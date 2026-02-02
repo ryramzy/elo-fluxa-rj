@@ -4,7 +4,7 @@
 */
 
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Product } from '../types';
 
 interface ProductDetailProps {
@@ -14,11 +14,10 @@ interface ProductDetailProps {
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onAddToCart }) => {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  
-  // Mock sizes for demonstration if not in data
-  const sizes = ['S', 'M', 'L'];
-  const showSizes = product.category === 'Wearable';
+  /**
+   * Removed showSizes and related logic as English courses do not have sizing attributes.
+   * This also prevents a type mismatch error after updating the category union.
+   */
 
   return (
     <div className="pt-24 min-h-screen bg-[#F5F2EB] animate-fade-in-up">
@@ -52,39 +51,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onAddToC
           <div className="flex flex-col justify-center max-w-xl">
              <span className="text-sm font-medium text-[#A8A29E] uppercase tracking-widest mb-2">{product.category}</span>
              <h1 className="text-4xl md:text-5xl font-serif text-[#2C2A26] mb-4">{product.name}</h1>
-             <span className="text-2xl font-light text-[#2C2A26] mb-8">${product.price}</span>
+             <span className="text-2xl font-light text-[#2C2A26] mb-8">R${product.price}/h</span>
              
              <p className="text-[#5D5A53] leading-relaxed font-light text-lg mb-8 border-b border-[#D6D1C7] pb-8">
                {product.longDescription || product.description}
              </p>
-
-             {showSizes && (
-                <div className="mb-8">
-                  <span className="block text-xs font-bold uppercase tracking-widest text-[#2C2A26] mb-4">Select Size</span>
-                  <div className="flex gap-4">
-                    {sizes.map(size => (
-                      <button 
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`w-12 h-12 flex items-center justify-center border transition-all duration-300 ${
-                          selectedSize === size 
-                            ? 'border-[#2C2A26] bg-[#2C2A26] text-[#F5F2EB]' 
-                            : 'border-[#D6D1C7] text-[#5D5A53] hover:border-[#2C2A26]'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-             )}
 
              <div className="flex flex-col gap-4">
                <button 
                  onClick={() => onAddToCart(product)}
                  className="w-full py-5 bg-[#2C2A26] text-[#F5F2EB] uppercase tracking-widest text-sm font-medium hover:bg-[#433E38] transition-colors"
                >
-                 Add to Cart — ${product.price}
+                 Book Now — R${product.price}
                </button>
                <ul className="mt-8 space-y-2 text-sm text-[#5D5A53]">
                  {product.features.map((feature, idx) => (

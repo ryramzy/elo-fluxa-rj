@@ -4,8 +4,9 @@
 */
 
 import React from 'react';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants';
+import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../constants';
 import { SupportedLanguage } from '../types';
+import { trackEvent } from '../services/trackingService';
 
 interface HeroProps {
   onScheduleClick: () => void;
@@ -14,53 +15,32 @@ interface HeroProps {
 
 export default function Hero({ onScheduleClick, lang }: HeroProps) {
   function handleWhatsAppClick() {
+    trackEvent('hero_whatsapp_click');
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
     window.open(url, '_blank');
   }
 
   const content = {
     pt: {
-      tag: 'A Conexão Nativa',
-      subtitle: 'Inglês com americano nativo. Conectando você ao mundo com fluência, confiança e o estilo de vida carioca.',
+      tag: 'O Nativo que fala sua língua',
+      subtitle: 'Inglês com americano nativo no Rio. Destrave sua fala com quem entende o seu contexto e seus desafios.',
       cta1: 'WhatsApp',
-      cta2: 'Agenda Aula'
+      cta2: 'Ver Agenda',
+      socialProof: `Ajudando ${STUDENT_COUNT}+ cariocas a alcançarem a fluência este mês.`
     },
     en: {
       tag: 'The Native Connection',
-      subtitle: 'Native American English. Connecting you to the world with fluency, confidence, and the Carioca lifestyle.',
+      subtitle: 'Native American English in Rio. Unlock your speech with someone who understands your context and challenges.',
       cta1: 'WhatsApp',
-      cta2: 'Schedule'
-    },
-    tr: {
-      tag: 'Yerel Bağlantı',
-      subtitle: 'Ana dili Amerikan İngilizcesi olan Matthew ile İngilizce. Rio yaşam tarzıyla akıcılık ve özgüven kazanın.',
-      cta1: 'WhatsApp',
-      cta2: 'Randevu Al'
-    },
-    ar: {
-      tag: 'الاتصال الأصلي',
-      subtitle: 'الإنجليزية مع ماثيو، المتحدث الأصلي. تواصل مع العالم بطلاقة وثقة، وبأسلوب حياة كاريوكا.',
-      cta1: 'واتساب',
-      cta2: 'جدولة حصة'
-    },
-    jp: {
-      tag: 'ネイティブコネクション',
-      subtitle: 'ネイティブのアメリカ英語。流暢さと自信、そしてリオのライフスタイルで世界とつながりましょう。',
-      cta1: 'WhatsApp',
-      cta2: '予約する'
-    },
-    zh: {
-      tag: '原汁原味的连接',
-      subtitle: '跟随母语人士 Matthew 学习英语。以流利和自信连接世界，体验里约生活方式。',
-      cta1: 'WhatsApp',
-      cta2: '预约课程'
+      cta2: 'Schedule',
+      socialProof: `Helping ${STUDENT_COUNT}+ students in Rio achieve fluency this month.`
     }
   };
 
-  const current = content[lang] || content.en;
+  const current = (content as any)[lang] || content.en;
 
   return (
-    <section className="relative w-full h-[85vh] min-h-[600px] overflow-hidden bg-slate-900 pt-[33px]">
+    <section className="relative w-full h-[85vh] min-h-[650px] overflow-hidden bg-slate-900 pt-[33px]">
       <div className="absolute inset-0 w-full h-full">
         <img 
             src="https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=2000" 
@@ -72,10 +52,17 @@ export default function Hero({ onScheduleClick, lang }: HeroProps) {
 
       <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 max-w-5xl mx-auto">
         <div className="animate-fade-in-up">
-          <span className="inline-block text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-blue-400 mb-8 px-6 py-2 border border-blue-400/30 bg-blue-400/10 rounded-full">
-            {current.tag}
-          </span>
-          <h1 className={`font-serif text-white leading-[0.9] mb-8 ${lang === 'zh' || lang === 'jp' ? 'text-5xl md:text-7xl lg:text-8xl' : 'text-6xl md:text-8xl lg:text-9xl'}`}>
+          <div className="flex flex-col items-center mb-8">
+            <span className="inline-block text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-blue-400 mb-4 px-6 py-2 border border-blue-400/30 bg-blue-400/10 rounded-full">
+              {current.tag}
+            </span>
+            <div className="flex items-center gap-2 text-[10px] text-white/60 font-bold uppercase tracking-widest">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              {current.socialProof}
+            </div>
+          </div>
+
+          <h1 className="font-serif text-white leading-[0.9] mb-8 text-6xl md:text-8xl lg:text-9xl">
             Elo <span className="italic text-blue-400">Matt!</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-200 font-light leading-relaxed mb-12 max-w-2xl mx-auto">
@@ -91,7 +78,7 @@ export default function Hero({ onScheduleClick, lang }: HeroProps) {
               {current.cta1}
             </button>
             <button 
-              onClick={onScheduleClick}
+              onClick={() => { trackEvent('hero_schedule_click'); onScheduleClick(); }}
               className="px-12 py-5 bg-white text-slate-900 text-xs font-bold uppercase tracking-[0.3em] hover:bg-slate-100 transition-all shadow-xl"
             >
               {current.cta2}

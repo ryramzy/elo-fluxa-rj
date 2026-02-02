@@ -14,7 +14,10 @@ export interface Product {
   description: string;
   longDescription?: string;
   price: number;
-  category: 'Audio' | 'Wearable' | 'Mobile' | 'Home';
+  /**
+   * Updated category type to reflect English teaching services instead of generic hardware.
+   */
+  category: 'Professional' | 'Coaching' | 'Essential';
   imageUrl: string;
   gallery?: string[];
   features: string[];

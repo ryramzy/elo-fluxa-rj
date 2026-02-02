@@ -14,7 +14,8 @@ import Assistant from './components/Assistant';
 import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
 import JournalDetail from './components/JournalDetail';
-import { Product, ViewState, SupportedLanguage } from './types';
+import LeadAssessment from './components/LeadAssessment';
+import { ViewState, SupportedLanguage } from './types';
 
 export type TabID = 'sobre' | 'agenda' | 'courses' | 'video' | 'journal';
 
@@ -102,6 +103,8 @@ export default function App() {
                 {activeTab === 'video' && <VideoGrid />}
               </div>
             </div>
+
+            <LeadAssessment />
           </>
         )}
 
