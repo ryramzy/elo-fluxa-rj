@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -15,36 +14,41 @@ import Assistant from './components/Assistant';
 import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
 import JournalDetail from './components/JournalDetail';
-import { Product, ViewState } from './types';
+import { Product, ViewState, SupportedLanguage } from './types';
 
-type TabID = 'sobre' | 'agenda' | 'courses' | 'video';
+export type TabID = 'sobre' | 'agenda' | 'courses' | 'video' | 'journal';
 
-function App() {
+const TABS: Array<TabID> = ['sobre', 'agenda', 'courses', 'video'];
+
+export default function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
   const [activeTab, setActiveTab] = useState<TabID>('sobre');
+  const [language, setLanguage] = useState<SupportedLanguage>('pt');
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
+    
+    let tabToSet: TabID = 'sobre';
+    if (targetId === 'products') tabToSet = 'courses';
+    if (targetId === 'about') tabToSet = 'sobre';
+    if (targetId === 'journal') tabToSet = 'journal';
+    if (targetId === 'agenda') tabToSet = 'agenda';
+
     if (view.type !== 'home') {
       setView({ type: 'home' });
-      setTimeout(() => scrollToSection(targetId), 0);
-    } else {
-      scrollToSection(targetId);
     }
-  };
-
-  const scrollToSection = (targetId: string) => {
-    if (!targetId) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-    }
-    const element = document.getElementById(targetId);
-    if (element) {
-      const headerOffset = 85;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    }
+    
+    setActiveTab(tabToSet);
+    
+    setTimeout(() => {
+      const element = document.getElementById('content-area');
+      if (element) {
+        const headerOffset = 120;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      }
+    }, 50);
   };
 
   return (
@@ -53,44 +57,51 @@ function App() {
           onNavClick={handleNavClick} 
           cartCount={0}
           onOpenCart={() => {}}
+          activeTab={activeTab}
+          currentLanguage={language}
+          onLanguageChange={setLanguage}
       />
       
       <main>
         {view.type === 'home' && (
           <>
-            <Hero onScheduleClick={() => {
-              setActiveTab('agenda');
-              scrollToSection('tabs-section');
-            }} />
+            <Hero 
+              lang={language}
+              onScheduleClick={() => {
+                setActiveTab('agenda');
+                const element = document.getElementById('content-area');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }} 
+            />
             
-            <section id="tabs-section" className="py-20 px-6 md:px-12 max-w-[1800px] mx-auto">
-              <div className="flex border-b border-gray-200 mb-12 overflow-x-auto no-scrollbar">
-                {(['sobre', 'agenda', 'courses', 'video'] as TabID[]).map((tab) => (
+            <div id="content-area" className="py-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-screen">
+              <div className="flex justify-center mb-16 border-b border-slate-200 overflow-x-auto no-scrollbar whitespace-nowrap">
+                {TABS.map((tab) => (
                   <button 
                     key={tab}
                     data-tab={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-8 py-4 font-bold uppercase tracking-widest text-sm transition-all whitespace-nowrap border-b-2 ${
+                    className={`px-6 py-4 font-bold uppercase tracking-widest text-[10px] sm:text-xs transition-all border-b-2 ${
                       activeTab === tab 
-                        ? 'border-blue-600 text-blue-800' 
-                        : 'border-transparent text-gray-400 hover:text-gray-600'
+                        ? 'border-blue-600 text-blue-600' 
+                        : 'border-transparent text-slate-400 hover:text-slate-600'
                     }`}
                   >
-                    {tab === 'sobre' && 'Sobre Matthew'}
-                    {tab === 'agenda' && 'Agendar Aula'}
-                    {tab === 'courses' && 'Courses'}
-                    {tab === 'video' && 'Video Classes'}
+                    {tab === 'sobre' && (language === 'pt' ? 'Sobre Matthew' : 'About Matthew')}
+                    {tab === 'agenda' && (language === 'pt' ? 'Agendar Aula' : 'Schedule Lesson')}
+                    {tab === 'courses' && (language === 'pt' ? 'Cursos' : 'Courses')}
+                    {tab === 'video' && (language === 'pt' ? 'Aulas Gravadas' : 'Video Classes')}
                   </button>
                 ))}
               </div>
 
               <div className="animate-fade-in-up">
-                {activeTab === 'sobre' && <About />}
+                {activeTab === 'sobre' && <About lang={language} />}
                 {activeTab === 'agenda' && <Booking />}
                 {activeTab === 'courses' && <ProductGrid onProductClick={(p) => setView({ type: 'product', product: p })} />}
                 {activeTab === 'video' && <VideoGrid />}
               </div>
-            </section>
+            </div>
           </>
         )}
 
@@ -115,5 +126,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

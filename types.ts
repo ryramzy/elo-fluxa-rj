@@ -5,6 +5,8 @@
 
 import React from 'react';
 
+export type SupportedLanguage = 'pt' | 'en' | 'tr' | 'ar' | 'jp' | 'zh';
+
 export interface Product {
   id: string;
   name: string;
@@ -24,7 +26,20 @@ export interface JournalArticle {
   date: string;
   excerpt: string;
   image: string;
-  content: React.ReactNode; // Allowing JSX for rich formatting/poems
+  content: React.ReactNode; 
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  locationCode: string;
+  date: string;
+  content: string;
+  translation?: string;
+  isFeatured: boolean;
+  portugueseSpeaker?: boolean;
+  language: 'en' | 'pt' | 'tr' | 'ar' | 'other' | 'zh' | 'jp';
 }
 
 export interface ChatMessage {

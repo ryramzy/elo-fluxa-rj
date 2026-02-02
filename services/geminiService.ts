@@ -15,7 +15,7 @@ const getSystemInstruction = () => {
   return `Você é o Concierge de IA do "Elo Matt!", o serviço de ensino de inglês de Matthew, um americano nativo que vive no Rio de Janeiro. 
   Seu tom é amigável, encorajador, prático e com um toque de humor carioca (mas mantendo o profissionalismo de um coach americano).
   
-  Matthew é um americano nativo, praticante de Taoísmo, coach e entusiasta da cultura carioca. Ele ajuda brasileiros a destravarem o inglês.
+  Matthew é um americano nativo, praticante de Taoísmo, coach e entusiasta da cultura carioca. He helps Brazilians unlock their English.
   
   VOCÊ TEM CAPACIDADES ESPECIAIS (Simuladas via MCP):
   - Você pode verificar a disponibilidade real de Matthew consultando o calendário dele (ferramenta list_available_slots).
@@ -34,35 +34,26 @@ const getSystemInstruction = () => {
   Sempre encoraje o usuário a praticar um pouco de inglês na conversa se ele se sentir confortável.`;
 };
 
-export const sendMessageToGemini = async (history: {role: string, text: string}[], newMessage: string): Promise<string> => {
+export const sendMessageToGemini = async (history: Array<{role: string, text: string}>, newMessage: string): Promise<string> => {
   try {
-    let apiKey: string | undefined;
+    // Initializing Gemini API client using the environment variable directly as per guidelines.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
-    try {
-      apiKey = process.env.API_KEY;
-    } catch (e) {
-      console.warn("Accessing process.env failed");
-    }
-    
-    if (!apiKey) {
-      return "Desculpe, não consigo me conectar agora. (Falta chave de API)";
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-    
+    // Creating a chat session with the recommended model for basic text tasks.
     const chat = ai.chats.create({
-      model: 'gemini-2.0-flash-exp', 
+      model: 'gemini-3-flash-preview', 
       config: {
         systemInstruction: getSystemInstruction(),
       },
       history: history.map(h => ({
-        role: h.role,
+        role: h.role === 'model' ? 'model' : 'user',
         parts: [{ text: h.text }]
       }))
     });
 
-    const result = await chat.sendMessage({ message: newMessage });
-    return result.text;
+    // Sending a message and extracting the text content property from the response.
+    const response = await chat.sendMessage({ message: newMessage });
+    return response.text || "I apologize, but I could not generate a response.";
 
   } catch (error) {
     console.error("Gemini API Error:", error);
