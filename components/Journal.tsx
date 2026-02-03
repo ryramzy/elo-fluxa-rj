@@ -5,8 +5,8 @@
 
 
 import React from 'react';
-import { JOURNAL_ARTICLES } from '../constants';
-import { JournalArticle } from '../types';
+import { JOURNAL_ARTICLES } from '../constants.ts';
+import { JournalArticle } from '../types.ts';
 
 interface JournalProps {
   onArticleClick: (article: JournalArticle) => void;

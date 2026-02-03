@@ -4,9 +4,9 @@
 */
 
 import React from 'react';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../constants';
-import { SupportedLanguage } from '../types';
-import { trackEvent } from '../services/trackingService';
+import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../constants.ts';
+import { SupportedLanguage } from '../types.ts';
+import { trackEvent } from '../services/trackingService.ts';
 
 interface HeroProps {
   onScheduleClick: () => void;

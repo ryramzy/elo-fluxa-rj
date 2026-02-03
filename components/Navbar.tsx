@@ -4,8 +4,8 @@
 */
 
 import React, { useState, useEffect } from 'react';
-import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants';
-import { SupportedLanguage } from '../types';
+import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
+import { SupportedLanguage } from '../types.ts';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;

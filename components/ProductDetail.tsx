@@ -5,7 +5,7 @@
 
 
 import React from 'react';
-import { Product } from '../types';
+import { Product } from '../types.ts';
 
 interface ProductDetailProps {
   product: Product;
@@ -14,11 +14,6 @@ interface ProductDetailProps {
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onAddToCart }) => {
-  /**
-   * Removed showSizes and related logic as English courses do not have sizing attributes.
-   * This also prevents a type mismatch error after updating the category union.
-   */
-
   return (
     <div className="pt-24 min-h-screen bg-[#F5F2EB] animate-fade-in-up">
       <div className="max-w-[1800px] mx-auto px-6 md:px-12 pb-24">

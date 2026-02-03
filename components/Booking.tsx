@@ -4,8 +4,8 @@
 */
 
 import React, { useState } from 'react';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants';
-import { trackEvent } from '../services/trackingService';
+import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
+import { trackEvent } from '../services/trackingService.ts';
 
 const Booking: React.FC = () => {
   const [showSlots, setShowSlots] = useState(false);

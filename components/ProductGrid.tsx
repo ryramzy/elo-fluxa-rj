@@ -5,9 +5,9 @@
 
 
 import React from 'react';
-import { PRODUCTS } from '../constants';
-import { Product } from '../types';
-import ProductCard from './ProductCard';
+import { PRODUCTS } from '../constants.ts';
+import { Product } from '../types.ts';
+import ProductCard from './ProductCard.tsx';
 
 interface ProductGridProps {
   onProductClick: (product: Product) => void;
