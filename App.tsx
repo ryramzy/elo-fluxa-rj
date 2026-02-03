@@ -15,11 +15,12 @@ import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
 import JournalDetail from './components/JournalDetail';
 import LeadAssessment from './components/LeadAssessment';
+import Testimonials from './components/Testimonials';
 import { ViewState, SupportedLanguage } from './types';
 
-export type TabID = 'sobre' | 'agenda' | 'courses' | 'video' | 'journal';
+export type TabID = 'sobre' | 'reviews' | 'courses' | 'agenda' | 'video' | 'journal';
 
-const TABS: Array<TabID> = ['sobre', 'agenda', 'courses', 'video'];
+const TABS: Array<TabID> = ['sobre', 'courses', 'reviews', 'agenda', 'video'];
 
 export default function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
@@ -32,6 +33,7 @@ export default function App() {
     let tabToSet: TabID = 'sobre';
     if (targetId === 'products') tabToSet = 'courses';
     if (targetId === 'about') tabToSet = 'sobre';
+    if (targetId === 'reviews') tabToSet = 'reviews';
     if (targetId === 'journal') tabToSet = 'journal';
     if (targetId === 'agenda') tabToSet = 'agenda';
 
@@ -89,17 +91,19 @@ export default function App() {
                     }`}
                   >
                     {tab === 'sobre' && (language === 'pt' ? 'Sobre Matthew' : 'About Matthew')}
-                    {tab === 'agenda' && (language === 'pt' ? 'Agendar Aula' : 'Schedule Lesson')}
                     {tab === 'courses' && (language === 'pt' ? 'Cursos' : 'Courses')}
-                    {tab === 'video' && (language === 'pt' ? 'Aulas Gravadas' : 'Video Classes')}
+                    {tab === 'reviews' && (language === 'pt' ? 'Depoimentos' : 'Reviews')}
+                    {tab === 'agenda' && (language === 'pt' ? 'Agendar' : 'Schedule')}
+                    {tab === 'video' && (language === 'pt' ? 'Vídeos' : 'Videos')}
                   </button>
                 ))}
               </div>
 
               <div className="animate-fade-in-up">
                 {activeTab === 'sobre' && <About lang={language} />}
-                {activeTab === 'agenda' && <Booking />}
                 {activeTab === 'courses' && <ProductGrid onProductClick={(p) => setView({ type: 'product', product: p })} />}
+                {activeTab === 'reviews' && <Testimonials lang={language} />}
+                {activeTab === 'agenda' && <Booking />}
                 {activeTab === 'video' && <VideoGrid />}
               </div>
             </div>

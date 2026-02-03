@@ -10,6 +10,81 @@ export const WHATSAPP_NUMBER = "5522992322566";
 export const WHATSAPP_MESSAGE = "Olá Matthew! Vi seu site e gostaria de saber mais sobre as aulas de inglês.";
 export const BRAND_NAME = "Elo Matt!";
 
+export const MATTHEW_BIO = {
+  intro: {
+    title: "Welcome! It’s great to meet you 😊",
+    text: "Whether your goal is fluent conversation, sharper grammar, or speaking confidently about technology, work, and ideas, I’m here to help. My lessons are practical, engaging, and tailored to real life—so you leave each session feeling more confident and clearer in how you express yourself. Let’s make learning effective, relevant, and enjoyable 🚀"
+  },
+  aboutMe: {
+    title: "About Me",
+    text: "🌍 Curious mind. Global perspective. I’ve traveled to 13 countries, lived in three, and explored diverse regions of the U.S. Along the way, I’ve developed a deep appreciation for culture, communication, and how ideas move across borders. Professionally and personally, I’m passionate about: Technology & innovation (Generative AI, AI agents, cloud architecture, AWS, S3) Education & communication Philosophy (Stoicism, ethics, critical thinking, systems thinking) Public policy, globalization, and society. I enjoy helping students talk comfortably about modern topics—from AI and tech careers to philosophy, culture, and everyday life—while also improving pronunciation, clarity, and confidence. Outside the classroom, I stay active 💪 (gym, hiking, beach days 🏖️) and believe learning should feel dynamic and human, not rigid or robotic."
+  },
+  languages: [
+    { name: "English", level: "Native (USA Accent)", icon: "🇺🇸" },
+    { name: "Portuguese", level: "Fluent", icon: "🇧🇷" },
+    { name: "Spanish", level: "Basic", icon: "🇪🇸" }
+  ],
+  interests: [
+    "Food", "Movies", "Music", "Science", "Travel", "History", "Technology", "Philosophy", 
+    "Health and Wellness", "Art", "Fitness & discipline (boxing and martial arts)", 
+    "Relationships and communication", "Ancient and alternative history", "Space", 
+    "Speculative ideas", "Stoic philosophy"
+  ],
+  specialties: [
+    { name: "Business", icon: "💼" },
+    { name: "Finance", icon: "💰" },
+    { name: "Technology", icon: "💻" }
+  ],
+  teachingStyle: "In class, I focus on guided learning, practical language foundations, and light dictation to help you understand how English works in real contexts. Our sessions are mostly conversation-based, with flexibility to focus on specific areas you want to improve.",
+  levels: ["Beginner", "Intermediate", "Upper Intermediate", "Advanced"],
+  skills: ["Grammar", "Conversation Practice", "English for Business", "Reading", "Accent Reduction", "Vocabulary", "Test Preparation (IELTS)"],
+  industries: ["Business", "Finance", "Technology", "Public Services", "Engineering", "Education", "Entertainment", "Government", "Sustainability", "Law & Compliance"],
+  education: [
+    {
+      degree: "Google Cloud Architect Certification",
+      school: "Google Cloud",
+      focus: "Entrepreneurship • Technology • Internet. Training in cloud architecture, infrastructure design, scalability, security, and modern technologies."
+    },
+    {
+      degree: "Graduate Studies in Economics",
+      school: "University of Sydney",
+      focus: "Finance and Banking. Advanced coursework in economic theory, development, and global markets."
+    },
+    {
+      degree: "Bachelor of Arts (BA)",
+      school: "Law • Government • Research",
+      focus: "Focused on governance, public policy, international relations, and critical analysis."
+    }
+  ],
+  experience: [
+    {
+      role: "Sustainability Planner",
+      company: "ECO Action (Atlanta, GA)",
+      desc: "Bringing engineering expertise to drive environmental initiatives. Analyzing, designing, and implementing sustainable solutions."
+    },
+    {
+      role: "Software Programmer",
+      company: "Freelance/Tech",
+      desc: "Versatile programmer with experience in front-end, back-end development, and DevOps. Crafting innovative digital solutions."
+    },
+    {
+      role: "Research Associate",
+      company: "Government / Law",
+      desc: "Using case law and studies to improve government policy regarding the Americans With Disabilities Act."
+    },
+    {
+      role: "Financial Manager",
+      company: "Entrepreneurship",
+      desc: "Management of Stock, Forex, and Crypto (BTC & Ethereum) portfolios."
+    },
+    {
+      role: "Digital Content Creator",
+      company: "Journalism",
+      desc: "Published several articles while living in Australia from a student's perspective."
+    }
+  ]
+};
+
 export const PRODUCTS: Product[] = [
   {
     id: 'c1',
@@ -70,10 +145,20 @@ export const TESTIMONIALS: Testimonial[] = [
     isFeatured: true,
     portugueseSpeaker: true,
     language: 'pt'
+  },
+  {
+    id: 't3',
+    name: 'Marcos V.',
+    location: 'São Paulo',
+    locationCode: 'BR',
+    date: 'Jan 2025',
+    content: 'A experiência de ter um professor que entende de tecnologia facilitou muito. Não precisei explicar o que é AWS ou S3, ele já sabia.',
+    isFeatured: false,
+    portugueseSpeaker: true,
+    language: 'pt'
   }
 ];
 
-// Added missing JOURNAL_ARTICLES export to resolve module not found error in Journal.tsx
 export const JOURNAL_ARTICLES: JournalArticle[] = [
   {
     id: 1,
@@ -82,13 +167,5 @@ export const JOURNAL_ARTICLES: JournalArticle[] = [
     excerpt: 'Why the Oil & Gas sector requires more than just grammar.',
     image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e778?auto=format&fit=crop&q=80&w=1000',
     content: 'Professional English in the Rio tech and energy sectors is about more than just vocabulary; it is about cultural nuances and specific industry terminology.'
-  },
-  {
-    id: 2,
-    title: 'Common "Carioca" Pitfalls',
-    date: 'Mar 05, 2025',
-    excerpt: 'How to avoid the most common mistakes Portuguese speakers make.',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000',
-    content: 'Many students in Rio struggle with the "th" sound or the difference between "make" and "do". These small adjustments can significantly increase your perceived fluency and confidence in international meetings.'
   }
 ];
