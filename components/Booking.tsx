@@ -60,11 +60,11 @@ const Booking: React.FC = () => {
         <div className="animate-fade-in-up">
             <div className="grid grid-cols-1 gap-4 mb-10 max-w-md mx-auto">
                 {mockSlots.map((slot, i) => (
-                    <div key={i} className="bg-slate-50 p-6 border border-slate-100 flex justify-between items-center group hover:border-blue-500 hover:bg-white transition-all">
+                    <div key={i} className="bg-slate-50 p-6 border border-slate-100 flex justify-between items-center group hover:border-green-500 hover:bg-white transition-all">
                         <span className="font-bold text-slate-700">{slot}</span>
                         <button 
                           onClick={() => handleWhatsApp(slot)} 
-                          className="bg-blue-600 text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all"
+                          className="bg-[#25D366] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#128C7E] transition-all"
                         >
                           Agendar
                         </button>

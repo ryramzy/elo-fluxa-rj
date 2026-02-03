@@ -44,7 +44,7 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
           </p>
           <button 
             onClick={handleWhatsApp}
-            className="text-blue-400 font-bold uppercase tracking-widest text-[10px] hover:text-blue-300 transition-colors flex items-center gap-2"
+            className="text-green-500 font-bold uppercase tracking-widest text-[10px] hover:text-green-400 transition-colors flex items-center gap-2"
           >
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
             Fale conosco via WhatsApp

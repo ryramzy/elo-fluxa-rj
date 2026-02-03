@@ -117,7 +117,7 @@ export default function Navbar({
             <button 
               onClick={handleWhatsApp}
               className={`text-[10px] font-bold uppercase tracking-widest px-6 py-2 border transition-all hidden sm:block ${
-                scrolled || mobileMenuOpen ? 'border-slate-900 hover:bg-slate-900 hover:text-white' : 'border-white hover:bg-white hover:text-slate-900'
+                scrolled || mobileMenuOpen ? 'border-green-600 hover:bg-green-600 hover:text-white' : 'border-white hover:bg-[#25D366] hover:border-[#25D366] hover:text-white'
               }`}
             >
               WhatsApp
@@ -156,7 +156,7 @@ export default function Navbar({
             </a>
             <button 
                 onClick={handleWhatsApp} 
-                className="bg-blue-600 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4"
+                className="bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4"
             >
                 {currentLanguage === 'pt' ? 'Falar no WhatsApp' : 'Talk on WhatsApp'}
             </button>

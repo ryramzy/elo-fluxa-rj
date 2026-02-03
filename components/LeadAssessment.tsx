@@ -66,7 +66,7 @@ const LeadAssessment: React.FC = () => {
             </div>
             <button 
               type="submit"
-              className="w-full py-5 bg-blue-600 text-white text-xs font-bold uppercase tracking-[0.3em] hover:bg-blue-700 transition-all shadow-xl"
+              className="w-full py-5 bg-[#25D366] text-white text-xs font-bold uppercase tracking-[0.3em] hover:bg-[#128C7E] transition-all shadow-xl"
             >
               Iniciar Avaliação
             </button>
