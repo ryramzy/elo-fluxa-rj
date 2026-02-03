@@ -4,8 +4,8 @@
 */
 
 import React, { useState } from 'react';
-import { SupportedLanguage } from '../types';
-import { MATTHEW_BIO } from '../constants';
+import { SupportedLanguage } from '../types.ts';
+import { MATTHEW_BIO } from '../constants.ts';
 
 interface AboutProps {
   lang: SupportedLanguage;
@@ -70,7 +70,7 @@ export default function About({ lang }: AboutProps) {
             className="text-blue-600 font-bold uppercase tracking-widest text-xs hover:text-blue-700 transition-colors flex items-center gap-2"
           >
             {showFullAbout ? 'Read less' : 'Read more'}
-            <svg className={`w-4 h-4 transform transition-transform ${showFullAbout ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            <svg className={`w-4 h-4 transform transition-transform ${showFullAbout ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-slate-100">
@@ -157,6 +157,22 @@ export default function About({ lang }: AboutProps) {
                   ))}
                </div>
             </div>
+         </div>
+      </section>
+
+      {/* Bibliography Section - NEW */}
+      <section className="space-y-12">
+         <h3 className="text-3xl font-serif font-bold text-slate-900 border-b border-slate-200 pb-6">Selected Bibliography & Publications</h3>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {bio.bibliography?.map((item, i) => (
+              <div key={i} className="bg-slate-50 p-8 border-l-2 border-blue-600 flex flex-col justify-between hover:bg-white transition-colors">
+                 <div>
+                    <h4 className="font-serif italic text-xl text-slate-800 mb-2">"{item.title}"</h4>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{item.publisher} • {item.year}</p>
+                    <p className="text-sm text-slate-600 font-light leading-relaxed">{item.description}</p>
+                 </div>
+              </div>
+            ))}
          </div>
       </section>
 

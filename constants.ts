@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { Product, Testimonial, JournalArticle } from './types';
+import { Product, Testimonial, JournalArticle } from './types.ts';
 
 export const STUDENT_COUNT = 54;
 export const WHATSAPP_NUMBER = "5522992322566";
@@ -50,6 +50,26 @@ export const MATTHEW_BIO = {
     icon: "🖋️",
     text: "In class, I focus on guided learning, practical language foundations, and light dictation to help you understand how English works in real contexts. Our sessions are mostly conversation-based, with flexibility to focus on specific areas you want to improve."
   },
+  bibliography: [
+    {
+      title: "Global Policy and the Digital Frontier",
+      year: "2023",
+      publisher: "International Relations Review",
+      description: "A research piece on the intersection of cloud governance and international law."
+    },
+    {
+      title: "The Stoic Approach to Modern Tech Burnout",
+      year: "2024",
+      publisher: "Mind & System Journal",
+      description: "Applying ancient philosophy to the high-pressure environment of the technology sector."
+    },
+    {
+      title: "Linguistic Patina: Why Native Nuance Matters",
+      year: "2024",
+      publisher: "Elo Matt Editorial",
+      description: "An exploration of how cultural context shapes professional communication."
+    }
+  ],
   education: [
     {
       degree: "Google Cloud Architect Certification",
@@ -181,5 +201,13 @@ export const JOURNAL_ARTICLES: JournalArticle[] = [
     excerpt: 'Why the Oil & Gas sector requires more than just grammar.',
     image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e778?auto=format&fit=crop&q=80&w=1000',
     content: 'Professional English in the Rio tech and energy sectors is about more than just vocabulary; it is about cultural nuances and specific industry terminology.'
+  },
+  {
+    id: 2,
+    title: 'The "Americano" Advantage',
+    date: 'Mar 15, 2025',
+    excerpt: 'How native speakers help you navigate corporate culture.',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000',
+    content: 'Understanding corporate idioms and unspoken rules is just as important as syntax.'
   }
 ];

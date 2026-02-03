@@ -4,24 +4,25 @@
 */
 
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import ProductGrid from './components/ProductGrid';
-import About from './components/About';
-import VideoGrid from './components/VideoGrid';
-import Booking from './components/Booking';
-import Assistant from './components/Assistant';
-import Footer from './components/Footer';
-import ProductDetail from './components/ProductDetail';
-import JournalDetail from './components/JournalDetail';
-import LeadAssessment from './components/LeadAssessment';
-import Testimonials from './components/Testimonials';
-import { ViewState, SupportedLanguage } from './types';
+import Navbar from './components/Navbar.tsx';
+import Hero from './components/Hero.tsx';
+import ProductGrid from './components/ProductGrid.tsx';
+import About from './components/About.tsx';
+import VideoGrid from './components/VideoGrid.tsx';
+import Booking from './components/Booking.tsx';
+import Assistant from './components/Assistant.tsx';
+import Footer from './components/Footer.tsx';
+import ProductDetail from './components/ProductDetail.tsx';
+import Journal from './components/Journal.tsx';
+import JournalDetail from './components/JournalDetail.tsx';
+import LeadAssessment from './components/LeadAssessment.tsx';
+import Testimonials from './components/Testimonials.tsx';
+import { ViewState, SupportedLanguage } from './types.ts';
 
 export type TabID = 'sobre' | 'courses' | 'agenda' | 'video' | 'reviews' | 'journal';
 
-// Place 'reviews' at the end of primary tabs as requested
-const TABS: Array<TabID> = ['sobre', 'courses', 'agenda', 'video', 'reviews'];
+// Added 'journal' to the main navigation tabs
+const TABS: Array<TabID> = ['sobre', 'courses', 'agenda', 'video', 'journal', 'reviews'];
 
 export default function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
@@ -95,6 +96,7 @@ export default function App() {
                     {tab === 'courses' && (language === 'pt' ? 'Cursos' : 'Courses')}
                     {tab === 'agenda' && (language === 'pt' ? 'Agendar' : 'Schedule')}
                     {tab === 'video' && (language === 'pt' ? 'Vídeos' : 'Videos')}
+                    {tab === 'journal' && (language === 'pt' ? 'Dicas' : 'Journal')}
                     {tab === 'reviews' && (language === 'pt' ? 'Depoimentos' : 'Reviews')}
                   </button>
                 ))}
@@ -106,6 +108,7 @@ export default function App() {
                 {activeTab === 'reviews' && <Testimonials lang={language} />}
                 {activeTab === 'agenda' && <Booking />}
                 {activeTab === 'video' && <VideoGrid />}
+                {activeTab === 'journal' && <Journal onArticleClick={(article) => setView({ type: 'journal', article })} />}
               </div>
             </div>
 
