@@ -17,10 +17,11 @@ export const MATTHEW_BIO = {
   },
   aboutMe: {
     title: "About Me",
-    text: "🌍 Curious mind. Global perspective. I’ve traveled to 13 countries, lived in three, and explored diverse regions of the U.S. Along the way, I’ve developed a deep appreciation for culture, communication, and how ideas move across borders. Professionally and personally, I’m passionate about: Technology & innovation (Generative AI, AI agents, cloud architecture, AWS, S3) Education & communication Philosophy (Stoicism, ethics, critical thinking, systems thinking) Public policy, globalization, and society. I enjoy helping students talk comfortably about modern topics—from AI and tech careers to philosophy, culture, and everyday life—while also improving pronunciation, clarity, and confidence. Outside the classroom, I stay active 💪 (gym, hiking, beach days 🏖️) and believe learning should feel dynamic and human, not rigid or robotic."
+    icon: "👋",
+    text: "🌍 Curious mind. Global perspective. I’ve traveled to 13 countries, lived in three, and explored diverse regions of the U.S. Along the way, I’ve developed a deep appreciation for culture, communication, and how ideas move across borders. Professionally and personally, I’m passionate about: Technology & innovation (Generative AI, AI agents, cloud architecture, AWS, S3) Education & communication Philosophy (Stoicism, ethics, critical thinking, systems thinking) Public policy, globalization, and society. I enjoy helping students talk comfortably about modern topics—from AI and tech careers to philosophy, culture, and everyday life—while also improving pronunciation, clarity, and confidence. Outside the classroom, I stay active 💪 (gym, hiking, beach days 🏖️) and believe learning should feel dynamic and human, not rigid or robotic. Whether you want: Natural conversation practice, Professional or tech-focused English, or Thoughtful discussions about ideas, work, or the world—I’ll meet you where you are and help you level up. Book a lesson, and let’s build skills that actually matter 🌍✨"
   },
   languages: [
-    { name: "English", level: "Native (USA Accent)", icon: "🇺🇸" },
+    { name: "English", level: "Native: USA Accent", icon: "🇺🇸" },
     { name: "Portuguese", level: "Fluent", icon: "🇧🇷" },
     { name: "Spanish", level: "Basic", icon: "🇪🇸" }
   ],
@@ -28,58 +29,73 @@ export const MATTHEW_BIO = {
     "Food", "Movies", "Music", "Science", "Travel", "History", "Technology", "Philosophy", 
     "Health and Wellness", "Art", "Fitness & discipline (boxing and martial arts)", 
     "Relationships and communication", "Ancient and alternative history", "Space", 
-    "Speculative ideas", "Stoic philosophy"
+    "Science and speculative ideas", "Stoic philosophy"
   ],
-  specialties: [
-    { name: "Business", icon: "💼" },
-    { name: "Finance", icon: "💰" },
-    { name: "Technology", icon: "💻" }
-  ],
-  teachingStyle: "In class, I focus on guided learning, practical language foundations, and light dictation to help you understand how English works in real contexts. Our sessions are mostly conversation-based, with flexibility to focus on specific areas you want to improve.",
-  levels: ["Beginner", "Intermediate", "Upper Intermediate", "Advanced"],
-  skills: ["Grammar", "Conversation Practice", "English for Business", "Reading", "Accent Reduction", "Vocabulary", "Test Preparation (IELTS)"],
-  industries: ["Business", "Finance", "Technology", "Public Services", "Engineering", "Education", "Entertainment", "Government", "Sustainability", "Law & Compliance"],
+  specialties: {
+    expertise: [
+      { name: "Business", icon: "💼" },
+      { name: "Finance", icon: "💰" },
+      { name: "Technology", icon: "💻" }
+    ],
+    skills: ["Grammar", "Conversation Practice", "English for Business", "Reading", "Accent Reduction", "Vocabulary", "Test Preparation (IELTS)"],
+    industries: [
+      "Business", "Finance", "Technology", "Public Services", "Engineering", 
+      "Education", "Entertainment", "Government & Research", "Sustainability & Environmental Policy", 
+      "Media", "Law & Compliance"
+    ],
+    levels: ["Beginner", "Intermediate", "Upper Intermediate", "Advanced"]
+  },
+  teachingStyle: {
+    title: "Teaching Style",
+    icon: "🖋️",
+    text: "In class, I focus on guided learning, practical language foundations, and light dictation to help you understand how English works in real contexts. Our sessions are mostly conversation-based, with flexibility to focus on specific areas you want to improve."
+  },
   education: [
     {
       degree: "Google Cloud Architect Certification",
       school: "Google Cloud",
-      focus: "Entrepreneurship • Technology • Internet. Training in cloud architecture, infrastructure design, scalability, security, and modern technologies."
+      focus: "Entrepreneurship • Technology • Internet. Training in cloud architecture, infrastructure design, scalability, security, and modern technologies including data systems and distributed applications."
     },
     {
       degree: "Graduate Studies in Economics",
       school: "University of Sydney",
-      focus: "Finance and Banking. Advanced coursework in economic theory, development, and global markets."
+      focus: "Finance and Banking. Advanced coursework in economic theory, development, and global markets, with an international perspective shaped by studying and living abroad."
     },
     {
       degree: "Bachelor of Arts (BA)",
       school: "Law • Government • Research",
-      focus: "Focused on governance, public policy, international relations, and critical analysis."
+      focus: "Focused on governance, public policy, international relations, and critical analysis, with strong emphasis on writing, research, and understanding global political systems."
+    },
+    {
+      degree: "TESOL Certification",
+      school: "Teaching English to Speakers of Other Languages",
+      focus: "Specialized training in pedagogical techniques for non-native speakers."
     }
   ],
   experience: [
     {
       role: "Sustainability Planner",
       company: "ECO Action (Atlanta, GA)",
-      desc: "Bringing engineering expertise to drive environmental initiatives. Analyzing, designing, and implementing sustainable solutions."
+      desc: "As a sustainability planner, I bring my engineering expertise to drive environmental initiatives. My role involves analyzing, designing, and implementing sustainable solutions."
     },
     {
-      role: "Software Programmer",
-      company: "Freelance/Tech",
-      desc: "Versatile programmer with experience in front-end, back-end development, and DevOps. Crafting innovative digital solutions."
+      role: "Software Programming",
+      company: "Tech Lead / Dev",
+      desc: "Versatile software programmer with a wealth of experience in front-end and back-end development, as well as DevOps. Passionate about crafting innovative digital solutions."
     },
     {
       role: "Research Associate",
-      company: "Government / Law",
-      desc: "Using case law and studies to improve government policy regarding the Americans With Disabilities Act."
+      company: "Legal / Government",
+      desc: "Using case law and case studies performed research to improve government policy in regards to disability under the Americans With Disabilities Act."
     },
     {
       role: "Financial Manager",
-      company: "Entrepreneurship",
-      desc: "Management of Stock, Forex, and Crypto (BTC & Ethereum) portfolios."
+      company: "Asset Management",
+      desc: "Managed portfolios involving Stocks, Forex, and Crypto (BTC & Ethereum)."
     },
     {
       role: "Digital Content Creator",
-      company: "Journalism",
+      company: "Freelance",
       desc: "Published several articles while living in Australia from a student's perspective."
     }
   ]
@@ -129,7 +145,6 @@ export const TESTIMONIALS: Testimonial[] = [
     locationCode: 'BR',
     date: 'Fev 2025',
     content: 'The specific technical vocabulary for the energy sector was a game changer for my meetings with Houston.',
-    translation: 'O vocabulário técnico específico para o setor de energia foi um divisor de águas para as minhas reuniões com Houston.',
     isFeatured: true,
     portugueseSpeaker: true,
     language: 'en'
@@ -141,7 +156,6 @@ export const TESTIMONIALS: Testimonial[] = [
     locationCode: 'BR',
     date: 'Jan 2025',
     content: 'Preparei minha entrevista para o visto com o Matthew e passei de primeira. Ele entende as pegadinhas que nós brasileiros caímos.',
-    translation: 'I prepared my visa interview with Matthew and passed first time. He understands the traps we Brazilians fall into.',
     isFeatured: true,
     portugueseSpeaker: true,
     language: 'pt'

@@ -18,9 +18,10 @@ import LeadAssessment from './components/LeadAssessment';
 import Testimonials from './components/Testimonials';
 import { ViewState, SupportedLanguage } from './types';
 
-export type TabID = 'sobre' | 'reviews' | 'courses' | 'agenda' | 'video' | 'journal';
+export type TabID = 'sobre' | 'courses' | 'agenda' | 'video' | 'reviews' | 'journal';
 
-const TABS: Array<TabID> = ['sobre', 'courses', 'reviews', 'agenda', 'video'];
+// Place 'reviews' at the end of primary tabs as requested
+const TABS: Array<TabID> = ['sobre', 'courses', 'agenda', 'video', 'reviews'];
 
 export default function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
@@ -92,9 +93,9 @@ export default function App() {
                   >
                     {tab === 'sobre' && (language === 'pt' ? 'Sobre Matthew' : 'About Matthew')}
                     {tab === 'courses' && (language === 'pt' ? 'Cursos' : 'Courses')}
-                    {tab === 'reviews' && (language === 'pt' ? 'Depoimentos' : 'Reviews')}
                     {tab === 'agenda' && (language === 'pt' ? 'Agendar' : 'Schedule')}
                     {tab === 'video' && (language === 'pt' ? 'Vídeos' : 'Videos')}
+                    {tab === 'reviews' && (language === 'pt' ? 'Depoimentos' : 'Reviews')}
                   </button>
                 ))}
               </div>
