@@ -21,8 +21,7 @@ import { ViewState, SupportedLanguage } from './types.ts';
 
 export type TabID = 'sobre' | 'courses' | 'agenda' | 'video' | 'reviews' | 'journal';
 
-// Added 'journal' to the main navigation tabs
-const TABS: Array<TabID> = ['sobre', 'courses', 'agenda', 'video', 'journal', 'reviews'];
+const TABS: TabID[] = ['sobre', 'courses', 'agenda', 'video', 'journal', 'reviews'];
 
 export default function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
@@ -32,25 +31,24 @@ export default function App() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     
-    let tabToSet: TabID = 'sobre';
-    if (targetId === 'products') tabToSet = 'courses';
-    if (targetId === 'about') tabToSet = 'sobre';
-    if (targetId === 'reviews') tabToSet = 'reviews';
-    if (targetId === 'journal') tabToSet = 'journal';
-    if (targetId === 'agenda') tabToSet = 'agenda';
+    const tabMap: Record<string, TabID> = {
+      'products': 'courses',
+      'about': 'sobre',
+      'reviews': 'reviews',
+      'journal': 'journal',
+      'agenda': 'agenda'
+    };
 
-    if (view.type !== 'home') {
-      setView({ type: 'home' });
-    }
-    
+    const tabToSet = tabMap[targetId] || 'sobre';
+
+    if (view.type !== 'home') setView({ type: 'home' });
     setActiveTab(tabToSet);
     
     setTimeout(() => {
       const element = document.getElementById('content-area');
       if (element) {
         const headerOffset = 120;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+        const offsetPosition = element.getBoundingClientRect().top + window.scrollY - headerOffset;
         window.scrollTo({ top: offsetPosition, behavior: "smooth" });
       }
     }, 50);
@@ -60,9 +58,6 @@ export default function App() {
     <div className="min-h-screen bg-[#F8F9FA] font-sans text-[#1A1A1A]">
       <Navbar 
           onNavClick={handleNavClick} 
-          cartCount={0}
-          onOpenCart={() => {}}
-          activeTab={activeTab}
           currentLanguage={language}
           onLanguageChange={setLanguage}
       />
@@ -74,8 +69,7 @@ export default function App() {
               lang={language}
               onScheduleClick={() => {
                 setActiveTab('agenda');
-                const element = document.getElementById('content-area');
-                element?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('content-area')?.scrollIntoView({ behavior: 'smooth' });
               }} 
             />
             
@@ -84,7 +78,6 @@ export default function App() {
                 {TABS.map((tab) => (
                   <button 
                     key={tab}
-                    data-tab={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-6 py-4 font-bold uppercase tracking-widest text-[10px] sm:text-xs transition-all border-b-2 ${
                       activeTab === tab 
@@ -120,7 +113,6 @@ export default function App() {
           <ProductDetail 
             product={view.product} 
             onBack={() => setView({ type: 'home' })}
-            onAddToCart={() => {}}
           />
         )}
 

@@ -14,12 +14,8 @@ export interface Product {
   description: string;
   longDescription?: string;
   price: number;
-  /**
-   * Updated category type to reflect English teaching services instead of generic hardware.
-   */
   category: 'Professional' | 'Coaching' | 'Essential';
   imageUrl: string;
-  gallery?: string[];
   features: string[];
 }
 
@@ -51,15 +47,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export enum LoadingState {
-  IDLE = 'IDLE',
-  LOADING = 'LOADING',
-  ERROR = 'ERROR',
-  SUCCESS = 'SUCCESS'
-}
-
 export type ViewState = 
   | { type: 'home' }
   | { type: 'product', product: Product }
-  | { type: 'journal', article: JournalArticle }
-  | { type: 'checkout' };
+  | { type: 'journal', article: JournalArticle };

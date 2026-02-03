@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-
 import React from 'react';
 import { JournalArticle } from '../types.ts';
+import { BRAND_NAME } from '../constants.ts';
 
 interface JournalDetailProps {
   article: JournalArticle;
@@ -15,13 +15,8 @@ interface JournalDetailProps {
 const JournalDetail: React.FC<JournalDetailProps> = ({ article, onBack }) => {
   return (
     <div className="min-h-screen bg-[#F5F2EB] animate-fade-in-up">
-       {/* Hero Image for Article - Full bleed to top so navbar sits on it */}
        <div className="w-full h-[50vh] md:h-[60vh] relative overflow-hidden">
-          <img 
-             src={article.image} 
-             alt={article.title} 
-             className="w-full h-full object-cover"
-          />
+          <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/20"></div>
        </div>
 
@@ -49,7 +44,7 @@ const JournalDetail: React.FC<JournalDetailProps> = ({ article, onBack }) => {
              </div>
              
              <div className="mt-16 pt-12 border-t border-[#D6D1C7] flex justify-center">
-                 <span className="text-2xl font-serif italic text-[#2C2A26]">Aura</span>
+                 <span className="text-2xl font-serif italic text-[#2C2A26]">{BRAND_NAME}</span>
              </div>
           </div>
        </div>
