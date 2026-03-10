@@ -4,14 +4,9 @@
 */
 
 import React, { useState } from 'react';
-import { SupportedLanguage } from '../types.ts';
 import { MATTHEW_BIO } from '../constants.ts';
 
-interface AboutProps {
-  lang: SupportedLanguage;
-}
-
-export default function About({ lang }: AboutProps) {
+export default function About() {
   const bio = MATTHEW_BIO;
   const [showFullAbout, setShowFullAbout] = useState(false);
   const [expandedExps, setExpandedExps] = useState<Record<number, boolean>>({});

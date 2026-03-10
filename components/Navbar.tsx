@@ -5,32 +5,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
-import { SupportedLanguage } from '../types.ts';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
-  currentLanguage: SupportedLanguage;
-  onLanguageChange: (lang: SupportedLanguage) => void;
 }
 
-interface LangOption {
-  code: SupportedLanguage;
-  label: string;
-  flag: string;
-}
-
-const LANGUAGES: LangOption[] = [
-  { code: 'pt', label: 'PT', flag: '🇧🇷' },
-  { code: 'en', label: 'EN', flag: '🇺🇸' },
-  { code: 'tr', label: 'TR', flag: '🇹🇷' },
-  { code: 'ar', label: 'AR', flag: '🇸🇦' },
-  { code: 'jp', label: 'JP', flag: '🇯🇵' },
-  { code: 'zh', label: 'ZH', flag: '🇨🇳' }
-];
-
-export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }: NavbarProps) {
+export default function Navbar({ onNavClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<'about' | 'products' | 'agenda' | 'video' | 'journal'>('about');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -40,6 +23,14 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     setMobileMenuOpen(false);
+    setActiveSection(
+      targetId === 'products' ||
+      targetId === 'agenda' ||
+      targetId === 'video' ||
+      targetId === 'journal'
+        ? targetId
+        : 'about'
+    );
     onNavClick(e, targetId);
   };
 
@@ -48,8 +39,16 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`, '_blank');
   };
 
-  const textColorClass = (scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white';
-  const logoColorClass = (scrolled || mobileMenuOpen) ? 'text-blue-600' : 'text-blue-400';
+  const textColorClass = scrolled || mobileMenuOpen ? 'text-slate-900' : 'text-white';
+  const logoColorClass = scrolled || mobileMenuOpen ? 'text-blue-600' : 'text-blue-400';
+
+  const linkBaseClasses =
+    'hover:text-blue-500 transition-colors relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
+
+  const getLinkClasses = (id: typeof activeSection) =>
+    `${linkBaseClasses} ${
+      activeSection === id ? 'font-extrabold after:w-full' : 'after:w-0'
+    }`;
 
   return (
     <>
@@ -57,18 +56,7 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
         scrolled || mobileMenuOpen ? 'bg-slate-950/90 backdrop-blur-sm' : 'bg-black/20'
       }`}>
         <div className="max-w-[1800px] mx-auto px-8 flex justify-end gap-5">
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => onLanguageChange(lang.code)}
-              className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all hover:scale-105 ${
-                currentLanguage === lang.code ? 'text-blue-400' : 'text-white/50 hover:text-white'
-              }`}
-            >
-              <span className="text-[12px] grayscale-[0.5]">{lang.flag}</span>
-              <span>{lang.label}</span>
-            </button>
-          ))}
+          {/* Top bar can be empty or used later */}
         </div>
       </div>
 
@@ -82,14 +70,40 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
           </a>
           
           <div className={`hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${textColorClass}`}>
-            <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-blue-500 transition-colors">
-              {currentLanguage === 'pt' ? 'Sobre' : 'About'}
+            <a
+              href="#about"
+              onClick={(e) => handleLinkClick(e, 'about')}
+              className={getLinkClasses('about')}
+            >
+              Sobre
             </a>
-            <a href="#products" onClick={(e) => handleLinkClick(e, 'products')} className="hover:text-blue-500 transition-colors">
-              {currentLanguage === 'pt' ? 'Cursos' : 'Courses'}
+            <a
+              href="#products"
+              onClick={(e) => handleLinkClick(e, 'products')}
+              className={getLinkClasses('products')}
+            >
+              Cursos
             </a>
-            <a href="#agenda" onClick={(e) => handleLinkClick(e, 'agenda')} className="hover:text-blue-500 transition-colors">
-              {currentLanguage === 'pt' ? 'Agenda' : 'Calendar'}
+            <a
+              href="#agenda"
+              onClick={(e) => handleLinkClick(e, 'agenda')}
+              className={getLinkClasses('agenda')}
+            >
+              Agenda
+            </a>
+            <a
+              href="#video"
+              onClick={(e) => handleLinkClick(e, 'video')}
+              className={getLinkClasses('video')}
+            >
+              Vídeos
+            </a>
+            <a
+              href="#journal"
+              onClick={(e) => handleLinkClick(e, 'journal')}
+              className={getLinkClasses('journal')}
+            >
+              Dicas
             </a>
           </div>
 
@@ -116,11 +130,43 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
           mobileMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
           <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-slate-900">
-            <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-blue-600 transition-colors">{currentLanguage === 'pt' ? 'Sobre' : 'About'}</a>
-            <a href="#products" onClick={(e) => handleLinkClick(e, 'products')} className="hover:text-blue-600 transition-colors">{currentLanguage === 'pt' ? 'Cursos' : 'Courses'}</a>
-            <a href="#agenda" onClick={(e) => handleLinkClick(e, 'agenda')} className="hover:text-blue-600 transition-colors">{currentLanguage === 'pt' ? 'Agenda' : 'Calendar'}</a>
+            <a
+              href="#about"
+              onClick={(e) => handleLinkClick(e, 'about')}
+              className={activeSection === 'about' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+            >
+              Sobre
+            </a>
+            <a
+              href="#products"
+              onClick={(e) => handleLinkClick(e, 'products')}
+              className={activeSection === 'products' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+            >
+              Cursos
+            </a>
+            <a
+              href="#agenda"
+              onClick={(e) => handleLinkClick(e, 'agenda')}
+              className={activeSection === 'agenda' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+            >
+              Agenda
+            </a>
+            <a
+              href="#video"
+              onClick={(e) => handleLinkClick(e, 'video')}
+              className={activeSection === 'video' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+            >
+              Vídeos
+            </a>
+            <a
+              href="#journal"
+              onClick={(e) => handleLinkClick(e, 'journal')}
+              className={activeSection === 'journal' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+            >
+              Dicas
+            </a>
             <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4">
-                {currentLanguage === 'pt' ? 'Falar no WhatsApp' : 'Talk on WhatsApp'}
+                Falar no WhatsApp
             </button>
           </div>
       </div>

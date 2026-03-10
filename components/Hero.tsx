@@ -5,39 +5,26 @@
 
 import React from 'react';
 import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../constants.ts';
-import { SupportedLanguage } from '../types.ts';
 import { trackEvent } from '../services/trackingService.ts';
 
 interface HeroProps {
-  onScheduleClick: () => void;
-  lang: SupportedLanguage;
+  onEnter: () => void;
 }
 
-export default function Hero({ onScheduleClick, lang }: HeroProps) {
+export default function Hero({ onEnter }: HeroProps) {
   function handleWhatsAppClick() {
     trackEvent('hero_whatsapp_click');
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
     window.open(url, '_blank');
   }
 
-  const content = {
-    pt: {
-      tag: 'O Nativo que fala sua língua',
-      subtitle: 'Inglês com americano nativo no Rio. Destrave sua fala com quem entende o seu contexto e seus desafios.',
-      cta1: 'WhatsApp',
-      cta2: 'Ver Agenda',
-      socialProof: `Ajudando ${STUDENT_COUNT}+ cariocas a alcançarem a fluência este mês.`
-    },
-    en: {
-      tag: 'The Native Connection',
-      subtitle: 'Native American English in Rio. Unlock your speech with someone who understands your context and challenges.',
-      cta1: 'WhatsApp',
-      cta2: 'Schedule',
-      socialProof: `Helping ${STUDENT_COUNT}+ students in Rio achieve fluency this month.`
-    }
+  const current = {
+    tag: 'O Nativo que fala sua língua',
+    subtitle: 'Inglês com americano nativo no Rio. Destrave sua fala com quem entende o seu contexto e seus desafios.',
+    cta1: 'WhatsApp',
+    cta2: 'Entrar no site',
+    socialProof: `Ajudando ${STUDENT_COUNT}+ cariocas a alcançarem a fluência este mês.`
   };
-
-  const current = (content as any)[lang] || content.en;
 
   return (
     <section className="relative w-full h-[85vh] min-h-[650px] overflow-hidden bg-slate-900 pt-[33px]">
@@ -78,7 +65,7 @@ export default function Hero({ onScheduleClick, lang }: HeroProps) {
               {current.cta1}
             </button>
             <button 
-              onClick={() => { trackEvent('hero_schedule_click'); onScheduleClick(); }}
+              onClick={() => { trackEvent('hero_enter_click'); onEnter(); }}
               className="px-12 py-5 bg-white text-slate-900 text-xs font-bold uppercase tracking-[0.3em] hover:bg-slate-100 transition-all shadow-xl"
             >
               {current.cta2}

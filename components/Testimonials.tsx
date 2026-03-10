@@ -5,7 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { TESTIMONIALS } from '../constants.ts';
-import { Testimonial, SupportedLanguage } from '../types.ts';
+import { Testimonial } from '../types.ts';
 
 const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => {
   const isRTL = testimonial.language === 'ar';
@@ -53,7 +53,7 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
   );
 }
 
-export default function Testimonials({ lang }: { lang: SupportedLanguage }) {
+export default function Testimonials() {
   const featured = useMemo(() => TESTIMONIALS.filter(t => t.isFeatured), []);
   const others = useMemo(() => TESTIMONIALS.filter(t => !t.isFeatured), []);
 

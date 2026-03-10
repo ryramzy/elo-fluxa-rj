@@ -10,23 +10,20 @@ import ProductGrid from './components/ProductGrid.tsx';
 import About from './components/About.tsx';
 import VideoGrid from './components/VideoGrid.tsx';
 import Booking from './components/Booking.tsx';
-import Assistant from './components/Assistant.tsx';
 import Footer from './components/Footer.tsx';
 import ProductDetail from './components/ProductDetail.tsx';
 import Journal from './components/Journal.tsx';
 import JournalDetail from './components/JournalDetail.tsx';
 import LeadAssessment from './components/LeadAssessment.tsx';
 import Testimonials from './components/Testimonials.tsx';
-import { ViewState, SupportedLanguage } from './types.ts';
+import { ViewState } from './types.ts';
 
 export type TabID = 'sobre' | 'courses' | 'agenda' | 'video' | 'reviews' | 'journal';
 
-const TABS: TabID[] = ['sobre', 'courses', 'agenda', 'video', 'journal', 'reviews'];
-
 export default function App() {
+  const [hasEntered, setHasEntered] = useState(false);
   const [view, setView] = useState<ViewState>({ type: 'home' });
   const [activeTab, setActiveTab] = useState<TabID>('sobre');
-  const [language, setLanguage] = useState<SupportedLanguage>('pt');
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
@@ -36,77 +33,53 @@ export default function App() {
       'about': 'sobre',
       'reviews': 'reviews',
       'journal': 'journal',
-      'agenda': 'agenda'
+      'agenda': 'agenda',
+      'video': 'video'
     };
 
     const tabToSet = tabMap[targetId] || 'sobre';
 
     if (view.type !== 'home') setView({ type: 'home' });
     setActiveTab(tabToSet);
-    
-    setTimeout(() => {
+
+    // Smooth scroll to the main content area so tab changes feel like
+    // navigating between primary views rather than jumping around the page.
+    requestAnimationFrame(() => {
       const element = document.getElementById('content-area');
       if (element) {
         const headerOffset = 120;
-        const offsetPosition = element.getBoundingClientRect().top + window.scrollY - headerOffset;
-        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        const offsetPosition =
+          element.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       }
-    }, 50);
+    });
   };
+
+  if (!hasEntered) {
+    return (
+      <div className="min-h-screen bg-slate-900 font-sans text-[#1A1A1A] animate-fade-in-up">
+        <Hero onEnter={() => setHasEntered(true)} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans text-[#1A1A1A]">
-      <Navbar 
-          onNavClick={handleNavClick} 
-          currentLanguage={language}
-          onLanguageChange={setLanguage}
-      />
-      
-      <main>
+      <Navbar onNavClick={handleNavClick} />
+
+      <main
+        id="content-area"
+        className="pt-24 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
+      >
         {view.type === 'home' && (
-          <>
-            <Hero 
-              lang={language}
-              onScheduleClick={() => {
-                setActiveTab('agenda');
-                document.getElementById('content-area')?.scrollIntoView({ behavior: 'smooth' });
-              }} 
-            />
-            
-            <div id="content-area" className="py-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-screen">
-              <div className="flex justify-center mb-16 border-b border-slate-200 overflow-x-auto no-scrollbar whitespace-nowrap">
-                {TABS.map((tab) => (
-                  <button 
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-4 font-bold uppercase tracking-widest text-[10px] sm:text-xs transition-all border-b-2 ${
-                      activeTab === tab 
-                        ? 'border-blue-600 text-blue-600' 
-                        : 'border-transparent text-slate-400 hover:text-slate-600'
-                    }`}
-                  >
-                    {tab === 'sobre' && (language === 'pt' ? 'Sobre Matthew' : 'About Matthew')}
-                    {tab === 'courses' && (language === 'pt' ? 'Cursos' : 'Courses')}
-                    {tab === 'agenda' && (language === 'pt' ? 'Agendar' : 'Schedule')}
-                    {tab === 'video' && (language === 'pt' ? 'Vídeos' : 'Videos')}
-                    {tab === 'journal' && (language === 'pt' ? 'Dicas' : 'Journal')}
-                    {tab === 'reviews' && (language === 'pt' ? 'Depoimentos' : 'Reviews')}
-                  </button>
-                ))}
-              </div>
-
-              <div className="animate-fade-in-up">
-                {activeTab === 'sobre' && <About lang={language} />}
-                {activeTab === 'courses' && <ProductGrid onProductClick={(p) => setView({ type: 'product', product: p })} />}
-                {activeTab === 'reviews' && <Testimonials lang={language} />}
-                {activeTab === 'agenda' && <Booking />}
-                {activeTab === 'video' && <VideoGrid />}
-                {activeTab === 'journal' && <Journal onArticleClick={(article) => setView({ type: 'journal', article })} />}
-              </div>
-            </div>
-
-            <LeadAssessment />
-          </>
+          <div className="animate-fade-in-up">
+            {activeTab === 'sobre' && <About />}
+            {activeTab === 'courses' && <ProductGrid onProductClick={(p) => setView({ type: 'product', product: p })} />}
+            {activeTab === 'reviews' && <Testimonials />}
+            {activeTab === 'agenda' && <Booking />}
+            {activeTab === 'video' && <VideoGrid />}
+            {activeTab === 'journal' && <Journal onArticleClick={(article) => setView({ type: 'journal', article })} />}
+          </div>
         )}
 
         {view.type === 'product' && (
@@ -125,7 +98,6 @@ export default function App() {
       </main>
 
       <Footer onLinkClick={handleNavClick} />
-      <Assistant />
     </div>
   );
 }
