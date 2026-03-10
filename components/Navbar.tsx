@@ -96,9 +96,7 @@ export default function Navbar({ onNavClick, currentLanguage, onLanguageChange }
           <div className={`flex items-center gap-6 z-50 relative transition-colors duration-500 ${textColorClass}`}>
             <button 
               onClick={handleWhatsApp}
-              className={`text-[10px] font-bold uppercase tracking-widest px-6 py-2 border transition-all hidden sm:block ${
-                scrolled || mobileMenuOpen ? 'border-green-600 hover:bg-green-600 hover:text-white' : 'border-white hover:bg-[#25D366] hover:border-[#25D366] hover:text-white'
-              }`}
+              className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-[#25D366] text-white hover:bg-[#128C7E] transition-all hidden sm:block rounded-sm"
             >
               WhatsApp
             </button>
