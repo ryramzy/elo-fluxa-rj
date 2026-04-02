@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import ProductGrid from './components/ProductGrid.tsx';
@@ -14,36 +16,58 @@ import Footer from './components/Footer.tsx';
 import ProductDetail from './components/ProductDetail.tsx';
 import Journal from './components/Journal.tsx';
 import JournalDetail from './components/JournalDetail.tsx';
-import LeadAssessment from './components/LeadAssessment.tsx';
 import Testimonials from './components/Testimonials.tsx';
-import { ViewState } from './types.ts';
+import Login from './components/Auth/Login.tsx';
+import Signup from './components/Auth/Signup.tsx';
+import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
 
-export type TabID = 'sobre' | 'courses' | 'agenda' | 'video' | 'reviews' | 'journal';
+const ProductDetailWrapper = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const product = location.state?.product;
+  if (!product) {
+    navigate(-1);
+    return null;
+  }
+  return <ProductDetail product={product} onBack={() => navigate(-1)} />;
+};
 
-export default function App() {
+const JournalDetailWrapper = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const article = location.state?.article;
+  if (!article) {
+    navigate(-1);
+    return null;
+  }
+  return <JournalDetail article={article} onBack={() => navigate(-1)} />;
+};
+
+function AppShell() {
   const [hasEntered, setHasEntered] = useState(false);
-  const [view, setView] = useState<ViewState>({ type: 'home' });
-  const [activeTab, setActiveTab] = useState<TabID>('sobre');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Scroll to top or specific area on route change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     
-    const tabMap: Record<string, TabID> = {
-      'products': 'courses',
-      'about': 'sobre',
-      'reviews': 'reviews',
-      'journal': 'journal',
-      'agenda': 'agenda',
-      'video': 'video'
+    const tabMap: Record<string, string> = {
+      'products': '/courses',
+      'about': '/',
+      'reviews': '/reviews',
+      'journal': '/journal',
+      'agenda': '/agenda',
+      'video': '/video'
     };
 
-    const tabToSet = tabMap[targetId] || 'sobre';
+    const targetRoute = tabMap[targetId] || '/';
+    navigate(targetRoute);
 
-    if (view.type !== 'home') setView({ type: 'home' });
-    setActiveTab(tabToSet);
-
-    // Smooth scroll to the main content area so tab changes feel like
-    // navigating between primary views rather than jumping around the page.
     requestAnimationFrame(() => {
       const element = document.getElementById('content-area');
       if (element) {
@@ -55,11 +79,20 @@ export default function App() {
     });
   };
 
-  if (!hasEntered) {
+  if (!hasEntered && location.pathname === '/') {
     return (
       <div className="min-h-screen bg-slate-900 font-sans text-[#1A1A1A] animate-fade-in-up">
         <Hero onEnter={() => setHasEntered(true)} />
       </div>
+    );
+  }
+
+  if (location.pathname === '/login' || location.pathname === '/signup') {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
     );
   }
 
@@ -71,33 +104,32 @@ export default function App() {
         id="content-area"
         className="pt-24 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
       >
-        {view.type === 'home' && (
-          <div className="animate-fade-in-up">
-            {activeTab === 'sobre' && <About />}
-            {activeTab === 'courses' && <ProductGrid onProductClick={(p) => setView({ type: 'product', product: p })} />}
-            {activeTab === 'reviews' && <Testimonials />}
-            {activeTab === 'agenda' && <Booking />}
-            {activeTab === 'video' && <VideoGrid />}
-            {activeTab === 'journal' && <Journal onArticleClick={(article) => setView({ type: 'journal', article })} />}
-          </div>
-        )}
-
-        {view.type === 'product' && (
-          <ProductDetail 
-            product={view.product} 
-            onBack={() => setView({ type: 'home' })}
-          />
-        )}
-
-        {view.type === 'journal' && (
-          <JournalDetail 
-            article={view.article} 
-            onBack={() => setView({ type: 'home' })}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={<About />} />
+          <Route path="/courses" element={<ProductGrid onProductClick={(p) => navigate('/product', { state: { product: p } })} />} />
+          <Route path="/product" element={<ProductDetailWrapper />} />
+          <Route path="/reviews" element={<Testimonials />} />
+          <Route path="/agenda" element={
+            <ProtectedRoute>
+              <Booking />
+            </ProtectedRoute>
+          } />
+          <Route path="/video" element={<VideoGrid />} />
+          <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
+          <Route path="/journal/article" element={<JournalDetailWrapper />} />
+        </Routes>
       </main>
 
       <Footer onLinkClick={handleNavClick} />
     </div>
+  );
+}
+
+export default function App() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
+  return (
+    <GoogleOAuthProvider clientId={clientId}>
+      <AppShell />
+    </GoogleOAuthProvider>
   );
 }

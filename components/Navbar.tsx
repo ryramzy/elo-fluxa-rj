@@ -4,7 +4,11 @@
 */
 
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
+import { auth } from '../firebase.ts';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '../hooks/useAuth.ts';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
@@ -13,7 +17,14 @@ interface NavbarProps {
 export default function Navbar({ onNavClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<'about' | 'products' | 'agenda' | 'video' | 'journal'>('about');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    navigate('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -21,16 +32,17 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const getActiveSection = () => {
+    if (location.pathname.startsWith('/courses') || location.pathname.startsWith('/product')) return 'products';
+    if (location.pathname.startsWith('/agenda')) return 'agenda';
+    if (location.pathname.startsWith('/video')) return 'video';
+    if (location.pathname.startsWith('/journal')) return 'journal';
+    return 'about';
+  };
+  const activeSection = getActiveSection();
+
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     setMobileMenuOpen(false);
-    setActiveSection(
-      targetId === 'products' ||
-      targetId === 'agenda' ||
-      targetId === 'video' ||
-      targetId === 'journal'
-        ? targetId
-        : 'about'
-    );
     onNavClick(e, targetId);
   };
 
@@ -114,6 +126,14 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             >
               WhatsApp
             </button>
+            {user && (
+              <button 
+                onClick={handleSignOut}
+                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-slate-800 text-white hover:bg-slate-700 transition-all hidden sm:block rounded-sm"
+              >
+                Sign Out
+              </button>
+            )}
             
             <button className={`block md:hidden focus:outline-none transition-colors duration-500 ${textColorClass}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                {mobileMenuOpen ? (
@@ -168,6 +188,15 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4">
                 Falar no WhatsApp
             </button>
+            {user && (
+              <button 
+                onClick={handleSignOut} 
+                className="bg-slate-800 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-700 transition-colors"
+                style={{ width: '100%', maxWidth: '300px' }}
+              >
+                 Sign Out
+              </button>
+            )}
           </div>
       </div>
     </>

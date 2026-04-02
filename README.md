@@ -1,20 +1,38 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# elo-matt
 
-# Run and deploy your AI Studio app
+A scheduling app for Carioca students with Firebase Authentication and Gemini AI integration.
 
-This contains everything you need to run your app locally.
+## Tech Stack
+- Frontend: Vite, React 19, TypeScript
+- Authentication: Firebase Auth
+- Routing: react-router-dom
+- AI: @google/genai
+- Backend/Agents: FastMCP
 
-View your app in AI Studio: https://ai.studio/apps/drive/1iQH8Das1CKc48VVbxVKDdAkrDKEittCe
+## Environment Variables
+Create a `.env.local` file in the root with the following variables:
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
 
-## Run Locally
+## Running the App
+1. Install dependencies: `npm install`
+2. Start the development server: `npm run dev`
+3. The app will be available on `http://localhost:5173`.
 
-**Prerequisites:**  Node.js
+## Routes
+- `/login`: Firebase Email/Password Sign-In
+- `/signup`: Firebase Account Creation
+- `/agenda`: Booking and Calendar interface (Protected Route). Unauthenticated users are redirected to `/login`.
+- `/courses`: Available course catalog
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## MCP Integration
+Inside `mcp_server/server.py` runs a FastMCP agent handling logic such as:
+- `register_carioca_student`
+- `list_available_slots` 
+- `create_lesson_event`
