@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import ProductGrid from './components/ProductGrid.tsx';
@@ -17,9 +17,34 @@ import ProductDetail from './components/ProductDetail.tsx';
 import Journal from './components/Journal.tsx';
 import JournalDetail from './components/JournalDetail.tsx';
 import Testimonials from './components/Testimonials.tsx';
-import Login from './components/Auth/Login.tsx';
-import Signup from './components/Auth/Signup.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
+
+// Dashboard component
+const Dashboard = () => {
+  return (
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8">Student Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <h2 className="text-xl font-semibold mb-4">My Lessons</h2>
+          <p className="text-gray-600">View and manage your scheduled lessons.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <h2 className="text-xl font-semibold mb-4">Progress</h2>
+          <p className="text-gray-600">Track your learning progress.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <h2 className="text-xl font-semibold mb-4">Profile</h2>
+          <p className="text-gray-600">Manage your account settings.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <h2 className="text-xl font-semibold mb-4">Support</h2>
+          <p className="text-gray-600">Get help and contact support.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProductDetailWrapper = () => {
   const location = useLocation();
@@ -88,12 +113,7 @@ function AppShell() {
   }
 
   if (location.pathname === '/login' || location.pathname === '/signup') {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    );
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -109,14 +129,29 @@ function AppShell() {
           <Route path="/courses" element={<ProductGrid onProductClick={(p) => navigate('/product', { state: { product: p } })} />} />
           <Route path="/product" element={<ProductDetailWrapper />} />
           <Route path="/reviews" element={<Testimonials />} />
+          <Route path="/video" element={<VideoGrid />} />
+          <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
+          <Route path="/journal/article" element={<JournalDetailWrapper />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/agenda" element={
             <ProtectedRoute>
               <Booking />
             </ProtectedRoute>
           } />
-          <Route path="/video" element={<VideoGrid />} />
-          <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
-          <Route path="/journal/article" element={<JournalDetailWrapper />} />
+          <Route path="/lessons" element={
+            <ProtectedRoute>
+              <Booking />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
         </Routes>
       </main>
 

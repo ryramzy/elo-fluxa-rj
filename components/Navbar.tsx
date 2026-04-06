@@ -6,8 +6,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
-import { auth } from '../firebase.ts';
-import { signOut } from 'firebase/auth';
 import { useAuth } from '../hooks/useAuth.ts';
 
 interface NavbarProps {
@@ -19,11 +17,24 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signInWithGoogle, signOut } = useAuth();
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    navigate('/login');
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   };
 
   useEffect(() => {
@@ -119,20 +130,40 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             </a>
           </div>
 
-          <div className={`flex items-center gap-6 z-50 relative transition-colors duration-500 ${textColorClass}`}>
+          <div className={`flex items-center gap-4 z-50 relative transition-colors duration-500 ${textColorClass}`}>
             <button 
               onClick={handleWhatsApp}
               className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-[#25D366] text-white hover:bg-[#128C7E] transition-all hidden sm:block rounded-sm"
             >
               WhatsApp
             </button>
-            {user && (
-              <button 
-                onClick={handleSignOut}
-                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-slate-800 text-white hover:bg-slate-700 transition-all hidden sm:block rounded-sm"
-              >
-                Sign Out
-              </button>
+            {!user ? (
+              <>
+                <button 
+                  onClick={handleSignIn}
+                  className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-current text-current hover:bg-current hover:text-white transition-all hidden sm:block rounded-sm"
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={handleSignIn}
+                  className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-blue-600 text-white hover:bg-blue-500 transition-all hidden sm:block rounded-sm"
+                >
+                  Get Started
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-medium hidden sm:block">
+                  {user.displayName || user.email}
+                </span>
+                <button 
+                  onClick={handleSignOut}
+                  className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-slate-800 text-white hover:bg-slate-700 transition-all hidden sm:block rounded-sm"
+                >
+                  Sign Out
+                </button>
+              </div>
             )}
             
             <button className={`block md:hidden focus:outline-none transition-colors duration-500 ${textColorClass}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -188,14 +219,36 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4">
                 Falar no WhatsApp
             </button>
-            {user && (
-              <button 
-                onClick={handleSignOut} 
-                className="bg-slate-800 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-700 transition-colors"
-                style={{ width: '100%', maxWidth: '300px' }}
-              >
-                 Sign Out
-              </button>
+            {!user ? (
+              <>
+                <button 
+                  onClick={handleSignIn}
+                  className="border border-slate-800 text-slate-800 px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-800 hover:text-white transition-colors"
+                  style={{ width: '100%', maxWidth: '300px' }}
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={handleSignIn}
+                  className="bg-blue-600 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-blue-500 transition-colors"
+                  style={{ width: '100%', maxWidth: '300px' }}
+                >
+                  Get Started
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-center text-slate-600 mb-2">
+                  {user.displayName || user.email}
+                </div>
+                <button 
+                  onClick={handleSignOut} 
+                  className="bg-slate-800 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-700 transition-colors"
+                  style={{ width: '100%', maxWidth: '300px' }}
+                >
+                   Sign Out
+                </button>
+              </>
             )}
           </div>
       </div>
