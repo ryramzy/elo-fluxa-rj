@@ -36,7 +36,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'elo-fluxa-rj'
+      - 'elo-matt-app'
       - '--image'
       - 'gcr.io/$PROJECT_ID/elo-fluxa-rj:$COMMIT_SHA'
       - '--region'
