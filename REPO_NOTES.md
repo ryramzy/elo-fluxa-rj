@@ -27,3 +27,30 @@
 - Verify Google OAuth popup authentication flow
 - Test protected routes (/dashboard, /agenda, /lessons, /profile)
 - Add localhost to Firebase Auth authorized domains for local testing
+
+---
+## [April 6, 2026] — Manual Deployment with Latest Fixes
+**Commit:** dc000b5
+**Status:** working
+
+### What changed
+- Manual deployment using gcloud instead of Cloud Build
+- Deployed latest image `dc000b5633b6580f723457b8bfa96ea9b80f732b` from AR registry
+- Used `southamerica-east1-docker.pkg.dev` registry path
+- Bypassed Docker unavailability in environment
+
+### Why
+- Docker not available in PowerShell environment
+- Needed to ensure latest nginx and Vite fixes were deployed
+- Direct gcloud deployment is more reliable than automated Cloud Build
+
+### Known issues
+- Need to verify React app loads correctly with manual deployment
+- Need to test Firebase Auth UI functionality
+- Need to confirm Google OAuth popup works
+
+### Next steps
+- Test Sign In and Get Started buttons appear in navbar
+- Verify Google OAuth authentication flow
+- Test protected routes redirect behavior
+- Validate all Firebase Auth functionality
