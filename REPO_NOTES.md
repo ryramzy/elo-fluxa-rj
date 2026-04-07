@@ -78,3 +78,27 @@
 - Verify live URL loads React app after deploy
 - Test Google login on live URL
 - Confirm all Firebase Auth functionality works
+
+---
+## 2026-04-06 — Root cause found and fixed
+**Status:** fixed
+**Lesson learned:** Deleting a Cloud Run service requires:
+  1. Re-grant secretAccessor to new Cloud Build SA on ALL secrets
+  2. Re-push secret values from .env.local to Secret Manager
+  3. Trigger a fresh build AFTER both steps above are complete
+
+### What happened
+- Firebase error auth/invalid-api-key on live URL
+- VITE_* secrets in Secret Manager had wrong/empty values after service deletion
+- Cloud Build SA lost secretAccessor permissions when service was recreated
+
+### Fix applied
+- Resynced all 7 Firebase secrets from .env.local to Secret Manager
+- Re-granted secretAccessor to Cloud Build SA (17211915954@cloudbuild.gserviceaccount.com)
+- Manually deployed latest image to elo-matt-rj service
+- Fixed service name to match correct URL pattern
+
+### Result
+- Live URL: https://elo-matt-rj-17211915954.southamerica-east1.run.app
+- Firebase secrets now populated with correct values
+- Auth UI should load and Google OAuth should work
