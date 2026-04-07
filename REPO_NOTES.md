@@ -54,3 +54,27 @@
 - Verify Google OAuth authentication flow
 - Test protected routes redirect behavior
 - Validate all Firebase Auth functionality
+
+---
+## 2026-04-06 — nginx and Vite config fixes
+**Status:** testing
+**Commit:** f0373c6
+
+### What changed
+- Added include /etc/nginx/mime.types to nginx.conf
+- Added default_type application/octet-stream to nginx.conf
+- Fixed health endpoint from /healthz to /health
+- Confirmed try_files SPA fallback in nginx.conf
+- Confirmed COPY path matches /app/dist in Dockerfile
+- Confirmed base: '/' already present in vite.config.ts
+
+### Why
+- App blank on Cloud Run despite successful build
+- JS files served with wrong MIME type or wrong path
+- Health endpoint mismatch causing deployment issues
+- SPA routing not working properly on production
+
+### Next steps
+- Verify live URL loads React app after deploy
+- Test Google login on live URL
+- Confirm all Firebase Auth functionality works
