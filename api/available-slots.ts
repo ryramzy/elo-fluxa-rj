@@ -13,15 +13,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Parse service account credentials from environment variable
+    // For local development, return mock data if environment variables are not set
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    if (!serviceAccountJson) {
-      return res.status(500).json({ error: 'GOOGLE_SERVICE_ACCOUNT_JSON not configured' });
-    }
-
     const calendarId = process.env.GOOGLE_CALENDAR_ID;
-    if (!calendarId) {
-      return res.status(500).json({ error: 'GOOGLE_CALENDAR_ID not configured' });
+
+    if (!serviceAccountJson || !calendarId) {
+      // Return mock data for local development
+      const mockSlots = generateMockSlots();
+      console.log('Returning mock slots for local development:', mockSlots.length);
+      return res.status(200).json(mockSlots);
     }
 
     // Initialize Google Calendar API with service account
@@ -60,6 +60,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
+}
+
+function generateMockSlots(): AvailableSlot[] {
+  const slots: AvailableSlot[] = [];
+  const now = new Date();
+  const timeZone = 'America/Sao_Paulo';
+
+  // Generate mock slots for the next few days
+  for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+    const currentDate = new Date(now);
+    currentDate.setDate(now.getDate() + dayOffset);
+    
+    // Skip weekends
+    const dayOfWeek = currentDate.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      continue;
+    }
+
+    // Generate a few slots per day for testing
+    for (let hour = 9; hour <= 17; hour += 2) {
+      const slotStart = new Date(currentDate);
+      slotStart.setHours(hour, 0, 0, 0);
+      
+      // Skip past slots
+      if (slotStart <= now) {
+        continue;
+      }
+
+      const slotEnd = new Date(currentDate);
+      slotEnd.setHours(hour + 1, 0, 0, 0);
+
+      const label = formatSlotLabel(slotStart, timeZone);
+      
+      slots.push({
+        start: slotStart.toISOString(),
+        end: slotEnd.toISOString(),
+        label
+      });
+    }
+  }
+
+  return slots;
 }
 
 function generateAvailableSlots(events: any[], startDate: Date, daysAhead: number): AvailableSlot[] {

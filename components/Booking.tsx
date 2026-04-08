@@ -3,46 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { trackEvent } from '../services/trackingService.ts';
 import { useAuth } from '../hooks/useAuth';
 import SlotPicker from './Calendar/SlotPicker.tsx';
 
-interface AvailableSlot {
-  start: string;
-  end: string;
-  label: string;
-}
-
 const Booking: React.FC = () => {
   const [showSlots, setShowSlots] = useState(false);
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
-  const [loadingSlots, setLoadingSlots] = useState(false);
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (showSlots) {
-      fetchAvailableSlots();
-    }
-  }, [showSlots]);
-
-  const fetchAvailableSlots = async () => {
-    setLoadingSlots(true);
-    try {
-      const response = await fetch('/api/available-slots');
-      if (!response.ok) {
-        throw new Error('Failed to fetch available slots');
-      }
-      const slots = await response.json();
-      setAvailableSlots(slots);
-    } catch (error) {
-      console.error('Error fetching slots:', error);
-      setAvailableSlots([]);
-    } finally {
-      setLoadingSlots(false);
-    }
-  };
 
   const handleWhatsApp = (slot: string) => {
     trackEvent('booking_slot_selected', { slot });
@@ -51,7 +20,13 @@ const Booking: React.FC = () => {
     window.open(url, '_blank');
   };
 
-  const isLowAvailability = availableSlots.length < 5;
+  const mockSlots = [
+    "Segunda, 10:00 (Rio)",
+    "Terça, 14:30 (Rio)",
+    "Quarta, 16:00 (Rio)"
+  ];
+
+  const isLowAvailability = mockSlots.length < 5;
 
   return (
     <div className="bg-white p-12 md:p-20 border border-slate-100 text-center max-w-4xl mx-auto shadow-sm relative overflow-hidden">
@@ -106,45 +81,27 @@ const Booking: React.FC = () => {
         </div>
       ) : (
         <div className="animate-fade-in-up">
-          {loadingSlots ? (
             <div className="grid grid-cols-1 gap-4 mb-10 max-w-md mx-auto">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-slate-50 p-6 border border-slate-100 animate-pulse">
-                  <div className="flex justify-between items-center">
-                    <div className="h-4 bg-slate-200 rounded w-32"></div>
-                    <div className="h-8 bg-slate-200 rounded w-20"></div>
-                  </div>
-                </div>
-              ))}
+                {mockSlots.map((slot, i) => (
+                    <div key={i} className="bg-slate-50 p-6 border border-slate-100 flex justify-between items-center group hover:border-green-500 hover:bg-white transition-all">
+                        <span className="font-bold text-slate-700">{slot}</span>
+                        <button 
+                          onClick={() => {
+                            if (!user) {
+                              const loginBtn = document.querySelector('[data-login-trigger="true"]') as HTMLButtonElement;
+                              if (loginBtn) loginBtn.click();
+                            } else {
+                              handleWhatsApp(slot);
+                            }
+                          }} 
+                          className="bg-[#25D366] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#128C7E] transition-all"
+                        >
+                          Agendar
+                        </button>
+                    </div>
+                ))}
             </div>
-          ) : availableSlots.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-slate-500 text-lg mb-4">Sem horários disponíveis no momento</p>
-              <p className="text-slate-400 text-sm">Verifique novamente em breve ou entre em contato pelo WhatsApp</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 mb-10 max-w-md mx-auto">
-              {availableSlots.map((slot, i) => (
-                <div key={i} className="bg-slate-50 p-6 border border-slate-100 flex justify-between items-center group hover:border-green-500 hover:bg-white transition-all">
-                  <span className="font-bold text-slate-700">{slot.label}</span>
-                  <button 
-                    onClick={() => {
-                      if (!user) {
-                        const loginBtn = document.querySelector('[data-login-trigger="true"]') as HTMLButtonElement;
-                        if (loginBtn) loginBtn.click();
-                      } else {
-                        handleWhatsApp(slot.label);
-                      }
-                    }} 
-                    className="bg-[#25D366] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-[#128C7E] transition-all"
-                  >
-                    Agendar
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-          <button onClick={() => setShowSlots(false)} className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-900">Voltar</button>
+            <button onClick={() => setShowSlots(false)} className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-900">Voltar</button>
         </div>
       )}
       
