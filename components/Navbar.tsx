@@ -5,8 +5,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FaWhatsapp } from 'react-icons/fa';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { useAuth } from '../hooks/useAuth.ts';
+import LoginModal from './LoginModal.tsx';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
@@ -15,6 +17,7 @@ interface NavbarProps {
 export default function Navbar({ onNavClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signInWithGoogle, signOut } = useAuth();
@@ -31,10 +34,19 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
+      setLoginModalOpen(false);
       navigate('/dashboard');
     } catch (error) {
       console.error('Error signing in:', error);
     }
+  };
+
+  const handleLoginModalOpen = () => {
+    setLoginModalOpen(true);
+  };
+
+  const handleLoginModalClose = () => {
+    setLoginModalOpen(false);
   };
 
   useEffect(() => {
@@ -131,27 +143,23 @@ export default function Navbar({ onNavClick }: NavbarProps) {
           </div>
 
           <div className={`flex items-center gap-4 z-50 relative transition-colors duration-500 ${textColorClass}`}>
+            {/* WhatsApp Icon Button */}
             <button 
               onClick={handleWhatsApp}
-              className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-[#25D366] text-white hover:bg-[#128C7E] transition-all hidden sm:block rounded-sm"
+              className="p-2 text-[#25D366] hover:text-[#128C7E] hover:scale-110 transition-all duration-200 hidden sm:block rounded-full hover:shadow-lg hover:shadow-green-500/25"
+              aria-label="WhatsApp"
             >
-              WhatsApp
+              <FaWhatsapp className="w-5 h-5" />
             </button>
+            
             {!user ? (
-              <>
-                <button 
-                  onClick={handleSignIn}
-                  className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-current text-current hover:bg-current hover:text-white transition-all hidden sm:block rounded-sm"
-                >
-                  Sign In
-                </button>
-                <button 
-                  onClick={handleSignIn}
-                  className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 bg-blue-600 text-white hover:bg-blue-500 transition-all hidden sm:block rounded-sm"
-                >
-                  Get Started
-                </button>
-              </>
+              /* Login Button */
+              <button 
+                onClick={handleLoginModalOpen}
+                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-current text-current hover:bg-current hover:text-white transition-all hidden sm:block rounded-sm"
+              >
+                Entrar
+              </button>
             ) : (
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-medium hidden sm:block">
@@ -216,26 +224,18 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             >
               Dicas
             </a>
-            <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4">
+            <button onClick={handleWhatsApp} className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-4 rounded-lg hover:bg-[#128C7E] transition-colors">
+                <FaWhatsapp className="w-5 h-5" />
                 Falar no WhatsApp
             </button>
             {!user ? (
-              <>
-                <button 
-                  onClick={handleSignIn}
-                  className="border border-slate-800 text-slate-800 px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-800 hover:text-white transition-colors"
-                  style={{ width: '100%', maxWidth: '300px' }}
-                >
-                  Sign In
-                </button>
-                <button 
-                  onClick={handleSignIn}
-                  className="bg-blue-600 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-blue-500 transition-colors"
-                  style={{ width: '100%', maxWidth: '300px' }}
-                >
-                  Get Started
-                </button>
-              </>
+              <button 
+                onClick={handleLoginModalOpen}
+                className="border border-slate-800 text-slate-800 px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-800 hover:text-white transition-colors rounded-lg"
+                style={{ width: '100%', maxWidth: '300px' }}
+              >
+                Entrar
+              </button>
             ) : (
               <>
                 <div className="text-center text-slate-600 mb-2">
@@ -252,6 +252,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             )}
           </div>
       </div>
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={loginModalOpen}
+        onClose={handleLoginModalClose}
+        onSignIn={handleSignIn}
+      />
     </>
   );
 }
