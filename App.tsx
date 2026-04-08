@@ -132,7 +132,7 @@ function AppShell() {
           <Route path="/video" element={<VideoGrid />} />
           <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
           <Route path="/journal/article" element={<JournalDetailWrapper />} />
-          <Route path="/dashboard" element={
+                    <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>

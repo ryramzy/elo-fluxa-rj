@@ -203,7 +203,7 @@ export async function bookLesson(
   slot: CalendarSlot,
   studentEmail: string,
   studentName: string
-): Promise<{ htmlLink?: string; id?: string }> {
+): Promise<{ htmlLink?: string; id?: string; meetLink?: string }> {
   const instructorEmail = getInstructorEmail();
   if (!instructorEmail) {
     throw new Error('Configure VITE_INSTRUCTOR_EMAIL');
@@ -212,7 +212,7 @@ export async function bookLesson(
     throw new Error('Student email is required');
   }
 
-  const title = `Elo Matt Lesson — ${studentName || studentEmail}`;
+  const title = `Elo Matt Lesson - ${studentName || studentEmail}`;
 
   const body = {
     summary: title,
@@ -228,9 +228,18 @@ export async function bookLesson(
       { email: instructorEmail },
       { email: studentEmail.trim() },
     ],
+    conferenceData: {
+      createRequest: {
+        requestId: `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        conferenceSolutionKey: {
+          type: 'hangoutsMeet'
+        }
+      }
+    },
+    description: `Aula de inglês particular com Matthew.\n\nAluno: ${studentName}\nEmail: ${studentEmail}\n\nDuração: 60 minutos\nHorário: ${slot.summary}`,
   };
 
-  const q = new URLSearchParams({ sendUpdates: 'all' });
+  const q = new URLSearchParams({ sendUpdates: 'all', conferenceDataVersion: '1' });
   const res = await calendarFetch(
     accessToken,
     `/calendars/primary/events?${q.toString()}`,
@@ -245,7 +254,14 @@ export async function bookLesson(
     throw new Error(`Create event failed (${res.status}): ${text || res.statusText}`);
   }
 
-  return (await res.json()) as { htmlLink?: string; id?: string };
+  const event = await res.json() as any;
+  const meetLink = event.conferenceData?.entryPoints?.[0]?.uri;
+
+  return {
+    htmlLink: event.htmlLink,
+    id: event.id,
+    meetLink: meetLink
+  };
 }
 
 export { getClientId };

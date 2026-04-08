@@ -93,8 +93,26 @@ const SlotPicker: React.FC = () => {
     setError(null);
     try {
       const created = await bookLesson(accessToken, slot, studentEmail, studentName);
+      
+      // Send email confirmation via serverless function
+      if (created.meetLink) {
+        await fetch('/api/confirm-booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            studentName,
+            studentEmail,
+            slot: slot.start,
+            meetLink: created.meetLink,
+            googleEventId: created.id
+          }),
+        });
+      }
+
       setSuccess(
-        'Aula agendada. Verifique seu e-mail — o convite do Google Calendar pode levar alguns minutos.'
+        `Aula agendada com sucesso! ${created.meetLink ? 'Link do Google Meet enviado por e-mail.' : 'Verifique seu e-mail para o convite do Google Calendar.'}`
       );
       setBookingId(created.id ?? null);
       await loadSlots();

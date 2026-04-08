@@ -22,6 +22,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const navigate = useNavigate();
   const { user, signInWithGoogle, signOut } = useAuth();
 
+  // Check for returnTo state from auth gate
+  useEffect(() => {
+    if (user && location.state?.returnTo) {
+      navigate(location.state.returnTo, { replace: true });
+    }
+  }, [user, location.state, navigate]);
+
   const handleSignOut = async () => {
     try {
       await signOut();
