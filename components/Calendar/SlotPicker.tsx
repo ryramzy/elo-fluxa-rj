@@ -133,7 +133,26 @@ const SlotPicker: React.FC = () => {
   }
 
   if (!user) {
-    return null;
+    return (
+      <div className="rounded-sm border border-slate-200 bg-white p-6 md:p-10 shadow-sm text-left">
+        <h4 className="font-serif text-2xl font-bold text-slate-900 mb-2">
+          Agendar pelo Google Calendar
+        </h4>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6">
+          Conecte sua conta Google para ver horários livres do instrutor e reservar.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            const loginBtn = document.querySelector('[data-login-trigger="true"]') as HTMLButtonElement;
+            if (loginBtn) loginBtn.click();
+          }}
+          className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 transition-all"
+        >
+          Faça Login para Agendar
+        </button>
+      </div>
+    );
   }
 
   return (

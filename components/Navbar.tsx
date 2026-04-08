@@ -81,8 +81,8 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`, '_blank');
   };
 
-  const textColorClass = scrolled || mobileMenuOpen ? 'text-slate-900' : 'text-white';
-  const logoColorClass = scrolled || mobileMenuOpen ? 'text-blue-600' : 'text-blue-400';
+  const textColorClass = 'text-slate-900';
+  const logoColorClass = 'text-blue-600';
 
   const linkBaseClasses =
     'hover:text-blue-500 transition-colors relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
@@ -94,18 +94,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
 
   return (
     <>
-      <div className={`fixed top-0 left-0 right-0 z-[60] py-1.5 transition-all duration-500 border-b border-white/10 ${
-        scrolled || mobileMenuOpen ? 'bg-slate-950/90 backdrop-blur-sm' : 'bg-black/20'
-      }`}>
+      <div className="fixed top-0 left-0 right-0 z-[60] py-1.5 bg-slate-950/90 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-[1800px] mx-auto px-8 flex justify-end gap-5">
           {/* Top bar can be empty or used later */}
         </div>
       </div>
 
-      <nav className={`fixed top-[29px] left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-          scrolled || mobileMenuOpen ? 'bg-white/95 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-7'
-        }`}
-      >
+      <nav className="fixed top-[29px] left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 backdrop-blur-md py-4 shadow-sm">
         <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
@@ -163,6 +158,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
               /* Login Button */
               <button 
                 onClick={handleLoginModalOpen}
+                data-login-trigger="true"
                 className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-current text-current hover:bg-current hover:text-white transition-all hidden sm:block rounded-sm"
               >
                 Entrar

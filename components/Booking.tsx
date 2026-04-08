@@ -6,10 +6,12 @@
 import React, { useState } from 'react';
 import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { trackEvent } from '../services/trackingService.ts';
+import { useAuth } from '../hooks/useAuth';
 import SlotPicker from './Calendar/SlotPicker.tsx';
 
 const Booking: React.FC = () => {
   const [showSlots, setShowSlots] = useState(false);
+  const { user } = useAuth();
 
   const handleWhatsApp = (slot: string) => {
     trackEvent('booking_slot_selected', { slot });
@@ -28,6 +30,26 @@ const Booking: React.FC = () => {
 
   return (
     <div className="bg-white p-12 md:p-20 border border-slate-100 text-center max-w-4xl mx-auto shadow-sm relative overflow-hidden">
+      {!user && (
+        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 mb-8 rounded-lg">
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-left">
+              <p className="font-bold text-lg mb-1">Faça login para reservar sua aula! 😊</p>
+              <p className="text-sm opacity-80">Conecte-se para agendar horários e receber links do Google Meet</p>
+            </div>
+            <button 
+              onClick={() => {
+                const loginBtn = document.querySelector('[data-login-trigger="true"]') as HTMLButtonElement;
+                if (loginBtn) loginBtn.click();
+              }}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Entrar Agora
+            </button>
+          </div>
+        </div>
+      )}
+      
       {isLowAvailability && (
         <div className="absolute top-6 right-6 bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-widest px-4 py-2 border border-amber-100 animate-pulse">
           ⚠️ Poucas vagas disponíveis

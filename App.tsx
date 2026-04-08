@@ -137,11 +137,7 @@ function AppShell() {
               <Dashboard />
             </ProtectedRoute>
           } />
-          <Route path="/agenda" element={
-            <ProtectedRoute>
-              <Booking />
-            </ProtectedRoute>
-          } />
+          <Route path="/agenda" element={<Booking />} />
           <Route path="/lessons" element={
             <ProtectedRoute>
               <Booking />
