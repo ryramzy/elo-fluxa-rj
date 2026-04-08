@@ -78,17 +78,10 @@ function generateAvailableSlots(events: any[], startDate: Date, daysAhead: numbe
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + dayOffset);
     
-    // Skip weekends unless there are events on those days
+    // Always skip weekends (Saturday = 6, Sunday = 0)
     const dayOfWeek = currentDate.getDay();
-    const hasWeekendEvent = busyTimes.some(busy => {
-      const busyDay = new Date(busy.start);
-      return busyDay.getDate() === currentDate.getDate() && 
-             busyDay.getMonth() === currentDate.getMonth() &&
-             busyDay.getFullYear() === currentDate.getFullYear();
-    });
-    
-    if ((dayOfWeek === 0 || dayOfWeek === 6) && !hasWeekendEvent) {
-      continue; // Skip weekends without events
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      continue;
     }
 
     // Generate 30-minute slots from 09:00 to 20:00
@@ -101,7 +94,8 @@ function generateAvailableSlots(events: any[], startDate: Date, daysAhead: numbe
         slotEnd.setHours(hour, minute + 30, 0, 0);
 
         // Skip slots in the past
-        if (slotEnd <= new Date()) {
+        const now = new Date();
+        if (slotStart <= now) {
           continue;
         }
 
@@ -110,6 +104,7 @@ function generateAvailableSlots(events: any[], startDate: Date, daysAhead: numbe
           return (slotStart < busy.end && slotEnd > busy.start);
         });
 
+        // Show slot if not overlapping with any event
         if (!isOverlapping) {
           // Format the slot for Brazil timezone
           const label = formatSlotLabel(slotStart, timeZone);
