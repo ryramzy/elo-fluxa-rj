@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -8,7 +10,32 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProps) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+      onClose();
+    } catch (err: any) {
+      setError(err.message || `Failed to ${isLogin ? 'login' : 'create account'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -33,14 +60,25 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
 
           {/* Modal header */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Entrar</h2>
-            <p className="text-gray-600">Acesse sua conta para continuar</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {isLogin ? 'Entrar' : 'Criar Conta'}
+            </h2>
+            <p className="text-gray-600">
+              {isLogin ? 'Acesse sua conta para continuar' : 'Crie sua conta para começar'}
+            </p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Google OAuth button */}
           <button
             onClick={onSignIn}
-            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm mb-4"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -51,8 +89,62 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
             <span className="font-medium">Entrar com Google</span>
           </button>
 
-          {/* Future providers placeholder */}
-          {/* future providers go here */}
+          {/* Divider */}
+          <div className="relative mb-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">ou continue com email</span>
+            </div>
+          </div>
+
+          {/* Email/Password form */}
+          <form onSubmit={handleEmailAuth} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Email"
+                className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Senha"
+                className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50"
+            >
+              {loading ? (isLogin ? 'Entrando...' : 'Criando...') : (isLogin ? 'Entrar' : 'Criar Conta')}
+            </button>
+          </form>
+
+          {/* Toggle between login/signup */}
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError('');
+              }}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              {isLogin ? 'Não tem uma conta? Criar conta' : 'Já tem uma conta? Entrar'}
+            </button>
+          </div>
 
           {/* Footer text */}
           <p className="text-center text-sm text-gray-500 mt-6">
