@@ -3,6 +3,31 @@
 > Updated automatically on every push.
 
 ---
+## [April 9, 2026] — Email/Password Auth Added to Modal
+**Status:** working
+
+### What changed
+- Integrated email/password login and create account flow into the existing auth modal popup
+- Modal now shows Google Sign In + divider + email/password form in one place
+- Added toggle between Login and Create Account modes inside the modal
+- Uses signInWithEmailAndPassword and createUserWithEmailAndPassword from firebase/auth
+- Kept /login route and Login.tsx as fallback, modal is now primary UX
+
+### Why
+- Email/Password was enabled in Firebase but only wired to a separate /login page
+- Users clicking "Entrar" in the navbar only saw the Google button - email option was invisible
+- Modal is the correct entry point for client auth in the CRM flow
+
+### Known issues
+- Facebook auth provider not yet added (planned next)
+- Google Calendar sync and live availability slots still using mock data
+
+### Next steps
+- Add Facebook OAuth provider to modal
+- Wire AGENDAR button to real Google Calendar availability
+- Begin CRM client tracking feature (booked classes)
+
+---
 ## [April 6, 2026] — Fixed React App Loading Issue
 **Commit:** eeae960
 **Status:** working
