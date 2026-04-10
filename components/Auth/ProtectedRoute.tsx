@@ -1,9 +1,10 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -14,7 +15,8 @@ const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    // Redirect to home with state to open auth modal
+    return <Navigate to="/" state={{ openAuthModal: true, from: location.pathname }} replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

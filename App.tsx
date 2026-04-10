@@ -19,32 +19,8 @@ import JournalDetail from './components/JournalDetail.tsx';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
 
-// Dashboard component
-const Dashboard = () => {
-  return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Student Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">My Lessons</h2>
-          <p className="text-gray-600">View and manage your scheduled lessons.</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">Progress</h2>
-          <p className="text-gray-600">Track your learning progress.</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">Profile</h2>
-          <p className="text-gray-600">Manage your account settings.</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">Support</h2>
-          <p className="text-gray-600">Get help and contact support.</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Import Dashboard component
+import Dashboard from './src/pages/Dashboard';
 
 const ProductDetailWrapper = () => {
   const location = useLocation();

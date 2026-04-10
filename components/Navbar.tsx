@@ -29,6 +29,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     }
   }, [user, location.state, navigate]);
 
+  // Check for openAuthModal state from protected route redirects
+  useEffect(() => {
+    if (location.state?.openAuthModal && !user) {
+      setLoginModalOpen(true);
+    }
+  }, [location.state, user]);
+
   const handleSignOut = async () => {
     try {
       await signOut();
