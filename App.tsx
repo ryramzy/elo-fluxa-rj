@@ -19,8 +19,9 @@ import JournalDetail from './components/JournalDetail.tsx';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
 
-// Import Dashboard component
+// Import Dashboard and Admin components
 import Dashboard from './src/pages/Dashboard';
+import Admin from './src/pages/Admin';
 
 const ProductDetailWrapper = () => {
   const location = useLocation();
@@ -122,6 +123,27 @@ function AppShell() {
           <Route path="/profile" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/students/:uid" element={
+            <ProtectedRoute>
+              <div className="max-w-4xl mx-auto p-6">
+                <h1 className="text-2xl font-bold mb-4">Student Profile</h1>
+                <p className="text-slate-600">Student profile page - coming soon</p>
+              </div>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/announcements" element={
+            <ProtectedRoute>
+              <div className="max-w-4xl mx-auto p-6">
+                <h1 className="text-2xl font-bold mb-4">Announcements</h1>
+                <p className="text-slate-600">Announcement management - coming soon</p>
+              </div>
             </ProtectedRoute>
           } />
         </Routes>

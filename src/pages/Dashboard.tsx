@@ -5,8 +5,10 @@ import { useEnrollments } from '../hooks/useEnrollments';
 import { useBookings } from '../hooks/useBookings';
 import { useStreak } from '../hooks/useStreak';
 import { courses } from '../data/courses';
-import { createBooking } from '../lib/firestore';
+import { createBooking, getAvailableSlots, bookAvailableSlot } from '../lib/firestore';
 import { awardXP, XP_REWARDS, awardFirstLoginBonus } from '../lib/xpSystem';
+import { writeBatch, doc, collection } from 'firebase/firestore';
+import { db } from '../lib/firestore';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -16,6 +18,7 @@ const Dashboard: React.FC = () => {
   const { streak } = useStreak(user?.uid || '');
   
   const [bookingLoading, setBookingLoading] = useState<string | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
 
   // Award first login bonus
   useEffect(() => {
@@ -24,20 +27,50 @@ const Dashboard: React.FC = () => {
     }
   }, [user?.uid, profile]);
 
-  // Static booking slots for now
-  const availableSlots = [
-    { id: '1', label: 'Segunda, 10:00 (Rio)', datetime: new Date(2026, 3, 14, 10, 0) },
-    { id: '2', label: 'Terça, 14:30 (Rio)', datetime: new Date(2026, 3, 15, 14, 30) },
-    { id: '3', label: 'Quarta, 16:00 (Rio)', datetime: new Date(2026, 3, 16, 16, 0) },
-  ];
+  // Load available slots
+  useEffect(() => {
+    const loadSlots = async () => {
+      try {
+        const slots = await getAvailableSlots();
+        setAvailableSlots(slots);
+      } catch (error) {
+        console.error('Error loading available slots:', error);
+      }
+    };
+    loadSlots();
+  }, []);
 
   const handleBooking = async (slot: any) => {
     if (!user || !slot.datetime) return;
     
     setBookingLoading(slot.id);
     try {
-      await createBooking(user.uid, slot.datetime);
+      // Use atomic batch write to prevent double-bookings
+      const batch = writeBatch(db);
+      
+      // Create booking
+      const bookingData = {
+        uid: user.uid,
+        studentName: user.displayName || 'Unknown',
+        studentEmail: user.email || 'unknown@example.com',
+        datetime: slot.datetime,
+        status: 'booked' as const,
+        createdAt: new Date()
+      };
+      
+      const bookingRef = doc(collection(db, 'bookings'));
+      batch.set(bookingRef, bookingData);
+      
+      // Mark slot as booked
+      const slotRef = doc(collection(db, 'availableSlots'), slot.id);
+      batch.update(slotRef, { status: 'booked' });
+      
+      await batch.commit();
       await awardXP(user.uid, XP_REWARDS.BOOKING_CREATED, 'booking created');
+      
+      // Reload available slots
+      const slots = await getAvailableSlots();
+      setAvailableSlots(slots);
     } catch (error) {
       console.error('Error booking class:', error);
     } finally {
@@ -221,30 +254,43 @@ const Dashboard: React.FC = () => {
           <div className="bg-white rounded-lg border border-slate-200 p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Book a class with Matt</h3>
             <div className="space-y-3">
-              {availableSlots.map((slot) => {
-                const isBooked = isSlotBooked(slot);
-                return (
-                  <div 
-                    key={slot.id}
-                    className="flex items-center justify-between p-3 border border-slate-200 rounded-lg"
-                  >
-                    <span className="text-sm text-slate-700">{slot.label}</span>
-                    <button
-                      onClick={() => handleBooking(slot)}
-                      disabled={isBooked || bookingLoading === slot.id}
-                      className={`px-4 py-2 rounded text-xs font-medium transition-colors ${
-                        isBooked 
-                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                          : bookingLoading === slot.id
-                          ? 'bg-blue-100 text-blue-600'
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      }`}
+              {availableSlots.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  No slots available right now - check back soon!
+                </div>
+              ) : (
+                availableSlots.map((slot) => {
+                  const slotDate = slot.datetime.toDate();
+                  const isBooked = isSlotBooked(slot);
+                  return (
+                    <div 
+                      key={slot.id}
+                      className="flex items-center justify-between p-3 border border-slate-200 rounded-lg"
                     >
-                      {isBooked ? 'Booked' : bookingLoading === slot.id ? 'Booking...' : 'Book'}
-                    </button>
-                  </div>
-                );
-              })}
+                      <span className="text-sm text-slate-700">
+                        {slotDate.toLocaleDateString('pt-BR', { 
+                          weekday: 'long', 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })} (Rio)
+                      </span>
+                      <button
+                        onClick={() => handleBooking(slot)}
+                        disabled={isBooked || bookingLoading === slot.id}
+                        className={`px-4 py-2 rounded text-xs font-medium transition-colors ${
+                          isBooked 
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                            : bookingLoading === slot.id
+                            ? 'bg-blue-100 text-blue-600'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                      >
+                        {isBooked ? 'Booked' : bookingLoading === slot.id ? 'Booking...' : 'Book'}
+                      </button>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
 
