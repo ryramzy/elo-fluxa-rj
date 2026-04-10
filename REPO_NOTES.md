@@ -3,6 +3,38 @@
 > Updated automatically on every push.
 
 ---
+## [April 10, 2026] — Admin Dashboard Built
+**Status:** working
+
+### What changed
+- /admin protected route - only accessible by Matt's uid (VITE_ADMIN_UID env var)
+- useAdminGuard hook - redirects non-admins to /dashboard
+- Admin stats row: total students, bookings this week, XP awarded, most popular course
+- Upcoming bookings table with confirm/complete/cancel actions
+- Student roster with search, XP, level, streak per student
+- Course analytics: enrollments, avg progress, completions
+- Quick actions: add slot, export CSV, announcement placeholder
+- availableSlots Firestore collection - Matt adds slots manually
+- Student dashboard booking panel now reads from availableSlots (replaces hardcoded static slots), atomic batch write on booking to prevent double-bookings
+
+### Why
+- Completes the core CRM loop: student books -> Matt sees and confirms -> booking tracked in Firestore
+- availableSlots collection is the bridge to Google Calendar sync - same data structure, just populated manually for now
+- Matt needs roster visibility before the LMS makes sense
+
+### Known issues
+- Google Calendar sync not yet wired (slots still manual)
+- /admin/students/:uid profile page is a placeholder
+- No email notifications on booking confirmation yet
+- Facebook OAuth still pending
+
+### Next steps
+- Wire availableSlots to Google Calendar API (auto-populate slots from Matt's real availability)
+- Build individual course/lesson pages (LMS)
+- Email notification on booking confirm (Firebase Extensions or Resend API)
+- Build /admin/students/:uid detailed student profile page
+
+---
 ## [April 10, 2026] — Student Dashboard Built
 **Status:** working
 
