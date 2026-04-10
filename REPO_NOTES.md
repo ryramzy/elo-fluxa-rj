@@ -3,6 +3,37 @@
 > Updated automatically on every push.
 
 ---
+## [April 10, 2026] — Student Dashboard Built
+**Status:** working
+
+### What changed
+- Built /dashboard protected route (redirects to home if not authed)
+- Firestore schema: users, enrollments, bookings collections
+- src/lib/firestore.ts with typed helper functions
+- src/data/courses.ts with all 6 course definitions
+- src/hooks/: useUserProfile, useEnrollments, useBookings, useStreak
+- Dashboard sections: stats row, courses grid, booking panel, badges
+- Gamification: XP system, level progression (6 levels), streak tracking, per-course badges
+- After login (Google or email/password), user lands on /dashboard
+
+### Why
+- CRM foundation: every student now has a Firestore profile
+- Gamification drives retention and course completion
+- Booking panel is the bridge to the Google Calendar sync (still using static slots for now)
+
+### Known issues
+- Booking slots still hardcoded (Google Calendar sync pending)
+- /courses/{courseId} lesson pages not yet built (placeholder route)
+- Admin/Matt dashboard not yet built
+- Facebook OAuth not yet added
+
+### Next steps
+- Wire booking slots to real Google Calendar availability
+- Build individual course/lesson pages (LMS layer)
+- Build Matt's admin dashboard (see all students, bookings, XP)
+- Add Facebook OAuth to auth modal
+
+---
 ## [April 9, 2026] — Email/Password Auth Added to Modal
 **Status:** working
 
