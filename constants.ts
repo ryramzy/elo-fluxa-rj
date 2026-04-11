@@ -10,6 +10,20 @@ export const WHATSAPP_NUMBER = "5522992322566";
 export const WHATSAPP_MESSAGE = "Olá Matthew! Vi seu site e gostaria de saber mais sobre as aulas de inglês.";
 export const BRAND_NAME = "Elo Matt!";
 
+// WhatsApp CTAs for different contexts
+export const WHATSAPP_MESSAGES = {
+  landing: "Oi%20Matt!%20Vi%20seu%20site%20e%20quero%20saber%20mais%20sobre%20as%20aulas",
+  lessonPaywall: "Oi%20Matt!%20Acabei%20de%20fazer%20a%20aula%20gr%C3%A1tis%20e%20quero%20continuar",
+  subscription: "Oi%20Matt!%20Quero%20assinar%20o%20plano%20Pro",
+  booking: "Oi%20Matt!%20Quero%20agendar%20uma%20aula",
+  onboarding: "Oi%20Matt!%20Acabei%20de%20criar%20minha%20conta%20no%20Elo%20Matt!",
+  general: "Oi%20Matt!%20Preciso%20de%20ajuda"
+};
+
+export const getWhatsAppLink = (context: keyof typeof WHATSAPP_MESSAGES) => {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGES[context]}`;
+};
+
 export const MATTHEW_BIO = {
   intro: {
     title: "Welcome! It’s great to meet you 😊",

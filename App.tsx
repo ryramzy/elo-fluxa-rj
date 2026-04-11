@@ -12,7 +12,7 @@ import ProductGrid from './components/ProductGrid.tsx';
 import About from './components/About.tsx';
 import VideoGrid from './components/VideoGrid.tsx';
 import Booking from './components/Booking.tsx';
-import Footer from './components/Footer.tsx';
+import Footer from './src/components/Footer';
 import ProductDetail from './components/ProductDetail.tsx';
 import Journal from './components/Journal.tsx';
 import JournalDetail from './components/JournalDetail.tsx';
@@ -28,6 +28,8 @@ import CoursePage from './src/pages/CoursePage';
 import LessonPage from './src/pages/LessonPage';
 import AdminStudentProfile from './src/pages/AdminStudentProfile';
 import Sobre from './src/pages/Sobre';
+import Dicas from './src/pages/Dicas';
+import Videos from './src/pages/Videos';
 import NotFound from './src/pages/NotFound';
 
 const ProductDetailWrapper = () => {
@@ -119,20 +121,8 @@ function AppShell() {
           <Route path="/video" element={<VideoGrid />} />
           <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
           <Route path="/journal/article" element={<JournalDetailWrapper />} />
-          <Route path="/dicas" element={
-            <div className="max-w-4xl mx-auto p-6">
-              <h1 className="text-2xl font-bold mb-4">Dicas de Inglês</h1>
-              <p className="text-slate-600">Em breve - dicas e conteúdo para melhorar seu inglês!</p>
-              <a
-                href="https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20as%20aulas%20de%20ingl%C3%AAs"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Falar com Matt no WhatsApp
-              </a>
-            </div>
-          } />
+          <Route path="/dicas" element={<Dicas />} />
+          <Route path="/videos" element={<Videos />} />
 
           {/* Auth-required routes */}
           <Route path="/dashboard" element={
@@ -187,7 +177,7 @@ function AppShell() {
         </Routes>
       </main>
 
-      <Footer onLinkClick={handleNavClick} />
+      <Footer />
       
       {/* Toast Container */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />

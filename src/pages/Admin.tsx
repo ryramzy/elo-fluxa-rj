@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdminGuard } from '../hooks/useAdminGuard';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { 
   getAllUsers, 
   getAllBookings, 
@@ -9,16 +10,19 @@ import {
   getAllEnrollments,
   createAvailableSlot,
   getAvailableSlots,
-  bookAvailableSlot
+  bookAvailableSlot,
+  updateUserPlan
 } from '../lib/firestore';
 import { courses } from '../data/courses';
-import { writeBatch } from 'firebase/firestore';
+import { writeBatch, doc, collection, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 const Admin: React.FC = () => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminGuard();
   const navigate = useNavigate();
+  
+  useDocumentTitle('Admin Dashboard');
   
   const [users, setUsers] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
@@ -28,6 +32,19 @@ const Admin: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddSlot, setShowAddSlot] = useState(false);
   const [newSlotDate, setNewSlotDate] = useState('');
+  
+  // Lead management state
+  const [leads, setLeads] = useState<any[]>([]);
+  const [showAddLead, setShowAddLead] = useState(false);
+  const [newLead, setNewLead] = useState({
+    name: '',
+    whatsapp: '',
+    email: '',
+    interestedIn: '',
+    status: 'new',
+    notes: ''
+  });
+  const [manualRevenue, setManualRevenue] = useState(0);
 
   useEffect(() => {
     if (!adminLoading && isAdmin) {
@@ -98,7 +115,117 @@ const Admin: React.FC = () => {
     a.href = url;
     a.download = 'bookings.csv';
     a.click();
-    window.URL.revokeObjectURL(url);
+  };
+
+  const handlePlanUpgrade = async (userId: string, newPlan: 'free' | 'pro' | 'elite') => {
+    if (!window.confirm(`Upgrade student to ${newPlan.toUpperCase()}?`)) return;
+    
+    try {
+      await updateUserPlan(userId, newPlan);
+      
+      // Log the plan change
+      const planHistoryRef = doc(collection(db, 'users', userId, 'planHistory'), new Date().toISOString());
+      await setDoc(planHistoryRef, {
+        fromPlan: users.find(u => u.uid === userId)?.plan || 'free',
+        toPlan: newPlan,
+        changedAt: new Date(),
+        changedBy: 'admin'
+      });
+      
+      // Update local state
+      setUsers(prev => prev.map(user => 
+        user.uid === userId ? { ...user, plan: newPlan } : user
+      ));
+      
+      // Show success message (would integrate with toast system)
+      alert(`Student upgraded to ${newPlan.toUpperCase()}`);
+    } catch (error) {
+      console.error('Error upgrading plan:', error);
+      alert('Error upgrading plan');
+    }
+  };
+
+  const handleAddLead = async () => {
+    if (!newLead.name || !newLead.whatsapp || !newLead.interestedIn) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const leadId = new Date().toISOString();
+      const leadRef = doc(db, 'leads', leadId);
+      
+      await setDoc(leadRef, {
+        ...newLead,
+        createdAt: new Date(),
+        convertedAt: null,
+        revenue: null
+      });
+
+      setLeads(prev => [...prev, { ...newLead, id: leadId, createdAt: new Date() }]);
+      setNewLead({
+        name: '',
+        whatsapp: '',
+        email: '',
+        interestedIn: '',
+        status: 'new',
+        notes: ''
+      });
+      setShowAddLead(false);
+      
+      alert('Lead added successfully!');
+    } catch (error) {
+      console.error('Error adding lead:', error);
+      alert('Error adding lead');
+    }
+  };
+
+  const handleLeadStatusUpdate = async (leadId: string, newStatus: string) => {
+    try {
+      const leadRef = doc(db, 'leads', leadId);
+      await updateDoc(leadRef, { 
+        status: newStatus,
+        convertedAt: newStatus === 'converted' ? new Date() : null
+      });
+      
+      setLeads(prev => prev.map(lead => 
+        lead.id === leadId ? { ...lead, status: newStatus, convertedAt: newStatus === 'converted' ? new Date() : lead.convertedAt } : lead
+      ));
+    } catch (error) {
+      console.error('Error updating lead status:', error);
+      alert('Error updating lead status');
+    }
+  };
+
+  const handleConvertLead = async (leadId: string) => {
+    const revenue = prompt('Enter revenue amount (R$):');
+    if (!revenue || isNaN(Number(revenue))) return;
+    
+    try {
+      const leadRef = doc(db, 'leads', leadId);
+      await updateDoc(leadRef, {
+        status: 'converted',
+        convertedAt: new Date(),
+        revenue: Number(revenue)
+      });
+      
+      // Update manual revenue total
+      const adminSettingsRef = doc(db, 'adminSettings', 'revenue');
+      await setDoc(adminSettingsRef, {
+        totalManualRevenue: manualRevenue + Number(revenue),
+        lastUpdated: new Date()
+      }, { merge: true });
+      
+      setManualRevenue(prev => prev + Number(revenue));
+      setLeads(prev => prev.map(lead => 
+        lead.id === leadId ? { ...lead, status: 'converted', convertedAt: new Date(), revenue: Number(revenue) } : lead
+      ));
+      
+      alert(`Lead converted! Revenue: R$${revenue}`);
+    } catch (error) {
+      console.error('Error converting lead:', error);
+      alert('Error converting lead');
+    }
   };
 
   // Calculate stats
@@ -243,6 +370,31 @@ const Admin: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <div className="bg-white p-6 rounded-lg border border-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-600 mb-1">Manual Revenue</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-2xl font-bold text-slate-900">R${manualRevenue}</p>
+                  <button
+                    onClick={() => {
+                      const amount = prompt('Update manual revenue (R$):');
+                      if (amount && !isNaN(Number(amount))) {
+                        setManualRevenue(Number(amount));
+                      }
+                    }}
+                    className="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-green-600">R$</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* SECTION 1 - UPCOMING BOOKINGS */}
@@ -335,20 +487,29 @@ const Admin: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map((user) => (
               <div key={user.uid} className="border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                      {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                        {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-medium text-slate-900">{user.displayName}</h4>
+                      <p className="text-sm text-slate-600">{user.email}</p>
                     </div>
-                  )}
-                  <div>
-                    <h4 className="font-medium text-slate-900">{user.displayName}</h4>
-                    <p className="text-sm text-slate-600">{user.email}</p>
                   </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    user.plan === 'elite' ? 'bg-purple-100 text-purple-700' :
+                    user.plan === 'pro' ? 'bg-blue-100 text-blue-700' :
+                    'bg-slate-100 text-slate-700'
+                  }`}>
+                    {user.plan || 'free'}
+                  </span>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm mb-3">
                   <div className="flex justify-between">
                     <span className="text-slate-600">Level:</span>
                     <span className="font-medium">Level {user.level}</span>
@@ -370,12 +531,174 @@ const Admin: React.FC = () => {
                     <span className="font-medium">{bookings.filter(b => b.uid === user.uid).length}</span>
                   </div>
                 </div>
-                <button
-                  onClick={() => navigate(`/admin/students/${user.uid}`)}
-                  className="mt-3 w-full px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                
+                {/* Quick Plan Upgrade */}
+                <div className="mb-3">
+                  <label className="text-xs text-slate-600 block mb-1">Quick Upgrade:</label>
+                  <select
+                    value={user.plan || 'free'}
+                    onChange={(e) => handlePlanUpgrade(user.uid, e.target.value as 'free' | 'pro' | 'elite')}
+                    className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="free">Free</option>
+                    <option value="pro">Pro</option>
+                    <option value="elite">Elite</option>
+                  </select>
+                </div>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/admin/students/${user.uid}`)}
+                    className="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                  >
+                    View Profile
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 2.5 - LEAD TRACKER */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Lead Tracker</h3>
+              <p className="text-sm text-slate-600">
+                {leads.filter(l => l.status === 'converted').length} of {leads.length} leads converted ({Math.round((leads.filter(l => l.status === 'converted').length / leads.length) * 100) || 0}%)
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddLead(true)}
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+            >
+              Add Lead
+            </button>
+          </div>
+
+          {/* Add Lead Form */}
+          {showAddLead && (
+            <div className="bg-slate-50 rounded-lg p-4 mb-4">
+              <h4 className="font-medium text-slate-900 mb-3">Add New Lead</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Name *"
+                  value={newLead.name}
+                  onChange={(e) => setNewLead(prev => ({ ...prev, name: e.target.value }))}
+                  className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                />
+                <input
+                  type="text"
+                  placeholder="WhatsApp *"
+                  value={newLead.whatsapp}
+                  onChange={(e) => setNewLead(prev => ({ ...prev, whatsapp: e.target.value }))}
+                  className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={newLead.email}
+                  onChange={(e) => setNewLead(prev => ({ ...prev, email: e.target.value }))}
+                  className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                />
+                <select
+                  value={newLead.interestedIn}
+                  onChange={(e) => setNewLead(prev => ({ ...prev, interestedIn: e.target.value }))}
+                  className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
                 >
-                  View Profile
+                  <option value="">Select Course *</option>
+                  {courses.map(course => (
+                    <option key={course.id} value={course.id}>{course.title}</option>
+                  ))}
+                </select>
+                <textarea
+                  placeholder="Notes"
+                  value={newLead.notes}
+                  onChange={(e) => setNewLead(prev => ({ ...prev, notes: e.target.value }))}
+                  className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500 md:col-span-2"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={handleAddLead}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                >
+                  Add Lead
                 </button>
+                <button
+                  onClick={() => setShowAddLead(false)}
+                  className="px-4 py-2 bg-slate-200 text-slate-700 text-sm rounded hover:bg-slate-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Lead Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {leads.map((lead) => (
+              <div key={lead.id} className="border border-slate-200 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-medium text-slate-900">{lead.name}</h4>
+                    <p className="text-sm text-slate-600">{lead.whatsapp}</p>
+                    {lead.email && <p className="text-sm text-slate-600">{lead.email}</p>}
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    lead.status === 'converted' ? 'bg-green-100 text-green-700' :
+                    lead.status === 'contacted' ? 'bg-amber-100 text-amber-700' :
+                    lead.status === 'lost' ? 'bg-gray-100 text-gray-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {lead.status}
+                  </span>
+                </div>
+                
+                <div className="mb-3">
+                  <p className="text-xs text-slate-600 mb-1">Interested in:</p>
+                  <p className="text-sm font-medium text-slate-900">
+                    {courses.find(c => c.id === lead.interestedIn)?.title || lead.interestedIn}
+                  </p>
+                </div>
+
+                {lead.notes && (
+                  <div className="mb-3">
+                    <p className="text-xs text-slate-600 mb-1">Notes:</p>
+                    <p className="text-sm text-slate-700">{lead.notes}</p>
+                  </div>
+                )}
+
+                {lead.revenue && (
+                  <div className="mb-3">
+                    <p className="text-xs text-slate-600 mb-1">Revenue:</p>
+                    <p className="text-sm font-medium text-green-700">R${lead.revenue}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <select
+                    value={lead.status}
+                    onChange={(e) => handleLeadStatusUpdate(lead.id, e.target.value)}
+                    className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="lost">Lost</option>
+                    <option value="converted">Converted</option>
+                  </select>
+                  
+                  {lead.status !== 'converted' && (
+                    <button
+                      onClick={() => handleConvertLead(lead.id)}
+                      className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                    >
+                      Convert
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

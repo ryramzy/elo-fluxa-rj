@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { courses, Course, Lesson } from '../data/courses';
+import { lessonContent } from '../data/lessonContent';
 import { awardXP } from '../lib/xpSystem';
+import LessonPaywall from '../components/LessonPaywall';
+import SubscriptionModal from '../components/SubscriptionModal';
 
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -11,6 +14,7 @@ const LessonPage: React.FC = () => {
   
   const [isCompleted, setIsCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const [quizState, setQuizState] = useState<{
     answers: Record<number, string>;
     showResults: boolean;
@@ -96,75 +100,76 @@ const LessonPage: React.FC = () => {
     });
   };
 
-  const renderReadingContent = () => (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-lg border border-slate-200 p-8">
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-sm text-slate-600 mb-4">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Estimated read time: {lesson.duration}
+  const renderReadingContent = () => {
+    const content = lessonContent[courseId]?.[lessonId];
+    
+    if (!content) {
+      return (
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-lg border border-slate-200 p-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-slate-900 mb-4">{lesson.title}</h1>
+              <p className="text-slate-600">Content not available yet.</p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-4">{lesson.title}</h1>
-          <p className="text-slate-600 mb-6">{lesson.description}</p>
         </div>
+      );
+    }
 
-        <div className="prose prose-slate max-w-none">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-4">Understanding Professional Greetings</h2>
-          <p className="text-slate-700 leading-relaxed mb-4">
-            In American business culture, first impressions happen within seconds. The way you greet someone 
-            sets the tone for the entire interaction. Professional greetings in the United States follow specific 
-            cultural norms that differ significantly from other countries.
-          </p>
-          <p className="text-slate-700 leading-relaxed mb-4">
-            When meeting someone for the first time in a professional setting, Americans typically use a firm 
-            handshake, direct eye contact, and a warm smile. The greeting should be confident but not overly 
-            aggressive. This non-verbal communication conveys respect and professionalism.
-          </p>
-          <p className="text-slate-700 leading-relaxed mb-6">
-            Verbal greetings usually include "Nice to meet you" or "It's a pleasure to meet you." These phrases are 
-            considered polite and appropriate for most business situations. Avoid overly casual greetings like 
-            "Hey" or "What's up" in formal business contexts.
-          </p>
-
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
-            <p className="text-blue-900 font-medium mb-2">Key Phrase:</p>
-            <p className="text-blue-800 italic">"It's a pleasure to meet you. I'm [Your Name], and I'll be handling your account."</p>
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white rounded-lg border border-slate-200 p-8">
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-sm text-slate-600 mb-4">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Estimated read time: {lesson.duration}
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-4">{lesson.title}</h1>
+            <p className="text-slate-600 mb-6">{lesson.description}</p>
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Cultural Context</h3>
-          <p className="text-slate-700 leading-relaxed mb-4">
-            Understanding the cultural context behind American greetings is crucial. Americans value directness 
-            and confidence in business interactions. Unlike some cultures where indirect communication is preferred, 
-            American business culture appreciates straightforward, clear communication.
-          </p>
-          <p className="text-slate-700 leading-relaxed mb-6">
-            The timing of greetings is also important. In meetings, it's customary to greet everyone individually 
-            rather than a general "hello" to the group. This shows respect for each person's presence and contribution.
-          </p>
+          {/* Hook */}
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+            <p className="text-blue-900 font-medium">{content.hook}</p>
+          </div>
 
-          <div className="bg-amber-50 rounded-lg p-4 my-6">
-            <h4 className="font-semibold text-amber-900 mb-3">Vocabulary Highlights:</h4>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <span className="font-medium text-amber-800 mr-2">Firm handshake:</span>
-                <span className="text-amber-700">A confident, strong handshake that conveys professionalism</span>
-              </li>
-              <li className="flex items-start">
-                <span className="font-medium text-amber-800 mr-2">Direct eye contact:</span>
-                <span className="text-amber-700">Looking someone in the eyes while speaking to show confidence</span>
-              </li>
-              <li className="flex items-start">
-                <span className="font-medium text-amber-800 mr-2">Professional demeanor:</span>
-                <span className="text-amber-700">Appropriate behavior and attitude in business settings</span>
-              </li>
-            </ul>
+          <div className="prose prose-slate max-w-none">
+            {/* Sections */}
+            {content.sections.map((section, index) => (
+              <div key={index} className="mb-8">
+                <h2 className="text-2xl font-semibold text-slate-900 mb-4">{section.title}</h2>
+                <p className="text-slate-700 leading-relaxed">{section.content}</p>
+              </div>
+            ))}
+
+            {/* Vocabulary Box */}
+            <div className="bg-amber-50 rounded-lg p-6 my-8">
+              <h3 className="text-xl font-semibold text-amber-900 mb-4">Essential Vocabulary</h3>
+              <div className="space-y-4">
+                {content.vocabularyBox.map((vocab, index) => (
+                  <div key={index} className="border-l-4 border-amber-400 pl-4">
+                    <h4 className="font-semibold text-amber-800">{vocab.term}</h4>
+                    <p className="text-amber-700 text-sm mb-1">{vocab.definition}</p>
+                    <p className="text-amber-600 text-xs italic">When to use: {vocab.whenToUse}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Cultural Note */}
+            {content.culturalNote && (
+              <div className="bg-purple-50 border-l-4 border-purple-500 p-4 my-8">
+                <h3 className="text-lg font-semibold text-purple-900 mb-2">Cultural Note</h3>
+                <p className="text-purple-800">{content.culturalNote}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderVideoContent = () => (
     <div className="max-w-4xl mx-auto">
@@ -473,21 +478,21 @@ const LessonPage: React.FC = () => {
 
       {/* Bottom Navigation */}
       <div className="bg-white border-t border-slate-200 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => {
-              if (lessonIndex! > 0) {
-                const prevLesson = course.lessons[lessonIndex! - 1];
-                navigate(`/courses/${courseId}/lessons/${prevLesson.id}`);
-              }
-            }}
-            disabled={lessonIndex === 0}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 disabled:text-slate-400 text-slate-700 rounded-lg transition-colors"
-          >
-            Previous Lesson
-          </button>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => {
+                if (lessonIndex! > 0) {
+                  const prevLesson = course.lessons[lessonIndex! - 1];
+                  navigate(`/courses/${courseId}/lessons/${prevLesson.id}`);
+                }
+              }}
+              disabled={lessonIndex === 0}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 disabled:text-slate-400 text-slate-700 rounded-lg transition-colors"
+            >
+              Previous Lesson
+            </button>
 
-          <div className="flex items-center gap-4">
             <button
               onClick={handleCompleteLesson}
               disabled={isCompleted}
@@ -495,19 +500,31 @@ const LessonPage: React.FC = () => {
             >
               {isCompleted ? 'Completed ??' : 'Mark as Complete'}
             </button>
+          </div>
 
-            {lessonIndex! < course.lessons.length - 1 && (
+          {/* Show LessonPaywall for free lessons, or Next Lesson button for paid lessons */}
+          {isCompleted && lesson.free && lessonIndex! < course.lessons.length - 1 && (
+            <LessonPaywall
+              courseId={courseId}
+              lessonTitle={lesson.title}
+              onPlanSelect={() => setSubscriptionModalOpen(true)}
+            />
+          )}
+
+          {/* Regular Next Lesson button for paid lessons or when not completed */}
+          {((!lesson.free && isCompleted) || (!isCompleted && lessonIndex! < course.lessons.length - 1)) && (
+            <div className="flex justify-center">
               <button
                 onClick={() => {
                   const nextLesson = course.lessons[lessonIndex! + 1];
                   navigate(`/courses/${courseId}/lessons/${nextLesson.id}`);
                 }}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 Next Lesson
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -529,6 +546,17 @@ const LessonPage: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={subscriptionModalOpen}
+        onClose={() => setSubscriptionModalOpen(false)}
+        onPlanSelect={(plan: string) => {
+          // Handle plan selection - would integrate with payment system
+          console.log('Selected plan:', plan);
+          setSubscriptionModalOpen(false);
+        }}
+      />
 
       <style jsx>{`
         @keyframes fall {

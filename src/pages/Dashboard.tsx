@@ -4,12 +4,14 @@ import { useUserProfile } from '../hooks/useUserProfile';
 import { useEnrollments } from '../hooks/useEnrollments';
 import { useBookings } from '../hooks/useBookings';
 import { useStreak } from '../hooks/useStreak';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { courses } from '../data/courses';
 import { createBooking, getAvailableSlots, bookAvailableSlot, checkCourseAccess, updateUserPlan } from '../lib/firestore';
 import { XP_REWARDS, awardFirstLoginBonus, awardXP } from '../lib/xpSystem';
-import { writeBatch, doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { writeBatch, doc, collection, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 import SubscriptionModal from '../components/SubscriptionModal';
+import OnboardingModal from '../components/OnboardingModal';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -18,10 +20,13 @@ const Dashboard: React.FC = () => {
   const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { streak } = useStreak(user?.uid || '');
   
+  useDocumentTitle('Dashboard');
+  
   const [bookingLoading, setBookingLoading] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState<string | null>(null);
+  const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
 
   // Award first login bonus
   useEffect(() => {
@@ -29,6 +34,26 @@ const Dashboard: React.FC = () => {
       awardFirstLoginBonus(user.uid);
     }
   }, [user?.uid, profile]);
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user || !profile) return;
+      
+      try {
+        const userDoc = doc(db, 'users', user.uid);
+        const userSnapshot = await getDoc(userDoc);
+        
+        if (!userSnapshot.exists() || !userSnapshot.data().onboardingComplete) {
+          setOnboardingModalOpen(true);
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [user, profile]);
 
   // Load available slots
   useEffect(() => {
@@ -612,6 +637,12 @@ const Dashboard: React.FC = () => {
           setSelectedCourseForEnroll(null);
         }}
         onPlanSelect={handleSubscriptionPlanSelect}
+      />
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={onboardingModalOpen}
+        onClose={() => setOnboardingModalOpen(false)}
       />
     </div>
   );
