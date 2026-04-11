@@ -3,6 +3,32 @@
 > Updated automatically on every push.
 
 ---
+## [April 10, 2026] — Blank Page Bug Fixed
+**Status:** fixed
+
+### What happened
+- Blank page on localhost:5173/5175 after admin setup
+- Root cause: conflicting importmap in index.html (lines 109-118)
+  was forcing browser to load React from CDN instead of Vite,
+  breaking module resolution silently
+
+### Fix applied
+- Removed <script type="importmap"> block from index.html
+- Cleared node_modules/.vite cache
+- Restarted dev server - clean startup, no errors
+
+### Result
+- Dev server runs cleanly on localhost:5175
+- VITE_ADMIN_UID confirmed loading
+- /admin route accessible with Matt's account
+
+### Known issues
+- Navbar visible before auth (to be fixed next)
+- Dashboard UI needs richer cards and content
+- Enroll button has no paywall yet
+- No subscription/pricing model yet
+
+---
 ## [April 10, 2026] — Admin Dashboard Built
 **Status:** working
 
