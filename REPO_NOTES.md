@@ -3,6 +3,49 @@
 > Updated automatically on every push.
 
 ---
+## [April 11, 2026] — Auth Flow, Dashboard UI + Subscription Model
+**Status:** working
+
+### What changed
+- Navbar now hides links until authenticated, shows
+  avatar + dropdown when logged in
+- "Entrar" click opens auth modal directly
+- After login, redirects to /dashboard
+- Dashboard hero section with animated XP bar
+- Stat cards with distinct color identities per metric
+- Course cards richer: description, audience tag, 
+  XP reward, thicker progress bar, context-aware CTA
+- Enroll button opens SubscriptionModal
+- 3-tier subscription model: Starter (free), Pro (R$97),
+  Elite (R$197)
+- Plan stored in Firestore users/{uid}.plan
+- Course access locked/unlocked based on plan
+- Booking limit enforced per plan (1 / 4 / unlimited)
+- Pro/Elite payment placeholder -> WhatsApp for now
+- Gamification panel: weekly XP chart, badge tooltips,
+  level milestone markers
+
+### Why
+- Empty navbar before login was confusing UX
+- Dashboard needed visual identity to feel premium
+- Monetization layer needed before LMS makes sense
+- Subscription model sets up Stripe integration later
+
+### Known issues
+- Pro/Elite payment not yet wired (WhatsApp placeholder)
+- Stripe integration planned as next major step
+- /courses/:courseId lesson pages still placeholder
+- Facebook OAuth still pending
+- Email notifications on booking still pending
+
+### Next steps
+- Integrate Stripe for Pro and Elite subscriptions
+- Build individual course lesson pages (LMS layer)
+- Wire Google Calendar to availableSlots collection
+- Build /admin/students/:uid detailed profile page
+- Add email notifications on booking confirmation
+
+---
 ## [April 10, 2026] — Blank Page Bug Fixed
 **Status:** fixed
 
