@@ -33,7 +33,10 @@ export default function Hero({ onEnter }: HeroProps) {
       <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 max-w-5xl mx-auto">
         <div className="animate-fade-in-up">
           <div className="flex flex-col items-center mb-8">
-            <span className="inline-block text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-blue-400 mb-4 px-6 py-2 border border-blue-400/30 bg-blue-400/10 rounded-full">
+            <h2 className="text-3xl md:text-4xl font-bold text-blue-400 mb-4">
+              Elo Matt!
+            </h2>
+            <span className="inline-block text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-blue-300 mb-4 px-6 py-2 border border-blue-400/30 bg-blue-400/10 rounded-full">
               {current.tag}
             </span>
             <div className="flex items-center gap-2 text-[10px] text-white/60 font-bold uppercase tracking-widest">
@@ -66,7 +69,7 @@ export default function Hero({ onEnter }: HeroProps) {
               onClick={() => { trackEvent('hero_enter_click'); onEnter(); }}
               className="px-6 py-3 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.3em] hover:bg-white hover:text-slate-900 transition-all"
             >
-              Criar conta grátis
+              Entrar
             </button>
           </div>
           <p className="text-sm text-slate-400 font-light mt-4 text-center">
