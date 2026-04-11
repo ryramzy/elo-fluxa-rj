@@ -399,7 +399,7 @@ const Dashboard: React.FC = () => {
                     {/* XP reward */}
                     <div className="mb-3">
                       <span className="text-sm font-semibold" style={{ color: course.accentColor }}>
-                        +{course.xpReward} XP
+                        +{course.totalXpReward} XP
                       </span>
                     </div>
                     
