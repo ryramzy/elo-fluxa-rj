@@ -3,6 +3,55 @@
 > Updated automatically on every push.
 
 ---
+## [April 11, 2026] — Hard Build Sprint: LMS + Content + Polish
+**Status:** working
+
+### What changed
+- src/data/courses.ts: full lesson plans for all 6 courses 
+  (8-14 lessons each, typed, XP per lesson, free flags)
+- src/pages/CoursePage.tsx: course overview with lesson list,
+  about tab, sidebar, progress tracking
+- src/pages/LessonPage.tsx: 4 lesson type layouts 
+  (reading, video, quiz, conversation), XP award on complete,
+  confetti on course completion
+- src/pages/AdminStudentProfile.tsx: full student profile 
+  for admin with notes, XP award, plan override, booking history
+- src/pages/Home.tsx: full Launch-style landing page with 
+  social proof, transformation section, testimonials, CTA
+- src/pages/Sobre.tsx: Matt's about page
+- src/pages/NotFound.tsx: 404 page
+- src/components/Toast.tsx: global toast system with XP toasts
+- Skeleton loaders on dashboard and course pages
+- Empty states across booking panel, courses, admin table
+- Full routing cleanup in App.tsx - all routes defined
+
+### Why
+- App felt empty - needed real content architecture
+  before showing to potential students or investors
+- Launch methodology: build perception of completeness,
+  then wire the backend
+- LMS structure is now in place for real content to 
+  drop in without architectural changes
+- Admin student profiles complete the CRM loop
+
+### Known issues
+- Lesson content is placeholder (real content TBD with Matt)
+- Video lessons have no actual video (placeholder UI only)
+- Stripe not yet integrated (Pro/Elite -> WhatsApp CTA)
+- Google Calendar not yet wired to availableSlots
+- Email notifications not yet built
+- Dicas and Videos pages are "Em breve" placeholders
+
+### Next steps
+- Stripe integration for Pro and Elite subscriptions
+- Wire Google Calendar API to availableSlots collection
+- Real lesson content creation with Matt
+- Email notifications on booking (Firebase Extension 
+  or Resend API)
+- /dicas page: build out English tips blog/content feed
+- /videos page: YouTube embed gallery
+
+---
 ## [April 11, 2026] — Auth Flow, Dashboard UI + Subscription Model
 **Status:** working
 
