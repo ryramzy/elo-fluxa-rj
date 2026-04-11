@@ -29,6 +29,10 @@ export interface UserProfile {
   lastActiveDate: Timestamp;
   badgesEarned: string[];
   createdAt: Timestamp;
+  plan: 'free' | 'pro' | 'elite';
+  planActivatedAt: Timestamp | null;
+  bookingsThisMonth: number;
+  bookingLimit: number;
 }
 
 export interface Enrollment {
@@ -347,6 +351,95 @@ export async function bookAvailableSlot(slotId: string, uid: string): Promise<vo
     await updateDoc(slotRef, { status: 'booked' });
   } catch (error) {
     console.error('Error booking available slot:', error);
+    throw error;
+  }
+}
+
+// Plan management functions
+export async function updateUserPlan(uid: string, plan: 'free' | 'pro' | 'elite'): Promise<void> {
+  try {
+    const userRef = doc(collection(db, 'users'), uid);
+    const bookingLimits = {
+      free: 1,
+      pro: 4,
+      elite: 999
+    };
+    
+    await updateDoc(userRef, {
+      plan,
+      planActivatedAt: serverTimestamp(),
+      bookingLimit: bookingLimits[plan]
+    });
+  } catch (error) {
+    console.error('Error updating user plan:', error);
+    throw error;
+  }
+}
+
+export async function checkCourseAccess(uid: string, courseId: string): Promise<{ canAccess: boolean; reason?: string }> {
+  try {
+    const userDoc = await getDoc(doc(collection(db, 'users'), uid));
+    if (!userDoc.exists()) {
+      return { canAccess: false, reason: 'User profile not found' };
+    }
+    
+    const userProfile = userDoc.data() as UserProfile;
+    
+    // Pro and Elite plans have access to all courses
+    if (userProfile.plan === 'pro' || userProfile.plan === 'elite') {
+      return { canAccess: true };
+    }
+    
+    // Free plan: check if user has enrollments
+    const enrollmentsQuery = query(
+      collection(db, `users/${uid}/courses`),
+      where('courseId', '==', courseId)
+    );
+    const enrollmentsSnapshot = await getDocs(enrollmentsQuery);
+    
+    if (enrollmentsSnapshot.empty) {
+      return { canAccess: false, reason: 'Free plan limited to 1 course. Upgrade to access this course.' };
+    }
+    
+    return { canAccess: true };
+  } catch (error) {
+    console.error('Error checking course access:', error);
+    return { canAccess: false, reason: 'Error checking access' };
+  }
+}
+
+export async function incrementBookingCount(uid: string): Promise<void> {
+  try {
+    const userRef = doc(collection(db, 'users'), uid);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data() as UserProfile;
+      const currentCount = userData.bookingsThisMonth || 0;
+      const bookingLimit = userData.bookingLimit || 1;
+      
+      if (currentCount >= bookingLimit) {
+        throw new Error('Booking limit reached for this month');
+      }
+      
+      await updateDoc(userRef, {
+        bookingsThisMonth: currentCount + 1
+      });
+    }
+  } catch (error) {
+    console.error('Error incrementing booking count:', error);
+    throw error;
+  }
+}
+
+export async function resetMonthlyBookingCount(uid: string): Promise<void> {
+  try {
+    const userRef = doc(collection(db, 'users'), uid);
+    await updateDoc(userRef, {
+      bookingsThisMonth: 0
+    });
+  } catch (error) {
+    console.error('Error resetting booking count:', error);
     throw error;
   }
 }
