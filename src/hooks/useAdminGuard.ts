@@ -24,7 +24,7 @@ export function useAdminGuard() {
       return;
     }
 
-    if (user.uid !== adminUid) {
+    if (user.uid.trim() !== adminUid?.trim()) {
       navigate('/dashboard');
       return;
     }
