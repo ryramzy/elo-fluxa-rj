@@ -20,8 +20,8 @@ export default function Hero({ onEnter }: HeroProps) {
 
   const current = {
     tag: 'O Nativo que fala sua língua',
-    subtitle: 'Chega de curso que não sai do papel. Aqui você fala inglês americano de verdade com um professor nativo, desde a primeira aula.',
-    subtitleEn: 'Real English. Real conversations. Real results.',
+    subtitle: 'Aulas com professor nativo americano, foco total em conversação real.',
+    subtitleEn: '',
     cta1: 'WhatsApp',
     cta2: 'Entrar no site',
     socialProof: `Ajudando ${STUDENT_COUNT}+ cariocas a alcançarem a fluência este mês.`
@@ -46,14 +46,11 @@ export default function Hero({ onEnter }: HeroProps) {
           </div>
 
           <h1 className="font-serif text-white leading-[0.9] mb-6 text-4xl md:text-5xl">
-            De 'I study English' para 'I live in English'
+            De "eu estudo inglês" para "eu falo inglês de verdade"
           </h1>
           <div className="mb-8 max-w-[600px] mx-auto">
-            <p className="text-lg text-slate-200 font-light leading-relaxed mb-3">
+            <p className="text-lg text-slate-200 font-light leading-relaxed">
               {current.subtitle}
-            </p>
-            <p className="text-sm text-slate-400 font-light leading-relaxed">
-              {current.subtitleEn}
             </p>
           </div>
           
