@@ -7,7 +7,7 @@ import { Product, Testimonial, JournalArticle } from './types.ts';
 
 export const STUDENT_COUNT = 54;
 export const WHATSAPP_NUMBER = "5522992322566";
-export const WHATSAPP_MESSAGE = "Olá Matthew! Vi seu site e gostaria de saber mais sobre as aulas de inglês.";
+export const WHATSAPP_MESSAGE = "Oi Matt! Vi seu site e quero começar a aprender inglês americano";
 export const BRAND_NAME = "Elo Matt!";
 
 // WhatsApp CTAs for different contexts
