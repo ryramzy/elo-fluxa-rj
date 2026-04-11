@@ -3,6 +3,48 @@
 > Updated automatically on every push.
 
 ---
+## [April 11, 2026] — Marketing & Conversion Update
+**Status:** working
+
+### What changed
+- Hero subheadline rewritten - hits emotional pain directly
+- CTA hierarchy fixed: WhatsApp primary, signup secondary
+- Fake social proof numbers removed - replaced with 
+  honest credibility pills
+- Pain-benefit section added (5 rows, antes/depois style)
+- Course cards: anonymous visitors - WhatsApp CTA,
+  authenticated users - Ver curso (LMS)
+- "Why this works" trust section added (3 cards)
+- Bottom CTA section rewritten - WhatsApp first
+- Urgency line moved from hero to bottom (more credible)
+- SubscriptionModal plan names updated to match 
+  WhatsApp sales framing
+- WHATSAPP_SCRIPTS.md created with full sales scripts
+  and offer framing for Matt to use in conversations
+
+### Why
+- Fake numbers (1,247 students) would hurt credibility
+  with early visitors who know this is phase 1
+- WhatsApp is the conversion channel - CTAs must
+  push there first, not to the signup flow
+- Pain-benefit section addresses the #1 objection:
+  "I've tried before and it didn't work"
+- Trust section answers "why should I trust this guy"
+  before the visitor has to ask
+
+### Known issues
+- Stripe not integrated (intentional)
+- WhatsApp auto-reply requires WhatsApp Business app
+  (Matt sets up manually - not a code task)
+
+### Next steps
+- Matt sets up WhatsApp Business with auto-reply
+- First 5 users invited manually to test the funnel
+- Collect first real testimonials to replace 
+  placeholder ones
+- Add Matt's real photo when available
+
+---
 ## [April 11, 2026] — Hard Build Sprint: LMS + Content + Polish
 **Status:** working
 
