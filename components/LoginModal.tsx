@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebase';
+
+// Initialize Google provider
+const googleProvider = new GoogleAuthProvider();
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -32,6 +35,22 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
       onClose();
     } catch (err: any) {
       setError(err.message || `Failed to ${isLogin ? 'login' : 'create account'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    console.log('Google OAuth clicked');
+    setError('');
+    setLoading(true);
+
+    try {
+      await signInWithPopup(auth, googleProvider);
+      onClose();
+    } catch (err: any) {
+      console.error('Google OAuth error:', err);
+      setError(err.message || 'Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
@@ -77,7 +96,7 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
 
           {/* Google OAuth button */}
           <button
-            onClick={onSignIn}
+            onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm mb-4"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
