@@ -3,6 +3,28 @@
 > Updated automatically on every push.
 
 ---
+## [April 13, 2026] — Auth Redirect Fix + Landing Polish
+**Status:** fixed
+
+### What happened
+- After "Entrar" click, users were redirected to an old
+  Vercel preview deployment showing the outdated English
+  hero copy - confusing and breaking the UX flow
+
+### Fix applied
+- Removed old preview URLs from Firebase authorized domains
+- Fixed auth redirect to use window.location.origin
+- Removed duplicate/stale hero copy from codebase
+- Translated course card descriptions and tags to PT
+- Fixed stuck loading spinner on "Quero começar" buttons
+- Replaced fake placeholder testimonials with honest
+  "coming soon" messaging
+
+### Known issues
+- Real testimonials needed (collect from first students)
+- Video placeholder on lesson pages still pending
+
+---
 ## [April 11, 2026] — Marketing & Conversion Update
 **Status:** working
 
