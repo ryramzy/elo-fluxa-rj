@@ -7,10 +7,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courses } from '../src/data/courses';
 import { useAuth } from '../hooks/useAuth';
+import { useEnrollments } from '../src/hooks/useEnrollments';
 
 export default function About() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { enrollments } = useEnrollments(user?.uid || '');
   const [linkCopied, setLinkCopied] = useState(false);
 
   const handleShareClick = () => {
@@ -199,51 +201,110 @@ export default function About() {
             </p>
           </div>
           
-          <div className="flex overflow-x-auto gap-6 pb-4">
-            {courses.map((course) => (
-              <div key={course.id} className="flex-none w-80 bg-white rounded-lg border border-slate-200 p-6 hover:shadow-lg transition-shadow">
-                <div className="text-4xl mb-4 text-center">{course.emoji}</div>
-                <h3 className="font-semibold text-slate-900 mb-2">{course.title}</h3>
-                <p className="text-sm text-slate-600 mb-4 line-clamp-2">{course.description}</p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full">{course.audience}</span>
-                  <span className="text-sm font-semibold" style={{ color: course.accentColor }}>
-                    +{course.totalXpReward} XP
-                  </span>
-                </div>
-                
-                {user ? (
-                  // Authenticated users - go to LMS
-                  <button 
-                    onClick={() => handleEnrollClick(course.id)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors"
-                  >
-                    Ver curso
-                  </button>
-                ) : (
-                  // Anonymous users - WhatsApp CTA
-                  <div className="space-y-2">
-                    <a
-                      href={`https://wa.me/5522992322566?text=Oi%20Matt!%20Tenho%20interesse%20no%20curso%20de%20${encodeURIComponent(course.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-medium py-2 rounded transition-colors inline-flex items-center justify-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-                      </svg>
-                      Quero começar
-                    </a>
-                    <button 
-                      onClick={() => handleEnrollClick(course.id)}
-                      className="w-full text-blue-600 hover:text-blue-700 font-medium py-1 text-sm transition-colors"
-                    >
-                      Ver detalhes
-                    </button>
+          {/* Course Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {courses.map((course) => {
+              const isEnrolled = enrollments.some(e => e.courseId === course.id);
+              
+              return (
+                <div
+                  key={course.id}
+                  className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                  onClick={() => handleEnrollClick(course.id)}
+                >
+                  {/* Photo Banner with Colored Overlay */}
+                  <div className="relative h-52 overflow-hidden">
+                    <img
+                      src={course.imageUrl}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div 
+                      className="absolute inset-0"
+                      style={{ backgroundColor: course.accentColor + '40' }}
+                    />
+                    {/* Emoji */}
+                    <div className="absolute bottom-4 left-4 text-4xl">
+                      {course.emoji}
+                    </div>
+                    {/* Tag Badge */}
+                    <div className="absolute top-4 right-4">
+                      <span 
+                        className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                        style={{ backgroundColor: course.accentColor }}
+                      >
+                        {course.tag}
+                      </span>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Card Body */}
+                  <div className="p-6">
+                    <h3 className="font-bold text-slate-900 mb-2 text-lg">
+                      {course.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                      {course.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                        {course.audience}
+                      </span>
+                      <span 
+                        className="text-sm font-semibold"
+                        style={{ color: course.accentColor }}
+                      >
+                        +{course.totalXpReward} XP
+                      </span>
+                    </div>
+
+                    {/* Lesson Count */}
+                    <div className="text-sm text-slate-500 mb-4">
+                      {course.lessons.length} aulas · Professor Matt
+                    </div>
+
+                    {/* CTA Button */}
+                    {user ? (
+                      // Authenticated users - go to LMS
+                      <button
+                        className="w-full py-3 rounded-lg font-medium transition-colors text-white"
+                        style={{ backgroundColor: course.accentColor }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = course.accentColor + 'DD';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = course.accentColor;
+                        }}
+                      >
+                        {isEnrolled ? 'Continuar' : 'Ver curso'}
+                      </button>
+                    ) : (
+                      // Anonymous users - WhatsApp CTA
+                      <div className="space-y-2">
+                        <a
+                          href={`https://wa.me/5522992322566?text=Oi%20Matt!%20Tenho%20interesse%20no%20curso%20de%20${encodeURIComponent(course.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-medium py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                          </svg>
+                          Quero começar
+                        </a>
+                        <button 
+                          onClick={() => handleEnrollClick(course.id)}
+                          className="w-full text-blue-600 hover:text-blue-700 font-medium py-2 text-sm transition-colors"
+                        >
+                          Ver detalhes
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           
           <div className="text-center mt-8">

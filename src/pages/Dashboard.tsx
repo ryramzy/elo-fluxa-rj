@@ -403,9 +403,30 @@ const Dashboard: React.FC = () => {
                   {/* Locked overlay for paid plans */}
                   {/* TODO: Add plan check logic here */}
                   
-                  {/* Taller banner */}
-                  <div className="h-24 flex items-center justify-center" style={{ backgroundColor: course.color }}>
-                    <span className="text-5xl">{course.emoji}</span>
+                  {/* Photo Banner with Colored Overlay */}
+                  <div className="relative h-32 overflow-hidden">
+                    <img
+                      src={course.imageUrl}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div 
+                      className="absolute inset-0"
+                      style={{ backgroundColor: course.accentColor + '40' }}
+                    />
+                    {/* Emoji */}
+                    <div className="absolute bottom-2 left-2 text-2xl">
+                      {course.emoji}
+                    </div>
+                    {/* Tag Badge */}
+                    <div className="absolute top-2 right-2">
+                      <span 
+                        className="px-2 py-1 rounded-full text-xs font-bold text-white"
+                        style={{ backgroundColor: course.accentColor }}
+                      >
+                        {course.tag}
+                      </span>
+                    </div>
                   </div>
                   
                   <div className="p-4">

@@ -8,12 +8,10 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
-import ProductGrid from './components/ProductGrid.tsx';
 import About from './components/About.tsx';
 import VideoGrid from './components/VideoGrid.tsx';
 import Booking from './components/Booking.tsx';
 import Footer from './src/components/Footer';
-import ProductDetail from './components/ProductDetail.tsx';
 import Journal from './components/Journal.tsx';
 import JournalDetail from './components/JournalDetail.tsx';
 import Testimonials from './components/Testimonials.tsx';
@@ -25,6 +23,7 @@ import { useToast } from './src/hooks/useToast';
 import Dashboard from './src/pages/Dashboard';
 import Admin from './src/pages/Admin';
 import CoursePage from './src/pages/CoursePage';
+import CoursesPage from './src/pages/CoursesPage';
 import LessonPage from './src/pages/LessonPage';
 import AdminStudentProfile from './src/pages/AdminStudentProfile';
 import Sobre from './src/pages/Sobre';
@@ -32,16 +31,6 @@ import Dicas from './src/pages/Dicas';
 import Videos from './src/pages/Videos';
 import NotFound from './src/pages/NotFound';
 
-const ProductDetailWrapper = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const product = location.state?.product;
-  if (!product) {
-    navigate(-1);
-    return null;
-  }
-  return <ProductDetail product={product} onBack={() => navigate(-1)} />;
-};
 
 const JournalDetailWrapper = () => {
   const location = useLocation();
@@ -115,9 +104,8 @@ function AppShell() {
           {/* Public routes */}
           <Route path="/" element={<About />} />
           <Route path="/sobre" element={<Sobre />} />
-          <Route path="/courses" element={<ProductGrid onProductClick={(p) => navigate('/product', { state: { product: p } })} />} />
-          <Route path="/product" element={<ProductDetailWrapper />} />
-          <Route path="/reviews" element={<Testimonials />} />
+          <Route path="/courses" element={<CoursesPage />} />
+                    <Route path="/reviews" element={<Testimonials />} />
           <Route path="/video" element={<VideoGrid />} />
           <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
           <Route path="/journal/article" element={<JournalDetailWrapper />} />

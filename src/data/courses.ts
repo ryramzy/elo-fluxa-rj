@@ -22,6 +22,7 @@ export interface Course {
   aboutText: string;
   whoThisIsFor: string;
   whatYouWillLearn: string[];
+  imageUrl: string;
 }
 
 export const courses: Course[] = [
@@ -29,6 +30,7 @@ export const courses: Course[] = [
     id: 'business-english',
     title: 'Business English — Entrevistas e Confiança',
     description: 'Comunicação profissional, entrevistas de emprego e confiança no ambiente corporativo.',
+    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -145,6 +147,7 @@ export const courses: Course[] = [
     emoji: '💼',
     tag: 'Pro',
     audience: 'Profissionais',
+    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80',
     aboutText: 'Master the language of American business with practical skills for interviews, meetings, and professional networking. This course focuses on real-world scenarios you\'ll encounter in corporate environments.',
     whoThisIsFor: 'Professionals seeking to work in American companies, advance their careers, or improve their business English confidence.',
     whatYouWillLearn: [
@@ -159,6 +162,7 @@ export const courses: Course[] = [
     id: 'sports-english',
     title: 'Sports English — Basquete e Futebol Americano',
     description: 'Gírias, regras, cultura e conversação do mundo dos esportes americanos.',
+    imageUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -271,6 +275,7 @@ export const courses: Course[] = [
     id: 'hiphop-culture',
     title: 'Hip Hop — Cultura e Inglês Americano',
     description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
+    imageUrl: 'https://images.unsplash.com/photo-1493225457124-a9333d879b1f?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -365,6 +370,7 @@ export const courses: Course[] = [
     id: 'medical-english',
     title: 'Medical English for Professionals',
     description: 'Vocabulário clínico e comunicação profissional para médicos e enfermeiros.',
+    imageUrl: 'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -513,6 +519,7 @@ export const courses: Course[] = [
     id: 'study-abroad',
     title: 'Study Abroad & Exam Prep',
     description: 'TOEFL, IELTS e inglês acadêmico para quem vai estudar fora do Brasil.',
+    imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -634,6 +641,7 @@ export const courses: Course[] = [
     id: 'law-enforcement',
     title: 'Law Enforcement Culture & English',
     description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
+    imageUrl: 'https://images.unsplash.com/photo-1605732562742-3023a888e56e?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -723,6 +731,7 @@ export const courses: Course[] = [
     emoji: '🚔',
     tag: 'New',
     audience: 'Segurança pública',
+    imageUrl: 'https://images.unsplash.com/photo-1605732562742-3023a888e56e?w=600&q=80',
     aboutText: 'Specialized English training for law enforcement professionals covering American police culture, legal terminology, and communication protocols essential for effective policing.',
     whoThisIsFor: 'Police officers, federal agents, and law enforcement professionals working with American systems or international cooperation.',
     whatYouWillLearn: [
