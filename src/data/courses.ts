@@ -147,7 +147,6 @@ export const courses: Course[] = [
     emoji: '💼',
     tag: 'Pro',
     audience: 'Profissionais',
-    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80',
     aboutText: 'Master the language of American business with practical skills for interviews, meetings, and professional networking. This course focuses on real-world scenarios you\'ll encounter in corporate environments.',
     whoThisIsFor: 'Professionals seeking to work in American companies, advance their careers, or improve their business English confidence.',
     whatYouWillLearn: [
@@ -275,7 +274,7 @@ export const courses: Course[] = [
     id: 'hiphop-culture',
     title: 'Hip Hop — Cultura e Inglês Americano',
     description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
-    imageUrl: 'https://images.unsplash.com/photo-1493225457124-a9333d879b1f?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1571609803939-54f463c9dc2d?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -519,7 +518,7 @@ export const courses: Course[] = [
     id: 'study-abroad',
     title: 'Study Abroad & Exam Prep',
     description: 'TOEFL, IELTS e inglês acadêmico para quem vai estudar fora do Brasil.',
-    imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -641,7 +640,7 @@ export const courses: Course[] = [
     id: 'law-enforcement',
     title: 'Law Enforcement Culture & English',
     description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
-    imageUrl: 'https://images.unsplash.com/photo-1605732562742-3023a888e56e?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1617575521317-d2974f3b56d2?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -731,7 +730,6 @@ export const courses: Course[] = [
     emoji: '🚔',
     tag: 'New',
     audience: 'Segurança pública',
-    imageUrl: 'https://images.unsplash.com/photo-1605732562742-3023a888e56e?w=600&q=80',
     aboutText: 'Specialized English training for law enforcement professionals covering American police culture, legal terminology, and communication protocols essential for effective policing.',
     whoThisIsFor: 'Police officers, federal agents, and law enforcement professionals working with American systems or international cooperation.',
     whatYouWillLearn: [
