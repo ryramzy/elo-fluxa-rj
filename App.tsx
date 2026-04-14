@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { DarkModeProvider } from './src/hooks/useDarkMode';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import About from './components/About.tsx';
@@ -177,7 +178,9 @@ export default function App() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <AppShell />
+      <DarkModeProvider>
+        <AppShell />
+      </DarkModeProvider>
     </GoogleOAuthProvider>
   );
 }

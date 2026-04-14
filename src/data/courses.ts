@@ -274,7 +274,7 @@ export const courses: Course[] = [
     id: 'hiphop-culture',
     title: 'Hip Hop — Cultura e Inglês Americano',
     description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
-    imageUrl: 'https://images.unsplash.com/photos/man-wearing-a-large-mushroom-hat-rapping-into-microphone-2B-km350_24?w=600&q=80',
+    imageUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzhiNWNmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+SGlwIEhvcDwvdGV4dD48L3N2Zz4='
     lessons: [
       {
         id: 'lesson-1',
@@ -640,7 +640,7 @@ export const courses: Course[] = [
     id: 'law-enforcement',
     title: 'Law Enforcement Culture & English',
     description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
-    imageUrl: 'https://images.unsplash.com/photos/police-dog-9k-unit-tactical-gear-cop-car-background-Udu9NgiNFk8?w=600&q=80',
+    imageUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzA1OTY2OSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+TGF3IEVuZm9yY2VtZW50PC90ZXh0Pjwvc3ZnPg=='}
     lessons: [
       {
         id: 'lesson-1',

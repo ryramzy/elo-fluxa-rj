@@ -218,13 +218,16 @@ export default function About() {
                       src={course.imageUrl}
                       alt={course.title}
                       className="w-full h-full object-cover"
+                      onLoad={(e) => {
+                        console.log('Image loaded successfully:', course.imageUrl);
+                      }}
                       onError={(e) => {
                         console.error('Image failed to load:', course.imageUrl, e);
                         e.target.style.display = 'none';
                       }}
                     />
                     <div 
-                      className="absolute inset-0"
+                      className="absolute inset-0 z-10"
                       style={{ backgroundColor: course.accentColor + '40' }}
                     />
                     {/* Emoji */}
