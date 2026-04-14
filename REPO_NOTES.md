@@ -52,6 +52,24 @@
 - Removed duplicate/stale hero copy from codebase
 - Translated course card descriptions and tags to PT
 - Fixed stuck loading spinner on "Quero começar" buttons
+
+---
+## [April 13, 2026] — Course Card Image Updates
+**Status:** completed
+
+### What changed
+- Hip Hop Culture: Updated to recording studio image (photo-1571609803939-54f463c9dc2d)
+- Study Abroad: Updated to female student studying image (photo-1523240795612-9a054b0db644)  
+- Law Enforcement: Updated to police officers with K9 image (photo-1617575521317-d2974f3b56d2)
+
+### Why
+- Previous images were generic and didn't match course themes
+- New images provide specific context for each course content
+- Professional appearance with better lighting and composition
+
+### Result
+All course cards now display more relevant imagery that better represents
+the specific content and themes of each course.
 - Replaced fake placeholder testimonials with honest
   "coming soon" messaging
 
