@@ -27,8 +27,8 @@ export interface Course {
 export const courses: Course[] = [
   {
     id: 'business-english',
-    title: 'Business English - Interviews & Confidence',
-    description: 'Master professional communication for corporate environments, job interviews, and workplace confidence.',
+    title: 'Business English — Entrevistas e Confiança',
+    description: 'Comunicação profissional, entrevistas de emprego e confiança no ambiente corporativo.',
     lessons: [
       {
         id: 'lesson-1',
@@ -144,7 +144,7 @@ export const courses: Course[] = [
     accentColor: '#185fa5',
     emoji: '💼',
     tag: 'Pro',
-    audience: 'Professionals',
+    audience: 'Profissionais',
     aboutText: 'Master the language of American business with practical skills for interviews, meetings, and professional networking. This course focuses on real-world scenarios you\'ll encounter in corporate environments.',
     whoThisIsFor: 'Professionals seeking to work in American companies, advance their careers, or improve their business English confidence.',
     whatYouWillLearn: [
@@ -157,8 +157,8 @@ export const courses: Course[] = [
   },
   {
     id: 'sports-english',
-    title: 'Sports English - Basketball & American Football',
-    description: 'Slang, rules, culture, and communication from courts and fields of America.',
+    title: 'Sports English — Basquete e Futebol Americano',
+    description: 'Gírias, regras, cultura e conversação do mundo dos esportes americanos.',
     lessons: [
       {
         id: 'lesson-1',
@@ -256,7 +256,7 @@ export const courses: Course[] = [
     accentColor: '#ba7517',
     emoji: '🏀',
     tag: 'Hot',
-    audience: 'Sports fans',
+    audience: 'Fãs de esportes',
     aboutText: 'Immerse yourself in American sports culture while learning the language of basketball and football. Perfect for fans who want to understand games, commentary, and fan conversations.',
     whoThisIsFor: 'Sports enthusiasts who want to understand American games, follow commentary, and discuss sports like a native fan.',
     whatYouWillLearn: [
@@ -269,8 +269,8 @@ export const courses: Course[] = [
   },
   {
     id: 'hiphop-culture',
-    title: 'Hip Hop Culture & American English',
-    description: 'From Bronx to Brazil - understand the language, history, and culture of hip hop.',
+    title: 'Hip Hop — Cultura e Inglês Americano',
+    description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
     lessons: [
       {
         id: 'lesson-1',
@@ -350,7 +350,7 @@ export const courses: Course[] = [
     accentColor: '#534ab7',
     emoji: '🎤',
     tag: 'New',
-    audience: 'Culture lovers',
+    audience: 'Amantes de cultura',
     aboutText: 'Dive deep into hip hop culture and its influence on American English. From the Bronx block parties to global dominance, understand the language that shaped modern American speech.',
     whoThisIsFor: 'Culture enthusiasts, music lovers, and anyone interested in understanding the cultural roots of modern American slang.',
     whatYouWillLearn: [
@@ -364,7 +364,7 @@ export const courses: Course[] = [
   {
     id: 'medical-english',
     title: 'Medical English for Professionals',
-    description: 'Clinical vocabulary, patient communication, and professional terminology for healthcare workers.',
+    description: 'Vocabulário clínico e comunicação profissional para médicos e enfermeiros.',
     lessons: [
       {
         id: 'lesson-1',
@@ -498,7 +498,7 @@ export const courses: Course[] = [
     accentColor: '#1d9e75',
     emoji: '🩺',
     tag: 'Pro',
-    audience: 'Medical professionals',
+    audience: 'Profissionais de saúde',
     aboutText: 'Comprehensive medical English training covering clinical vocabulary, patient communication, and professional healthcare terminology. Designed for medical professionals working in or with American healthcare systems.',
     whoThisIsFor: 'Doctors, nurses, and healthcare professionals who need to communicate effectively in English medical environments.',
     whatYouWillLearn: [
@@ -512,7 +512,7 @@ export const courses: Course[] = [
   {
     id: 'study-abroad',
     title: 'Study Abroad & Exam Prep',
-    description: 'TOEFL, IELTS, and real-world academic English for students going international.',
+    description: 'TOEFL, IELTS e inglês acadêmico para quem vai estudar fora do Brasil.',
     lessons: [
       {
         id: 'lesson-1',
@@ -619,7 +619,7 @@ export const courses: Course[] = [
     accentColor: '#d4537e',
     emoji: '🎓',
     tag: 'New',
-    audience: 'Students',
+    audience: 'Estudantes',
     aboutText: 'Comprehensive preparation for studying abroad with focus on TOEFL/IELTS exams and real-world academic English. Master the language skills needed for success in American universities.',
     whoThisIsFor: 'Students planning to study in the United States or needing to pass English proficiency exams for academic purposes.',
     whatYouWillLearn: [
@@ -633,7 +633,7 @@ export const courses: Course[] = [
   {
     id: 'law-enforcement',
     title: 'Law Enforcement Culture & English',
-    description: 'American law enforcement vocabulary, procedures, culture, and communication style.',
+    description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
     lessons: [
       {
         id: 'lesson-1',
@@ -722,7 +722,7 @@ export const courses: Course[] = [
     accentColor: '#888780',
     emoji: '🚔',
     tag: 'New',
-    audience: 'Law enforcement',
+    audience: 'Segurança pública',
     aboutText: 'Specialized English training for law enforcement professionals covering American police culture, legal terminology, and communication protocols essential for effective policing.',
     whoThisIsFor: 'Police officers, federal agents, and law enforcement professionals working with American systems or international cooperation.',
     whatYouWillLearn: [

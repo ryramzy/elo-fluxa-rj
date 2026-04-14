@@ -25,7 +25,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/agenda');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
     } finally {

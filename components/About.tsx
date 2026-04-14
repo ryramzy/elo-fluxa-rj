@@ -26,34 +26,7 @@ export default function About() {
 
   return (
     <div className="animate-fade-in-up">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-            De "I study English" para "I live in English"
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto">
-            Domine o inglês americano real com aulas ao vivo, cursos especializados, e um professor nativo que entende sua jornada.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => navigate('/', { state: { openAuthModal: true } })}
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
-            >
-              Criar conta grátis
-            </button>
-            <a
-              href="https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20interesse%20nas%20aulas%20de%20ingl%C3%AAs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors"
-            >
-              Falar com Matt
-            </a>
-          </div>
-        </div>
-      </section>
-
+      
       {/* Social Proof Bar */}
       <section className="bg-white py-8 px-6 border-b border-slate-200">
         <div className="max-w-6xl mx-auto">
@@ -275,7 +248,7 @@ export default function About() {
           
           <div className="text-center mt-8">
             <p className="text-sm text-slate-600">
-              Comece grátis - sem cartão de crédito necessário
+              Comece grátis - sem cartão de crédito
             </p>
           </div>
         </div>
@@ -457,69 +430,75 @@ export default function About() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-slate-50 rounded-lg p-6">
+            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  D
+                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-900">Dr. Carlos Silva</h4>
-                  <p className="text-sm text-slate-600">Médico, Hospital São Lucas</p>
+                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
+                  <p className="text-sm text-slate-500 italic">Primeiro aluno</p>
                 </div>
               </div>
               <div className="flex mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-700 italic">
-                "O curso de inglês médico mudou minha carreira. Consigo agora atender pacientes internacionais com confiança e participar de conferências mundiais."
+              <p className="text-slate-600 italic text-sm">
+                "Depoimento em breve - nossos primeiros alunos estão começando agora."
               </p>
             </div>
             
-            <div className="bg-slate-50 rounded-lg p-6">
+            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  M
+                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-900">Maria Oliveira</h4>
-                  <p className="text-sm text-slate-600">Advogada, Rio de Janeiro</p>
+                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
+                  <p className="text-sm text-slate-500 italic">Primeira aluna</p>
                 </div>
               </div>
               <div className="flex mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-700 italic">
-                "Finalmente entendo o basquete! As aulas de sports english me ajudaram a conversar com clientes americanos sobre NBA e NFL."
+              <p className="text-slate-600 italic text-sm">
+                "Depoimento em breve - nossos primeiros alunos estão começando agora."
               </p>
             </div>
             
-            <div className="bg-slate-50 rounded-lg p-6">
+            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  R
+                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-900">Roberto Santos</h4>
-                  <p className="text-sm text-slate-600">Estudante, MIT</p>
+                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
+                  <p className="text-sm text-slate-500 italic">Primeiro aluno</p>
                 </div>
               </div>
               <div className="flex mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-700 italic">
-                "O preparation course me ajudou a tirar 110 no TOEFL! Agora estou estudando em Boston com total confiança no meu inglês."
+              <p className="text-slate-600 italic text-sm">
+                "Depoimento em breve - nossos primeiros alunos estão começando agora."
               </p>
             </div>
           </div>
