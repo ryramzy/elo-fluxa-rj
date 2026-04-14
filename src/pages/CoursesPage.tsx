@@ -91,6 +91,10 @@ const Courses: React.FC = () => {
                     src={course.imageUrl}
                     alt={course.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error('Image failed to load:', course.imageUrl, e);
+                      e.target.style.display = 'none';
+                    }}
                   />
                   <div 
                     className="absolute inset-0"
