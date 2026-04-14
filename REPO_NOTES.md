@@ -425,3 +425,56 @@ the specific content and themes of each course.
 - Live URL: https://elo-matt-rj-17211915954.southamerica-east1.run.app
 - Firebase secrets now populated with correct values
 - Auth UI should load and Google OAuth should work
+
+---
+
+## [April 14, 2026] — Course Card Image Fix - Critical Issue
+
+**Status:** ✅ FIXED
+
+### What happened
+- Course card images not displaying due to broken Unsplash URLs returning binary data
+- Previous fixes only addressed landing page component, not data source
+- Build errors preventing Vercel deployment due to TypeScript syntax issues
+
+### Root cause analysis
+- Unsplash URLs in `src/data/courses.ts` were malformed/invalid
+- Missing commas after `imageUrl` properties causing TypeScript syntax errors
+- Both landing page (`About.tsx`) and course detail pages (`CoursesPage.tsx`) affected
+
+### Fix implemented
+1. **Data Source Fix**: Updated `src/data/courses.ts` with proper base64 SVG data URIs
+   - Hip Hop course: Purple SVG background (#8B5CF6) with "Hip Hop" text
+   - Law Enforcement course: Green SVG background (#059669) with "Law Enforcement" text
+   - Added missing commas after `imageUrl` properties to resolve syntax errors
+
+2. **Syntax Error Resolution**: Fixed TypeScript compilation errors
+   - Build now passes successfully: `✓ 108 modules transformed`
+   - Vercel deployment should work
+
+3. **Component Verification**: Confirmed both components use `course.imageUrl` correctly
+   - `About.tsx` (landing page): Line 218 - `<img src={course.imageUrl}>`
+   - `CoursesPage.tsx` (course detail): Line 91 - `<img src={course.imageUrl}>`
+
+### Technical benefits
+- No external dependency on image services
+- Guaranteed image loading regardless of network conditions  
+- Faster loading (self-contained data URIs)
+- Consistent visual appearance across all devices
+- No more 404 errors or broken image requests
+
+### Files modified
+- `src/data/courses.ts` - Fixed imageUrl properties and syntax
+- `docs/CHANGELOG.md` - Added comprehensive documentation
+- `docs/COURSE_CARD_IMAGE_FIX.md` - Technical details
+- `README.md` - Added Recent Important Fixes section
+
+### Build status
+- ✅ Local build: PASSED
+- ✅ Ready for Vercel deployment
+
+### Impact
+- Course cards now display proper images instead of emoji placeholders
+- Both landing page showcase and individual course pages work correctly
+- Improved user experience and visual consistency
+- Resolved critical build blocking issue
