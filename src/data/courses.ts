@@ -274,7 +274,7 @@ export const courses: Course[] = [
     id: 'hiphop-culture',
     title: 'Hip Hop — Cultura e Inglês Americano',
     description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
-    imageUrl: 'https://images.unsplash.com/photo-1571609803939-54f463c9dc2d?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photos/man-wearing-a-large-mushroom-hat-rapping-into-microphone-2B-km350_24?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
@@ -640,7 +640,7 @@ export const courses: Course[] = [
     id: 'law-enforcement',
     title: 'Law Enforcement Culture & English',
     description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
-    imageUrl: 'https://images.unsplash.com/photo-1617575521317-d2974f3b56d2?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photos/police-dog-9k-unit-tactical-gear-cop-car-background-Udu9NgiNFk8?w=600&q=80',
     lessons: [
       {
         id: 'lesson-1',
