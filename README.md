@@ -36,3 +36,27 @@ Inside `mcp_server/server.py` runs a FastMCP agent handling logic such as:
 - `register_carioca_student`
 - `list_available_slots` 
 - `create_lesson_event`
+
+## Recent Important Fixes
+
+### Course Card Image Loading Fix (2026-04-14)
+**Problem**: Hip Hop and Law Enforcement course cards displayed emoji placeholders instead of images due to broken Unsplash URLs returning binary data.
+
+**Solution**: Replaced external image URLs with self-contained base64 SVG data URIs:
+- Hip Hop course: Purple SVG background with "Hip Hop" text
+- Law Enforcement course: Green SVG background with "Law Enforcement" text
+- Added debugging with onLoad/onError handlers
+- Fixed CSS z-index layering for proper image visibility
+
+**Benefits**:
+- No external dependency on image services
+- Guaranteed image loading regardless of network conditions
+- Faster loading (no external HTTP requests)
+- Consistent visual appearance across all devices
+
+### Dark Mode Implementation (2026-04-14)
+- Added navbar dark mode toggle with sun/moon icons
+- Implemented React Context for state management
+- Added comprehensive CSS dark mode support
+- localStorage persistence for user preferences
+- System preference detection
