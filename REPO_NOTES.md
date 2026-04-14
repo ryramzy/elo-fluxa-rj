@@ -3,6 +3,41 @@
 > Updated automatically on every push.
 
 ---
+## [April 13, 2026] — Course Catalog Unification + Photo Cards
+**Status:** working
+
+### What changed
+- Deleted rogue course data (Rio Tech, Carioca, US Visa)
+  that was disconnected from the LMS course catalog
+- /courses page now renders all 6 courses from
+  src/data/courses.ts — single source of truth
+- Rich photo cards: Unsplash photos per course with
+  colored overlay, emoji, tag badge, progress bar
+- Landing page course showcase replaced: horizontal
+  scroll → clean 3-column responsive grid
+- Dashboard course cards upgraded with photo banners
+- All "Ver curso" buttons navigate to correct courseId
+
+### Why
+- /courses page was showing different courses than
+  the LMS, Firestore enrollments, and lesson content —
+  completely broken user journey
+- Photo cards make each course feel distinct and
+  premium vs generic emoji cards
+- Grid layout is more scannable than horizontal scroll
+  (especially on desktop)
+
+### Known issues
+- Unsplash photos are free tier — may need to replace
+  with owned photos when Matt has real course imagery
+- Filter pills are basic client-side filter only
+
+### Next steps
+- Add real course photography when available
+- Wire "Continuar" to resume at last completed lesson
+- Individual lesson pages content (real content from Matt)
+
+---
 ## [April 13, 2026] — Auth Redirect Fix + Landing Polish
 **Status:** fixed
 
