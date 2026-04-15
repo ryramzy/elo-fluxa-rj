@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive dark mode CSS styling for all components
 
 ### Fixed
+- **CRITICAL**: Dark mode conflict between Context API and useDarkMode hook - standardized on hook approach, removed Context implementation
+- Fixed Navbar.tsx useDarkMode import path (../src/hooks -> ../src/hooks)
+- Added FOUC prevention script to index.html
+- Added dark: Tailwind variants to all Navbar elements
+- Confirmed tailwind.config.js uses darkMode: 'class'
+- Dark mode toggle now visible on mobile
 - **CRITICAL**: Course card image loading issue for Hip Hop and Law Enforcement courses
 - Root cause: Unsplash URLs returning binary data instead of valid images
 - Solution: Replaced with self-contained base64 SVG data URIs

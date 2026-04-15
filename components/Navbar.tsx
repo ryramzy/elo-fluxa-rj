@@ -103,8 +103,8 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`, '_blank');
   };
 
-  const textColorClass = 'text-slate-900';
-  const logoColorClass = 'text-blue-600';
+  const textColorClass = 'text-slate-900 dark:text-slate-100';
+  const logoColorClass = 'text-blue-600 dark:text-blue-400';
 
   const linkBaseClasses =
     'hover:text-blue-500 transition-colors relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
@@ -122,7 +122,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
         </div>
       </div>
 
-      <nav className="fixed top-[29px] left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 backdrop-blur-md py-4 shadow-sm">
+      <nav className="fixed top-[29px] left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 dark:bg-slate-900/95 backdrop-blur-md py-4 shadow-sm dark:border-b dark:border-white/10">
         <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
@@ -172,7 +172,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             {/* Dark Mode Toggle Button */}
             <button 
               onClick={toggleDarkMode}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:scale-110 transition-all duration-200 hidden sm:block rounded-full hover:shadow-lg hover:shadow-slate-500/25"
+              className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:scale-110 transition-all duration-200 block rounded-full hover:shadow-lg hover:shadow-slate-500/25"
               aria-label="Toggle dark mode"
             >
               {isDarkMode ? (
@@ -228,7 +228,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 </button>
                 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
                     <a
                       href="/dashboard"
                       onClick={(e) => {
@@ -236,13 +236,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                         navigate('/dashboard');
                         setUserDropdownOpen(false);
                       }}
-                      className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                      className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                     >
                       Meu painel
                     </a>
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                     >
                       Sair
                     </button>
@@ -262,10 +262,10 @@ export default function Navbar({ onNavClick }: NavbarProps) {
         </div>
       </nav>
 
-      <div className={`fixed inset-0 bg-white z-40 flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
+      <div className={`fixed inset-0 bg-white dark:bg-slate-900 z-40 flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
           mobileMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
-          <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-slate-900">
+          <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-slate-900 dark:text-slate-100">
             {user && (
               <>
                 <a
