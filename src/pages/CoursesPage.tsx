@@ -48,10 +48,10 @@ const Courses: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
             Todos os Cursos
           </h1>
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto">
             Escolha seu caminho e comece a falar inglês americano de verdade
           </p>
           
@@ -64,7 +64,7 @@ const Courses: React.FC = () => {
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedFilter === filter
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                 }`}
               >
                 {filter}
@@ -82,7 +82,7 @@ const Courses: React.FC = () => {
             return (
               <div
                 key={course.id}
-                className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                className="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                 onClick={() => handleEnrollClick(course.id)}
               >
                 {/* Photo Banner with Colored Overlay */}
@@ -117,15 +117,15 @@ const Courses: React.FC = () => {
 
                 {/* Card Body */}
                 <div className="p-6">
-                  <h3 className="font-bold text-slate-900 mb-2 text-lg">
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2 text-lg">
                     {course.title}
                   </h3>
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">
                     {course.description}
                   </p>
                   
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                    <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
                       {course.audience}
                     </span>
                     <span 
@@ -137,18 +137,18 @@ const Courses: React.FC = () => {
                   </div>
 
                   {/* Lesson Count */}
-                  <div className="text-sm text-slate-500 mb-4">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                     {course.lessons.length} aulas · Professor Matt
                   </div>
 
                   {/* Progress Bar (if enrolled) */}
                   {isEnrolled && (
                     <div className="mb-4">
-                      <div className="flex justify-between text-xs text-slate-600 mb-1">
+                      <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300 mb-1">
                         <span>Progresso</span>
                         <span>{progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                         <div 
                           className="h-2 rounded-full transition-all duration-300"
                           style={{ 

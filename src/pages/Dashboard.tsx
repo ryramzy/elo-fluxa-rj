@@ -217,16 +217,16 @@ const Dashboard: React.FC = () => {
 
   if (profileLoading || enrollmentsLoading || bookingsLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-slate-600">Loading dashboard...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* TOP BAR */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4">
+      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-serif font-bold text-blue-600">Elo Matt!</span>
@@ -305,7 +305,7 @@ const Dashboard: React.FC = () => {
 
         {/* STATS ROW */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-[#faeeda] p-6 rounded-lg border border-amber-200 relative overflow-hidden">
+          <div className="bg-[#faeeda] dark:bg-amber-900/20 p-6 rounded-lg border border-amber-200 dark:border-amber-800 relative overflow-hidden">
             <div className="flex items-center justify-between relative z-10">
               <div>
                 <p className="text-sm text-amber-700 mb-1">Total XP</p>
@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
               return (
                 <div 
                   key={course.id}
-                  className="bg-white rounded-lg border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer relative"
+                  className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer relative"
                   onClick={() => {
                     // Placeholder navigation
                     console.log('Navigate to course:', course.id);
@@ -437,7 +437,7 @@ const Dashboard: React.FC = () => {
                     
                     {/* Audience tag */}
                     <div className="mb-3">
-                      <span className="inline-block px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">
+                      <span className="inline-block px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-full">
                         {course.audience}
                       </span>
                     </div>
