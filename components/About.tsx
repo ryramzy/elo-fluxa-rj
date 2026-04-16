@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courses } from '../src/data/courses';
 import { useAuth } from '../hooks/useAuth';
@@ -14,6 +14,13 @@ export default function About() {
   const { user } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
   const [linkCopied, setLinkCopied] = useState(false);
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleShareClick = () => {
     const url = window.location.href;
@@ -50,6 +57,7 @@ export default function About() {
       </section>
 
       {/* Pain-Benefit Section */}
+      {!user && (
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -190,6 +198,7 @@ export default function About() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Course Showcase */}
       <section className="py-20 px-6 bg-slate-50">
