@@ -4,9 +4,15 @@
   "description": "Inglês Americano de Verdade no Rio de Janeiro",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#185fa5",
-  "theme_color": "#185fa5",
+  "orientation": "portrait",
+  "background_color": "#111111",
+  "theme_color": "#111111",
   "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
