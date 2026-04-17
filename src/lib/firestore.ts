@@ -1,22 +1,12 @@
 import { 
   collection, 
   doc, 
-  getDoc, 
-  getDocs, 
-  addDoc, 
+  setDoc, 
   updateDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  Timestamp,
   serverTimestamp,
   getFirestore 
 } from 'firebase/firestore';
-import { auth } from '../../firebase';
-
-// Initialize Firestore
-const db = getFirestore();
+import { auth, db } from './firebase';
 
 // Types
 export interface UserProfile {
