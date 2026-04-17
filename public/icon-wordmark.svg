@@ -2,11 +2,11 @@
   <rect width="512" height="512" rx="96" fill="#111111"/>
   <text
     x="256" y="296"
-    font-family="'Arial Black', 'Helvetica Neue', sans-serif"
-    font-weight="900"
-    font-size="148"
+    font-family="'Plus Jakarta Sans', sans-serif"
+    font-weight="700"
+    font-size="144"
     fill="#5BA4F5"
     text-anchor="middle"
-    letter-spacing="-4"
+    letter-spacing="-2"
   >Elo!</text>
 </svg>
