@@ -1,0 +1,217 @@
+/* Elo! Brand System - Base Styles */
+
+:root {
+  /* Colors */
+  --elo-black: #111111;
+  --elo-blue: #5BA4F5;
+  --elo-green: #22C55E;
+  --elo-yellow: #FACC15;
+  --elo-white: #FFFFFF;
+  --elo-gray-50: #F8F9FA;
+  --elo-gray-100: #E5E7EB;
+  --elo-gray-200: #D1D5DB;
+  --elo-gray-300: #9CA3AF;
+  --elo-gray-400: #6B7280;
+  --elo-gray-500: #374151;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Spacing (4px base unit) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+/* Base Typography */
+body {
+  font-family: var(--font-body);
+  color: var(--elo-gray-500);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--elo-gray-500);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+/* Component Base Styles */
+.elo-button {
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.elo-button--primary {
+  background-color: var(--elo-blue);
+  color: var(--elo-white);
+}
+
+.elo-button--primary:hover {
+  background-color: var(--elo-blue);
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.elo-button--secondary {
+  background-color: transparent;
+  color: var(--elo-blue);
+  border: 2px solid var(--elo-blue);
+}
+
+.elo-button--secondary:hover {
+  background-color: var(--elo-blue);
+  color: var(--elo-white);
+}
+
+.elo-button--success {
+  background-color: var(--elo-green);
+  color: var(--elo-white);
+}
+
+.elo-card {
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  background-color: var(--elo-gray-50);
+  border: 1px solid var(--elo-gray-100);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.elo-input {
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--elo-gray-100);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  background-color: var(--elo-white);
+}
+
+.elo-input:focus {
+  outline: none;
+  border-color: var(--elo-blue);
+  box-shadow: 0 0 0 3px rgba(91, 164, 245, 0.1);
+}
+
+.elo-input::placeholder {
+  color: var(--elo-gray-300);
+}
+
+/* Logo Usage Guidelines */
+.elo-logo-wordmark {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--elo-blue);
+  letter-spacing: -0.05em;
+}
+
+.elo-logo-mark {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--elo-blue);
+}
+
+/* Spacing Utilities */
+.space-1 { margin: var(--space-1); }
+.space-2 { margin: var(--space-2); }
+.space-3 { margin: var(--space-3); }
+.space-4 { margin: var(--space-4); }
+.space-6 { margin: var(--space-6); }
+.space-8 { margin: var(--space-8); }
+
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+/* Color Utilities */
+.text-elo-blue { color: var(--elo-blue); }
+.text-elo-green { color: var(--elo-green); }
+.text-elo-yellow { color: var(--elo-yellow); }
+.text-elo-gray-400 { color: var(--elo-gray-400); }
+.text-elo-gray-500 { color: var(--elo-gray-500); }
+
+.bg-elo-blue { background-color: var(--elo-blue); }
+.bg-elo-green { background-color: var(--elo-green); }
+.bg-elo-yellow { background-color: var(--elo-yellow); }
+.bg-elo-gray-50 { background-color: var(--elo-gray-50); }
+.bg-elo-gray-100 { background-color: var(--elo-gray-100); }
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --elo-gray-50: #1F2937;
+    --elo-gray-100: #374151;
+    --elo-gray-200: #4B5563;
+    --elo-gray-300: #6B7280;
+    --elo-gray-400: #9CA3AF;
+    --elo-gray-500: #D1D5DB;
+  }
+}
+
+.dark .elo-card {
+  background-color: var(--elo-gray-50);
+  border-color: var(--elo-gray-100);
+}
+
+.dark .elo-input {
+  background-color: var(--elo-gray-100);
+  color: var(--elo-gray-500);
+  border-color: var(--elo-gray-200);
+}
+
+.dark body {
+  background-color: var(--elo-black);
+  color: var(--elo-gray-500);
+}
