@@ -1,13 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="6" fill="#111111"/>
-  <text
-    x="12" y="24"
-    font-family="'Plus Jakarta Sans', sans-serif"
-    font-weight="800"
-    font-size="20"
-    fill="#5BA4F5"
-    text-anchor="middle"
-  >E</text>
-  <!-- Exclamation dot - tighter spacing with E, more intentional -->
+  <!-- Custom E with subtle design refinements -->
+  <g transform="translate(6, 8)">
+    <!-- Top bar with slight curve -->
+    <path d="M 2 0 Q 2 0.5 2.5 0.5 L 13.5 0.5 Q 14 0.5 14 1 L 14 3 Q 14 3.5 13.5 3.5 L 2.5 3.5 Q 2 3.5 2 3 Z" 
+          fill="#5BA4F5" />
+    <!-- Middle bar - shorter, unique proportion -->
+    <path d="M 2 6 Q 2 6.5 2.5 6.5 L 10.5 6.5 Q 11 6.5 11 7 L 11 9 Q 11 9.5 10.5 9.5 L 2.5 9.5 Q 2 9.5 2 9 Z" 
+          fill="#5BA4F5" />
+    <!-- Bottom bar with rounded ends -->
+    <path d="M 2 12 Q 2 12.5 2.5 12.5 L 13.5 12.5 Q 14 12.5 14 13 L 14 15 Q 14 15.5 13.5 15.5 L 2.5 15.5 Q 2 15.5 2 15 Z" 
+          fill="#5BA4F5" />
+  </g>
+  <!-- Exclamation dot - aligned and purposeful -->
   <circle cx="22" cy="8" r="2.5" fill="#5BA4F5"/>
 </svg>
