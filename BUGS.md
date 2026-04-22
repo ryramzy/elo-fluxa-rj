@@ -6,13 +6,12 @@
 - [FIXED] useBookings hook wired to real Firestore functions
 - [FIXED] Created missing useAuth hook for authentication
 - [FIXED] Fixed import conflicts between Booking interfaces
-
-## MEDIUM - PENDING TONIGHT
-- [OPEN] Google Calendar API integration - stubs ready in 
-  src/lib/googleCalendar.ts | googleCalendar.ts + /api/ | HIGH
-- [OPEN] Auto-generate Google Meet links on booking confirmation
+- [FIXED] Google Calendar API integration complete with /api/calendar/create-event
+- [FIXED] Google Meet link generation working on booking confirmation
+- [FIXED] Booking cancellation with Calendar event cleanup
+- [FIXED] AgendaPage UI with cancel buttons and confirmation dialogs
 
 ## LOW - BACKLOG
-- [OPEN] Add booking cancellation UI in AgendaPage
 - [OPEN] Add booking reminders/notifications
 - [OPEN] Add timezone handling for international users
+- [OPEN] Add booking analytics dashboard for Matt

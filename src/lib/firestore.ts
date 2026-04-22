@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { TimeSlot, Booking } from '../types';
+import { createCalendarEvent, cancelCalendarEvent } from './googleCalendar';
 
 // Types
 export interface UserProfile {
@@ -467,22 +468,46 @@ export async function bookSlot(
   userEmail: string,
   notes?: string
 ): Promise<string> {
+  // Get slot data first
+  const slotRef = doc(db, 'slots', slotId);
+  const slotSnap = await getDoc(slotRef);
+  if (!slotSnap.exists()) {
+    throw new Error('Slot not found');
+  }
+  
+  const slotData = slotSnap.data() as TimeSlot;
+  
+  // Create Google Calendar event
+  const startDateTime = `${slotData.date}T${slotData.time}:00-03:00`;
+  const endDateTime = new Date(startDateTime);
+  endDateTime.setMinutes(endDateTime.getMinutes() + slotData.duration);
+  
+  const calendarEvent = {
+    summary: `Aula de Inglês - ${userName}`,
+    description: `Aula particular de inglês com Elo Matt\n\nAluno: ${userName}\nEmail: ${userEmail}\n${notes ? `Notas: ${notes}` : ''}`,
+    startDateTime,
+    endDateTime: endDateTime.toISOString(),
+    attendeeEmail: userEmail,
+    attendeeName: userName,
+  };
+
+  const { eventId, meetLink, htmlLink } = await createCalendarEvent(calendarEvent);
+
+  // Now update Firestore with calendar info
   const batch = writeBatch(db);
   
   // Mark slot as unavailable
-  const slotRef = doc(db, 'slots', slotId);
   batch.update(slotRef, {
     available: false,
     bookedBy: userId,
     bookedByName: userName,
+    googleEventId: eventId,
+    meetLink,
     updatedAt: serverTimestamp(),
   });
 
   // Create booking record
   const bookingRef = doc(collection(db, 'bookings'));
-  const slot = await getDoc(slotRef);
-  const slotData = slot.data() as TimeSlot;
-  
   batch.set(bookingRef, {
     userId,
     userName,
@@ -492,8 +517,8 @@ export async function bookSlot(
     time: slotData.time,
     duration: slotData.duration,
     status: 'confirmed',
-    googleEventId: null,  // will be filled by Google Calendar tonight
-    meetLink: null,       // will be filled by Google Calendar tonight
+    googleEventId: eventId,
+    meetLink,
     notes: notes || '',
     createdAt: serverTimestamp(),
   });
@@ -507,6 +532,25 @@ export async function cancelBooking(
   bookingId: string,
   slotId: string
 ): Promise<void> {
+  // Get booking data to get Google Calendar event ID
+  const bookingDoc = await getDoc(doc(db, 'bookings', bookingId));
+  if (!bookingDoc.exists()) {
+    throw new Error('Booking not found');
+  }
+  
+  const bookingData = bookingDoc.data() as Booking;
+  
+  // Cancel Google Calendar event if it exists
+  if (bookingData.googleEventId) {
+    try {
+      await cancelCalendarEvent(bookingData.googleEventId);
+    } catch (error) {
+      console.error('Failed to cancel calendar event:', error);
+      // Continue with Firestore update even if calendar cancellation fails
+    }
+  }
+
+  // Update Firestore
   const batch = writeBatch(db);
   batch.update(doc(db, 'bookings', bookingId), {
     status: 'cancelled',
@@ -516,6 +560,8 @@ export async function cancelBooking(
     available: true,
     bookedBy: null,
     bookedByName: null,
+    googleEventId: null,
+    meetLink: null,
     updatedAt: serverTimestamp(),
   });
   await batch.commit();

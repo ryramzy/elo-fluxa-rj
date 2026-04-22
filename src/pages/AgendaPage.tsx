@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { getAvailableSlots, bookSlot, getUserBookings } 
+import { getAvailableSlots, bookSlot, getUserBookings, cancelBooking } 
   from '../lib/firestore';
 import { TimeSlot, Booking } from '../types';
 
@@ -65,6 +65,22 @@ const AgendaPage = () => {
       console.error('Booking error:', err);
     } finally {
       setBooking(false);
+    }
+  };
+
+  const handleCancel = async (booking: Booking) => {
+    if (!user || !window.confirm('Tem certeza que deseja cancelar esta aula?')) {
+      return;
+    }
+    
+    try {
+      await cancelBooking(booking.id, booking.slotId);
+      // Reload bookings
+      const updated = await getUserBookings(user.uid);
+      setMyBookings(updated);
+    } catch (err) {
+      console.error('Cancellation error:', err);
+      alert('Erro ao cancelar aula. Tente novamente.');
     }
   };
 
@@ -259,12 +275,24 @@ const AgendaPage = () => {
                         </p>
                       )}
                     </div>
-                    <span className="px-3 py-1 rounded-full text-xs 
-                                     font-medium bg-green-100 
-                                     text-green-700 dark:bg-green-900 
-                                     dark:text-green-300">
-                      Confirmada
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full text-xs 
+                                       font-medium bg-green-100 
+                                       text-green-700 dark:bg-green-900 
+                                       dark:text-green-300">
+                        Confirmada
+                      </span>
+                      <button
+                        onClick={() => handleCancel(booking)}
+                        className="px-3 py-1 rounded-full text-xs 
+                                         font-medium bg-red-100 
+                                         text-red-700 dark:bg-red-900 
+                                         dark:text-red-300 hover:bg-red-200 
+                                         dark:hover:bg-red-800 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
                   </div>
                   {booking.notes && (
                     <p className="text-sm text-slate-500 

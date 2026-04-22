@@ -10,19 +10,41 @@ export interface CalendarEvent {
   attendeeName: string;
 }
 
-// TODO tonight: implement with Google Calendar API
+// Google Calendar API integration
 export async function createCalendarEvent(
   event: CalendarEvent
-): Promise<{ eventId: string; meetLink: string }> {
-  // Will call: POST /api/calendar/create-event
-  throw new Error('Google Calendar not configured yet');
+): Promise<{ eventId: string; meetLink: string; htmlLink: string }> {
+  const response = await fetch('/api/calendar/create-event', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(event),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to create calendar event');
+  }
+
+  return response.json();
 }
 
 export async function cancelCalendarEvent(
   eventId: string
 ): Promise<void> {
-  // Will call: POST /api/calendar/cancel-event
-  throw new Error('Google Calendar not configured yet');
+  const response = await fetch('/api/calendar/cancel-event', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ eventId }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to cancel calendar event');
+  }
 }
 
 // Vercel API route stub - create /api/calendar/create-event.ts tonight
