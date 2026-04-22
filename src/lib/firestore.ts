@@ -4,9 +4,19 @@ import {
   setDoc, 
   updateDoc, 
   serverTimestamp,
-  getFirestore 
+  getFirestore,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  getDoc,
+  writeBatch,
+  addDoc,
+  Timestamp,
+  limit
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { TimeSlot, Booking } from '../types';
 
 // Types
 export interface UserProfile {
@@ -34,7 +44,7 @@ export interface Enrollment {
   xpEarned: number;
 }
 
-export interface Booking {
+export interface LegacyBooking {
   uid: string;
   studentName: string;
   studentEmail: string;
@@ -111,7 +121,7 @@ export async function getUserEnrollments(uid: string): Promise<Enrollment[]> {
   }
 }
 
-export async function getUpcomingBookings(uid: string): Promise<Booking[]> {
+export async function getUpcomingBookings(uid: string): Promise<LegacyBooking[]> {
   try {
     const now = new Date();
     const bookingsQuery = query(
@@ -133,7 +143,7 @@ export async function getUpcomingBookings(uid: string): Promise<Booking[]> {
       calendarEventId: doc.data().calendarEventId,
       createdAt: doc.data().createdAt,
       id: doc.id
-    } as Booking));
+    } as LegacyBooking));
   } catch (error) {
     console.error('Error getting upcoming bookings:', error);
     throw error;
@@ -224,7 +234,7 @@ export async function getAllUsers(): Promise<UserProfile[]> {
   }
 }
 
-export async function getAllBookings(): Promise<(Booking & { uid: string })[]> {
+export async function getAllBookings(): Promise<(LegacyBooking & { uid: string })[]> {
   try {
     const bookingsQuery = query(
       collection(db, 'bookings'),
@@ -235,7 +245,7 @@ export async function getAllBookings(): Promise<(Booking & { uid: string })[]> {
     const bookings = querySnapshot.docs.map(doc => ({
       ...doc.data(),
       uid: doc.id
-    } as Booking & { uid: string }));
+    } as LegacyBooking & { uid: string }));
 
     // Join with user data
     const bookingsWithUserDetails = await Promise.all(
@@ -432,6 +442,97 @@ export async function resetMonthlyBookingCount(uid: string): Promise<void> {
     console.error('Error resetting booking count:', error);
     throw error;
   }
+}
+
+// Get available slots for a given week
+export async function getAvailableSlots(
+  weekStart: string
+): Promise<TimeSlot[]> {
+  const q = query(
+    collection(db, 'slots'),
+    where('date', '>=', weekStart),
+    where('available', '==', true),
+    orderBy('date'),
+    orderBy('time')
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as TimeSlot));
+}
+
+// Book a slot
+export async function bookSlot(
+  slotId: string,
+  userId: string,
+  userName: string,
+  userEmail: string,
+  notes?: string
+): Promise<string> {
+  const batch = writeBatch(db);
+  
+  // Mark slot as unavailable
+  const slotRef = doc(db, 'slots', slotId);
+  batch.update(slotRef, {
+    available: false,
+    bookedBy: userId,
+    bookedByName: userName,
+    updatedAt: serverTimestamp(),
+  });
+
+  // Create booking record
+  const bookingRef = doc(collection(db, 'bookings'));
+  const slot = await getDoc(slotRef);
+  const slotData = slot.data() as TimeSlot;
+  
+  batch.set(bookingRef, {
+    userId,
+    userName,
+    userEmail,
+    slotId,
+    date: slotData.date,
+    time: slotData.time,
+    duration: slotData.duration,
+    status: 'confirmed',
+    googleEventId: null,  // will be filled by Google Calendar tonight
+    meetLink: null,       // will be filled by Google Calendar tonight
+    notes: notes || '',
+    createdAt: serverTimestamp(),
+  });
+
+  await batch.commit();
+  return bookingRef.id;
+}
+
+// Cancel a booking
+export async function cancelBooking(
+  bookingId: string,
+  slotId: string
+): Promise<void> {
+  const batch = writeBatch(db);
+  batch.update(doc(db, 'bookings', bookingId), {
+    status: 'cancelled',
+    updatedAt: serverTimestamp(),
+  });
+  batch.update(doc(db, 'slots', slotId), {
+    available: true,
+    bookedBy: null,
+    bookedByName: null,
+    updatedAt: serverTimestamp(),
+  });
+  await batch.commit();
+}
+
+// Get user's bookings
+export async function getUserBookings(
+  userId: string
+): Promise<Booking[]> {
+  const q = query(
+    collection(db, 'bookings'),
+    where('userId', '==', userId),
+    where('status', '==', 'confirmed'),
+    orderBy('date')
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
 }
 
 // Export db for use in hooks
