@@ -309,25 +309,25 @@ export async function getAllEnrollments(): Promise<{ courseId: string; uid: stri
   }
 }
 
-// Available slots functions
-export async function getAvailableSlots(): Promise<(AvailableSlot & { id: string })[]> {
-  try {
-    const slotsQuery = query(
-      collection(db, 'availableSlots'),
-      where('status', '==', 'open'),
-      orderBy('datetime', 'asc')
-    );
-    const querySnapshot = await getDocs(slotsQuery);
-    
-    return querySnapshot.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id
-    } as AvailableSlot & { id: string }));
-  } catch (error) {
-    console.error('Error getting available slots:', error);
-    throw error;
-  }
-}
+// Available slots functions (legacy - replaced by TimeSlot-based getAvailableSlots below)
+// export async function getAvailableSlots(): Promise<(AvailableSlot & { id: string })[]> {
+//   try {
+//     const slotsQuery = query(
+//       collection(db, 'availableSlots'),
+//       where('status', '==', 'open'),
+//       orderBy('datetime', 'asc')
+//     );
+//     const querySnapshot = await getDocs(slotsQuery);
+//     
+//     return querySnapshot.docs.map(doc => ({
+//       ...doc.data(),
+//       id: doc.id
+//     } as AvailableSlot & { id: string }));
+//   } catch (error) {
+//     console.error('Error getting available slots:', error);
+//     throw error;
+//   }
+// }
 
 export async function createAvailableSlot(datetime: Date): Promise<string> {
   try {
