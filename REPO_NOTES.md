@@ -2,6 +2,44 @@
 > Running log of all changes, decisions, and next steps.
 > Updated automatically on every push.
 
+## Infrastructure Overview
+
+### Domain
+- **Production**: https://elospeak.com.br
+- **Vercel preview**: elo-fluxa-rj.vercel.app (keep for staging)
+
+### Email
+- **Provider**: Resend
+- **Domain**: elospeak.com.br (SPF + DKIM + DMARC configured)
+- **From**: noreply@elospeak.com.br
+- **Reply-to**: matt@elospeak.com.br
+- **Templates**: /api/email/
+  - booking-confirmation.ts
+  - welcome.ts
+  - lesson-reminder.ts (cron: hourly)
+
+### GCP Project
+- **Project**: elo-matt-prod
+- **Service Account**: elo-matt-calendar-service
+- **APIs enabled**: Calendar, Gmail, Meet
+- **OAuth Client**: Elo Matt Web
+
+### Environment Variables (Vercel)
+```
+RESEND_API_KEY=                    # Resend dashboard
+GOOGLE_SERVICE_ACCOUNT_KEY=        # GCP Service Account JSON key
+GOOGLE_CALENDAR_ID=                # matt@elospeak.com.br
+MATT_EMAIL=                        # matt@elospeak.com.br
+VITE_GOOGLE_CLIENT_ID=             # GCP OAuth 2.0 Client
+GOOGLE_CLIENT_SECRET=              # GCP OAuth 2.0 Client
+VITE_FIREBASE_API_KEY=             # Firebase Console
+VITE_FIREBASE_AUTH_DOMAIN=         # elospeak.com.br
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
 ---
 ## [April 13, 2026] — Course Catalog Unification + Photo Cards
 **Status:** working
