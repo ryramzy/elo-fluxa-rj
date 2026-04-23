@@ -445,6 +445,26 @@ export async function resetMonthlyBookingCount(uid: string): Promise<void> {
   }
 }
 
+// Create a new time slot
+export async function createTimeSlot(
+  date: string,
+  time: string,
+  duration: number = 60
+): Promise<string> {
+  const slotData = {
+    date,
+    time,
+    duration,
+    available: true,
+    status: 'available' as const,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  const docRef = await addDoc(collection(db, 'slots'), slotData);
+  return docRef.id;
+}
+
 // Get available slots for a given date range
 export async function getAvailableSlots(
   from: string,

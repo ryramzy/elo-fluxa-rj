@@ -8,9 +8,8 @@ import {
   getAllBookings, 
   updateBookingStatus, 
   getAllEnrollments,
-  createAvailableSlot,
+  createTimeSlot,
   getAvailableSlots,
-  bookAvailableSlot,
   updateUserPlan
 } from '../lib/firestore';
 import { courses } from '../data/courses';
@@ -32,6 +31,7 @@ const Admin: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddSlot, setShowAddSlot] = useState(false);
   const [newSlotDate, setNewSlotDate] = useState('');
+  const [newSlotTime, setNewSlotTime] = useState('');
   
   // Lead management state
   const [leads, setLeads] = useState<any[]>([]);
@@ -86,15 +86,51 @@ const Admin: React.FC = () => {
   };
 
   const handleAddSlot = async () => {
-    if (!newSlotDate) return;
+    if (!newSlotDate || !newSlotTime) return;
     
     try {
-      await createAvailableSlot(new Date(newSlotDate));
+      await createTimeSlot(newSlotDate, newSlotTime);
       setNewSlotDate('');
+      setNewSlotTime('');
       setShowAddSlot(false);
       loadData(); // Reload slots
     } catch (error) {
       console.error('Error adding slot:', error);
+    }
+  };
+
+  // Add sample slots for testing
+  const handleAddSampleSlots = async () => {
+    const sampleSlots = [
+      // Today
+      { date: '2026-04-23', time: '09:00', duration: 60 },
+      { date: '2026-04-23', time: '10:30', duration: 60 },
+      { date: '2026-04-23', time: '14:00', duration: 60 },
+      { date: '2026-04-23', time: '15:30', duration: 60 },
+      // Tomorrow
+      { date: '2026-04-24', time: '09:00', duration: 60 },
+      { date: '2026-04-24', time: '10:30', duration: 60 },
+      { date: '2026-04-24', time: '14:00', duration: 60 },
+      { date: '2026-04-24', time: '16:00', duration: 60 },
+      // Next week
+      { date: '2026-04-28', time: '09:00', duration: 60 },
+      { date: '2026-04-28', time: '10:30', duration: 60 },
+      { date: '2026-04-28', time: '14:00', duration: 60 },
+      { date: '2026-04-29', time: '09:00', duration: 60 },
+      { date: '2026-04-29', time: '11:00', duration: 60 },
+      { date: '2026-04-29', time: '14:00', duration: 60 },
+      { date: '2026-04-29', time: '15:30', duration: 60 },
+    ];
+
+    try {
+      console.log('Adding sample slots...');
+      for (const slot of sampleSlots) {
+        await createTimeSlot(slot.date, slot.time, slot.duration);
+      }
+      console.log('Sample slots added successfully!');
+      loadData(); // Reload slots
+    } catch (error) {
+      console.error('Error adding sample slots:', error);
     }
   };
 
@@ -755,10 +791,16 @@ const Admin: React.FC = () => {
                 Add Available Slot
               </button>
               <button
+                onClick={handleAddSampleSlots}
+                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+              >
+                Add Sample Slots (Testing)
+              </button>
+              <button
                 onClick={handleExportCSV}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
               >
-                Export Bookings CSV
+                Export CSV
               </button>
               <button
                 onClick={() => navigate('/admin/announcements')}
@@ -773,10 +815,18 @@ const Admin: React.FC = () => {
                 <h4 className="font-medium text-slate-900 mb-3">Add Available Slot</h4>
                 <div className="flex gap-3">
                   <input
-                    type="datetime-local"
+                    type="date"
                     value={newSlotDate}
                     onChange={(e) => setNewSlotDate(e.target.value)}
                     className="flex-1 px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                    placeholder="Date"
+                  />
+                  <input
+                    type="time"
+                    value={newSlotTime}
+                    onChange={(e) => setNewSlotTime(e.target.value)}
+                    className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                    placeholder="Time"
                   />
                   <button
                     onClick={handleAddSlot}
