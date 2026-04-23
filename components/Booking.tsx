@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { trackEvent } from '../services/trackingService.ts';
 import { useAuth } from '../hooks/useAuth';
-import SlotPicker from './Calendar/SlotPicker.tsx';
 
 const Booking: React.FC = () => {
   const [showSlots, setShowSlots] = useState(false);
@@ -109,10 +108,7 @@ const Booking: React.FC = () => {
         Agendamento 100% online com confirmação instantânea.
       </p>
 
-      <div className="mt-16 pt-16 border-t border-slate-100 text-left max-w-3xl mx-auto">
-        <SlotPicker />
-      </div>
-    </div>
+          </div>
   );
 };
 

@@ -26,6 +26,7 @@ import CoursePage from './src/pages/CoursePage';
 import CoursesPage from './src/pages/CoursesPage';
 import LessonPage from './src/pages/LessonPage';
 import AdminStudentProfile from './src/pages/AdminStudentProfile';
+import AgendaPage from './src/pages/AgendaPage';
 import Sobre from './src/pages/Sobre';
 import Dicas from './src/pages/Dicas';
 import Videos from './src/pages/Videos';
@@ -128,7 +129,11 @@ function AppShell() {
               <LessonPage />
             </ProtectedRoute>
           } />
-          <Route path="/agenda" element={<Booking />} />
+          <Route path="/agenda" element={
+            <ProtectedRoute>
+              <AgendaPage />
+            </ProtectedRoute>
+          } />
           <Route path="/lessons" element={
             <ProtectedRoute>
               <Booking />

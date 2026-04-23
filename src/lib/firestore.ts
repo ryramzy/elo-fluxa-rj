@@ -445,16 +445,25 @@ export async function resetMonthlyBookingCount(uid: string): Promise<void> {
   }
 }
 
-// Get available slots for a given week
+// Get available slots for a given date range
 export async function getAvailableSlots(
-  weekStart: string
+  from: string,
+  to?: string
 ): Promise<TimeSlot[]> {
-  const q = query(
-    collection(db, 'slots'),
-    where('date', '>=', weekStart),
+  const constraints = [
+    where('date', '>=', from),
     where('available', '==', true),
     orderBy('date'),
     orderBy('time')
+  ];
+  
+  if (to) {
+    constraints.splice(1, 0, where('date', '<=', to));
+  }
+  
+  const q = query(
+    collection(db, 'slots'),
+    ...constraints
   );
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as TimeSlot));
@@ -530,7 +539,8 @@ export async function bookSlot(
 // Cancel a booking
 export async function cancelBooking(
   bookingId: string,
-  slotId: string
+  slotId: string,
+  googleEventId?: string
 ): Promise<void> {
   // Get booking data to get Google Calendar event ID
   const bookingDoc = await getDoc(doc(db, 'bookings', bookingId));
