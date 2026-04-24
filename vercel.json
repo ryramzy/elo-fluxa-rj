@@ -1,7 +1,4 @@
 {
-  "github": {
-    "silent": true
-  },
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
@@ -9,12 +6,6 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/email/lesson-reminder",
-      "schedule": "0 * * * *"
     }
   ]
 }

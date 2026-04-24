@@ -12,8 +12,6 @@ import About from './components/About.tsx';
 import VideoGrid from './components/VideoGrid.tsx';
 import Booking from './components/Booking.tsx';
 import Footer from './src/components/Footer';
-import Journal from './components/Journal.tsx';
-import JournalDetail from './components/JournalDetail.tsx';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
 import { ToastContainer } from './src/components/Toast';
@@ -33,16 +31,6 @@ import Videos from './src/pages/Videos';
 import NotFound from './src/pages/NotFound';
 
 
-const JournalDetailWrapper = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const article = location.state?.article;
-  if (!article) {
-    navigate(-1);
-    return null;
-  }
-  return <JournalDetail article={article} onBack={() => navigate(-1)} />;
-};
 
 function AppShell() {
   const [hasEntered, setHasEntered] = useState(false);
@@ -62,7 +50,6 @@ function AppShell() {
       'products': '/courses',
       'about': '/',
       'reviews': '/reviews',
-      'journal': '/journal',
       'agenda': '/agenda',
       'video': '/video'
     };
@@ -99,7 +86,7 @@ function AppShell() {
 
       <main
         id="content-area"
-        className="pt-24 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
+        className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
       >
         <Routes>
           {/* Public routes */}
@@ -108,8 +95,6 @@ function AppShell() {
           <Route path="/courses" element={<CoursesPage />} />
                     <Route path="/reviews" element={<Testimonials />} />
           <Route path="/video" element={<VideoGrid />} />
-          <Route path="/journal" element={<Journal onArticleClick={(a) => navigate('/journal/article', { state: { article: a } })} />} />
-          <Route path="/journal/article" element={<JournalDetailWrapper />} />
           <Route path="/dicas" element={<Dicas />} />
           <Route path="/videos" element={<Videos />} />
 

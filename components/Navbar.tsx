@@ -88,7 +88,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     if (location.pathname.startsWith('/courses') || location.pathname.startsWith('/product')) return 'products';
     if (location.pathname.startsWith('/agenda')) return 'agenda';
     if (location.pathname.startsWith('/video')) return 'video';
-    if (location.pathname.startsWith('/journal')) return 'journal';
     return 'about';
   };
   const activeSection = getActiveSection();
@@ -116,13 +115,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[60] py-1.5 bg-slate-950/90 backdrop-blur-sm border-b border-white/10">
-        <div className="max-w-[1800px] mx-auto px-8 flex justify-end gap-5">
-          {/* Top bar can be empty or used later */}
-        </div>
-      </div>
-
-      <nav className="fixed top-[29px] left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 dark:bg-slate-900/95 backdrop-blur-md py-4 shadow-sm dark:border-b dark:border-white/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 dark:bg-slate-900/95 backdrop-blur-md py-4 shadow-sm dark:border-b dark:border-white/10">
         <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
@@ -157,13 +150,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 className={getLinkClasses('video')}
               >
                 Vídeos
-              </a>
-              <a
-                href="#journal"
-                onClick={(e) => handleLinkClick(e, 'journal')}
-                className={getLinkClasses('journal')}
-              >
-                Dicas
               </a>
             </div>
           )}
@@ -295,13 +281,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   className={activeSection === 'video' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
                 >
                   Vídeos
-                </a>
-                <a
-                  href="#journal"
-                  onClick={(e) => handleLinkClick(e, 'journal')}
-                  className={activeSection === 'journal' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
-                >
-                  Dicas
                 </a>
               </>
             )}

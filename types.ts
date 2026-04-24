@@ -19,14 +19,6 @@ export interface Product {
   features: string[];
 }
 
-export interface JournalArticle {
-  id: number;
-  title: string;
-  date: string;
-  excerpt: string;
-  image: string;
-  content: React.ReactNode; 
-}
 
 export interface Testimonial {
   id: string;
@@ -49,5 +41,4 @@ export interface ChatMessage {
 
 export type ViewState = 
   | { type: 'home' }
-  | { type: 'product', product: Product }
-  | { type: 'journal', article: JournalArticle };
+  | { type: 'product', product: Product };
