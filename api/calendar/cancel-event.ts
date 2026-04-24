@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await calendar.events.update({
       calendarId,
       eventId,
-      resource: {
+      requestBody: {
         status: 'cancelled',
         summary: 'CANCELLED - Aula Elo Matt',
       },

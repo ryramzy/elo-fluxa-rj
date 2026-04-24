@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const eventResponse = await calendar.events.insert({
       calendarId,
-      resource: event,
+      requestBody: event,
       conferenceDataVersion: 1,
     });
 
