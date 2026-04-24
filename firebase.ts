@@ -7,5 +7,22 @@ console.log("Firebase Init Check:", {
   hasApiKey: !!firebaseConfig.apiKey 
 });
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+let app;
+let auth;
+
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+  // Fallback: create a mock auth object to prevent app crash
+  auth = {
+    currentUser: null,
+    onAuthStateChanged: () => () => {},
+    signInWithPopup: () => Promise.reject(new Error('Firebase not initialized')),
+    signOut: () => Promise.reject(new Error('Firebase not initialized'))
+  };
+}
+
+export { auth };
