@@ -41,6 +41,28 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [April 27, 2026] — Authentication System Fix & Firebase OAuth Integration
+**Status:** ✅ COMPLETED
+
+### Issues Resolved
+- **Environment Variables**: Fixed missing closing quote in `VITE_GOOGLE_CLIENT_ID`
+- **Firebase Domain Authorization**: Resolved `auth/unauthorized-domain` error by running dev server on `localhost:5173` instead of `127.0.0.1:5173`
+- **Route Configuration**: Fixed login/signup redirect issue in `App.tsx` that was preventing access to `/login` and `/signup` routes
+- **Component Imports**: Added proper imports for `Login` and `Signup` components
+
+### Authentication Flow Status
+- ✅ Google OAuth popup authentication working
+- ✅ Firebase Auth initialization successful
+- ✅ Environment variables loading correctly
+- ✅ Protected routes functioning
+- ✅ Login/Signup pages accessible
+
+### Development Notes
+- Dev server should run with `npm run dev -- --host` to use `localhost` domain
+- Firebase Console requires `localhost` and `localhost:5173` in authorized domains
+- All authentication components now properly integrated
+
+---
 ## [April 13, 2026] — Course Catalog Unification + Photo Cards
 **Status:** working
 
