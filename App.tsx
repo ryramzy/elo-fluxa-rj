@@ -14,6 +14,8 @@ import Booking from './components/Booking.tsx';
 import Footer from './src/components/Footer';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
 import { ToastContainer } from './src/components/Toast';
 import { useToast } from './src/hooks/useToast';
 
@@ -76,10 +78,7 @@ function AppShell() {
     );
   }
 
-  if (location.pathname === '/login' || location.pathname === '/signup') {
-    return <Navigate to="/" replace />;
-  }
-
+  
   return (
     <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100">
       <Navbar onNavClick={handleNavClick} />
@@ -89,6 +88,10 @@ function AppShell() {
         className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
       >
         <Routes>
+          {/* Auth routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
           {/* Public routes */}
           <Route path="/" element={<About />} />
           <Route path="/sobre" element={<Sobre />} />
