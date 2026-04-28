@@ -29,14 +29,15 @@ export const useBooking = () => {
     monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
+    
+    // Extend range to show more slots - show current month and next month
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0); // Next month end
+    
     return {
-      from: monday.toISOString().split('T')[0],
-      to: sunday.toISOString().split('T')[0],
-      label: monday.toLocaleDateString('pt-BR', { 
-        day: 'numeric', month: 'long' 
-      }) + ' – ' + sunday.toLocaleDateString('pt-BR', { 
-        day: 'numeric', month: 'long' 
-      }),
+      from: startOfMonth.toISOString().split('T')[0],
+      to: endOfMonth.toISOString().split('T')[0],
+      label: 'Horários Disponíveis',
     };
   };
 
