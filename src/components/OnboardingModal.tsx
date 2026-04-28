@@ -103,7 +103,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
         <div className="p-6 border-b border-slate-200">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-slate-900">
-              {currentStep === 1 && 'Bem-vindo ao Elo Matt! ?'}
+              {currentStep === 1 && 'Bem-vindo ao Elo!'}
               {currentStep === 2 && 'Qual é o seu objetivo?'}
               {currentStep === 3 && 'Como funciona'}
             </h2>

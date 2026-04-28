@@ -138,7 +138,7 @@ const Courses: React.FC = () => {
 
                   {/* Lesson Count */}
                   <div className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                    {course.lessons.length} aulas · Professor Matt
+                    {course.lessons.length} aulas · Professor nativo
                   </div>
 
                   {/* Progress Bar (if enrolled) */}

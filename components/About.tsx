@@ -191,9 +191,9 @@ export default function About() {
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
               </svg>
-              Falar com Matt agora
+              Começar agora
             </a>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function About() {
 
                     {/* Lesson Count */}
                     <div className="text-sm text-slate-500 mb-4">
-                      {course.lessons.length} aulas · Professor Matt
+                      {course.lessons.length} aulas · Professor
                     </div>
 
                     {/* CTA Button */}
@@ -299,13 +299,13 @@ export default function About() {
                       // Anonymous users - WhatsApp CTA
                       <div className="space-y-2">
                         <a
-                          href={`https://wa.me/5522992322566?text=Oi%20Matt!%20Tenho%20interesse%20no%20curso%20de%20${encodeURIComponent(course.title)}`}
+                          href={`https://wa.me/5522992322566?text=Tenho%20interesse%20no%20curso%20de%20${encodeURIComponent(course.title)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-medium py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
                           </svg>
                           Quero começar
                         </a>
@@ -345,7 +345,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-4">Professor nativo, não roteiro</h3>
               <p className="text-slate-600 leading-relaxed">
-                Matt é americano morando no Rio. Ele não segue um script ele ensina do jeito que os americanos realmente falam.
+                Nossos professores são nativos americanos. Eles não seguem um script - ensinam do jeito que os americanos realmente falam.
               </p>
             </div>
             
@@ -358,7 +358,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-4">Contexto cultural primeiro</h3>
               <p className="text-slate-600 leading-relaxed">
-                Inglês sem cultura é vocabulário solto. Aqui você aprende o idioma dentro da cultura esportes, trabalho, música, vida real.
+                Inglês sem cultura é vocabulário solto. Aqui você aprende o idioma dentro da cultura: esportes, trabalho, música, vida real.
               </p>
             </div>
             
@@ -375,13 +375,13 @@ export default function About() {
           
           <div className="text-center">
             <p className="text-sm text-slate-500 font-medium mb-6 max-w-2xl mx-auto">
-              Matt Ramsay professor nativo americano no Rio de Janeiro. Especialista em inglês para profissionais, estudantes e apaixonados por cultura americana.
+              Professores nativos americanos especializados em inglês para profissionais, estudantes e apaixonados por cultura americana.
             </p>
             <button 
               onClick={() => navigate('/sobre')}
               className="px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded-lg transition-colors"
             >
-              Conhecer o Matt
+              Conhecer nossos professores
             </button>
           </div>
         </div>
@@ -408,8 +408,8 @@ export default function About() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-blue-600">2</span>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Aprenda com Matt</h3>
-              <p className="text-slate-600">Aulas ao vivo com um professor nativo, material autêntico e feedback personalizado</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Aprenda com professores nativos</h3>
+              <p className="text-slate-600">Aulas ao vivo com professores nativos, material autêntico e feedback personalizado</p>
             </div>
             
             <div className="text-center">
@@ -589,13 +589,13 @@ export default function About() {
             Pronto para parar de estudar<br />e começar a falar?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Manda uma mensagem para o Matt.<br />
+            Mande uma mensagem para nossos professores.<br />
             Sem formulário, sem espera.<br />
             Só você e um professor nativo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
             <a
-              href="https://wa.me/5522992322566?text=Oi%20Matt!%20Vi%20seu%20site%20e%20quero%20come%C3%A7ar%20a%20aprender%20ingl%C3%AAs%20americano"
+              href="https://wa.me/5522992322566?text=Oi!%20Vi%20seu%20site%20e%20quero%20come%C3%A7ar%20a%20aprender%20ingl%C3%AAs%20americano"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-white hover:bg-slate-100 text-blue-600 font-bold rounded-lg transition-colors inline-flex items-center justify-center gap-2"
@@ -603,7 +603,7 @@ export default function About() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
               </svg>
-              Falar com Matt no WhatsApp
+              Falar com professores no WhatsApp
             </a>
             <button 
               onClick={() => navigate('/', { state: { openAuthModal: true } })}

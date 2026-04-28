@@ -13,7 +13,7 @@ import {
   updateUserPlan
 } from '../lib/firestore';
 import { courses } from '../data/courses';
-import { writeBatch, doc, collection, setDoc, updateDoc, addDoc } from 'firebase/firestore';
+import { writeBatch, doc, collection, setDoc, updateDoc, addDoc, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 const Admin: React.FC = () => {
@@ -31,7 +31,38 @@ const Admin: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddSlot, setShowAddSlot] = useState(false);
   const [newSlotDate, setNewSlotDate] = useState('');
-  const [newSlotTime, setNewSlotTime] = useState('');
+  const [newSlotTime, setNewSlotTime] = useState('09:00');
+  const [newSlotDuration, setNewSlotDuration] = useState(60);
+  const [generatingSchedule, setGeneratingSchedule] = useState(false);
+
+  // Delete slot function
+  const handleDeleteSlot = async (slotId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este horário?')) return;
+    
+    try {
+      await deleteDoc(doc(db, 'slots', slotId));
+      loadData(); // Reload slots
+    } catch (error) {
+      console.error('Error deleting slot:', error);
+      alert('Erro ao excluir horário. Tente novamente.');
+    }
+  };
+
+  // Time options for 15-minute intervals
+  const timeOptions = [
+    '07:00', '07:15', '07:30', '07:45',
+    '08:00', '08:15', '08:30', '08:45',
+    '09:00', '09:15', '09:30', '09:45',
+    '10:00', '10:15', '10:30', '10:45',
+    '11:00', '11:15', '11:30', '11:45',
+    '12:00', '12:15', '12:30', '12:45',
+    '13:00', '13:15', '13:30', '13:45',
+    '14:00', '14:15', '14:30', '14:45',
+    '15:00', '15:15', '15:30', '15:45',
+    '16:00', '16:15', '16:30', '16:45',
+    '17:00', '17:15', '17:30', '17:45',
+    '18:00', '18:15', '18:30', '18:45'
+  ];
   
   // Lead management state
   const [leads, setLeads] = useState<any[]>([]);
@@ -93,7 +124,7 @@ const Admin: React.FC = () => {
       const slotData = {
         date: newSlotDate,
         time: newSlotTime,
-        duration: 60,
+        duration: newSlotDuration,
         available: true,
         status: 'available',
         createdAt: new Date(),
@@ -104,11 +135,91 @@ const Admin: React.FC = () => {
       await addDoc(slotsRef, slotData);
       
       setNewSlotDate('');
-      setNewSlotTime('');
+      setNewSlotTime('09:00');
+      setNewSlotDuration(60);
       setShowAddSlot(false);
       loadData(); // Reload slots
     } catch (error) {
       console.error('Error adding slot:', error);
+    }
+  };
+
+  // Generate weekly schedule for next 4 weeks
+  const handleGenerateWeeklySchedule = async () => {
+    setGeneratingSchedule(true);
+    
+    try {
+      const weeklySchedule = {
+        Monday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
+        Tuesday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
+        Wednesday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
+        Thursday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
+        Friday: ['09:00', '10:00', '11:00']
+      };
+
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ...
+      const daysUntilMonday = currentDay === 0 ? 6 : 1 - currentDay;
+      
+      const slotsToCreate = [];
+      
+      // Generate slots for next 4 weeks
+      for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
+        for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+          const currentDate = new Date(today);
+          currentDate.setDate(today.getDate() + daysUntilMonday + (weekOffset * 7) + dayOffset);
+          const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ...
+          const dateStr = currentDate.toISOString().split('T')[0];
+          
+          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const dayName = dayNames[dayOfWeek];
+          
+          if (weeklySchedule[dayName as keyof typeof weeklySchedule]) {
+            const times = weeklySchedule[dayName as keyof typeof weeklySchedule];
+            
+            for (const time of times) {
+              slotsToCreate.push({
+                date: dateStr,
+                time,
+                duration: 60,
+                available: true,
+                status: 'available',
+                createdAt: new Date(),
+                updatedAt: new Date()
+              });
+            }
+          }
+        }
+      }
+
+      // Check for existing slots and avoid duplicates
+      const slotsRef = collection(db, 'slots');
+      let createdCount = 0;
+      
+      for (const slot of slotsToCreate) {
+        // Check if slot already exists
+        const existingQuery = query(
+          slotsRef,
+          where('date', '==', slot.date),
+          where('time', '==', slot.time)
+        );
+        const existingSnapshot = await getDocs(existingQuery);
+        
+        if (existingSnapshot.empty) {
+          await addDoc(slotsRef, slot);
+          createdCount++;
+        }
+      }
+      
+      console.log(`✓ ${createdCount} slots criados`);
+      alert(`✓ ${createdCount} slots criados com sucesso!`);
+      loadData(); // Reload slots
+      
+    } catch (error) {
+      console.error('Error generating weekly schedule:', error);
+      alert('Erro ao gerar agenda semanal. Tente novamente.');
+    } finally {
+      setGeneratingSchedule(false);
     }
   };
 
@@ -364,7 +475,7 @@ const Admin: React.FC = () => {
       <header className="bg-slate-800 text-white border-b border-slate-700 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-serif font-bold">Elo Matt! - Admin</span>
+            <span className="text-2xl font-serif font-bold">Elo! - Admin</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -812,12 +923,19 @@ const Admin: React.FC = () => {
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
           <div className="space-y-4">
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <button
                 onClick={() => setShowAddSlot(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 Add Available Slot
+              </button>
+              <button
+                onClick={handleGenerateWeeklySchedule}
+                disabled={generatingSchedule}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-indigo-400"
+              >
+                {generatingSchedule ? 'Gerando...' : 'Gerar Semana Padrão'}
               </button>
               <button
                 onClick={handleAddSampleSlots}
@@ -850,13 +968,25 @@ const Admin: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
                     placeholder="Date"
                   />
-                  <input
-                    type="time"
+                  <select
                     value={newSlotTime}
                     onChange={(e) => setNewSlotTime(e.target.value)}
                     className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
-                    placeholder="Time"
-                  />
+                  >
+                    {timeOptions.map(time => (
+                      <option key={time} value={time}>{time}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={newSlotDuration}
+                    onChange={(e) => setNewSlotDuration(Number(e.target.value))}
+                    className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                  >
+                    <option value={30}>30 min</option>
+                    <option value={45}>45 min</option>
+                    <option value={60}>60 min</option>
+                    <option value={90}>90 min</option>
+                  </select>
                   <button
                     onClick={handleAddSlot}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -874,6 +1004,52 @@ const Admin: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* SECTION 5 - MANAGE SLOTS */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Horários desta semana</h3>
+          
+          {availableSlots.length === 0 ? (
+            <div className="text-center py-8 text-slate-500">
+              <p>Nenhum horário encontrado para esta semana.</p>
+              <p className="text-sm mt-2">Use "Gerar Semana Padrão" para criar horários automaticamente.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {availableSlots.map((slot) => (
+                <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${
+                  slot.available ? 'border-slate-200 bg-white' : 'border-slate-300 bg-slate-50'
+                }`}>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-2 h-2 rounded-full ${
+                      slot.available ? 'bg-green-500' : 'bg-red-500'
+                    }`} />
+                    <div>
+                      <div className="font-medium text-slate-900">
+                        {slot.date} às {slot.time}
+                      </div>
+                      <div className="text-sm text-slate-600">
+                        {slot.duration} min • {slot.available ? 'Disponível' : `Reservado por ${slot.bookedByName || 'Aluno'}`}
+                      </div>
+                    </div>
+                  </div>
+                  {slot.available && (
+                    <button
+                      onClick={() => handleDeleteSlot(slot.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Excluir horário"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
       </main>
     </div>
   );

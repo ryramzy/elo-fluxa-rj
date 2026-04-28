@@ -2,6 +2,6 @@ import { useEffect } from 'react';
 
 export const useDocumentTitle = (title: string) => {
   useEffect(() => {
-    document.title = `${title} - Elo Matt!`;
+    document.title = `${title} - Elo!`;
   }, [title]);
 };

@@ -11,9 +11,9 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Elo Matt!</h3>
+            <h3 className="text-xl font-bold mb-4">Elo!</h3>
             <p className="text-slate-400 text-sm mb-4">
-              Learn American English with a native speaker in Rio de Janeiro
+              Inglês com professores nativos
             </p>
             <a
               href={getWhatsAppLink('general')}
