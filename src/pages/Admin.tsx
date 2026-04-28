@@ -13,7 +13,7 @@ import {
   updateUserPlan
 } from '../lib/firestore';
 import { courses } from '../data/courses';
-import { writeBatch, doc, collection, setDoc, updateDoc } from 'firebase/firestore';
+import { writeBatch, doc, collection, setDoc, updateDoc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 const Admin: React.FC = () => {
@@ -89,7 +89,20 @@ const Admin: React.FC = () => {
     if (!newSlotDate || !newSlotTime) return;
     
     try {
-      await createTimeSlot(newSlotDate, newSlotTime);
+      // Create slot in new slots collection with TimeSlot schema
+      const slotData = {
+        date: newSlotDate,
+        time: newSlotTime,
+        duration: 60,
+        available: true,
+        status: 'available',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      const slotsRef = collection(db, 'slots');
+      await addDoc(slotsRef, slotData);
+      
       setNewSlotDate('');
       setNewSlotTime('');
       setShowAddSlot(false);
@@ -99,35 +112,51 @@ const Admin: React.FC = () => {
     }
   };
 
-  // Add sample slots for testing
+  // Add 24-hour sample slots for testing
   const handleAddSampleSlots = async () => {
-    const sampleSlots = [
-      // Today
-      { date: '2026-04-23', time: '09:00', duration: 60 },
-      { date: '2026-04-23', time: '10:30', duration: 60 },
-      { date: '2026-04-23', time: '14:00', duration: 60 },
-      { date: '2026-04-23', time: '15:30', duration: 60 },
-      // Tomorrow
-      { date: '2026-04-24', time: '09:00', duration: 60 },
-      { date: '2026-04-24', time: '10:30', duration: 60 },
-      { date: '2026-04-24', time: '14:00', duration: 60 },
-      { date: '2026-04-24', time: '16:00', duration: 60 },
-      // Next week
-      { date: '2026-04-28', time: '09:00', duration: 60 },
-      { date: '2026-04-28', time: '10:30', duration: 60 },
-      { date: '2026-04-28', time: '14:00', duration: 60 },
-      { date: '2026-04-29', time: '09:00', duration: 60 },
-      { date: '2026-04-29', time: '11:00', duration: 60 },
-      { date: '2026-04-29', time: '14:00', duration: 60 },
-      { date: '2026-04-29', time: '15:30', duration: 60 },
-    ];
+    const today = new Date().toISOString().split('T')[0];
+    const sampleSlots = [];
+    
+    // Add every hour from 00:00 to 23:00 for today
+    for (let hour = 0; hour < 24; hour++) {
+      const time = `${hour.toString().padStart(2, '0')}:00`;
+      sampleSlots.push({
+        date: today,
+        time,
+        duration: 60
+      });
+    }
+    
+    // Add a few slots for tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    ['09:00', '14:00', '16:00', '20:00'].forEach(time => {
+      sampleSlots.push({
+        date: tomorrowStr,
+        time,
+        duration: 60
+      });
+    });
 
     try {
-      console.log('Adding sample slots...');
+      console.log('Adding 24-hour sample slots...');
       for (const slot of sampleSlots) {
-        await createTimeSlot(slot.date, slot.time, slot.duration);
+        const slotData = {
+          date: slot.date,
+          time: slot.time,
+          duration: slot.duration,
+          available: true,
+          status: 'available',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        const slotsRef = collection(db, 'slots');
+        await addDoc(slotsRef, slotData);
       }
-      console.log('Sample slots added successfully!');
+      console.log('24-hour sample slots added successfully!');
       loadData(); // Reload slots
     } catch (error) {
       console.error('Error adding sample slots:', error);

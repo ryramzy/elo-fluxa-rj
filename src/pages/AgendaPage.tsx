@@ -81,22 +81,6 @@ const AgendaPage = () => {
         notes
       );
 
-      // Trigger Google Calendar + email via API
-      await fetch('/api/calendar/create-event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId,
-          slotId: selectedSlot.id,
-          date: selectedSlot.date,
-          time: selectedSlot.time,
-          durationMinutes: selectedSlot.duration || 60,
-          attendeeName: profile?.displayName 
-            || user.displayName || 'Aluno',
-          attendeeEmail: user.email,
-        }),
-      });
-
       setSlots(prev => prev.filter(s => s.id !== selectedSlot.id));
       setSelectedSlot(null);
       setNotes('');

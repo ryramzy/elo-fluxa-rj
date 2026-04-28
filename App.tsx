@@ -10,7 +10,6 @@ import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import About from './components/About.tsx';
 import VideoGrid from './components/VideoGrid.tsx';
-import Booking from './components/Booking.tsx';
 import Footer from './src/components/Footer';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
@@ -124,7 +123,7 @@ function AppShell() {
           } />
           <Route path="/lessons" element={
             <ProtectedRoute>
-              <Booking />
+              <AgendaPage />
             </ProtectedRoute>
           } />
           <Route path="/profile" element={

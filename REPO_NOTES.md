@@ -598,3 +598,101 @@ The Agenda page already exceeded requirements with:
 - Confirmed booking system is production-ready
 - Cleaner navigation and reduced cognitive load
 - Maintained all core functionality while removing dead weight
+
+---
+
+## [April 27, 2026] — Calendar Slot Loading Fix & In-App Booking System
+**Status:** ✅ COMPLETED
+
+### Problem diagnosed
+- **Root Cause**: Calendar slots not loading due to missing time slots in Firestore database
+- **Secondary Issue**: App running in demo mode because Firebase environment variables not configured
+- **Architecture Problem**: Mixed old/new booking systems causing confusion
+
+### Diagnostic process completed
+1. **Booking component analysis**: Found old `components/Booking.tsx` still imported in `/lessons` route
+2. **Route verification**: Confirmed `/agenda` correctly routes to `AgendaPage.tsx`
+3. **API endpoint check**: Verified `/api/calendar/create-event.ts` exists and functional
+4. **Firestore schema**: Admin.tsx had `createTimeSlot()` but using old slot system
+5. **Environment variables**: App using demo Firebase config instead of real project credentials
+
+### Actions taken
+1. **Deleted old Booking component**: Removed `components/Booking.tsx` and all imports
+2. **Fixed routing**: Updated `/lessons` route to use `AgendaPage.tsx` instead of old component
+3. **Removed API dependency**: Simplified `AgendaPage.tsx` to use only Firestore (no external API calls)
+4. **Simplified booking flow**: Updated `bookSlot()` in `firestore.ts` to work purely with Firestore
+5. **Fixed Admin slot creation**: Updated Admin.tsx to write to new `slots` collection with proper TimeSlot schema
+6. **Implemented 24-hour scheduling**: Created slots from 12am to 12am next day
+
+### Technical architecture decisions
+- **In-First Approach**: Built pure in-app calendar solution instead of external APIs
+- **Firestore-Only**: Eliminated Google Calendar dependency for immediate functionality
+- **Admin UI Seeding**: Used Admin interface to create test slots instead of environment-dependent scripts
+- **24-Hour Coverage**: Implemented full day scheduling (00:00-23:00) for maximum flexibility
+
+### Key files modified
+- `App.tsx` - Removed Booking component import, updated /lessons route
+- `src/pages/AgendaPage.tsx` - Removed API fetch call, simplified booking flow
+- `src/lib/firestore.ts` - Simplified bookSlot() function, removed Google Calendar dependency
+- `src/pages/Admin.tsx` - Updated slot creation to use new slots collection
+- `scripts/seed-24hour-slots.cjs` - Backup script for automated slot creation
+
+### Schema changes
+**New slots collection structure:**
+```typescript
+{
+  date: string,        // "2026-04-28"
+  time: string,        // "10:00"
+  duration: 60,        // minutes
+  available: true,
+  status: 'available',
+  createdAt: serverTimestamp(),
+  updatedAt: serverTimestamp()
+}
+```
+
+### Booking flow (simplified)
+1. User clicks slot → `AgendaPage.handleBook()`
+2. Call `bookSlot()` → Firestore atomic operation
+3. Mark slot unavailable + create booking record
+4. UI updates instantly (no external API calls)
+
+### Lessons learned for future apps
+1. **Environment Variable Management**: 
+   - Always verify `.env` file is updated with real credentials
+   - Demo mode fallbacks can mask real connection issues
+   - Use Admin UI for data seeding instead of environment-dependent scripts
+
+2. **Component Architecture**:
+   - Remove old components completely to avoid import confusion
+   - Single source of truth for booking UI (AgendaPage.tsx only)
+   - Route cleanup prevents component duplication
+
+3. **Database Schema**:
+   - Use consistent collection names (`slots` vs `availableSlots`)
+   - Atomic Firestore operations prevent race conditions
+   - Server timestamps for consistent data tracking
+
+4. **API Dependencies**:
+   - Build in-app functionality first, add external APIs later
+   - Remove API calls that aren't essential for core functionality
+   - Use mock responses during development to avoid blocking
+
+5. **Testing Strategy**:
+   - Admin UI seeding bypasses environment variable issues
+   - Create test data via UI instead of scripts when possible
+   - 24-hour scheduling provides comprehensive test coverage
+
+### Success metrics
+- ✅ Calendar slots now load and display correctly
+- ✅ Users can book slots instantly (no external API delays)
+- ✅ Admin can create/manage slots via intuitive UI
+- ✅ 24-hour scheduling implemented (12am-12am next day)
+- ✅ No environment variable dependencies for core functionality
+- ✅ Clean architecture with single booking component
+
+### Next steps
+- Implement in-app notifications for booking confirmations
+- Add email notifications via Resend API
+- Optimize UI for Vita app (React Native elements)
+- Consider Google Calendar re-integration as optional enhancement

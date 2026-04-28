@@ -506,23 +506,12 @@ export async function bookSlot(
   
   const slotData = slotSnap.data() as TimeSlot;
   
-  // Create Google Calendar event
-  const startDateTime = `${slotData.date}T${slotData.time}:00-03:00`;
-  const endDateTime = new Date(startDateTime);
-  endDateTime.setMinutes(endDateTime.getMinutes() + slotData.duration);
-  
-  const calendarEvent = {
-    summary: `Aula de Inglês - ${userName}`,
-    description: `Aula particular de inglês com Elo Matt\n\nAluno: ${userName}\nEmail: ${userEmail}\n${notes ? `Notas: ${notes}` : ''}`,
-    startDateTime,
-    endDateTime: endDateTime.toISOString(),
-    attendeeEmail: userEmail,
-    attendeeName: userName,
-  };
+  // Check if slot is still available
+  if (!slotData.available) {
+    throw new Error('SLOT_UNAVAILABLE');
+  }
 
-  const { eventId, meetLink, htmlLink } = await createCalendarEvent(calendarEvent);
-
-  // Now update Firestore with calendar info
+  // Update Firestore with booking info
   const batch = writeBatch(db);
   
   // Mark slot as unavailable
@@ -530,8 +519,6 @@ export async function bookSlot(
     available: false,
     bookedBy: userId,
     bookedByName: userName,
-    googleEventId: eventId,
-    meetLink,
     updatedAt: serverTimestamp(),
   });
 
@@ -546,8 +533,8 @@ export async function bookSlot(
     time: slotData.time,
     duration: slotData.duration,
     status: 'confirmed',
-    googleEventId: eventId,
-    meetLink,
+    googleEventId: null,
+    meetLink: null,
     notes: notes || '',
     createdAt: serverTimestamp(),
   });
