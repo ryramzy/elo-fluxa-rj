@@ -8,7 +8,6 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useNavigate } from 'react-router-dom';
 
 // Import components that we know work
-import { Header } from '../components/dashboard/Header';
 import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { KpiCards } from '../components/dashboard/KpiCards';
 import { CoursesGrid } from '../components/dashboard/CoursesGrid';
@@ -49,8 +48,6 @@ const DashboardWorking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <Header profile={profile} user={user} />
-      
       <WelcomeBanner profile={profile} streak={streak || 0} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">

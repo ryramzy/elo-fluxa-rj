@@ -102,8 +102,8 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`, '_blank');
   };
 
-  const textColorClass = 'text-slate-900 dark:text-slate-100';
-  const logoColorClass = 'text-blue-600 dark:text-blue-400';
+  const logoColorClass = 'text-blue-400';
+  const textColorClass = 'text-white';
 
   const linkBaseClasses =
     'hover:text-blue-500 transition-colors relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
@@ -115,7 +115,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/95 dark:bg-slate-900/95 backdrop-blur-md py-4 shadow-sm dark:border-b dark:border-white/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-slate-900 backdrop-blur-md py-4 shadow-sm border-b border-slate-700">
         <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
@@ -188,7 +188,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
               <button 
                 onClick={handleLoginModalOpen}
                 data-login-trigger="true"
-                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-current text-current hover:bg-current hover:text-white transition-all hidden sm:block rounded-sm"
+                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 transition-all hidden sm:block rounded-sm"
               >
                 Entrar
               </button>
@@ -196,7 +196,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
               <div className="relative user-dropdown">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 text-[10px] font-medium hidden sm:block hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 text-[10px] font-medium hidden sm:block text-white hover:text-blue-400 transition-colors"
                 >
                   {user.photoURL ? (
                     <img src={user.photoURL} alt="Avatar" className="w-8 h-8 rounded-full" />
@@ -214,7 +214,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 </button>
                 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50">
                     <a
                       href="/dashboard"
                       onClick={(e) => {
@@ -222,13 +222,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                         navigate('/dashboard');
                         setUserDropdownOpen(false);
                       }}
-                      className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      className="block px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
                     >
                       Meu painel
                     </a>
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
                     >
                       Sair
                     </button>
@@ -248,37 +248,37 @@ export default function Navbar({ onNavClick }: NavbarProps) {
         </div>
       </nav>
 
-      <div className={`fixed inset-0 bg-white dark:bg-slate-900 z-40 flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
+      <div className={`fixed inset-0 bg-slate-900 z-40 flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
           mobileMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
-          <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-slate-900 dark:text-slate-100">
+          <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-white">
             {user && (
               <>
                 <a
                   href="#about"
                   onClick={(e) => handleLinkClick(e, 'about')}
-                  className={activeSection === 'about' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+                  className={activeSection === 'about' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
                 >
                   Sobre
                 </a>
                 <a
                   href="#products"
                   onClick={(e) => handleLinkClick(e, 'products')}
-                  className={activeSection === 'products' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+                  className={activeSection === 'products' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
                 >
                   Cursos
                 </a>
                 <a
                   href="#agenda"
                   onClick={(e) => handleLinkClick(e, 'agenda')}
-                  className={activeSection === 'agenda' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+                  className={activeSection === 'agenda' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
                 >
                   Agenda
                 </a>
                 <a
                   href="#video"
                   onClick={(e) => handleLinkClick(e, 'video')}
-                  className={activeSection === 'video' ? 'text-blue-600' : 'hover:text-blue-600 transition-colors'}
+                  className={activeSection === 'video' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
                 >
                   Vídeos
                 </a>
