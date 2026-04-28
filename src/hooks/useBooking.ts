@@ -30,13 +30,17 @@ export const useBooking = () => {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     
-    // Extend range to show more slots - show current month and next month
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0); // Next month end
+    // Optimized range: current week + 2 weeks ahead for better performance
+    const fromDate = monday.toISOString().split('T')[0];
+    const toDate = new Date(monday);
+    toDate.setDate(monday.getDate() + 21); // 3 weeks total
+    const toDateStr = toDate.toISOString().split('T')[0];
+    
+    console.log('Loading slots from:', fromDate, 'to:', toDateStr);
     
     return {
-      from: startOfMonth.toISOString().split('T')[0],
-      to: endOfMonth.toISOString().split('T')[0],
+      from: fromDate,
+      to: toDateStr,
       label: 'Horários Disponíveis',
     };
   };
@@ -47,14 +51,17 @@ export const useBooking = () => {
     setError(null);
     try {
       const { from, to } = getWeekRange(weekOffset);
+      console.log('🔄 Loading agenda data for user:', user.email);
       const [available, userBookings] = await Promise.all([
         getAvailableSlots(from, to),
         getUserBookings(user.uid),
       ]);
+      console.log('📊 Loaded slots:', available.length, 'User bookings:', userBookings.length);
+      console.log('📅 Available slots:', available);
       setSlots(available);
       setMyBookings(userBookings);
     } catch (err) {
-      console.error('Error loading agenda:', err);
+      console.error('❌ Error loading agenda:', err);
       setError('Erro ao carregar horários. Tente novamente.');
     } finally {
       setLoading(false);

@@ -85,11 +85,17 @@ const Admin: React.FC = () => {
 
   const loadData = async () => {
     try {
+      // Get today's date for slot retrieval
+      const today = new Date().toISOString().split('T')[0];
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 2);
+      const nextMonthStr = nextMonth.toISOString().split('T')[0];
+      
       const [usersData, bookingsData, enrollmentsData, slotsData] = await Promise.all([
         getAllUsers(),
         getAllBookings(),
         getAllEnrollments(),
-        getAvailableSlots()
+        getAvailableSlots(today, nextMonthStr)
       ]);
       
       setUsers(usersData);
@@ -149,45 +155,51 @@ const Admin: React.FC = () => {
     setGeneratingSchedule(true);
     
     try {
+      // Generate time slots from 8:00 AM to 9:00 PM for each weekday
+      const generateDailySlots = () => {
+        const slots = [];
+        for (let hour = 8; hour <= 21; hour++) {
+          slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        }
+        return slots;
+      };
+
       const weeklySchedule = {
-        Monday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-        Tuesday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-        Wednesday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-        Thursday: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-        Friday: ['09:00', '10:00', '11:00']
+        Monday: generateDailySlots(),
+        Tuesday: generateDailySlots(),
+        Wednesday: generateDailySlots(),
+        Thursday: generateDailySlots(),
+        Friday: generateDailySlots(),
+        Saturday: generateDailySlots(),
+        Sunday: [] // No slots on Sunday
       };
 
       const today = new Date();
-      const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ...
-      const daysUntilMonday = currentDay === 0 ? 6 : 1 - currentDay;
-      
       const slotsToCreate = [];
       
-      // Generate slots for next 4 weeks
-      for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
-        for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-          const currentDate = new Date(today);
-          currentDate.setDate(today.getDate() + daysUntilMonday + (weekOffset * 7) + dayOffset);
-          const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ...
-          const dateStr = currentDate.toISOString().split('T')[0];
-          
-          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-          const dayName = dayNames[dayOfWeek];
-          
-          if (weeklySchedule[dayName as keyof typeof weeklySchedule]) {
-            const times = weeklySchedule[dayName as keyof typeof weeklySchedule];
+      // Generate slots for next 30 days starting from today
+      for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() + dayOffset);
+        const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ...
+        const dateStr = currentDate.toISOString().split('T')[0];
+        
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = dayNames[dayOfWeek];
+        
+        if (weeklySchedule[dayName as keyof typeof weeklySchedule]) {
+          const times = weeklySchedule[dayName as keyof typeof weeklySchedule];
             
             for (const time of times) {
-              slotsToCreate.push({
-                date: dateStr,
-                time,
-                duration: 60,
-                available: true,
-                status: 'available',
-                createdAt: new Date(),
-                updatedAt: new Date()
-              });
-            }
+            slotsToCreate.push({
+              date: dateStr,
+              time,
+              duration: 60,
+              available: true,
+              status: 'available',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
           }
         }
       }
@@ -965,13 +977,13 @@ const Admin: React.FC = () => {
                     type="date"
                     value={newSlotDate}
                     onChange={(e) => setNewSlotDate(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                    className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded focus:outline-none focus:border-blue-500"
                     placeholder="Date"
                   />
                   <select
                     value={newSlotTime}
                     onChange={(e) => setNewSlotTime(e.target.value)}
-                    className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded focus:outline-none focus:border-blue-500"
                   >
                     {timeOptions.map(time => (
                       <option key={time} value={time}>{time}</option>
@@ -980,7 +992,7 @@ const Admin: React.FC = () => {
                   <select
                     value={newSlotDuration}
                     onChange={(e) => setNewSlotDuration(Number(e.target.value))}
-                    className="px-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded focus:outline-none focus:border-blue-500"
                   >
                     <option value={30}>30 min</option>
                     <option value={45}>45 min</option>
