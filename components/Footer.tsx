@@ -37,7 +37,7 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
       <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
         
         <div className="md:col-span-4">
-          <h4 className="text-2xl font-serif text-white mb-6">Elo Matt!</h4>
+          <h4 className="text-2xl font-serif text-white mb-6">Elo!</h4>
           <p className="max-w-xs font-light leading-relaxed mb-6 text-sm">
             Aprenda inglês com Matthew, americano nativo e coach. 
             Do Business English para Oil & Gas à sobrevivência no Rio, destrave sua fala com confiança.
@@ -91,7 +91,7 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
       </div>
 
       <div className="max-w-[1800px] mx-auto mt-20 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] font-bold opacity-40">
-        <p>© 2025 Elo Matt! - Professor de Inglês Nativo no Rio</p>
+        <p>© 2025 Elo! - Professor de Inglês Nativo no Rio</p>
         <p className="flex items-center gap-4">
           <span>Conformidade LGPD</span>
           <span>Rio de Janeiro, Brasil</span>

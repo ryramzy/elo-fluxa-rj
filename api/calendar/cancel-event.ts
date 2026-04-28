@@ -37,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       eventId,
       requestBody: {
         status: 'cancelled',
-        summary: 'CANCELLED - Aula Elo Matt',
+        summary: 'CANCELLED - Aula Elo!',
       },
     });
 

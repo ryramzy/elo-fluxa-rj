@@ -12,19 +12,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { name, email } = req.body;
 
     const { error } = await resend.emails.send({
-      from: 'Elo Matt <noreply@elospeak.com.br>',
+      from: 'Elo! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: email,
-      subject: `Bem-vindo ao Elo Matt, ${name}!`,
+      subject: `Bem-vindo ao Elo!, ${name}!`,
       html: `
         <div style="font-family:sans-serif;max-width:520px;
                     margin:0 auto;color:#1a1a1a">
-          <h2 style="color:#2563eb;margin-bottom:8px">Elo Matt</h2>
+          <h2 style="color:#2563eb;margin-bottom:8px">Elo!</h2>
           <p style="margin:0 0 24px 0;font-size:16px">
             Olá, <strong>${name}</strong>!
           </p>
           <p style="margin:0 0 20px 0">
-            Seja bem-vindo(a) ao Elo Matt! Estou muito feliz em ter você aqui.
+            Seja bem-vindo(a) ao Elo! Estou muito feliz em ter você aqui.
           </p>
           
           <div style="background:#f0f9ff;border-left:4px solid #2563eb;
@@ -88,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           <p style="color:#94a3b8;font-size:12px;margin-top:32px;
                     padding-top:16px;border-top:1px solid #e2e8f0">
-            <strong>Elo Matt</strong><br/>
+            <strong>Elo!</strong><br/>
             Seu professor de inglês americano<br/>
             elospeak.com.br · matt@elospeak.com.br
           </p>

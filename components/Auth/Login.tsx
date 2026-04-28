@@ -39,7 +39,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         {/* Login Header - Low friction, task-focused */}
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-serif font-bold tracking-tight text-white flex items-center justify-center gap-2 mb-4 hover:opacity-80 transition-opacity">
-            <span className="text-blue-500">Elo Matt!</span>
+            <span className="text-blue-500">Elo!</span>
           </Link>
           
           <h1 className="text-2xl font-bold text-white mb-2">

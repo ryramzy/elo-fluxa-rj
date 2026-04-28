@@ -68,9 +68,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: 'Elo Matt <noreply@elospeak.com.br>',
+      from: 'Elo! <noreply@elospeak.com.br>',
       to: [studentEmail],
-      subject: 'Sua aula foi confirmada - Elo Matt',
+      subject: 'Sua aula foi confirmada - Elo!',
       html: emailContent,
     });
 

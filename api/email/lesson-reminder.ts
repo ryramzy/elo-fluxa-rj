@@ -48,14 +48,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             });
 
           const { error } = await resend.emails.send({
-            from: 'Elo Matt <noreply@elospeak.com.br>',
+            from: 'Elo! <noreply@elospeak.com.br>',
             replyTo: 'matt@elospeak.com.br',
             to: userEmail,
             subject: `Lembrete: Sua aula é amanhã - ${formattedDate}`,
             html: `
               <div style="font-family:sans-serif;max-width:520px;
                           margin:0 auto;color:#1a1a1a">
-                <h2 style="color:#2563eb;margin-bottom:8px">Elo Matt</h2>
+                <h2 style="color:#2563eb;margin-bottom:8px">Elo!</h2>
                 <p style="margin:0 0 24px 0;font-size:16px">
                   Olá, <strong>${userName}</strong>!
                 </p>
@@ -113,7 +113,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
                 <p style="color:#94a3b8;font-size:12px;margin-top:32px;
                           padding-top:16px;border-top:1px solid #e2e8f0">
-                  <strong>Elo Matt</strong><br/>
+                  <strong>Elo!</strong><br/>
                   Inglês americano sem pressão<br/>
                   elospeak.com.br · matt@elospeak.com.br
                 </p>

@@ -1,7 +1,7 @@
 # Landing Page & Click-In Functionality Troubleshooting
 
 ## Overview
-Quick reference for diagnosing and fixing landing page and click-in issues in the Elo Matt application.
+Quick reference for diagnosing and fixing landing page and click-in issues in the Elo! application.
 
 ## Common Issues & Solutions
 

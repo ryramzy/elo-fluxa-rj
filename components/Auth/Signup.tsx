@@ -36,7 +36,7 @@ const Signup = () => {
       <div className="max-w-md w-full bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 font-sans">
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-serif font-bold tracking-tight text-white flex items-center justify-center gap-2 mb-2 hover:opacity-80 transition-opacity">
-             <span className="text-blue-500">Elo Matt!</span>
+             <span className="text-blue-500">Elo!</span>
           </Link>
           <h2 className="text-2xl font-bold text-white mb-2">Create Account</h2>
           <p className="text-slate-400 text-sm font-light">Join us to book your sessions and start speaking</p>
