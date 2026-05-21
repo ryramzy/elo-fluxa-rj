@@ -1,5 +1,6 @@
 import { beginnerContent } from './content/beginner';
 import { intermediateContent } from './content/intermediate';
+import { advancedConversationContent } from './content/advanced-conversation';
 
 export interface LessonContent {
   id: string;
@@ -11,4 +12,5 @@ export interface LessonContent {
 export const lessonContent: Record<string, Record<string, LessonContent>> = {
   ...beginnerContent,
   ...intermediateContent,
+  ...advancedConversationContent,
 };
