@@ -55,62 +55,62 @@ const LessonPage: React.FC = () => {
     }
   };
 
-  // Generate slides dynamically based on lesson content
   const generateSlides = () => {
     const slides = [];
     const content = lessonContent[courseId!]?.[lessonId!];
 
-    // Slide 1: Intro
-    slides.push({
-      id: 'intro',
-      title: lesson.title,
-      content: <p className="text-slate-200">{lesson.description}</p>
-    });
+    if (content && content.slides) {
+      content.slides.forEach((slide: string, idx: number) => {
+        const parts = slide.split('|||');
+        const type = parts[0] || '';
+        const heading = parts[1] || '';
+        const body = parts[2] || '';
+        const eloPrompt = parts[3] || '';
 
-    if (content && lesson.type === 'reading') {
-      if (content.hook) {
-        slides.push({
-          id: 'hook',
-          title: 'Did you know?',
-          content: <p className="text-blue-100 italic">"{content.hook}"</p>
-        });
-      }
+        let typeLabel = '';
+        if (type === 'VOCAB') typeLabel = 'Vocabulary';
+        else if (type === 'CONCEPT') typeLabel = 'Concept';
+        else if (type === 'EXAMPLE') typeLabel = 'Example';
+        else if (type === 'CULTURE') typeLabel = 'Culture Note';
+        else if (type === 'DRILL') typeLabel = 'Practice Drill';
+        else if (type === 'ROLEPLAY') typeLabel = 'Roleplay Scenario';
+        else if (type === 'REVIEW') typeLabel = 'Review';
 
-      content.sections.forEach((section: any, idx: number) => {
         slides.push({
-          id: `section-${idx}`,
-          title: section.title,
-          content: <p className="text-slate-100">{section.content}</p>
-        });
-      });
-
-      if (content.vocabularyBox && content.vocabularyBox.length > 0) {
-        slides.push({
-          id: 'vocab',
-          title: 'Vocabulary',
+          id: `slide-${idx}`,
+          title: heading,
           content: (
-            <div className="space-y-4">
-              {content.vocabularyBox.slice(0, 3).map((v: any, i: number) => (
-                <div key={i} className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-left">
-                  <h4 className="font-bold text-amber-400">{v.term}</h4>
-                  <p className="text-sm text-slate-300">{v.definition}</p>
+            <div className="flex flex-col h-full space-y-6">
+              {typeLabel && (
+                <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">
+                  {typeLabel}
+                </span>
+              )}
+              {body && (
+                <div className="text-slate-100 text-lg md:text-xl leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto">
+                  {body}
                 </div>
-              ))}
+              )}
+              {eloPrompt && (
+                <div className="mt-8 bg-blue-900/40 border border-blue-500/30 rounded-2xl p-5 relative">
+                  <div className="absolute -top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-blue-900/50">
+                    <span className="text-base">✨</span> Elo
+                  </div>
+                  <p className="text-blue-100 italic text-base md:text-lg pt-2">
+                    "{eloPrompt}"
+                  </p>
+                </div>
+              )}
             </div>
           )
         });
-      }
-    } else if (lesson.type === 'video' || lesson.type === 'conversation' || lesson.type === 'quiz') {
-      // Fallback for non-reading lessons until they are fully split into slides
+      });
+    } else {
+      // Fallback
       slides.push({
-        id: 'interactive',
-        title: 'Interactive Content',
-        content: (
-          <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 text-center">
-            <p className="text-slate-300 mb-4">This is a {lesson.type} session.</p>
-            <p className="text-slate-400 text-sm">Follow the instructions provided by your instructor.</p>
-          </div>
-        )
+        id: 'intro',
+        title: lesson.title,
+        content: <p className="text-slate-200">Content loading...</p>
       });
     }
 
