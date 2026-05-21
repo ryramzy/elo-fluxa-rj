@@ -1,4 +1,5 @@
 import { beginnerContent } from './content/beginner';
+import { intermediateContent } from './content/intermediate';
 
 export interface LessonContent {
   id: string;
@@ -9,4 +10,5 @@ export interface LessonContent {
 // We will aggregate all content here as we generate the batches
 export const lessonContent: Record<string, Record<string, LessonContent>> = {
   ...beginnerContent,
+  ...intermediateContent,
 };

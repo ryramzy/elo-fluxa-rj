@@ -1,0 +1,376 @@
+export const intermediateContent: Record<string, Record<string, { id: string; title: string; slides: string[] }>> = {
+  "intermediate-english-topics": {
+    "int-tc-01": {
+      id: "int-tc-01",
+      title: "Opinions & agreeing/disagreeing",
+      slides: [
+        "INTRO|||Speak Your Mind|||Welcome to the Intermediate level! It's time to start sharing what you really think.|||Elo: Hi again! Are you someone who loves to debate, or do you prefer to keep the peace?",
+        "VOCAB|||Sharing Opinions|||In my opinion, To be honest, From my perspective, If you ask me.|||Elo: 'To be honest' is incredibly common in spoken English. Try starting a sentence with it.",
+        "CONCEPT|||Strong vs Weak Disagreement|||Saying 'You're wrong' is too aggressive. Say 'I disagree', 'I'm not so sure about that', or 'I see your point, but...'|||Elo: How would you politely disagree with someone who says pizza is the worst food?",
+        "EXAMPLE|||The Debate|||A: I think remote work is bad for team culture. — B: I see what you mean, but I actually think it improves focus.|||Elo: Notice how B validates A's point before disagreeing. That's the secret!",
+        "CULTURE|||The Sandwich Method|||Americans often use the 'sandwich method' for criticism: Positive comment, then the disagreement, then another positive comment.|||Elo: It softens the blow. Have you noticed this in movies or at work?",
+        "DRILL|||Translation|||Translate: 'Na minha opinião, isso é uma má ideia.'|||Elo: Don't translate word-for-word. Use 'In my opinion...'",
+        "ROLEPLAY|||The Meeting|||Your boss suggests a new software tool that you know is terrible.|||Elo: Politely disagree with your boss. Use the 'I see your point, but...' structure.",
+        "REVIEW|||Diplomat Status|||You learned: Softening disagreements and expressing opinions professionally.|||Elo: Excellent! You are ready to hold your own in any discussion."
+      ]
+    },
+    "int-tc-02": {
+      id: "int-tc-02",
+      title: "Storytelling & past experiences",
+      slides: [
+        "INTRO|||Let Me Tell You A Story...|||Being a good storyteller is a superpower. Let's learn how to tell engaging stories in English.|||Elo: What's the craziest thing that's ever happened to you on a trip?",
+        "VOCAB|||Story Flow|||Suddenly, Out of nowhere, Eventually, In the end, To make a long story short.|||Elo: 'To make a long story short' is perfect when you realize you've been talking for too long!",
+        "CONCEPT|||Setting the Scene|||Use the Past Continuous ('I was walking...') to set the background, and the Past Simple ('when I saw...') for the action.|||Elo: Describe a background action you were doing yesterday when something interrupted you.",
+        "EXAMPLE|||The Anecdote|||'So I was walking down the street, minding my own business, when suddenly this guy runs past me...'|||Elo: Notice the dramatic pause implied by 'when suddenly'.",
+        "CULTURE|||Exaggeration|||Americans love hyperbole in storytelling. 'It was the best thing ever', 'I literally died laughing'.|||Elo: 'Literally' is often used figuratively now. Crazy, right?",
+        "DRILL|||Flow Words|||Translate: 'No fim das contas, deu tudo certo.'|||Elo: Try using 'In the end...'",
+        "ROLEPLAY|||The Monday Morning Catch-up|||A coworker asks: 'Did anything interesting happen this weekend?'|||Elo: Tell a short 3-sentence story about your weekend using 'I was [verb-ing] when...'",
+        "REVIEW|||Master Storyteller|||You learned: Narrative tenses, flow words, and cultural hyperbole.|||Elo: Great story! Book a session with me and tell me the long version."
+      ]
+    },
+    "int-tc-03": {
+      id: "int-tc-03",
+      title: "Plans, predictions & future",
+      slides: [
+        "INTRO|||Crystal Ball|||Will robots take our jobs? Will we live on Mars? Let's talk about the future.|||Elo: Do you think the future will be better or worse than the present?",
+        "VOCAB|||Future Certainty|||Definitely, Probably, Might/May, Probably not, Definitely not.|||Elo: Where do you put 'probably'? Before or after the verb? ('I will probably go')",
+        "CONCEPT|||Will vs Going To (Review)|||Use 'Will' for spontaneous decisions or predictions. Use 'Going to' for planned actions.|||Elo: Quick! I just dropped my pen. Will you say 'I will pick it up' or 'I am going to pick it up'?",
+        "EXAMPLE|||Making a Prediction|||'I think electric cars will definitely replace gas cars by 2040.'|||Elo: This is a prediction, so we use 'will'.",
+        "CULTURE|||The American Dream|||The concept of the 'American Dream' is built on optimism about the future and upward mobility.|||Elo: Do you think optimism is a defining trait of American culture?",
+        "DRILL|||Translation|||Translate: 'Eu acho que choverá amanhã.'|||Elo: It's a prediction. Use 'will' or 'going to'.",
+        "ROLEPLAY|||The Tech Debate|||A friend says: 'AI is going to destroy all creative jobs.'|||Elo: Respond with your own prediction. Use 'I think...' and 'definitely/probably'.",
+        "REVIEW|||Future Ready|||You learned: Adverbs of certainty, will vs going to, and making predictions.|||Elo: Your English future is definitely looking bright!"
+      ]
+    },
+    "int-tc-04": {
+      id: "int-tc-04",
+      title: "Problems & solutions",
+      slides: [
+        "INTRO|||Houston, we have a problem|||Life is full of problems. Knowing how to explain them clearly and brainstorm solutions is vital.|||Elo: How do you usually handle stress? Panic or plan?",
+        "VOCAB|||Brainstorming|||Figure out, Come up with, Sort out, Workaround, To tackle.|||Elo: To 'come up with an idea' is to invent or produce one. Try it!",
+        "CONCEPT|||Giving Advice|||'You should...', 'If I were you, I would...', 'Have you thought about...?'|||Elo: Give me some advice on how to learn English faster.",
+        "EXAMPLE|||Troubleshooting|||A: I can't figure out this software bug. — B: Have you thought about restarting the server?|||Elo: Using a question ('Have you thought about') makes the advice sound friendlier.",
+        "CULTURE|||Solution-Oriented Culture|||American business culture hates complaining without solutions. Always bring a 'workaround' when presenting a problem.|||Elo: Be a problem-solver, not just a problem-finder!",
+        "DRILL|||Translation|||Translate: 'Se eu fosse você, eu falaria com o chefe.'|||Elo: Use the 2nd conditional structure we learned.",
+        "ROLEPLAY|||The Broken Laptop|||Your colleague's laptop just crashed right before a big presentation.|||Elo: Calm them down and suggest a quick workaround. Use 'Have you thought about...'",
+        "REVIEW|||Problem Solver|||You learned: Brainstorming verbs, giving polite advice, and solution-culture.|||Elo: Problem sorted! Moving on to the next challenge."
+      ]
+    },
+    "int-tc-05": {
+      id: "int-tc-05",
+      title: "Culture shock & travel stories",
+      slides: [
+        "INTRO|||Lost in Translation|||Traveling exposes us to new rules, foods, and faux pas. Let's talk about culture shock.|||Elo: What was the biggest culture shock you ever experienced abroad?",
+        "VOCAB|||Travel Woes|||Jet lag, Homesick, Overwhelmed, Faux pas, To get used to.|||Elo: A 'faux pas' (pronounced fo-pah) is an embarrassing social mistake. Ever made one?",
+        "CONCEPT|||Used to vs Get used to|||'I am used to the cold' (It's normal now). 'I am getting used to the cold' (I'm adapting).|||Elo: What is something in your daily life you are still 'getting used to'?",
+        "EXAMPLE|||Culture Clash|||'When I moved to New York, the speed of life was overwhelming, but I eventually got used to it.'|||Elo: Notice the transition from struggle to adaptation.",
+        "CULTURE|||Personal Space|||Americans value a larger 'bubble' of personal space than Brazilians. Standing too close can make them uncomfortable.|||Elo: Have you ever noticed people stepping back from you during a conversation?",
+        "DRILL|||Translation|||Translate: 'Eu não estou acostumado a jantar tão cedo.'|||Elo: Use the 'I am not used to [verb+ing]' structure.",
+        "ROLEPLAY|||The Expat Chat|||You meet an American who just moved to Brazil. They are confused by the hugging and kissing.|||Elo: Explain the Brazilian greeting culture to them and tell them they will 'get used to it'.",
+        "REVIEW|||Global Citizen|||You learned: 'Get used to', travel vocabulary, and personal space differences.|||Elo: You're officially a global citizen now!"
+      ]
+    },
+    "int-tc-06": {
+      id: "int-tc-06",
+      title: "News & current events",
+      slides: [
+        "INTRO|||Breaking News|||Discussing current events shows high-level fluency. It requires specific vocabulary and tact.|||Elo: Do you read the news daily, or try to avoid it for your mental health?",
+        "VOCAB|||Headlines|||To claim, To urge, To back, A breakthrough, A setback.|||Elo: News headlines use short words. 'To back' means to support. 'Mayor backs new law.'",
+        "CONCEPT|||Hedging (Being Careful)|||When discussing sensitive topics, soften your statements: 'It seems that...', 'Some people argue that...', 'I tend to think...'|||Elo: Why is it important to use 'hedging' in English?",
+        "EXAMPLE|||The Discussion|||A: Did you see the news about the new tax bill? — B: Yeah, it seems like it might cause some controversy.|||Elo: Very diplomatic answer from B!",
+        "CULTURE|||Politics at the Dinner Table|||In the US, discussing politics, religion, or salary at social events or work is generally considered taboo.|||Elo: Is this the same in Brazil, or do people argue about politics at every barbecue?",
+        "DRILL|||Translation|||Translate: 'Parece que a economia está melhorando.'|||Elo: Use the hedging phrase 'It seems that...'",
+        "ROLEPLAY|||Watercooler Talk|||A coworker asks: 'Did you hear about the massive tech outage this morning?'|||Elo: Respond and express a mild opinion using a hedging phrase.",
+        "REVIEW|||Diplomat Ready|||You learned: News verbs, hedging techniques, and conversation taboos.|||Elo: Congratulations! You've finished the Intermediate Conversation module!"
+      ]
+    }
+  },
+  "english-grammar-beginner": {
+    "gr-beg-01": {
+      id: "gr-beg-01",
+      title: "Present simple & routines",
+      slides: [
+        "INTRO|||The Present Simple|||This is the foundation of English. We use it for facts, habits, and routines.|||Elo: Ready to master the most important tense in English?",
+        "CONCEPT|||The 'S' Rule|||I work, You work, We work, They work. BUT: He works, She works, It works. Add 's' for the 3rd person singular!|||Elo: This is the #1 mistake learners make. Remember the 's'!",
+        "EXAMPLE|||Daily Routine|||'I wake up at 7 AM. My brother wakes up at 8 AM.'|||Elo: See the difference? Wake vs Wakes.",
+        "CONCEPT|||Negatives & Questions|||Use 'Don't' (I/You/We/They) and 'Doesn't' (He/She/It). Questions use 'Do' or 'Does'.|||Elo: If I say 'She likes coffee', how do you make it negative?",
+        "CULTURE|||Small Talk Frequency|||Adverbs of frequency (always, usually, sometimes, never) are essential for small talk about routines.|||Elo: Where does the adverb go? 'I always drink coffee' or 'I drink always coffee'?",
+        "DRILL|||Translation|||Translate: 'Ele não joga futebol nos finais de semana.'|||Elo: Watch out for 'doesn't' and the base verb!",
+        "ROLEPLAY|||The Interview|||An interviewer asks: 'What do you usually do on Monday mornings?'|||Elo: Answer with two things you usually do, using the present simple.",
+        "REVIEW|||Solid Foundation|||You learned: The 's' rule, do/does, and adverbs of frequency.|||Elo: Great start! The foundation is solid."
+      ]
+    },
+    "gr-beg-02": {
+      id: "gr-beg-02",
+      title: "The verb To Be",
+      slides: [
+        "INTRO|||To Be or Not To Be|||Ser ou estar. It's the most irregular verb in English, but the most important.|||Elo: Let's conquer the verb To Be once and for all.",
+        "CONCEPT|||I am, You are, He is...|||I am (I'm). You/We/They are (You're, We're, They're). He/She/It is (He's, She's, It's).|||Elo: Can you say the contractions out loud?",
+        "EXAMPLE|||Age and Feelings|||In English, we ARE our age, we don't HAVE our age. 'I am 25 years old.' Not 'I have 25 years.'|||Elo: How old are you? Tell me in English.",
+        "CONCEPT|||Questions with To Be|||Just flip the subject and the verb! 'You are happy' -> 'Are you happy?'|||Elo: Turn this into a question: 'She is from Brazil.'",
+        "CULTURE|||How's it going?|||'How is it going?' is a very common greeting using the verb To Be.|||Elo: And the answer? 'It's going well, thanks!'",
+        "DRILL|||Translation|||Translate: 'Eles não estão cansados, eles estão com fome.'|||Elo: Remember, in English we ARE hungry, we don't HAVE hunger.",
+        "ROLEPLAY|||Meeting a Stranger|||You meet someone at a conference. They ask: 'Are you from around here?'|||Elo: Say no, and tell them where you are from.",
+        "REVIEW|||Being Awesome|||You learned: To be conjugation, age rules, and question structure.|||Elo: You are doing great! (See what I did there?)"
+      ]
+    },
+    "gr-beg-03": {
+      id: "gr-beg-03",
+      title: "Articles (A, An, The)",
+      slides: [
+        "INTRO|||The Little Words|||A, An, The. They are tiny, but they cause massive confusion for Portuguese speakers.|||Elo: Do you ever just guess which article to use? Let's fix that.",
+        "CONCEPT|||A vs An|||Use 'A' before consonant sounds (a car, a university). Use 'An' before vowel sounds (an apple, an hour).|||Elo: Notice I said 'sounds', not letters! 'Hour' starts with a vowel sound.",
+        "CONCEPT|||The Definite Article|||Use 'The' for specific things. Use 'A/An' for general things. 'I saw a dog' (any dog). 'The dog bit me' (that specific dog).|||Elo: If I say 'Let's go to the beach', do we both know which beach?",
+        "EXAMPLE|||No Article (Zero Article)|||We don't use articles for plural general nouns or uncountable nouns. 'I love pizza.' Not 'I love the pizza.'|||Elo: This is tricky because in Portuguese you say 'A pizza é boa'.",
+        "CULTURE|||Names and Titles|||We don't use 'The' before names. Never say 'The John is here'. Just 'John is here'.|||Elo: Did you use to put 'The' in front of your friends' names?",
+        "DRILL|||Translation|||Translate: 'A vida é bela.'|||Elo: Careful! Life in general = no article.",
+        "ROLEPLAY|||The Bakery|||You want to buy one specific cake in the window, and any cup of coffee.|||Elo: Order them! Use 'the' for the cake, and 'a' for the coffee.",
+        "REVIEW|||Article Master|||You learned: A/An sounds, specific vs general, and the zero article rule.|||Elo: The end of the lesson! (See, specific end!)."
+      ]
+    },
+    "gr-beg-04": {
+      id: "gr-beg-04",
+      title: "Basic nouns & plurals",
+      slides: [
+        "INTRO|||One or Many?|||Adding 's' is usually enough, but English loves exceptions. Let's look at plurals.|||Elo: Are you ready to multiply things?",
+        "CONCEPT|||Regular Plurals|||Usually add -s (cars, books). If it ends in s, ch, sh, x, add -es (bus -> buses, watch -> watches).|||Elo: Make 'box' plural.",
+        "CONCEPT|||Irregular Plurals|||Man -> Men, Woman -> Women, Child -> Children, Person -> People, Tooth -> Teeth, Mouse -> Mice.|||Elo: Don't say 'persons' or 'childs'! It's a dead giveaway.",
+        "EXAMPLE|||Countable vs Uncountable|||You can count apples (one apple, two apples). You cannot count water, information, or advice.|||Elo: Never say 'an advice' or 'two advices'. Say 'some advice'.",
+        "CULTURE|||Money is Uncountable|||The word 'money' is uncountable. You can't have 'three moneys'. You have three dollars.|||Elo: So we ask 'How MUCH money?', not 'How MANY moneys?'",
+        "DRILL|||Translation|||Translate: 'Eu preciso de algumas informações sobre as crianças.'|||Elo: Watch out for 'informações' and 'crianças'!",
+        "ROLEPLAY|||At the Dentist|||The dentist asks what's wrong. You have pain in more than one tooth.|||Elo: Tell the dentist your 'teeth' hurt. Don't use 'tooths'!",
+        "REVIEW|||Plural Perfection|||You learned: -es endings, irregular plurals, and uncountable nouns like advice and information.|||Elo: Excellent progress. You're building a strong base."
+      ]
+    },
+    "gr-beg-05": {
+      id: "gr-beg-05",
+      title: "Pronouns & possessives",
+      slides: [
+        "INTRO|||Mine or Yours?|||He, him, his. She, her, hers. It's time to sort out who owns what!|||Elo: Pronouns can be messy. Let's clean them up.",
+        "CONCEPT|||Subject vs Object Pronouns|||Subjects DO the action (I, He, She, We). Objects RECEIVE it (Me, Him, Her, Us). 'I love her.' 'She loves me.'|||Elo: Choose the right one: '(Him/He) gave it to (I/me)'.",
+        "CONCEPT|||Possessive Adjectives|||My, Your, His, Her, Its, Our, Their. They go BEFORE a noun. 'This is my car.' 'That is her book.'|||Elo: Careful with 'Its' (possessive) vs 'It's' (It is).",
+        "EXAMPLE|||Possessive Pronouns|||Mine, Yours, His, Hers, Ours, Theirs. They REPLACE the noun. 'This car is mine.'|||Elo: If I ask 'Is this pen yours?', you answer 'Yes, it's ___'.",
+        "CULTURE|||Gender Neutral 'They'|||'They' is often used as a singular pronoun when the gender is unknown or non-binary. 'Someone left their umbrella.'|||Elo: This is very common in modern English!",
+        "DRILL|||Translation|||Translate: 'Eu a vi ontem, mas o carro dela não estava lá.'|||Elo: Distinguish between the object pronoun 'a' and possessive 'dela'.",
+        "ROLEPLAY|||Lost and Found|||You found a wallet. You ask a coworker if it belongs to him.|||Elo: Ask: 'Is this your wallet?' or 'Is this yours?'",
+        "REVIEW|||You Own It|||You learned: Subject vs Object, possessive adjectives, and possessive pronouns.|||Elo: You've completed Beginner Grammar! Give yourself a round of applause."
+      ]
+    }
+  },
+  "english-grammar-high-beginner": {
+    "gr-hbeg-01": {
+      id: "gr-hbeg-01",
+      title: "Past simple & regular verbs",
+      slides: [
+        "INTRO|||Time Travel to the Past|||Let's leave the present and learn how to talk about things that are finished.|||Elo: Welcome to High Beginner! What did you do yesterday?",
+        "CONCEPT|||The -ED Ending|||For regular verbs, just add -ed. Play -> Played. Work -> Worked. Walk -> Walked.|||Elo: Sounds easy, but the pronunciation is the tricky part!",
+        "CONCEPT|||Pronunciation of -ED|||It has 3 sounds: /id/ (wanted), /t/ (worked), /d/ (played). We rarely pronounce the 'e'!|||Elo: Say 'worked'. It sounds like 'workt', right?",
+        "EXAMPLE|||Negative & Questions|||Use 'did' for questions and 'didn't' for negatives. The main verb goes back to normal! 'Did you work?' 'I didn't play.'|||Elo: Don't say 'I didn't worked'. Only one past marker needed!",
+        "CULTURE|||Weekend Catch-up|||'What did you do this weekend?' is the most common Monday morning question in the US.|||Elo: You will use the past simple every Monday of your life.",
+        "DRILL|||Translation|||Translate: 'Eu assisti a um filme ontem, mas não gostei.'|||Elo: Watch out for the negative form!",
+        "ROLEPLAY|||Monday Morning|||A colleague asks: 'Did you watch the game last night?'|||Elo: Say 'No, I didn't watch it. I worked late.'",
+        "REVIEW|||Past Perfected|||You learned: -ED endings, pronunciation tricks, and did/didn't.|||Elo: Great job stepping into the past."
+      ]
+    },
+    "gr-hbeg-02": {
+      id: "gr-hbeg-02",
+      title: "Past simple & irregular verbs",
+      slides: [
+        "INTRO|||The Rule Breakers|||Some verbs refuse to follow the -ed rule. You just have to memorize them.|||Elo: Go -> Went. See -> Saw. Let's tackle the irregulars.",
+        "VOCAB|||Top 5 Irregulars|||Go -> Went. Have -> Had. Do -> Did. Say -> Said. Make -> Made.|||Elo: These 5 make up a huge percentage of all spoken English.",
+        "CONCEPT|||The Good News|||The negatives and questions work exactly the same as regular verbs! Use 'didn't' + base verb. 'I didn't go.'|||Elo: Did you go to the store? 'No, I didn't go.'",
+        "EXAMPLE|||Story Time|||'Yesterday, I WENT to the store, BOUGHT some milk, and CAME home.'|||Elo: Notice how irregulars dominate narrative storytelling.",
+        "CULTURE|||Slang: 'My bad'|||If you make a mistake in the past, a common casual apology is 'My bad!' (Meaning: 'That was my mistake').|||Elo: Try saying 'My bad' instead of 'I'm sorry' for small mistakes.",
+        "DRILL|||Translation|||Translate: 'Eu fui para a cama tarde, então não tive tempo de tomar café.'|||Elo: Use 'went' and 'didn't have'.",
+        "ROLEPLAY|||The Interrogation|||Your friend asks: 'Where did you go last night? I didn't see you at the party.'|||Elo: Tell them you went to a restaurant and had dinner with your family.",
+        "REVIEW|||Memory Master|||You learned: Key irregular verbs and how to use them in stories.|||Elo: The more you read and listen, the more natural irregulars become."
+      ]
+    },
+    "gr-hbeg-03": {
+      id: "gr-hbeg-03",
+      title: "There is vs There are",
+      slides: [
+        "INTRO|||Pointing Things Out|||In Portuguese you use 'Ter' (Tem um carro na rua). In English, we use 'There is/are'. Let's fix this common error.|||Elo: Have you ever said 'Have a problem'? That's Portu-lish!",
+        "CONCEPT|||There is (Singular)|||'There is a book on the table.' Use it for one thing, or for uncountable things ('There is water').|||Elo: Contraction: 'There's a problem.'",
+        "CONCEPT|||There are (Plural)|||'There are three books on the table.' Use it for plurals.|||Elo: Contraction: 'There're' exists but is hard to say. Just say 'There are'.",
+        "EXAMPLE|||Questions and Negatives|||'Is there a bank near here?' 'There aren't any apples left.'|||Elo: Turn 'There is a delay' into a question.",
+        "CULTURE|||Giving Directions|||Americans use 'There's a...' constantly when giving directions. 'There's a gas station on the corner.'|||Elo: It's the most natural way to describe what's around you.",
+        "DRILL|||Translation|||Translate: 'Tem muitas pessoas na sala, mas não tem comida.'|||Elo: DO NOT use 'have'! Use 'There are' and 'There isn't'.",
+        "ROLEPLAY|||Hotel Desk|||You are at a hotel. You want to know if they have a gym.|||Elo: Ask the receptionist: 'Is there a gym in the hotel?'",
+        "REVIEW|||Existence Verified|||You learned: There is/There are, and avoiding the 'Have' trap.|||Elo: You just eliminated a major Portuguese-speaker mistake!"
+      ]
+    },
+    "gr-hbeg-04": {
+      id: "gr-hbeg-04",
+      title: "Prepositions of time & place",
+      slides: [
+        "INTRO|||In, On, At|||The terrible trio! Prepositions are tricky, but there is a logic to them. Let's learn the triangle.|||Elo: Do you struggle with in/on/at? Everyone does.",
+        "CONCEPT|||The Triangle of Time|||IN (General/Big: In 2024, In May, In the morning). ON (Specific Days: On Monday, On May 5th). AT (Exact Time: At 3 PM, At noon).|||Elo: What preposition do you use for your birthday?",
+        "CONCEPT|||The Triangle of Place|||IN (Enclosed space: In a box, In London). ON (Surfaces/Streets: On the table, On Main Street). AT (Specific Points: At the door, At the bus stop).|||Elo: Are you IN a bus or ON a bus? (Hint: You can walk on it, so it's ON).",
+        "EXAMPLE|||Combining Them|||'Let's meet AT the coffee shop ON Friday IN the evening.'|||Elo: Notice how we go from specific place to specific day to general time.",
+        "CULTURE|||On Time vs In Time|||'On time' means exactly at the scheduled time. 'In time' means before it's too late.|||Elo: 'The meeting started on time. I arrived just in time to get a coffee.'",
+        "DRILL|||Translation|||Translate: 'Meu aniversário é em Julho. A festa é no sábado às 8 da noite.'|||Elo: Use the triangle rules! In July, On Saturday, At 8 PM.",
+        "ROLEPLAY|||Scheduling a Call|||A client says: 'Can we meet next week?'|||Elo: Suggest meeting ON Tuesday AT 10 AM.",
+        "REVIEW|||Preposition Pro|||You learned: The In/On/At triangle for time and place.|||Elo: Memorize the triangle and you'll be correct 90% of the time."
+      ]
+    },
+    "gr-hbeg-05": {
+      id: "gr-hbeg-05",
+      title: "Adjectives & comparatives",
+      slides: [
+        "INTRO|||Bigger, Better, Faster, Stronger|||How do we compare things in English? It depends on the size of the word.|||Elo: Are you taller than your best friend?",
+        "CONCEPT|||Short Adjectives|||For 1-syllable words, add -er. Tall -> Taller. Fast -> Faster. Big -> Bigger (double the consonant!).|||Elo: 'My car is faster than yours.' Always use 'than', not 'that'!",
+        "CONCEPT|||Long Adjectives|||For 3+ syllable words, use 'More'. Beautiful -> More beautiful. Expensive -> More expensive.|||Elo: Never say 'more better' or 'more faster'. Just faster!",
+        "EXAMPLE|||The Exceptions|||Good -> Better. Bad -> Worse. Far -> Further/Farther.|||Elo: These are the most common irregulars. Memorize them.",
+        "CULTURE|||The Culture of 'Best'|||American marketing loves superlatives. 'The biggest burger', 'The fastest internet'. We'll learn superlatives soon!|||Elo: Everything is bigger in Texas, as they say.",
+        "DRILL|||Translation|||Translate: 'Este laptop é mais caro, mas é melhor.'|||Elo: Use 'more expensive' and 'better'.",
+        "ROLEPLAY|||Buying a Phone|||The salesperson shows you two phones. One is big and expensive, the other is small and cheap.|||Elo: Tell them you want the smaller one because it is cheaper.",
+        "REVIEW|||Comparison Complete|||You learned: -er vs more, 'than', and irregular comparatives.|||Elo: You've finished High Beginner Grammar! You are officially an intermediate."
+      ]
+    }
+  },
+  "english-grammar-intermediate": {
+    "gr-int-01": {
+      id: "gr-int-01",
+      title: "Present perfect (Experience)",
+      slides: [
+        "INTRO|||The Dreaded Present Perfect|||It's the tense that doesn't exist in Portuguese! But it's essential for sounding fluent. Let's decode it.|||Elo: Have you ever eaten sushi? That's the Present Perfect!",
+        "CONCEPT|||What is it?|||Have/Has + Past Participle (verb column 3). We use it to talk about life experiences WITHOUT saying exactly WHEN they happened.|||Elo: 'I have been to Paris.' (In my life up to now).",
+        "CONCEPT|||Past Simple vs Present Perfect|||If you say WHEN, use Past Simple: 'I went to Paris in 2018.' If you don't say when, use Present Perfect: 'I have been to Paris.'|||Elo: Time is the trigger!",
+        "EXAMPLE|||Have you ever...?|||'Have you ever seen this movie?' 'No, I haven't. But I have read the book.'|||Elo: 'Ever' means 'at any time in your life'.",
+        "CULTURE|||Small Talk Gold|||'Have you ever...' is the ultimate icebreaker in English. 'Have you ever tried the food at that new restaurant?'|||Elo: It invites people to share stories.",
+        "DRILL|||Translation|||Translate: 'Eu já visitei Nova York, mas nunca visitei Chicago.'|||Elo: Don't translate 'já'. Just use the Present Perfect!",
+        "ROLEPLAY|||The Interview|||The recruiter asks: 'Have you ever managed a team?'|||Elo: Say yes, and then switch to Past Simple to give details: 'Yes, I have. I managed a team last year.'",
+        "REVIEW|||Experience Gained|||You learned: Life experiences without time = Present Perfect. Specific time = Past Simple.|||Elo: This takes practice, but you'll get it!"
+      ]
+    },
+    "gr-int-02": {
+      id: "gr-int-02",
+      title: "Present perfect (Recent past)",
+      slides: [
+        "INTRO|||Just, Already, and Yet|||The Present Perfect is also used for actions that happened recently and affect the present.|||Elo: 'I have just finished my coffee.' Let's learn these magic words.",
+        "CONCEPT|||Just (A moment ago)|||'I have just arrived.' It goes between 'have' and the verb.|||Elo: If someone offers you food but you ate 5 minutes ago, say: 'No thanks, I have just eaten.'",
+        "CONCEPT|||Already vs Yet|||Already (before expected) goes in positive sentences: 'I have already finished.' Yet (until now) goes at the end of negatives/questions: 'I haven't finished yet.'|||Elo: 'Yet' is 'ainda' in negative sentences.",
+        "EXAMPLE|||The Status Update|||Boss: Have you sent the email yet? — You: Yes, I've already sent it.|||Elo: This is daily office communication in English.",
+        "CULTURE|||American vs British|||British English uses Present Perfect strictly here. American English often just uses Past Simple: 'I just ate' instead of 'I've just eaten'. Both are fine!|||Elo: The 'yet/already' rules still apply though.",
+        "DRILL|||Translation|||Translate: 'Você já limpou seu quarto? Não, ainda não.'|||Elo: Use 'yet' for both the question and the negative answer.",
+        "ROLEPLAY|||The Group Project|||Your partner asks: 'Have you finished your part of the presentation yet?'|||Elo: Tell them you have ALREADY finished it.",
+        "REVIEW|||Time Management|||You learned: Just (very recently), Already (done), Yet (not done, but expected).|||Elo: I have just taught you a great lesson!"
+      ]
+    },
+    "gr-int-03": {
+      id: "gr-int-03",
+      title: "Modal verbs of obligation & advice",
+      slides: [
+        "INTRO|||Rules and Advice|||Must, Have to, Should. How strong is your advice? How strict is the rule?|||Elo: Do you have to study English, or do you want to?",
+        "CONCEPT|||Must vs Have To (Obligation)|||Both mean obligation. 'Must' is often internal or written rules (Passengers must wear seatbelts). 'Have to' is external facts (I have to work tomorrow).|||Elo: In conversation, 'have to' is much more common.",
+        "CONCEPT|||Mustn't vs Don't have to|||CAREFUL! They are different. 'You mustn't go' = It's forbidden. 'You don't have to go' = It's optional, you choose.|||Elo: This is a huge trap for Portuguese speakers!",
+        "EXAMPLE|||Giving Advice (Should)|||'Should' is for good advice. 'You look tired. You should sleep.' It's not a rule, just a good idea.|||Elo: Give me some advice using 'should'.",
+        "CULTURE|||Softening Obligations|||Americans don't like being told what they 'must' do. Bosses often soften it: 'We should probably get this done by Friday' (meaning: You MUST do it).|||Elo: It's all about reading between the lines.",
+        "DRILL|||Translation|||Translate: 'Você não precisa pagar, é grátis. Mas você não deve tocar nisso.'|||Elo: Use 'don't have to' (optional) and 'mustn't' (forbidden).",
+        "ROLEPLAY|||The Tour Guide|||A tourist asks about the museum rules. Tell them they HAVE TO buy a ticket, but they DON'T HAVE TO buy an audio guide.|||Elo: Use the modal verbs to explain the rules.",
+        "REVIEW|||Rule Master|||You learned: Have to (fact), Must (rule), Don't have to (choice), Mustn't (forbidden), Should (advice).|||Elo: You should definitely celebrate finishing this lesson."
+      ]
+    },
+    "gr-int-04": {
+      id: "gr-int-04",
+      title: "Zero & First Conditionals",
+      slides: [
+        "INTRO|||If This, Then That|||Conditionals talk about cause and effect. If you learn this, you will speak better! (That's a conditional!).|||Elo: Let's master the real and possible situations.",
+        "CONCEPT|||The Zero Conditional (Facts)|||If + Present, Present. Used for facts and absolute truths. 'If you heat ice, it melts.'|||Elo: Try one: If you mix blue and yellow, you get...",
+        "CONCEPT|||The First Conditional (Real Possibility)|||If + Present, Will + Verb. Used for real future possibilities. 'If it rains tomorrow, I will stay home.'|||Elo: Notice we DO NOT use 'will' in the 'If' part. Never 'If it will rain'.",
+        "EXAMPLE|||Making Threats/Promises|||'If you help me with this report, I will buy you lunch.'|||Elo: This is the standard way to negotiate or make promises.",
+        "CULTURE|||Unless|||'Unless' means 'If not'. 'I won't go unless you go' = 'I won't go if you don't go.' It's very common in native speech!|||Elo: It sounds much more advanced than 'if not'.",
+        "DRILL|||Translation|||Translate: 'Se eu tiver tempo, eu te ligo mais tarde.'|||Elo: Present in the 'If' clause, Will in the result clause.",
+        "ROLEPLAY|||Making Weekend Plans|||Your friend asks: 'Are we going to the beach tomorrow?' The weather forecast is uncertain.|||Elo: Answer: 'If it is sunny, we will go. If it rains, we will stay home.'",
+        "REVIEW|||Condition Met|||You learned: Zero conditional (facts), First conditional (future possibilities), and Unless.|||Elo: If you practice, you will succeed!"
+      ]
+    },
+    "gr-int-05": {
+      id: "gr-int-05",
+      title: "Relative clauses (who, which, that)",
+      slides: [
+        "INTRO|||Connecting Ideas|||How do we combine two short sentences into one fluid, native-sounding sentence? Relative pronouns!|||Elo: Instead of 'That's the man. He stole my car', let's combine them.",
+        "CONCEPT|||Who, Which, That|||Use 'Who' for people. Use 'Which' for things. Use 'That' for both!|||Elo: 'The man WHO stole my car.' 'The car WHICH was stolen.'",
+        "CONCEPT|||Dropping 'That'|||If the relative pronoun is the OBJECT of the clause, you can drop it. 'The movie (that) I watched was good.'|||Elo: Natives drop 'that' all the time to speak faster.",
+        "EXAMPLE|||Defining vs Non-Defining|||'My brother, who lives in NY, is a doctor' (Extra info, use commas). 'The man who lives next door is a doctor' (Essential info, no commas).|||Elo: Notice how the commas change the meaning.",
+        "CULTURE|||Whom|||'Whom' is the object form of 'Who', but it's dying out in spoken American English. People just use 'Who'. 'Who did you talk to?' (Instead of 'To whom did you speak?').|||Elo: Don't stress over 'whom' unless you are writing a formal essay.",
+        "DRILL|||Translation|||Translate: 'A mulher que eu conheci ontem é a chefe.'|||Elo: Try to drop the 'that/who' if you can! (The woman I met...)",
+        "ROLEPLAY|||The Police Report|||The officer asks you to describe the suspect and their car.|||Elo: 'It was a tall man WHO was wearing a hat, driving a car WHICH was red.'",
+        "REVIEW|||Connection Made|||You learned: Who/Which/That, dropping the object pronoun, and comma rules.|||Elo: You've finished Intermediate Grammar! The student WHO studied hard succeeded."
+      ]
+    }
+  },
+  "english-grammar-advanced": {
+    "gr-adv-01": {
+      id: "gr-adv-01",
+      title: "The Passive Voice",
+      slides: [
+        "INTRO|||Focus on the Action|||Sometimes who did the action isn't important. The action itself is. That's when we use the Passive Voice.|||Elo: 'Mistakes were made.' A classic politician phrase!",
+        "CONCEPT|||How to form it|||Subject + To Be + Past Participle. Active: 'Shakespeare wrote Hamlet.' Passive: 'Hamlet was written by Shakespeare.'|||Elo: The object of the active sentence becomes the subject.",
+        "CONCEPT|||When to use it|||1. When the actor is unknown ('My car was stolen'). 2. In formal/scientific writing ('The liquid was heated'). 3. To avoid blame ('Mistakes were made').|||Elo: It sounds very professional in business emails.",
+        "EXAMPLE|||In the News|||'A new hospital is being built in the city center.' (Present Continuous Passive)|||Elo: We don't care who is building it, we just care about the hospital.",
+        "CULTURE|||Active vs Passive in Resumes|||In American resumes, always use Active Voice! 'I managed a team' is strong. 'A team was managed by me' is weak and weird.|||Elo: Keep the passive voice for reports, use active voice for selling yourself.",
+        "DRILL|||Translation|||Translate: 'O relatório será terminado amanhã.'|||Elo: Future Passive! (Will be + past participle).",
+        "ROLEPLAY|||The Corporate Update|||You need to tell your boss that the servers were hacked, but you don't know by who.|||Elo: Use the passive voice: 'The servers were hacked last night.'",
+        "REVIEW|||Passively Perfect|||You learned: Forming the passive, when to use it, and when to avoid it.|||Elo: This lesson was completed by you."
+      ]
+    },
+    "gr-adv-02": {
+      id: "gr-adv-02",
+      title: "Reported Speech",
+      slides: [
+        "INTRO|||He Said, She Said|||How do you repeat what someone else told you? You can't always use quotes. You need Reported Speech.|||Elo: 'He said that he was tired.' Let's learn the backshift.",
+        "CONCEPT|||The Backshift|||When reporting, you usually shift the tense BACK one step into the past. Present -> Past. Past -> Past Perfect. Will -> Would.|||Elo: Direct: 'I am hungry'. Reported: 'He said he WAS hungry'.",
+        "CONCEPT|||Pronouns and Time|||You also have to change pronouns and time words. 'I will do it tomorrow' -> 'She said SHE would do it THE NEXT DAY.'|||Elo: It requires mental gymnastics, but it becomes automatic.",
+        "EXAMPLE|||Reporting Questions|||For questions, drop the 'do/does' and use normal word order. Direct: 'Where do you live?' Reported: 'He asked me where I lived.'|||Elo: This is tricky! Not 'He asked me where did I live'.",
+        "CULTURE|||Say vs Tell|||'Tell' requires an object (Tell ME, Tell HIM). 'Say' does not. 'He said he was tired.' 'He told ME he was tired.'|||Elo: Never say 'He said me'.",
+        "DRILL|||Translation|||Translate: 'Ela me disse que não viria para a festa.'|||Elo: 'She told me...' and shift 'will not' to 'would not'.",
+        "ROLEPLAY|||Office Gossip|||Your boss told you: 'I am resigning next month.' A coworker asks you what he said.|||Elo: Report it: 'He told me that he was resigning the following month.'",
+        "REVIEW|||The Reporter|||You learned: Backshifting tenses, reporting questions, and Say vs Tell.|||Elo: You can now successfully navigate office gossip in English!"
+      ]
+    },
+    "gr-adv-03": {
+      id: "gr-adv-03",
+      title: "Second & Third Conditionals",
+      slides: [
+        "INTRO|||Dreams and Regrets|||How do we talk about imaginary present situations and past regrets? We use the advanced conditionals.|||Elo: If I had a million dollars... (finish the sentence!)",
+        "CONCEPT|||Second Conditional (Imaginary Present)|||If + Past Simple, Would + Verb. 'If I won the lottery, I would buy an island.' (I probably won't win).|||Elo: We use 'were' for all subjects. 'If I were you...' Not 'If I was you'.",
+        "CONCEPT|||Third Conditional (Past Regrets)|||If + Past Perfect, Would have + Past Participle. 'If I had studied, I would have passed.' (But I didn't study, and I failed).|||Elo: This is for impossible past situations.",
+        "EXAMPLE|||Mixed Conditionals|||Sometimes we mix them! Past action -> Present result. 'If I had gone to bed earlier (past), I wouldn't be tired now (present).'|||Elo: This is native-level fluency territory.",
+        "CULTURE|||Shoulda, Woulda, Coulda|||Americans use 'Should have' (Shoulda) for regrets, 'Would have' (Woulda) for third conditional, and 'Could have' (Coulda) for missed possibilities.|||Elo: 'I shoulda studied more.'",
+        "DRILL|||Translation|||Translate: 'Se eu soubesse, eu teria te ajudado.'|||Elo: Third conditional! Past perfect + would have.",
+        "ROLEPLAY|||The Missed Flight|||You missed your flight because you woke up late. Your friend is annoyed.|||Elo: Express regret using the 3rd Conditional: 'If I had woken up earlier...'",
+        "REVIEW|||Condition Expert|||You learned: Imaginary present (2nd), Past regrets (3rd), and mixed conditionals.|||Elo: If you hadn't taken this lesson, you wouldn't be this smart now!"
+      ]
+    },
+    "gr-adv-04": {
+      id: "gr-adv-04",
+      title: "Inversion & Emphasis",
+      slides: [
+        "INTRO|||Adding Drama|||In advanced English, we sometimes break standard word order to add emphasis or drama to a sentence.|||Elo: 'Never have I ever...' is a classic example of inversion.",
+        "CONCEPT|||Negative Inversion|||When starting a sentence with a negative adverb (Never, Rarely, Seldom, Not only), invert the subject and auxiliary verb.|||Elo: Normal: 'I have never seen such a thing.' Inversion: 'Never have I seen such a thing.'",
+        "CONCEPT|||Cleft Sentences (It was... that...)|||To emphasize one part of a sentence, wrap it in 'It is/was [X] that/who...'.|||Elo: Normal: 'John broke the window.' Emphasis: 'It was John who broke the window.'",
+        "EXAMPLE|||Not only... but also|||'Not only did she pass the exam, but she also got the highest grade.'|||Elo: Notice the 'did she pass' instead of 'she passed'. This sounds incredibly formal and impressive.",
+        "CULTURE|||Rhetoric and Speeches|||Politicians and writers use inversion constantly for dramatic effect. It sounds poetic and authoritative.|||Elo: Listen to any famous speech, and you'll hear inversion.",
+        "DRILL|||Translation|||Rewrite with emphasis: 'The delay caused the problem.' -> 'It was...'",
+        "ROLEPLAY|||The Job Interview|||You want to emphasize that your LEADERSHIP SKILLS (not your coding skills) saved the project.|||Elo: Use a cleft sentence: 'It was my leadership skills that...'",
+        "REVIEW|||Dramatic Effect|||You learned: Negative inversion and cleft sentences for emphasis.|||Elo: Not only did you learn it, but you also mastered it!"
+      ]
+    },
+    "gr-adv-05": {
+      id: "gr-adv-05",
+      title: "Discourse markers & linking words",
+      slides: [
+        "INTRO|||The Glue of English|||Advanced speakers don't just speak in isolated sentences. They link their ideas beautifully.|||Elo: Words like 'Moreover' and 'Nevertheless' separate the learners from the masters.",
+        "CONCEPT|||Adding & Contrasting|||To add: Furthermore, Moreover, In addition. To contrast: However, Nevertheless, On the other hand, Despite.|||Elo: 'Despite' is followed by a noun or -ing, not a full sentence! 'Despite the rain...', not 'Despite it rained'.",
+        "CONCEPT|||Cause & Result|||Cause: Due to, Owing to, As a result of. Result: Consequently, Therefore, Thus.|||Elo: 'Due to' is formal for 'because of'.",
+        "EXAMPLE|||Structuring an Argument|||'Firstly, the cost is too high. Moreover, the quality is poor. Therefore, we should reject the proposal.'|||Elo: Notice how professional and structured this sounds.",
+        "CULTURE|||Academic vs Spoken|||'Furthermore' and 'Therefore' are great for essays and formal emails. In casual speech, natives prefer 'Plus', 'Also', and 'So'.|||Elo: Don't use 'Furthermore' at a bar with friends!",
+        "DRILL|||Translation|||Translate: 'Apesar do mau tempo, nós fomos à praia. Consequentemente, ficamos doentes.'|||Elo: Try 'Despite' and 'Consequently'.",
+        "ROLEPLAY|||The Board Meeting|||You need to argue against a project. Point 1: It's expensive. Point 2: We don't have time. Conclusion: Cancel it.|||Elo: Use linking words to connect these three ideas formally.",
+        "REVIEW|||Fluency Achieved|||You learned: Advanced linking words for contrast, cause, and addition.|||Elo: Congratulations! You have completed the entire Grammar track. You are an expert."
+      ]
+    }
+  }
+};
