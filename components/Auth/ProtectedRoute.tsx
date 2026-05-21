@@ -15,8 +15,8 @@ const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   }
 
   if (!user) {
-    // Redirect to home with state to open auth modal
-    return <Navigate to="/" state={{ openAuthModal: true, from: location.pathname }} replace />;
+    // Redirect to login page
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

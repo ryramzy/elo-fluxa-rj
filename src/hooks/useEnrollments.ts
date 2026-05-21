@@ -28,6 +28,9 @@ export function useEnrollments(uid: string) {
           lessonsCompleted: doc.data().lessonsCompleted,
           totalLessons: doc.data().totalLessons,
           xpEarned: doc.data().xpEarned,
+          activeLessonId: doc.data().activeLessonId,
+          activeSlideIndex: doc.data().activeSlideIndex,
+          completedLessons: doc.data().completedLessons,
           id: doc.id
         }));
 

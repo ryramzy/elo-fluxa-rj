@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useEnrollments } from '../hooks/useEnrollments';
 import { courses } from '../data/courses';
 import { lessonContent } from '../data/lessonContent';
 import { awardXP } from '../lib/xpSystem';
+import { updateLessonProgress } from '../lib/firestore';
 import { SlideViewer } from '../components/course/SlideViewer';
 import { SlideCompletionState } from '../components/course/SlideCompletionState';
 
@@ -11,6 +13,7 @@ const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { enrollments } = useEnrollments(user?.uid || '');
   
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -18,6 +21,9 @@ const LessonPage: React.FC = () => {
   const lessonIndex = course?.lessons.findIndex(l => l.id === lessonId);
   const lesson = lessonIndex !== undefined ? course?.lessons[lessonIndex] : undefined;
   const isLastLesson = lessonIndex === course?.lessons.length! - 1;
+
+  const enrollment = enrollments.find(e => e.courseId === courseId);
+  const initialSlide = enrollment?.activeLessonId === lessonId ? (enrollment?.activeSlideIndex || 0) : 0;
 
   if (!course || !lesson) {
     return (
@@ -35,9 +41,19 @@ const LessonPage: React.FC = () => {
     );
   }
 
-  const handleCompleteLesson = async () => {
-    if (!user?.uid) return;
+  const handleSlideChange = async (index: number) => {
+    if (!user?.uid || !courseId || !lessonId) return;
     try {
+      await updateLessonProgress(user.uid, courseId, lessonId, index, false);
+    } catch (error) {
+      console.error('Error saving slide progress:', error);
+    }
+  };
+
+  const handleCompleteLesson = async () => {
+    if (!user?.uid || !courseId || !lessonId) return;
+    try {
+      await updateLessonProgress(user.uid, courseId, lessonId, initialSlide, true);
       await awardXP(user.uid, lesson.xpReward, `lesson completed: ${lesson.title}`);
       setIsCompleted(true);
       console.log(`+${lesson.xpReward} XP earned!`);
@@ -133,6 +149,8 @@ const LessonPage: React.FC = () => {
   return (
     <SlideViewer 
       slides={generateSlides()} 
+      initialSlide={initialSlide}
+      onSlideChange={handleSlideChange}
       onComplete={handleCompleteLesson}
       onClose={() => navigate(`/courses/${courseId}`)}
     />

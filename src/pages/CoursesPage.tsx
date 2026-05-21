@@ -25,6 +25,22 @@ const Courses: React.FC = () => {
   });
 
   const handleEnrollClick = (courseId: string) => {
+    const enrollment = enrollments.find(e => e.courseId === courseId);
+    
+    if (enrollment) {
+      let nextLessonId = enrollment.activeLessonId;
+      if (!nextLessonId) {
+        const course = courses.find(c => c.id === courseId);
+        const firstUncompleted = course?.lessons.find(l => !enrollment.completedLessons?.includes(l.id));
+        nextLessonId = firstUncompleted?.id || course?.lessons[0]?.id;
+      }
+      
+      if (nextLessonId) {
+        navigate(`/courses/${courseId}/lessons/${nextLessonId}`);
+        return;
+      }
+    }
+    
     navigate(`/courses/${courseId}`);
   };
 

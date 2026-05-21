@@ -130,7 +130,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => navigate('/', { state: { openAuthModal: true } })}
+                  onClick={() => navigate('/signup')}
                   className="text-slate-400 hover:text-white text-sm transition-colors"
                 >
                   Create Account

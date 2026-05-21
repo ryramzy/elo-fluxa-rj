@@ -99,7 +99,7 @@ const CoursePage: React.FC = () => {
 
   const handleLessonClick = async (lesson: Lesson) => {
     if (!user?.uid) {
-      navigate('/', { state: { openAuthModal: true, returnTo: `/courses/${courseId}/lessons/${lesson.id}` } });
+      navigate('/login', { state: { returnTo: `/courses/${courseId}/lessons/${lesson.id}` } });
       return;
     }
 
@@ -211,8 +211,8 @@ const CoursePage: React.FC = () => {
                 <div className="p-6">
                   <div className="space-y-3">
                     {course.lessons.map((lesson, index) => {
-                      const isCompleted = false; // TODO: Check lesson completion
-                      const isCurrent = false; // TODO: Determine current lesson
+                      const isCompleted = enrollment?.completedLessons?.includes(lesson.id) || false;
+                      const isCurrent = enrollment?.activeLessonId === lesson.id || (!enrollment?.activeLessonId && index === 0);
                       const canAccess = lesson.free || isEnrolled;
                       
                       return (
@@ -372,10 +372,12 @@ const CoursePage: React.FC = () => {
                   ) : (
                     <button 
                       onClick={() => {
-                        const nextLesson = course.lessons.find(l => !l.free);
-                        if (nextLesson) {
-                          navigate(`/courses/${courseId}/lessons/${nextLesson.id}`);
+                        let nextLessonId = enrollment?.activeLessonId;
+                        if (!nextLessonId) {
+                          const firstUncompleted = course.lessons.find(l => !enrollment?.completedLessons?.includes(l.id));
+                          nextLessonId = firstUncompleted?.id || course.lessons[0].id;
                         }
+                        navigate(`/courses/${courseId}/lessons/${nextLessonId}`);
                       }}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors"
                     >

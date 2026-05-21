@@ -43,6 +43,9 @@ export interface Enrollment {
   lessonsCompleted: number;
   totalLessons: number;
   xpEarned: number;
+  activeLessonId?: string;
+  activeSlideIndex?: number;
+  completedLessons?: string[];
 }
 
 export interface LegacyBooking {
@@ -114,10 +117,50 @@ export async function getUserEnrollments(uid: string): Promise<Enrollment[]> {
       lessonsCompleted: doc.data().lessonsCompleted,
       totalLessons: doc.data().totalLessons,
       xpEarned: doc.data().xpEarned,
+      activeLessonId: doc.data().activeLessonId,
+      activeSlideIndex: doc.data().activeSlideIndex,
+      completedLessons: doc.data().completedLessons,
       id: doc.id
     } as Enrollment));
   } catch (error) {
     console.error('Error getting user enrollments:', error);
+    throw error;
+  }
+}
+
+export async function updateLessonProgress(
+  uid: string,
+  courseId: string,
+  lessonId: string,
+  slideIndex: number,
+  isCompleted: boolean = false
+): Promise<void> {
+  try {
+    const enrollmentsRef = collection(db, `users/${uid}/courses`);
+    const q = query(enrollmentsRef, where('courseId', '==', courseId));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      const docRef = snapshot.docs[0].ref;
+      const data = snapshot.docs[0].data();
+      const completedLessons = data.completedLessons || [];
+      
+      const updates: any = {
+        activeLessonId: lessonId,
+        activeSlideIndex: slideIndex,
+      };
+
+      if (isCompleted && !completedLessons.includes(lessonId)) {
+        completedLessons.push(lessonId);
+        updates.completedLessons = completedLessons;
+        updates.lessonsCompleted = completedLessons.length;
+        updates.progress = Math.round((completedLessons.length / data.totalLessons) * 100);
+      }
+
+      await updateDoc(docRef, updates);
+    }
+  } catch (error) {
+    console.error('Error updating lesson progress:', error);
     throw error;
   }
 }

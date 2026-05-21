@@ -10,16 +10,20 @@ interface Slide {
 
 interface SlideViewerProps {
   slides: Slide[];
+  initialSlide?: number;
+  onSlideChange?: (index: number) => void;
   onComplete: () => void;
   onClose: () => void;
 }
 
-export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, onComplete, onClose }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide = 0, onSlideChange, onComplete, onClose }) => {
+  const [currentIndex, setCurrentIndex] = useState(initialSlide);
 
   const handleNext = () => {
     if (currentIndex < slides.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      onSlideChange?.(nextIndex);
     } else {
       onComplete();
     }
@@ -27,7 +31,9 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, onComplete, on
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+      onSlideChange?.(prevIndex);
     }
   };
 

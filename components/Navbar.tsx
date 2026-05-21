@@ -159,7 +159,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             {!user ? (
               /* Login Button */
               <button 
-                onClick={handleLoginModalOpen}
+                onClick={() => navigate('/login')}
                 data-login-trigger="true"
                 className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 transition-all hidden sm:block rounded-sm"
               >
