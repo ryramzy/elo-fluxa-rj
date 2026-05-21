@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useEnrollments } from '../hooks/useEnrollments';
 import { courses, Course, Lesson } from '../data/courses';
-import { checkCourseAccess } from '../lib/firestore';
+import { checkCourseAccess, enrollUserInCourse } from '../lib/firestore';
 import { XP_REWARDS, awardXP } from '../lib/xpSystem';
 import SubscriptionModal from '../components/SubscriptionModal';
 
@@ -63,8 +63,7 @@ const CoursePage: React.FC = () => {
     if (!user?.uid) return;
     
     try {
-      // Create enrollment logic would go here
-      // For now, just show success and award XP
+      await enrollUserInCourse(user.uid, course.id, course.lessons.length);
       await awardXP(user.uid, 50, 'course enrolled');
       console.log(`Successfully enrolled in ${course.title}! +50 XP`);
       setSelectedCourseForEnroll(null);

@@ -435,20 +435,50 @@ export async function checkCourseAccess(uid: string, courseId: string): Promise<
     }
     
     // Free plan: check if user has enrollments
-    const enrollmentsQuery = query(
-      collection(db, `users/${uid}/courses`),
-      where('courseId', '==', courseId)
-    );
-    const enrollmentsSnapshot = await getDocs(enrollmentsQuery);
+    const allEnrollmentsQuery = query(collection(db, `users/${uid}/courses`));
+    const allEnrollmentsSnapshot = await getDocs(allEnrollmentsQuery);
     
-    if (enrollmentsSnapshot.empty) {
-      return { canAccess: false, reason: 'Free plan limited to 1 course. Upgrade to access this course.' };
+    // If they are already enrolled in THIS course, allow it
+    const isEnrolledInThis = allEnrollmentsSnapshot.docs.some(doc => doc.data().courseId === courseId);
+    if (isEnrolledInThis) {
+      return { canAccess: true };
+    }
+
+    // If they are not enrolled in this course, check if they hit the limit (1 course for free plan)
+    if (allEnrollmentsSnapshot.docs.length >= 1) {
+      return { canAccess: false, reason: 'O plano gratuito permite apenas 1 curso. Faça o upgrade para acessar mais.' };
     }
     
     return { canAccess: true };
   } catch (error) {
     console.error('Error checking course access:', error);
     return { canAccess: false, reason: 'Error checking access' };
+  }
+}
+
+export async function enrollUserInCourse(uid: string, courseId: string, totalLessons: number): Promise<void> {
+  try {
+    const enrollmentsRef = collection(db, `users/${uid}/courses`);
+    const q = query(enrollmentsRef, where('courseId', '==', courseId));
+    const snapshot = await getDocs(q);
+
+    // If already enrolled, do nothing
+    if (!snapshot.empty) return;
+
+    await addDoc(enrollmentsRef, {
+      courseId,
+      enrolledAt: serverTimestamp(),
+      progress: 0,
+      lessonsCompleted: 0,
+      totalLessons,
+      xpEarned: 0,
+      activeLessonId: '',
+      activeSlideIndex: 0,
+      completedLessons: []
+    });
+  } catch (error) {
+    console.error('Error enrolling user in course:', error);
+    throw error;
   }
 }
 
