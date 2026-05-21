@@ -1,743 +1,360 @@
-export interface Lesson {
+export interface LessonMetadata {
   id: string;
   title: string;
-  duration: string;
-  type: 'video' | 'reading' | 'quiz' | 'conversation';
-  description: string;
+  lessonIndex: number;
   xpReward: number;
-  free: boolean;
 }
 
 export interface Course {
   id: string;
   title: string;
   description: string;
-  lessons: Lesson[];
-  totalXpReward: number;
-  color: string;
-  accentColor: string;
-  emoji: string;
+  descriptionPt?: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Specialty';
   tag: string;
-  audience: string;
-  aboutText: string;
-  whoThisIsFor: string;
-  whatYouWillLearn: string[];
+  emoji: string;
   imageUrl: string;
+  totalLessons: number;
+  lessons: LessonMetadata[];
 }
 
 export const courses: Course[] = [
+  // --- BEGINNER ---
+  {
+    id: 'basic-english-daily-life',
+    title: 'Basic English for Daily Life',
+    description: 'Survive and communicate in basic real-world English situations.',
+    descriptionPt: 'Sobreviva e comunique-se em situações básicas do mundo real em inglês.',
+    level: 'Beginner',
+    tag: 'Essentials',
+    emoji: '👋',
+    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'be-dl-01', title: 'Greetings & introductions', lessonIndex: 0, xpReward: 20 },
+      { id: 'be-dl-02', title: 'Numbers, time & dates', lessonIndex: 1, xpReward: 20 },
+      { id: 'be-dl-03', title: 'Shopping & prices', lessonIndex: 2, xpReward: 20 },
+      { id: 'be-dl-04', title: 'Asking for directions', lessonIndex: 3, xpReward: 20 },
+      { id: 'be-dl-05', title: 'Daily routines & habits', lessonIndex: 4, xpReward: 25 },
+    ]
+  },
+  {
+    id: 'beginner-english-topics',
+    title: 'Beginner English Topics & Conversation',
+    description: 'Hold a simple, friendly conversation in English with confidence.',
+    descriptionPt: 'Mantenha uma conversa simples e amigável em inglês com confiança.',
+    level: 'Beginner',
+    tag: 'Conversation',
+    emoji: '☕',
+    imageUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'be-tc-01', title: 'Talking about yourself', lessonIndex: 0, xpReward: 20 },
+      { id: 'be-tc-02', title: 'Your family & home', lessonIndex: 1, xpReward: 20 },
+      { id: 'be-tc-03', title: 'Food & restaurants', lessonIndex: 2, xpReward: 20 },
+      { id: 'be-tc-04', title: 'Weather & seasons', lessonIndex: 3, xpReward: 20 },
+      { id: 'be-tc-05', title: 'Weekend plans', lessonIndex: 4, xpReward: 25 },
+    ]
+  },
+
+  // --- INTERMEDIATE ---
+  {
+    id: 'intermediate-english-topics',
+    title: 'Intermediate English Conversation Topics',
+    description: 'Express complex thoughts, tell stories, and discuss ideas with confidence.',
+    descriptionPt: 'Expresse pensamentos complexos, conte histórias e discuta ideias com confiança.',
+    level: 'Intermediate',
+    tag: 'Conversation',
+    emoji: '🗣️',
+    imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800&q=80',
+    totalLessons: 6,
+    lessons: [
+      { id: 'int-tc-01', title: 'Opinions & agreeing/disagreeing', lessonIndex: 0, xpReward: 30 },
+      { id: 'int-tc-02', title: 'Storytelling & past experiences', lessonIndex: 1, xpReward: 30 },
+      { id: 'int-tc-03', title: 'Plans, predictions & future', lessonIndex: 2, xpReward: 30 },
+      { id: 'int-tc-04', title: 'Problems & solutions', lessonIndex: 3, xpReward: 30 },
+      { id: 'int-tc-05', title: 'Culture shock & travel stories', lessonIndex: 4, xpReward: 30 },
+      { id: 'int-tc-06', title: 'News & current events', lessonIndex: 5, xpReward: 35 },
+    ]
+  },
+  {
+    id: 'english-grammar-beginner',
+    title: 'Beginner Grammar',
+    description: 'Master the fundamental building blocks of English grammar.',
+    descriptionPt: 'Domine os blocos de construção fundamentais da gramática inglesa.',
+    level: 'Intermediate', // Grouping under the Grammar track flow, though targeting beginners
+    tag: 'Grammar',
+    emoji: '🧱',
+    imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'gr-beg-01', title: 'Present simple & routines', lessonIndex: 0, xpReward: 25 },
+      { id: 'gr-beg-02', title: 'The verb To Be', lessonIndex: 1, xpReward: 25 },
+      { id: 'gr-beg-03', title: 'Articles (A, An, The)', lessonIndex: 2, xpReward: 25 },
+      { id: 'gr-beg-04', title: 'Basic nouns & plurals', lessonIndex: 3, xpReward: 25 },
+      { id: 'gr-beg-05', title: 'Pronouns & possessives', lessonIndex: 4, xpReward: 30 },
+    ]
+  },
+  {
+    id: 'english-grammar-high-beginner',
+    title: 'High Beginner Grammar',
+    description: 'Expand your sentence structure to talk about the past and describe the world.',
+    descriptionPt: 'Expanda sua estrutura de frases para falar sobre o passado e descrever o mundo.',
+    level: 'Intermediate',
+    tag: 'Grammar',
+    emoji: '📝',
+    imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'gr-hbeg-01', title: 'Past simple & regular verbs', lessonIndex: 0, xpReward: 30 },
+      { id: 'gr-hbeg-02', title: 'Past simple & irregular verbs', lessonIndex: 1, xpReward: 30 },
+      { id: 'gr-hbeg-03', title: 'There is vs There are', lessonIndex: 2, xpReward: 30 },
+      { id: 'gr-hbeg-04', title: 'Prepositions of time & place', lessonIndex: 3, xpReward: 30 },
+      { id: 'gr-hbeg-05', title: 'Adjectives & comparatives', lessonIndex: 4, xpReward: 35 },
+    ]
+  },
+  {
+    id: 'english-grammar-intermediate',
+    title: 'Intermediate Grammar',
+    description: 'Unlock nuanced expression with perfect tenses and conditionals.',
+    descriptionPt: 'Desbloqueie expressões sutis com tempos perfeitos e condicionais.',
+    level: 'Intermediate',
+    tag: 'Grammar',
+    emoji: '🏗️',
+    imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'gr-int-01', title: 'Present perfect (Experience)', lessonIndex: 0, xpReward: 35 },
+      { id: 'gr-int-02', title: 'Present perfect (Recent past)', lessonIndex: 1, xpReward: 35 },
+      { id: 'gr-int-03', title: 'Modal verbs of obligation & advice', lessonIndex: 2, xpReward: 35 },
+      { id: 'gr-int-04', title: 'Zero & First Conditionals', lessonIndex: 3, xpReward: 35 },
+      { id: 'gr-int-05', title: 'Relative clauses (who, which, that)', lessonIndex: 4, xpReward: 40 },
+    ]
+  },
+  {
+    id: 'english-grammar-advanced',
+    title: 'Advanced Grammar',
+    description: 'Speak and write with academic and professional precision.',
+    descriptionPt: 'Fale e escreva com precisão acadêmica e profissional.',
+    level: 'Intermediate',
+    tag: 'Grammar',
+    emoji: '🏛️',
+    imageUrl: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'gr-adv-01', title: 'The Passive Voice', lessonIndex: 0, xpReward: 40 },
+      { id: 'gr-adv-02', title: 'Reported Speech', lessonIndex: 1, xpReward: 40 },
+      { id: 'gr-adv-03', title: 'Second & Third Conditionals', lessonIndex: 2, xpReward: 40 },
+      { id: 'gr-adv-04', title: 'Inversion & Emphasis', lessonIndex: 3, xpReward: 40 },
+      { id: 'gr-adv-05', title: 'Discourse markers & linking words', lessonIndex: 4, xpReward: 45 },
+    ]
+  },
+
+  // --- ADVANCED ---
+  {
+    id: 'advanced-english-topics',
+    title: 'Advanced English Conversation Topics',
+    description: 'Communicate with native-level fluency, subtlety, and cultural intelligence.',
+    descriptionPt: 'Comunique-se com fluência de nível nativo, sutileza e inteligência cultural.',
+    level: 'Advanced',
+    tag: 'Conversation',
+    emoji: '🍷',
+    imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+    totalLessons: 6,
+    lessons: [
+      { id: 'adv-tc-01', title: 'Debate & persuasion', lessonIndex: 0, xpReward: 40 },
+      { id: 'adv-tc-02', title: 'Humor, irony & sarcasm', lessonIndex: 1, xpReward: 40 },
+      { id: 'adv-tc-03', title: 'Nuanced emotions & empathy', lessonIndex: 2, xpReward: 40 },
+      { id: 'adv-tc-04', title: 'Ethics & philosophy', lessonIndex: 3, xpReward: 40 },
+      { id: 'adv-tc-05', title: 'Identity, culture & belonging', lessonIndex: 4, xpReward: 40 },
+      { id: 'adv-tc-06', title: 'Navigating ambiguity & vagueness', lessonIndex: 5, xpReward: 50 },
+    ]
+  },
+  {
+    id: 'advanced-business-english',
+    title: 'Advanced Business English Communication',
+    description: 'Operate confidently at the executive level in English-speaking professional environments.',
+    descriptionPt: 'Opere com confiança no nível executivo em ambientes profissionais de língua inglesa.',
+    level: 'Advanced',
+    tag: 'Business',
+    emoji: '🏢',
+    imageUrl: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80',
+    totalLessons: 8,
+    lessons: [
+      { id: 'adv-biz-01', title: 'Executive presence & commanding a room', lessonIndex: 0, xpReward: 45 },
+      { id: 'adv-biz-02', title: 'High-stakes negotiation language', lessonIndex: 1, xpReward: 45 },
+      { id: 'adv-biz-03', title: 'Presentations & pitching', lessonIndex: 2, xpReward: 45 },
+      { id: 'adv-biz-04', title: 'Cross-cultural business communication', lessonIndex: 3, xpReward: 45 },
+      { id: 'adv-biz-05', title: 'Written business English', lessonIndex: 4, xpReward: 45 },
+      { id: 'adv-biz-06', title: 'Managing up, down & sideways', lessonIndex: 5, xpReward: 45 },
+      { id: 'adv-biz-07', title: 'Crisis communication & damage control', lessonIndex: 6, xpReward: 45 },
+      { id: 'adv-biz-08', title: 'Networking & relationship-building', lessonIndex: 7, xpReward: 60 },
+    ]
+  },
   {
     id: 'business-english',
-    title: 'Business English — Entrevistas e Confiança',
-    description: 'Comunicação profissional, entrevistas de emprego e confiança no ambiente corporativo.',
-    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80',
-    lessons: [
-      {
-        id: 'lesson-1',
-        title: 'First impressions: how Americans greet in professional settings',
-        duration: '8 min',
-        type: 'reading',
-        description: 'Learn the art of professional greetings and making strong first impressions in American business culture.',
-        xpReward: 15,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'The elevator pitch: sell yourself in 60 seconds',
-        duration: '12 min',
-        type: 'video',
-        description: 'Craft and deliver compelling elevator pitches that capture attention and open doors.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'Interview vocabulary: 50 phrases that get you hired',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Essential phrases and vocabulary that impress interviewers and showcase your professionalism.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'Salary negotiation in English: scripts that work',
-        duration: '20 min',
-        type: 'conversation',
-        description: 'Practice salary negotiation conversations with proven scripts and confidence-building techniques.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'Email etiquette: tone, structure, and sign-offs',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Master professional email communication with proper tone, formatting, and cultural nuances.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Conference calls and Zoom meetings: phrases and flow',
-        duration: '14 min',
-        type: 'video',
-        description: 'Navigate virtual meetings confidently with key phrases and meeting management skills.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Giving presentations: opening, body, closing',
-        duration: '18 min',
-        type: 'conversation',
-        description: 'Structure and deliver impactful presentations that engage and persuade American audiences.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'Small talk mastery: weather, sports, weekend plans',
-        duration: '8 min',
-        type: 'reading',
-        description: 'Build rapport through authentic small talk that feels natural to native speakers.',
-        xpReward: 15,
-        free: false
-      },
-      {
-        id: 'lesson-9',
-        title: 'Handling difficult questions in interviews',
-        duration: '12 min',
-        type: 'quiz',
-        description: 'Practice responding to challenging interview questions with confidence and clarity.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-10',
-        title: 'Writing a LinkedIn profile that gets noticed',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Optimize your LinkedIn profile for American recruiters and professional networking.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-11',
-        title: 'Networking events: how to work a room in English',
-        duration: '20 min',
-        type: 'conversation',
-        description: 'Master the art of networking events from introductions to meaningful connections.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-12',
-        title: 'Final assessment: mock interview with Matt',
-        duration: '30 min',
-        type: 'conversation',
-        description: 'Complete mock interview with personalized feedback and improvement strategies.',
-        xpReward: 40,
-        free: false
-      }
-    ],
-    totalXpReward: 300,
-    color: '#e6f1fb',
-    accentColor: '#185fa5',
+    title: 'Business English',
+    description: 'Navigate meetings, emails, and professional interactions seamlessly.',
+    descriptionPt: 'Navegue em reuniões, e-mails e interações profissionais de forma natural.',
+    level: 'Advanced',
+    tag: 'Business',
     emoji: '💼',
-    tag: 'Pro',
-    audience: 'Profissionais',
-    aboutText: 'Master the language of American business with practical skills for interviews, meetings, and professional networking. This course focuses on real-world scenarios you\'ll encounter in corporate environments.',
-    whoThisIsFor: 'Professionals seeking to work in American companies, advance their careers, or improve their business English confidence.',
-    whatYouWillLearn: [
-      'Craft compelling elevator pitches and professional introductions',
-      'Navigate interviews and salary negotiations with confidence',
-      'Master email etiquette and virtual meeting communication',
-      'Build professional relationships through effective networking',
-      'Deliver impactful presentations and handle difficult questions'
+    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
+    totalLessons: 6,
+    lessons: [
+      { id: 'biz-01', title: 'Professional introductions & networking', lessonIndex: 0, xpReward: 35 },
+      { id: 'biz-02', title: 'Meetings (agenda, minutes, participation)', lessonIndex: 1, xpReward: 35 },
+      { id: 'biz-03', title: 'Business correspondence', lessonIndex: 2, xpReward: 35 },
+      { id: 'biz-04', title: 'Phone & video call etiquette', lessonIndex: 3, xpReward: 35 },
+      { id: 'biz-05', title: 'Interviews & job applications', lessonIndex: 4, xpReward: 35 },
+      { id: 'biz-06', title: 'Business idioms & collocations', lessonIndex: 5, xpReward: 45 },
     ]
   },
   {
-    id: 'sports-english',
-    title: 'Sports English — Basquete e Futebol Americano',
-    description: 'Gírias, regras, cultura e conversação do mundo dos esportes americanos.',
-    imageUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
+    id: 'business-innovation',
+    title: 'Business Innovation',
+    description: 'Speak the language of startups, disruption, and product thinking.',
+    descriptionPt: 'Fale a língua das startups, inovação e pensamento de produto.',
+    level: 'Advanced',
+    tag: 'Startup',
+    emoji: '🚀',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32b7?w=800&q=80',
+    totalLessons: 5,
     lessons: [
-      {
-        id: 'lesson-1',
-        title: 'Basketball basics: the court, positions, and rules',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Learn fundamental basketball terminology and understand the layout of the court.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'NFL fundamentals: downs, yards, and touchdowns explained',
-        duration: '14 min',
-        type: 'video',
-        description: 'Master American football basics including scoring, positions, and game flow.',
-        xpReward: 25,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'Trash talk and compliments: the language of the court',
-        duration: '8 min',
-        type: 'reading',
-        description: 'Understand sports trash talk culture and appropriate ways to engage in competitive banter.',
-        xpReward: 15,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'March Madness: college basketball culture',
-        duration: '12 min',
-        type: 'video',
-        description: 'Explore the excitement and cultural significance of NCAA March Madness tournament.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'The Super Bowl: more than a game',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Discover why the Super Bowl is America\'s biggest cultural event beyond just football.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Sports commentary: how announcers speak',
-        duration: '10 min',
-        type: 'video',
-        description: 'Learn the language and style of professional sports commentators.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Fantasy sports: vocabulary for the obsessed',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Master fantasy football and basketball terminology to join conversations with fans.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'Sports interviews: how athletes speak to media',
-        duration: '18 min',
-        type: 'conversation',
-        description: 'Practice the language patterns and clichés used in post-game sports interviews.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-9',
-        title: 'Betting, stats, and analytics language',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Understand sports betting terminology and advanced analytics discussions.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-10',
-        title: 'Final challenge: commentate a play-by-play',
-        duration: '25 min',
-        type: 'conversation',
-        description: 'Test your skills by commentating a real sports play with Matt\'s guidance.',
-        xpReward: 35,
-        free: false
-      }
-    ],
-    totalXpReward: 280,
-    color: '#faeeda',
-    accentColor: '#ba7517',
-    emoji: '🏀',
-    tag: 'Hot',
-    audience: 'Fãs de esportes',
-    aboutText: 'Immerse yourself in American sports culture while learning the language of basketball and football. Perfect for fans who want to understand games, commentary, and fan conversations.',
-    whoThisIsFor: 'Sports enthusiasts who want to understand American games, follow commentary, and discuss sports like a native fan.',
-    whatYouWillLearn: [
-      'Understand basketball and football rules and terminology',
-      'Follow sports commentary and analysis like a native speaker',
-      'Participate in sports conversations and fantasy leagues',
-      'Appreciate the cultural significance of major sporting events',
-      'Commentate games and discuss plays with confidence'
+      { id: 'biz-inn-01', title: 'Startup & venture vocabulary', lessonIndex: 0, xpReward: 40 },
+      { id: 'biz-inn-02', title: 'Pitching ideas & getting buy-in', lessonIndex: 1, xpReward: 40 },
+      { id: 'biz-inn-03', title: 'Design thinking language', lessonIndex: 2, xpReward: 40 },
+      { id: 'biz-inn-04', title: 'Agile & lean methodology jargon', lessonIndex: 3, xpReward: 40 },
+      { id: 'biz-inn-05', title: 'Innovation culture & disruption', lessonIndex: 4, xpReward: 50 },
     ]
   },
   {
-    id: 'hiphop-culture',
-    title: 'Hip Hop — Cultura e Inglês Americano',
-    description: 'Do Bronx ao Brasil — a linguagem, história e cultura do hip hop americano.',
-    imageUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzhiNWNmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+SGlwIEhvcDwvdGV4dD48L3N2Zz4=',
+    id: 'business-marketing',
+    title: 'Business Marketing',
+    description: 'Master the vocabulary of digital marketing, branding, and persuasion.',
+    descriptionPt: 'Domine o vocabulário de marketing digital, branding e persuasão.',
+    level: 'Advanced',
+    tag: 'Marketing',
+    emoji: '📈',
+    imageUrl: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800&q=80',
+    totalLessons: 5,
     lessons: [
-      {
-        id: 'lesson-1',
-        title: 'Origins: the Bronx, the block party, and the birth of hip hop',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Explore the historical roots of hip hop in 1970s Bronx and its cultural significance.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'The four elements: rap, DJing, breakdancing, graffiti',
-        duration: '15 min',
-        type: 'video',
-        description: 'Discover the four foundational elements that define hip hop culture worldwide.',
-        xpReward: 25,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'AAVE: African American Vernacular English explained respectfully',
-        duration: '18 min',
-        type: 'reading',
-        description: 'Learn about AAVE as a legitimate dialect with its own grammar and cultural context.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'Rap lyrics decoded: slang, metaphors, and wordplay',
-        duration: '14 min',
-        type: 'reading',
-        description: 'Analyze rap lyrics to understand complex wordplay, metaphors, and cultural references.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'Regional dialects: NY vs LA vs Atlanta vs Houston',
-        duration: '16 min',
-        type: 'video',
-        description: 'Compare different regional hip hop styles and dialects across America.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Hip hop and social justice: the language of protest',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Understand how hip hop has been a voice for social change and political expression.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Beatmaking vocabulary: bars, hooks, bridges, and drops',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Learn the terminology of music production and beatmaking in hip hop.',
-        xpReward: 15,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'Final project: write and present your own 8 bars',
-        duration: '30 min',
-        type: 'conversation',
-        description: 'Create and perform your own 8-bar rap with Matt\'s feedback and guidance.',
-        xpReward: 40,
-        free: false
-      }
-    ],
-    totalXpReward: 200,
-    color: '#eeedfe',
-    accentColor: '#534ab7',
-    emoji: '🎤',
-    tag: 'New',
-    audience: 'Amantes de cultura',
-    aboutText: 'Dive deep into hip hop culture and its influence on American English. From the Bronx block parties to global dominance, understand the language that shaped modern American speech.',
-    whoThisIsFor: 'Culture enthusiasts, music lovers, and anyone interested in understanding the cultural roots of modern American slang.',
-    whatYouWillLearn: [
-      'Understand hip hop\'s historical and cultural significance',
-      'Decode rap lyrics and appreciate wordplay techniques',
-      'Recognize regional dialects and styles across America',
-      'Appreciate hip hop as a vehicle for social commentary',
-      'Create your own rhymes and understand beatmaking terminology'
+      { id: 'biz-mkt-01', title: 'Brand voice & copywriting', lessonIndex: 0, xpReward: 40 },
+      { id: 'biz-mkt-02', title: 'Digital marketing vocabulary', lessonIndex: 1, xpReward: 40 },
+      { id: 'biz-mkt-03', title: 'Data & analytics language', lessonIndex: 2, xpReward: 40 },
+      { id: 'biz-mkt-04', title: 'Campaign briefs & creative reviews', lessonIndex: 3, xpReward: 40 },
+      { id: 'biz-mkt-05', title: 'Consumer psychology & persuasion', lessonIndex: 4, xpReward: 50 },
     ]
   },
   {
-    id: 'medical-english',
-    title: 'Medical English for Professionals',
-    description: 'Vocabulário clínico e comunicação profissional para médicos e enfermeiros.',
-    imageUrl: 'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=600&q=80',
+    id: 'business-strategy',
+    title: 'Business Strategy',
+    description: 'Framework-driven communication for management and consulting.',
+    descriptionPt: 'Comunicação baseada em frameworks para gestão e consultoria.',
+    level: 'Advanced',
+    tag: 'Management',
+    emoji: '♟️',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80',
+    totalLessons: 5,
     lessons: [
-      {
-        id: 'lesson-1',
-        title: 'Hospital vocabulary: departments, roles, and equipment',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Master essential hospital terminology including departments, job titles, and medical equipment.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'Patient intake: how to ask questions in English',
-        duration: '15 min',
-        type: 'conversation',
-        description: 'Practice patient intake interviews with proper medical questioning techniques.',
-        xpReward: 25,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'Describing symptoms: precision language for diagnosis',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Learn precise vocabulary for describing symptoms and medical conditions.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'Medication instructions: dosage, frequency, side effects',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Master clear communication about medications, dosages, and potential side effects.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'Emergency room communication: urgent language',
-        duration: '14 min',
-        type: 'video',
-        description: 'Learn critical communication skills for high-pressure emergency situations.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Surgical team communication: sterile field vocabulary',
-        duration: '8 min',
-        type: 'reading',
-        description: 'Understand operating room terminology and sterile field communication protocols.',
-        xpReward: 15,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Medical records and documentation in English',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Learn proper medical documentation and record-keeping terminology.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'Breaking bad news: compassionate language frameworks',
-        duration: '20 min',
-        type: 'conversation',
-        description: 'Practice delivering difficult medical news with empathy and clarity.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-9',
-        title: 'Telemedicine: conducting remote consultations',
-        duration: '12 min',
-        type: 'video',
-        description: 'Adapt medical communication for virtual consultations and telemedicine platforms.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-10',
-        title: 'Interdisciplinary meetings: presenting cases',
-        duration: '18 min',
-        type: 'conversation',
-        description: 'Practice presenting medical cases to interdisciplinary teams effectively.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-11',
-        title: 'Patient rights and informed consent language',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Understand legal terminology around patient rights and informed consent.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-12',
-        title: 'Medical ethics vocabulary',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Master terminology for discussing medical ethics and professional conduct.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-13',
-        title: 'US vs Brazilian medical culture: key differences',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Navigate cultural differences between American and Brazilian medical systems.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-14',
-        title: 'Final assessment: full patient consultation simulation',
-        duration: '35 min',
-        type: 'conversation',
-        description: 'Complete comprehensive patient consultation with realistic scenarios.',
-        xpReward: 40,
-        free: false
-      }
-    ],
-    totalXpReward: 350,
-    color: '#e1f5ee',
-    accentColor: '#1d9e75',
-    emoji: '🩺',
-    tag: 'Pro',
-    audience: 'Profissionais de saúde',
-    aboutText: 'Comprehensive medical English training covering clinical vocabulary, patient communication, and professional healthcare terminology. Designed for medical professionals working in or with American healthcare systems.',
-    whoThisIsFor: 'Doctors, nurses, and healthcare professionals who need to communicate effectively in English medical environments.',
-    whatYouWillLearn: [
-      'Master clinical vocabulary and medical terminology',
-      'Conduct patient interviews and medical histories confidently',
-      'Communicate effectively in emergency and surgical settings',
-      'Navigate medical ethics and patient rights discussions',
-      'Adapt to American medical culture and documentation standards'
+      { id: 'biz-str-01', title: 'Strategic frameworks vocabulary', lessonIndex: 0, xpReward: 45 },
+      { id: 'biz-str-02', title: 'Stakeholder communication', lessonIndex: 1, xpReward: 45 },
+      { id: 'biz-str-03', title: 'M&A and market entry language', lessonIndex: 2, xpReward: 45 },
+      { id: 'biz-str-04', title: 'Competitive analysis discourse', lessonIndex: 3, xpReward: 45 },
+      { id: 'biz-str-05', title: 'Long-term vision & mission', lessonIndex: 4, xpReward: 55 },
+    ]
+  },
+
+  // --- SPECIALTY ---
+  {
+    id: 'electrical-engineering-english',
+    title: 'Electrical Engineering English',
+    description: 'Technical English for circuits, safety, and engineering documentation.',
+    descriptionPt: 'Inglês técnico para circuitos, segurança e documentação de engenharia.',
+    level: 'Specialty',
+    tag: 'Engineering',
+    emoji: '⚡',
+    imageUrl: 'https://images.unsplash.com/photo-1620283085068-5aab24e2f48c?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'ee-01', title: 'Circuits & components vocabulary', lessonIndex: 0, xpReward: 40 },
+      { id: 'ee-02', title: 'Schematics & technical drawings', lessonIndex: 1, xpReward: 40 },
+      { id: 'ee-03', title: 'Safety procedures & documentation', lessonIndex: 2, xpReward: 40 },
+      { id: 'ee-04', title: 'Lab & testing language', lessonIndex: 3, xpReward: 40 },
+      { id: 'ee-05', title: 'Technical presentations & reports', lessonIndex: 4, xpReward: 50 },
     ]
   },
   {
-    id: 'study-abroad',
-    title: 'Study Abroad & Exam Prep',
-    description: 'TOEFL, IELTS e inglês acadêmico para quem vai estudar fora do Brasil.',
-    imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80',
+    id: 'full-stack-development',
+    title: 'Full Stack Development Culture',
+    description: 'English fluency for remote dev teams, PRs, and Slack etiquette.',
+    descriptionPt: 'Fluência em inglês para equipes de desenvolvimento remotas, PRs e Slack.',
+    level: 'Specialty',
+    tag: 'Tech',
+    emoji: '💻',
+    imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80',
+    totalLessons: 5,
     lessons: [
-      {
-        id: 'lesson-1',
-        title: 'TOEFL vs IELTS: which exam is right for you',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Compare TOEFL and IELTS exams to choose the best test for your academic goals.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'Academic writing: essays, thesis statements, citations',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Master American academic writing standards including essays and proper citation.',
-        xpReward: 25,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'University vocabulary: lectures, seminars, office hours',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Learn essential terminology for navigating American university life.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'Reading comprehension strategies for timed exams',
-        duration: '20 min',
-        type: 'quiz',
-        description: 'Practice effective reading strategies for standardized test success.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'Listening skills: accents, speed, and note-taking',
-        duration: '15 min',
-        type: 'video',
-        description: 'Develop listening comprehension for various American accents and speaking speeds.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Speaking section mastery: TOEFL independent task',
-        duration: '20 min',
-        type: 'conversation',
-        description: 'Practice TOEFL speaking tasks with timing and scoring strategies.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Writing section: integrated task strategies',
-        duration: '14 min',
-        type: 'reading',
-        description: 'Master integrated writing tasks combining reading and listening comprehension.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'Dorm life and campus culture in America',
-        duration: '12 min',
-        type: 'video',
-        description: 'Understand American campus culture, dorm life, and student social dynamics.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-9',
-        title: 'Making friends abroad: social English for students',
-        duration: '18 min',
-        type: 'conversation',
-        description: 'Practice social situations and friendship-building in academic settings.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-10',
-        title: 'Financial aid and scholarship applications in English',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Navigate American financial aid and scholarship application processes.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-11',
-        title: 'Final mock exam: full TOEFL simulation',
-        duration: '45 min',
-        type: 'quiz',
-        description: 'Complete full TOEFL simulation with realistic timing and difficulty.',
-        xpReward: 40,
-        free: false
-      }
-    ],
-    totalXpReward: 280,
-    color: '#fbeaf0',
-    accentColor: '#d4537e',
-    emoji: '🎓',
-    tag: 'New',
-    audience: 'Estudantes',
-    aboutText: 'Comprehensive preparation for studying abroad with focus on TOEFL/IELTS exams and real-world academic English. Master the language skills needed for success in American universities.',
-    whoThisIsFor: 'Students planning to study in the United States or needing to pass English proficiency exams for academic purposes.',
-    whatYouWillLearn: [
-      'Choose and prepare for the right English proficiency exam',
-      'Master academic writing and citation standards',
-      'Develop listening comprehension for various American accents',
-      'Practice speaking tasks with proper timing and strategies',
-      'Navigate American campus culture and social situations'
+      { id: 'fs-01', title: 'Tech team communication culture', lessonIndex: 0, xpReward: 40 },
+      { id: 'fs-02', title: 'PR reviews & issue writing', lessonIndex: 1, xpReward: 40 },
+      { id: 'fs-03', title: 'Slack/Discord professional etiquette', lessonIndex: 2, xpReward: 40 },
+      { id: 'fs-04', title: 'Reading & writing technical docs', lessonIndex: 3, xpReward: 40 },
+      { id: 'fs-05', title: 'Interviewing at English tech companies', lessonIndex: 4, xpReward: 50 },
     ]
   },
   {
-    id: 'law-enforcement',
-    title: 'Law Enforcement Culture & English',
-    description: 'Vocabulário, cultura e comunicação do sistema policial americano.',
-    imageUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzA1OTY2OSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+TGF3IEVuZm9yY2VtZW50PC90ZXh0Pjwvc3ZnPg==',
+    id: 'software-engineering-2026',
+    title: 'Software Engineering English (2026)',
+    description: 'Navigate AI-assisted development, system design, and tech leadership.',
+    descriptionPt: 'Navegue pelo desenvolvimento com IA, system design e liderança técnica.',
+    level: 'Specialty',
+    tag: 'Tech',
+    emoji: '🤖',
+    imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+    totalLessons: 6,
     lessons: [
-      {
-        id: 'lesson-1',
-        title: 'American police structure: federal, state, local',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Understand the complex hierarchy and structure of American law enforcement agencies.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-2',
-        title: 'Miranda rights and legal vocabulary',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Master Miranda rights and essential legal terminology for police work.',
-        xpReward: 20,
-        free: true
-      },
-      {
-        id: 'lesson-3',
-        title: 'Police radio communication and 10-codes',
-        duration: '14 min',
-        type: 'video',
-        description: 'Learn police radio protocols, 10-codes, and communication procedures.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-4',
-        title: 'Use of force continuum: language and policy',
-        duration: '12 min',
-        type: 'reading',
-        description: 'Understand use of force terminology and policy language in American policing.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-5',
-        title: 'Court system vocabulary: from arrest to verdict',
-        duration: '15 min',
-        type: 'reading',
-        description: 'Navigate the American court system with proper legal terminology.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-6',
-        title: 'Detective work: investigation and interrogation language',
-        duration: '16 min',
-        type: 'video',
-        description: 'Master investigation techniques and interrogation communication strategies.',
-        xpReward: 25,
-        free: false
-      },
-      {
-        id: 'lesson-7',
-        title: 'Community policing: building trust through language',
-        duration: '18 min',
-        type: 'conversation',
-        description: 'Practice community policing communication and relationship-building skills.',
-        xpReward: 30,
-        free: false
-      },
-      {
-        id: 'lesson-8',
-        title: 'FBI and federal agencies: culture and communication',
-        duration: '10 min',
-        type: 'reading',
-        description: 'Understand federal law enforcement culture and communication protocols.',
-        xpReward: 20,
-        free: false
-      },
-      {
-        id: 'lesson-9',
-        title: 'Final scenario: handle a real situation in English',
-        duration: '30 min',
-        type: 'conversation',
-        description: 'Complete realistic police scenario with comprehensive English communication.',
-        xpReward: 35,
-        free: false
-      }
-    ],
-    totalXpReward: 220,
-    color: '#f1efe8',
-    accentColor: '#888780',
-    emoji: '🚔',
-    tag: 'New',
-    audience: 'Segurança pública',
-    aboutText: 'Specialized English training for law enforcement professionals covering American police culture, legal terminology, and communication protocols essential for effective policing.',
-    whoThisIsFor: 'Police officers, federal agents, and law enforcement professionals working with American systems or international cooperation.',
-    whatYouWillLearn: [
-      'Master American law enforcement structure and terminology',
-      'Communicate effectively using police radio protocols and 10-codes',
-      'Navigate legal procedures and court system vocabulary',
-      'Build community relationships through effective communication',
-      'Handle real policing scenarios with confidence in English'
+      { id: 'swe-01', title: 'AI-assisted development vocabulary', lessonIndex: 0, xpReward: 45 },
+      { id: 'swe-02', title: 'React Native & cross-platform language', lessonIndex: 1, xpReward: 45 },
+      { id: 'swe-03', title: 'System design discussion language', lessonIndex: 2, xpReward: 45 },
+      { id: 'swe-04', title: 'DevOps & CI/CD communication', lessonIndex: 3, xpReward: 45 },
+      { id: 'swe-05', title: 'Open source contribution English', lessonIndex: 4, xpReward: 45 },
+      { id: 'swe-06', title: 'Tech leadership communication', lessonIndex: 5, xpReward: 60 },
+    ]
+  },
+  {
+    id: 'cars-automotive-ev',
+    title: 'Cars & Automotive EV English',
+    description: 'Vocabulary for car enthusiasts, mechanics, and the EV transition.',
+    descriptionPt: 'Vocabulário para entusiastas de carros, mecânicos e a transição EV.',
+    level: 'Specialty',
+    tag: 'Automotive',
+    emoji: '🏎️',
+    imageUrl: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'car-01', title: 'EV vocabulary & how they work', lessonIndex: 0, xpReward: 35 },
+      { id: 'car-02', title: 'Hybrid systems & the EV transition', lessonIndex: 1, xpReward: 35 },
+      { id: 'car-03', title: 'Modern car tech: ADAS & OTA updates', lessonIndex: 2, xpReward: 35 },
+      { id: 'car-04', title: 'Road vocabulary & driving jargon', lessonIndex: 3, xpReward: 35 },
+      { id: 'car-05', title: 'Mechanics & workshop English', lessonIndex: 4, xpReward: 45 },
+    ]
+  },
+  {
+    id: 'english-for-traveling',
+    title: 'English for Traveling',
+    description: 'Practical English to navigate airports, hotels, and emergencies abroad.',
+    descriptionPt: 'Inglês prático para navegar em aeroportos, hotéis e emergências no exterior.',
+    level: 'Specialty',
+    tag: 'Travel',
+    emoji: '✈️',
+    imageUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
+    totalLessons: 5,
+    lessons: [
+      { id: 'trv-01', title: 'Airports & check-in', lessonIndex: 0, xpReward: 30 },
+      { id: 'trv-02', title: 'Hotels & accommodation', lessonIndex: 1, xpReward: 30 },
+      { id: 'trv-03', title: 'Ordering food & handling complaints', lessonIndex: 2, xpReward: 30 },
+      { id: 'trv-04', title: 'Emergencies & asking for help', lessonIndex: 3, xpReward: 30 },
+      { id: 'trv-05', title: 'Cultural etiquette & social cues', lessonIndex: 4, xpReward: 40 },
     ]
   }
 ];
