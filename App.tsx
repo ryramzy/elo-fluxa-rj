@@ -9,7 +9,6 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import About from './components/About.tsx';
-import VideoGrid from './components/VideoGrid.tsx';
 import Footer from './components/Footer';
 import Testimonials from './components/Testimonials.tsx';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
@@ -17,6 +16,8 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import { ToastContainer } from './src/components/Toast';
 import { useToast } from './src/hooks/useToast';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import { BottomNav } from './src/components/navigation/BottomNav';
 
 // Import Dashboard and Admin components
 import Dashboard from './src/pages/Dashboard';
@@ -28,7 +29,6 @@ import AdminStudentProfile from './src/pages/AdminStudentProfile';
 import AgendaPage from './src/pages/AgendaPage';
 import Sobre from './src/pages/Sobre';
 import Dicas from './src/pages/Dicas';
-import Videos from './src/pages/Videos';
 import NotFound from './src/pages/NotFound';
 
 
@@ -51,8 +51,7 @@ function AppShell() {
       'products': '/courses',
       'about': '/',
       'reviews': '/reviews',
-      'agenda': '/agenda',
-      'video': '/video'
+      'agenda': '/agenda'
     };
 
     const targetRoute = tabMap[targetId] || '/';
@@ -79,14 +78,15 @@ function AppShell() {
 
   
   return (
-    <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100">
-      <Navbar onNavClick={handleNavClick} />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100">
+        <Navbar onNavClick={handleNavClick} />
 
-      <main
-        id="content-area"
-        className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
-      >
-        <Routes>
+        <main
+          id="content-area"
+          className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)] animate-fade-in-up"
+        >
+          <Routes>
           {/* Auth routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -96,9 +96,7 @@ function AppShell() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/courses" element={<CoursesPage />} />
                     <Route path="/reviews" element={<Testimonials />} />
-          <Route path="/video" element={<VideoGrid />} />
           <Route path="/dicas" element={<Dicas />} />
-          <Route path="/videos" element={<Videos />} />
 
           {/* Auth-required routes */}
           <Route path="/dashboard" element={
@@ -159,9 +157,12 @@ function AppShell() {
 
       <Footer />
       
+      <BottomNav />
+
       {/* Toast Container */}
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
-    </div>
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </div>
+    </ErrorBoundary>
   );
 }
 

@@ -85,7 +85,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const getActiveSection = () => {
     if (location.pathname.startsWith('/courses') || location.pathname.startsWith('/product')) return 'products';
     if (location.pathname.startsWith('/agenda')) return 'agenda';
-    if (location.pathname.startsWith('/video')) return 'video';
     return 'about';
   };
   const activeSection = getActiveSection();
@@ -141,13 +140,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 className={getLinkClasses('agenda')}
               >
                 Agenda
-              </a>
-              <a
-                href="#video"
-                onClick={(e) => handleLinkClick(e, 'video')}
-                className={getLinkClasses('video')}
-              >
-                Vídeos
               </a>
             </div>
           )}
@@ -255,13 +247,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   className={activeSection === 'agenda' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
                 >
                   Agenda
-                </a>
-                <a
-                  href="#video"
-                  onClick={(e) => handleLinkClick(e, 'video')}
-                  className={activeSection === 'video' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
-                >
-                  Vídeos
                 </a>
               </>
             )}

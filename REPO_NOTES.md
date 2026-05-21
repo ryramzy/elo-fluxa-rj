@@ -41,6 +41,30 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [May 21, 2026] — Swipeable Course Slideshow & Student-First Navigation
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Video Section Removed**: Completely deleted `src/pages/Videos.tsx` and related components, routes, and navigation links.
+- **Student-First Navigation**: 
+  - Added `<BottomNav />` for mobile (`md:hidden`) showing Home, Book, Courses, Profile.
+  - Desktop Navbar updated to prioritize these same tabs.
+- **Dashboard CTA**: Added a prominent "Book a lesson with Elo" CTA to the top of the Dashboard. `CoursesGrid` naturally serves as "Continue learning".
+- **Swipeable Course Slideshow**:
+  - Overhauled `src/pages/LessonPage.tsx` from a scrollable text page into a full-screen, native-feeling slide viewer.
+  - Implemented `<SlideViewer />` with tap-to-advance navigation (left/right screen zones) and a segmented progress bar.
+  - Added `<SlideCompletionState />` at the end of lessons to award XP and prompt the student to book a session.
+
+### Why
+- The app needed to shift from a marketing-first layout to a student-first, app-like experience.
+- Mobile users expect swipeable/tappable full-screen content (like Instagram/TikTok stories) rather than long scrolling text blocks for micro-learning.
+- The primary goal of the app is booking, so the booking CTA needs to be the most prominent element after login.
+
+### Next steps
+- Connect the booking CTA on the completion slide directly to the real scheduling flow.
+- Add real course imagery and parse real lesson content into actual distinct slide strings in `lessonContent.ts`.
+
+---
 ## [April 27, 2026] — Authentication System Fix & Firebase OAuth Integration
 **Status:** ✅ COMPLETED
 

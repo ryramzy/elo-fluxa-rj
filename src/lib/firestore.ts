@@ -452,13 +452,16 @@ export async function createTimeSlot(
   duration: number = 60
 ): Promise<string> {
   const slotData = {
-    date,
-    time,
-    duration,
-    available: true,
-    status: 'available' as const,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    date: date,        // "2026-05-05" — ALWAYS a plain string, NEVER Timestamp
+    time: time,        // "08:00" — 24hr format string
+    duration: duration,    // 60 — always minutes as number
+    available: true,  // true
+    status: "available",      // "available"
+    bookedBy: null,
+    bookedByName: null,
+    meetLink: null,
+    googleEventId: null,
+    createdAt: serverTimestamp()
   };
 
   const docRef = await addDoc(collection(db, 'slots'), slotData);
@@ -517,6 +520,7 @@ export async function bookSlot(
   // Mark slot as unavailable
   batch.update(slotRef, {
     available: false,
+    status: "booked",
     bookedBy: userId,
     bookedByName: userName,
     updatedAt: serverTimestamp(),
