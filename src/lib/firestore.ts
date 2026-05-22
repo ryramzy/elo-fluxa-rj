@@ -512,12 +512,19 @@ export async function enrollUserInCourse(uid: string, courseId: string, totalLes
   };
 
   try {
+    const legacyRef = collection(db, `users/${uid}/courses`);
+    await addDoc(legacyRef, enrollmentData);
+  } catch (error) {
+    console.error('Failed to write to legacy enrollments:', error);
+    throw error; // Throw so the UI can catch it
+  }
+
+  // Try to write to root as backup for future migration, but don't fail if it doesn't work
+  try {
     const enrollmentsRef = collection(db, 'enrollments');
     await addDoc(enrollmentsRef, enrollmentData);
   } catch (error) {
-    console.warn('Error writing to root enrollments (possible rules issue). Falling back to legacy write.', error);
-    const legacyRef = collection(db, `users/${uid}/courses`);
-    await addDoc(legacyRef, enrollmentData);
+    console.warn('Error writing to root enrollments:', error);
   }
 }
 

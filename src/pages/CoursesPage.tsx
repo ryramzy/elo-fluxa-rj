@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courses } from '../data/courses';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { useEnrollments } from '../hooks/useEnrollments';
 
 const Courses: React.FC = () => {

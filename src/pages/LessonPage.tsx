@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { useEnrollments } from '../hooks/useEnrollments';
 import { courses } from '../data/courses';
 import { lessonContent } from '../data/lessonContent';
