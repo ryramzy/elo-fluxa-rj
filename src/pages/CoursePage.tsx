@@ -68,12 +68,10 @@ const CoursePage: React.FC = () => {
     
     try {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
-      try {
-        await awardXP(user.uid, 50, 'course enrolled');
-        console.log(`Successfully enrolled in ${course.title}! +50 XP`);
-      } catch (xpErr) {
-        console.warn('Non-fatal error awarding XP during enrollment:', xpErr);
-      }
+      // Fire XP and email asynchronously so they don't block navigation
+      awardXP(user.uid, 50, 'course enrolled').catch(xpError => {
+        console.error('Failed to award XP:', xpError);
+      });
       
       // Send confirmation email in background
       fetch('/api/email/enrollment-confirmation', {

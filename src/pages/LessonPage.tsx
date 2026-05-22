@@ -8,6 +8,7 @@ import { awardXP } from '../lib/xpSystem';
 import { updateLessonProgress } from '../lib/firestore';
 import { SlideViewer } from '../components/course/SlideViewer';
 import { SlideCompletionState } from '../components/course/SlideCompletionState';
+import confetti from 'canvas-confetti';
 
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -56,6 +57,33 @@ const LessonPage: React.FC = () => {
       await updateLessonProgress(user.uid, courseId, lessonId, initialSlide, true);
       await awardXP(user.uid, lesson.xpReward, `lesson completed: ${lesson.title}`);
       setIsCompleted(true);
+      
+      // Trigger Confetti!
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899']
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      frame();
+      
       console.log(`+${lesson.xpReward} XP earned!`);
     } catch (error) {
       console.error('Error completing lesson:', error);
@@ -95,6 +123,7 @@ const LessonPage: React.FC = () => {
         slides.push({
           id: `slide-${idx}`,
           title: heading,
+          spokenText: body, // Allows the SlideViewer to read the text
           content: (
             <div className="flex flex-col h-full space-y-6">
               {typeLabel && (

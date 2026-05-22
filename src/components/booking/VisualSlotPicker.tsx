@@ -2,6 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firestore';
 import { AppError, FirebaseError, getErrorMessage, logError, retryOperation, checkNetworkStatus } from '../../utils/errorHandling';
+import { Calendar, dateFnsLocalizer, Event } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const locales = {
+  'en-US': enUS,
+};
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 interface TimeSlot {
   id: string;
@@ -432,77 +447,74 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         </div>
       )}
 
-      {/* Slot Grid */}
+      {/* Calendar Grid */}
       {slots.length > 0 && (
-        <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
-            {/* Header Row */}
-            <div className="grid grid-cols-6 gap-2 mb-2">
-              <div className="text-xs font-medium text-slate-600 dark:text-slate-400 p-2">Time</div>
-              {weekDays.map((day, index) => (
-                <div key={day} className="text-xs font-medium text-slate-600 dark:text-slate-400 p-2 text-center">
-                  <div>{day.slice(0, 3)}</div>
-                  <div className="text-xs text-slate-500">
-                    {new Date(weekDates[index]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="h-[600px] mt-4">
+          <Calendar
+            localizer={localizer}
+            events={slots.map(slot => {
+              const [year, month, day] = slot.date.split('-');
+              const [hours, minutes] = slot.time.split(':');
+              const start = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
+              const end = new Date(start.getTime() + (slot.duration || 60) * 60000);
+              
+              let title = '';
+              if (slot.available) title = 'Available';
+              else if (slot.bookedBy === currentUserId) title = 'Your Booking';
+              else title = `Booked ${slot.bookedByName || ''}`;
 
-            {/* Time Slots Grid */}
-            {timeSlots.map((time) => (
-              <div key={time} className="grid grid-cols-6 gap-2 mb-1">
-                <div className="text-xs font-medium text-slate-700 dark:text-slate-300 p-2 flex items-center">
-                  {time}
-                </div>
-                {weekDates.map((date) => {
-                  const slot = slots.find(s => s.date === date && s.time === time);
-                  const isPast = new Date(date + ' ' + time) < new Date();
-                  
-                  return (
-                    <div key={`${date}-${time}`} className="p-1">
-                      {slot ? (
-                        <button
-                          onClick={() => {
-                            if (!isPast) {
-                              if (slot.available) {
-                                bookSlot(slot);
-                              } else if (slot.bookedBy === currentUserId) {
-                                cancelSlot(slot);
-                              }
-                            }
-                          }}
-                          disabled={isPast || booking || cancelling}
-                          className={`w-full h-12 rounded-lg text-xs font-medium transition-all ${
-                            isPast
-                              ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                              : slot.available
-                              ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800 cursor-pointer'
-                              : slot.bookedBy === currentUserId
-                              ? 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800 cursor-pointer'
-                              : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 cursor-not-allowed'
-                          }`}
-                        >
-                          {isPast 
-                            ? 'Past' 
-                            : slot.available 
-                            ? 'Available' 
-                            : slot.bookedBy === currentUserId
-                            ? cancelling
-                              ? 'Cancelling...'
-                              : 'Your Booking\nClick to Cancel'
-                            : `Booked\n${slot.bookedByName || ''}`
-                          }
-                        </button>
-                      ) : (
-                        <div className="w-full h-12 rounded-lg bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600"></div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+              return {
+                id: slot.id,
+                title,
+                start,
+                end,
+                resource: slot
+              };
+            })}
+            startAccessor="start"
+            endAccessor="end"
+            views={['week']}
+            defaultView="week"
+            date={new Date(weekDates[0] + 'T00:00:00')}
+            toolbar={false}
+            onSelectEvent={(event: any) => {
+              const slot = event.resource;
+              const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
+              if (!isPast && !booking && !cancelling) {
+                if (slot.available) {
+                  bookSlot(slot);
+                } else if (slot.bookedBy === currentUserId) {
+                  cancelSlot(slot);
+                }
+              }
+            }}
+            eventPropGetter={(event: any) => {
+              const slot = event.resource;
+              const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
+              
+              let style: any = { borderRadius: '8px', border: 'none', padding: '4px 8px', fontSize: '12px', fontWeight: 'bold' };
+              
+              if (isPast) {
+                style.backgroundColor = '#f1f5f9';
+                style.color = '#94a3b8';
+                style.cursor = 'not-allowed';
+              } else if (slot.available) {
+                style.backgroundColor = '#dcfce7';
+                style.color = '#15803d';
+                style.cursor = 'pointer';
+              } else if (slot.bookedBy === currentUserId) {
+                style.backgroundColor = '#ffedd5';
+                style.color = '#c2410c';
+                style.cursor = 'pointer';
+              } else {
+                style.backgroundColor = '#fee2e2';
+                style.color = '#b91c1c';
+                style.cursor = 'not-allowed';
+              }
+              
+              return { style };
+            }}
+          />
         </div>
       )}
 

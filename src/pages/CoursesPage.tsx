@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { courses } from '../data/courses';
 import { useAuth } from '../hooks/useAuth';
 import { useEnrollments } from '../hooks/useEnrollments';
@@ -92,14 +93,23 @@ const Courses: React.FC = () => {
 
         {/* Course Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCourses.map((course) => {
+          {filteredCourses.map((course, index) => {
             const progress = getProgressPercentage(course.id);
             const isEnrolled = enrollments.some(e => e.courseId === course.id);
+            const isHovered = hoveredCourse === course.id;
             
             return (
-              <div
+              <motion.div
                 key={course.id}
-                className="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className={`bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border transition-all cursor-pointer shadow-md ${
+                  isHovered ? 'shadow-xl border-blue-200' : 'border-slate-200 dark:border-slate-700'
+                }`}
+                onMouseEnter={() => setHoveredCourse(course.id)}
+                onMouseLeave={() => setHoveredCourse(null)}
                 onClick={() => handleEnrollClick(course.id)}
               >
                 {/* Photo Banner with Colored Overlay */}
@@ -195,7 +205,7 @@ const Courses: React.FC = () => {
                     {getButtonText(course.id)}
                   </button>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
