@@ -94,10 +94,8 @@ const CoursePage: React.FC = () => {
     
     try {
       if (plan === 'starter') {
-        // Update user plan to free logic would go here
-        if (selectedCourseForEnroll) {
-          await enrollInCourse();
-        }
+        // Enroll immediately
+        await enrollInCourse();
       } else {
         console.log(`User selected ${plan} plan - redirecting to WhatsApp for payment`);
       }
@@ -138,8 +136,8 @@ const CoursePage: React.FC = () => {
   };
 
   const estimatedTotalTime = course.lessons.reduce((total, lesson) => {
-    const minutes = parseInt(lesson.duration);
-    return total + minutes;
+    const minutes = parseInt(lesson.duration || '0');
+    return total + (isNaN(minutes) ? 0 : minutes);
   }, 0);
 
   const totalLessonXP = course.lessons.reduce((total, lesson) => total + lesson.xpReward, 0);
@@ -344,7 +342,9 @@ const CoursePage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Total Time</span>
-                  <span className="font-medium text-slate-900">~{Math.round(estimatedTotalTime / 60)}h {estimatedTotalTime % 60}min</span>
+                  <span className="font-medium text-slate-900">
+                    {isNaN(estimatedTotalTime) || estimatedTotalTime === 0 ? '—' : `~${Math.floor(estimatedTotalTime / 60)}h ${estimatedTotalTime % 60}min`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Lessons</span>
