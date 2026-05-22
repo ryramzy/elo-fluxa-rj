@@ -461,45 +461,63 @@ export async function checkCourseAccess(uid: string, courseId: string): Promise<
 }
 
 export async function enrollUserInCourse(uid: string, courseId: string, totalLessons: number): Promise<void> {
+  let isEnrolled = false;
+  
   try {
     // Check root enrollments collection
     const enrollmentsRef = collection(db, 'enrollments');
     const q = query(enrollmentsRef, where('userId', '==', uid));
     const snapshot = await getDocs(q);
+    isEnrolled = snapshot.docs.some(doc => doc.data().courseId === courseId);
+  } catch (error) {
+    console.warn('Could not read from root enrollments (possible missing index or rules). Falling back to legacy check.', error);
+  }
 
-    // If already enrolled, do nothing
-    const isEnrolled = snapshot.docs.some(doc => doc.data().courseId === courseId);
-    if (isEnrolled) return;
+  if (isEnrolled) return;
 
+  try {
     // Also check legacy subcollection to prevent double enrollment during transition
     const legacyRef = collection(db, `users/${uid}/courses`);
     const legacyQ = query(legacyRef, where('courseId', '==', courseId));
     const legacySnapshot = await getDocs(legacyQ);
     if (!legacySnapshot.empty) return;
-
-    // Fetch user details for denormalization
-    const userDoc = await getDoc(doc(db, 'users', uid));
-    const userData = userDoc.exists() ? userDoc.data() : {};
-
-    await addDoc(enrollmentsRef, {
-      userId: uid,
-      userName: userData.displayName || 'Unknown Student',
-      userEmail: userData.email || 'No email provided',
-      courseId,
-      pricePaid: 0,
-      emailSent: false,
-      enrolledAt: serverTimestamp(),
-      progress: 0,
-      lessonsCompleted: 0,
-      totalLessons,
-      xpEarned: 0,
-      activeLessonId: '',
-      activeSlideIndex: 0,
-      completedLessons: []
-    });
   } catch (error) {
-    console.error('Error enrolling user in course:', error);
-    throw error;
+    console.warn('Could not read legacy enrollments either.', error);
+  }
+
+  // Fetch user details for denormalization
+  let userData: any = {};
+  try {
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    userData = userDoc.exists() ? userDoc.data() : {};
+  } catch (error) {
+    console.warn('Could not fetch user details.', error);
+  }
+
+  const enrollmentData = {
+    userId: uid,
+    userName: userData.displayName || 'Unknown Student',
+    userEmail: userData.email || 'No email provided',
+    courseId,
+    pricePaid: 0,
+    emailSent: false,
+    enrolledAt: serverTimestamp(),
+    progress: 0,
+    lessonsCompleted: 0,
+    totalLessons,
+    xpEarned: 0,
+    activeLessonId: '',
+    activeSlideIndex: 0,
+    completedLessons: []
+  };
+
+  try {
+    const enrollmentsRef = collection(db, 'enrollments');
+    await addDoc(enrollmentsRef, enrollmentData);
+  } catch (error) {
+    console.warn('Error writing to root enrollments (possible rules issue). Falling back to legacy write.', error);
+    const legacyRef = collection(db, `users/${uid}/courses`);
+    await addDoc(legacyRef, enrollmentData);
   }
 }
 
