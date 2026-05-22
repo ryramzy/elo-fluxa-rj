@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { firebaseConfig } from './src/config/firebase';
 
 console.log("Firebase Init Check:", { 
@@ -25,4 +25,5 @@ try {
   };
 }
 
+export const googleProvider = new GoogleAuthProvider();
 export { auth };
