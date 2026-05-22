@@ -60,3 +60,16 @@ Inside `mcp_server/server.py` runs a FastMCP agent handling logic such as:
 - Added comprehensive CSS dark mode support
 - localStorage persistence for user preferences
 - System preference detection
+### Enrollment Flow & Firestore Index Fix (2026-05-22)
+**Problem 1**: Enrolling in a course by clicking "Começar de graça" resulted in a silent failure where the user was not navigated to the course and no enrollment document was created.
+**Problem 2**: Course duration in the sidebar was rendering as `NaNh NaNmin` when lesson durations were undefined or missing.
+
+**Solution**:
+- **Firestore Missing Index**: The `enrollments` collection query had multiple `where` clauses (on `userId` and `courseId`), which silently failed due to a missing composite index. Bypassed this by querying only by `userId` and filtering for `courseId` in JavaScript.
+- **NaN Time**: Added a safety check with `isNaN()` inside the reduce function, and a fallback render of `—` if the time calculation fails or is `0`.
+- **XP Isolation**: Wrapped the `awardXP` function in a `try/catch` within the `enrollInCourse` logic to ensure secondary feature failures (like XP) do not completely break the critical path of course enrollment and navigation.
+- **Error UI**: Added a user-facing error banner in `CoursePage.tsx` to surface silent Promise failures (like missing permissions or network drops).
+
+**Benefits**:
+- Guaranteed execution of course enrollment by removing rigid dependencies on unindexed fields.
+- Better error transparency to users rather than silent browser console errors.

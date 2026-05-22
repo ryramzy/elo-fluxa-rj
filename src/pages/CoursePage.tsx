@@ -18,6 +18,7 @@ const CoursePage: React.FC = () => {
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [enrollError, setEnrollError] = useState<string | null>(null);
 
   const course = courses.find(c => c.id === courseId);
   const enrollment = enrollments.find(e => e.courseId === courseId);
@@ -42,6 +43,7 @@ const CoursePage: React.FC = () => {
 
   const handleEnrollClick = async () => {
     if (!user?.uid) return;
+    setEnrollError(null);
     
     try {
       const accessCheck = await checkCourseAccess(user.uid, course.id);
@@ -54,13 +56,15 @@ const CoursePage: React.FC = () => {
       
       // Enroll directly if user has access
       await enrollInCourse();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking course access:', error);
+      setEnrollError(error.message || 'Failed to check course access. Please try again.');
     }
   };
 
   const enrollInCourse = async () => {
     if (!user?.uid) return;
+    setEnrollError(null);
     
     try {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
@@ -88,8 +92,9 @@ const CoursePage: React.FC = () => {
       
       // Immediately start the course
       navigate(`/courses/${course.id}/lessons/${course.lessons[0].id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error enrolling in course:', error);
+      setEnrollError(error.message || 'Failed to enroll in the course. Please try again or contact support.');
     }
   };
 
@@ -421,6 +426,23 @@ const CoursePage: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {/* Error Banner */}
+            {enrollError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-3">
+                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <div className="flex-1 text-sm font-medium">
+                  {enrollError}
+                </div>
+                <button onClick={() => setEnrollError(null)} className="text-red-500 hover:text-red-700">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            )}
 
             {/* Help */}
             <div className="bg-white rounded-lg border border-slate-200 p-6">
