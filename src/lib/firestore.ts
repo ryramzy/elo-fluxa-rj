@@ -136,28 +136,32 @@ export async function updateLessonProgress(
   isCompleted: boolean = false
 ): Promise<void> {
   try {
-    const enrollmentsRef = collection(db, `users/${uid}/courses`);
-    const q = query(enrollmentsRef, where('courseId', '==', courseId));
-    const snapshot = await getDocs(q);
+    const queries = [
+      query(collection(db, 'enrollments'), where('userId', '==', uid), where('courseId', '==', courseId)),
+      query(collection(db, `users/${uid}/courses`), where('courseId', '==', courseId))
+    ];
 
-    if (!snapshot.empty) {
-      const docRef = snapshot.docs[0].ref;
-      const data = snapshot.docs[0].data();
-      const completedLessons = data.completedLessons || [];
-      
-      const updates: any = {
-        activeLessonId: lessonId,
-        activeSlideIndex: slideIndex,
-      };
+    for (const q of queries) {
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const docRef = snapshot.docs[0].ref;
+        const data = snapshot.docs[0].data();
+        const completedLessons = data.completedLessons || [];
+        
+        const updates: any = {
+          activeLessonId: lessonId,
+          activeSlideIndex: slideIndex,
+        };
 
-      if (isCompleted && !completedLessons.includes(lessonId)) {
-        completedLessons.push(lessonId);
-        updates.completedLessons = completedLessons;
-        updates.lessonsCompleted = completedLessons.length;
-        updates.progress = Math.round((completedLessons.length / data.totalLessons) * 100);
+        if (isCompleted && !completedLessons.includes(lessonId)) {
+          completedLessons.push(lessonId);
+          updates.completedLessons = completedLessons;
+          updates.lessonsCompleted = completedLessons.length;
+          updates.progress = Math.round((completedLessons.length / data.totalLessons) * 100);
+        }
+
+        await updateDoc(docRef, updates);
       }
-
-      await updateDoc(docRef, updates);
     }
   } catch (error) {
     console.error('Error updating lesson progress:', error);
@@ -458,15 +462,31 @@ export async function checkCourseAccess(uid: string, courseId: string): Promise<
 
 export async function enrollUserInCourse(uid: string, courseId: string, totalLessons: number): Promise<void> {
   try {
-    const enrollmentsRef = collection(db, `users/${uid}/courses`);
-    const q = query(enrollmentsRef, where('courseId', '==', courseId));
+    // Check root enrollments collection
+    const enrollmentsRef = collection(db, 'enrollments');
+    const q = query(enrollmentsRef, where('userId', '==', uid), where('courseId', '==', courseId));
     const snapshot = await getDocs(q);
 
     // If already enrolled, do nothing
     if (!snapshot.empty) return;
 
+    // Also check legacy subcollection to prevent double enrollment during transition
+    const legacyRef = collection(db, `users/${uid}/courses`);
+    const legacyQ = query(legacyRef, where('courseId', '==', courseId));
+    const legacySnapshot = await getDocs(legacyQ);
+    if (!legacySnapshot.empty) return;
+
+    // Fetch user details for denormalization
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+
     await addDoc(enrollmentsRef, {
+      userId: uid,
+      userName: userData.displayName || 'Unknown Student',
+      userEmail: userData.email || 'No email provided',
       courseId,
+      pricePaid: 0,
+      emailSent: false,
       enrolledAt: serverTimestamp(),
       progress: 0,
       lessonsCompleted: 0,

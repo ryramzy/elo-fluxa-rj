@@ -66,7 +66,24 @@ const CoursePage: React.FC = () => {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
       await awardXP(user.uid, 50, 'course enrolled');
       console.log(`Successfully enrolled in ${course.title}! +50 XP`);
+      
+      // Send confirmation email in background
+      fetch('/api/email/enrollment-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: profile?.displayName || user.displayName || 'Student',
+          studentEmail: user.email,
+          courseName: course.title,
+          courseLink: `${window.location.origin}/courses/${course.id}/lessons/${course.lessons[0].id}`
+        })
+      }).catch(err => console.error('Failed to send enrollment email:', err));
+
+      setSubscriptionModalOpen(false);
       setSelectedCourseForEnroll(null);
+      
+      // Immediately start the course
+      navigate(`/courses/${course.id}/lessons/${course.lessons[0].id}`);
     } catch (error) {
       console.error('Error enrolling in course:', error);
     }

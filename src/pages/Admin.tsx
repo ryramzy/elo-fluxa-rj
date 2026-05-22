@@ -38,7 +38,8 @@ const Admin: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments'>('bookings');
+  const [enrollments, setEnrollments] = useState<any[]>([]);
 
   // Get week dates based on offset
   const getWeekDates = (offset: number) => {
@@ -168,10 +169,28 @@ const Admin: React.FC = () => {
     };
   };
 
+  const loadEnrollments = async () => {
+    try {
+      const enrollmentsQuery = query(
+        collection(db, 'enrollments'),
+        orderBy('enrolledAt', 'desc')
+      );
+      const snapshot = await getDocs(enrollmentsQuery);
+      const enrollmentsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEnrollments(enrollmentsData);
+    } catch (error) {
+      console.error('Error loading enrollments:', error);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       loadWeekSlots();
       loadUsers();
+      loadEnrollments();
     }
   }, [isAdmin, selectedWeek]);
 
@@ -276,6 +295,16 @@ const Admin: React.FC = () => {
               }`}
             >
               Revenue
+            </button>
+            <button
+              onClick={() => setActiveTab('enrollments')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'enrollments'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              Enrollments ({enrollments.length})
             </button>
           </div>
         </div>
@@ -528,6 +557,73 @@ const Admin: React.FC = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+
+        {/* Enrollments Tab */}
+        {activeTab === 'enrollments' && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+              Enrollments Management
+            </h2>
+            
+            {/* Enrollment Summary per course */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {Array.from(new Set(enrollments.map(e => e.courseId))).map(courseId => {
+                const count = enrollments.filter(e => e.courseId === courseId).length;
+                return (
+                  <div key={courseId} className="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg text-center">
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">{courseId.replace(/-/g, ' ').toUpperCase()}</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{count}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left p-3">Student Name</th>
+                    <th className="text-left p-3">Email</th>
+                    <th className="text-left p-3">Course</th>
+                    <th className="text-left p-3">Enrolled Date</th>
+                    <th className="text-left p-3">Price Paid</th>
+                    <th className="text-left p-3">Email Sent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enrollments.map((enrollment) => (
+                    <tr key={enrollment.id} className="border-b border-slate-100 dark:border-slate-800">
+                      <td className="p-3">{enrollment.userName || 'Unknown'}</td>
+                      <td className="p-3">{enrollment.userEmail || 'N/A'}</td>
+                      <td className="p-3 font-medium">{enrollment.courseId}</td>
+                      <td className="p-3">
+                        {enrollment.enrolledAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
+                      </td>
+                      <td className="p-3">
+                        R${enrollment.pricePaid || 0}
+                      </td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          enrollment.emailSent ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {enrollment.emailSent ? 'Yes' : 'No'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {enrollments.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="p-4 text-center text-slate-500">
+                        No enrollments found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

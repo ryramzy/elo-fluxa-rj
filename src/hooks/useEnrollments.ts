@@ -15,45 +15,55 @@ export function useEnrollments(uid: string) {
       return;
     }
 
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, 'users', uid, 'courses'),
-        orderBy('enrolledAt', 'desc')
-      ),
-      (querySnapshot) => {
-        const enrollmentData = querySnapshot.docs.map(doc => ({
-          courseId: doc.data().courseId,
-          enrolledAt: doc.data().enrolledAt,
-          progress: doc.data().progress,
-          lessonsCompleted: doc.data().lessonsCompleted,
-          totalLessons: doc.data().totalLessons,
-          xpEarned: doc.data().xpEarned,
-          activeLessonId: doc.data().activeLessonId,
-          activeSlideIndex: doc.data().activeSlideIndex,
-          completedLessons: doc.data().completedLessons,
-          id: doc.id
-        }));
+    let legacyData: any[] = [];
+    let rootData: any[] = [];
 
-        // Join with course catalog
-        const enrollmentsWithCourses = enrollmentData.map(enrollment => {
-          const course = courses.find(c => c.id === enrollment.courseId);
-          return {
-            ...enrollment,
-            course
-          };
-        });
+    const updateCombined = () => {
+      // Combine avoiding duplicates (root takes precedence)
+      const combinedMap = new Map();
+      legacyData.forEach(d => combinedMap.set(d.courseId, d));
+      rootData.forEach(d => combinedMap.set(d.courseId, d)); // overwrites legacy if exists
 
-        setEnrollments(enrollmentsWithCourses);
-        setLoading(false);
+      const combined = Array.from(combinedMap.values())
+        .sort((a, b) => b.enrolledAt?.toMillis?.() - a.enrolledAt?.toMillis?.());
+
+      const enrollmentsWithCourses = combined.map(enrollment => {
+        const course = courses.find(c => c.id === enrollment.courseId);
+        return { ...enrollment, course };
+      });
+
+      setEnrollments(enrollmentsWithCourses);
+      setLoading(false);
+    };
+
+    const unsubscribeLegacy = onSnapshot(
+      query(collection(db, 'users', uid, 'courses')),
+      (snapshot) => {
+        legacyData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        updateCombined();
       },
       (err) => {
-        console.error('Error fetching enrollments:', err);
+        console.error('Error fetching legacy enrollments:', err);
         setError(err.message);
-        setLoading(false);
       }
     );
 
-    return () => unsubscribe();
+    const unsubscribeRoot = onSnapshot(
+      query(collection(db, 'enrollments'), where('userId', '==', uid)),
+      (snapshot) => {
+        rootData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        updateCombined();
+      },
+      (err) => {
+        console.error('Error fetching root enrollments:', err);
+        setError(err.message);
+      }
+    );
+
+    return () => {
+      unsubscribeLegacy();
+      unsubscribeRoot();
+    };
   }, [uid]);
 
   return { enrollments, loading, error };
