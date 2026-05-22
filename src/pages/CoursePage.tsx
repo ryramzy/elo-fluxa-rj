@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useEnrollments } from '../hooks/useEnrollments';
@@ -279,7 +279,13 @@ const CoursePage: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-slate-600">+{lesson.xpReward} XP</span>
                             {isCurrent && (
-                              <button className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLessonClick(lesson);
+                                }}
+                                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                              >
                                 Continue
                               </button>
                             )}
@@ -395,19 +401,16 @@ const CoursePage: React.FC = () => {
                       Course Completed! ???
                     </button>
                   ) : (
-                    <button 
-                      onClick={() => {
-                        let nextLessonId = enrollment?.activeLessonId;
-                        if (!nextLessonId) {
-                          const firstUncompleted = course.lessons.find(l => !enrollment?.completedLessons?.includes(l.id));
-                          nextLessonId = firstUncompleted?.id || course.lessons[0].id;
-                        }
-                        navigate(`/courses/${courseId}/lessons/${nextLessonId}`);
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors"
+                    <Link 
+                      to={`/courses/${courseId}/lessons/${
+                        enrollment?.activeLessonId || 
+                        course.lessons.find(l => !enrollment?.completedLessons?.includes(l.id))?.id || 
+                        course.lessons[0].id
+                      }`}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors text-center block"
                     >
                       Continue Learning
-                    </button>
+                    </Link>
                   )
                 ) : (
                   <button 
