@@ -38,7 +38,7 @@ const Dicas: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/', { state: { openAuthModal: true, returnTo: '/courses' } })}
               className="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
             >
               Start Learning
