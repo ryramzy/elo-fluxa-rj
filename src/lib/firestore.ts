@@ -464,11 +464,12 @@ export async function enrollUserInCourse(uid: string, courseId: string, totalLes
   try {
     // Check root enrollments collection
     const enrollmentsRef = collection(db, 'enrollments');
-    const q = query(enrollmentsRef, where('userId', '==', uid), where('courseId', '==', courseId));
+    const q = query(enrollmentsRef, where('userId', '==', uid));
     const snapshot = await getDocs(q);
 
     // If already enrolled, do nothing
-    if (!snapshot.empty) return;
+    const isEnrolled = snapshot.docs.some(doc => doc.data().courseId === courseId);
+    if (isEnrolled) return;
 
     // Also check legacy subcollection to prevent double enrollment during transition
     const legacyRef = collection(db, `users/${uid}/courses`);
