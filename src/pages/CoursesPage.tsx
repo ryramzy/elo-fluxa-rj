@@ -31,8 +31,9 @@ const Courses: React.FC = () => {
       let nextLessonId = enrollment.activeLessonId;
       if (!nextLessonId) {
         const course = courses.find(c => c.id === courseId);
-        const firstUncompleted = course?.lessons.find(l => !enrollment.completedLessons?.includes(l.id));
-        nextLessonId = firstUncompleted?.id || course?.lessons[0]?.id;
+        const completed = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
+        const firstUncompleted = course?.lessons.find(l => !completed.includes(l.id));
+        nextLessonId = firstUncompleted?.id || course?.lessons?.[0]?.id;
       }
       
       if (nextLessonId) {

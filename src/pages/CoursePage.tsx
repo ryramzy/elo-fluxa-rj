@@ -234,7 +234,7 @@ const CoursePage: React.FC = () => {
                 <div className="p-6">
                   <div className="space-y-3">
                     {course.lessons.map((lesson, index) => {
-                      const isCompleted = enrollment?.completedLessons?.includes(lesson.id) || false;
+                      const isCompleted = Array.isArray(enrollment?.completedLessons) ? enrollment.completedLessons.includes(lesson.id) : false;
                       const isCurrent = enrollment?.activeLessonId === lesson.id || (!enrollment?.activeLessonId && index === 0);
                       const canAccess = lesson.free || isEnrolled;
                       
@@ -402,11 +402,15 @@ const CoursePage: React.FC = () => {
                     </button>
                   ) : (
                     <Link 
-                      to={`/courses/${courseId}/lessons/${
-                        enrollment?.activeLessonId || 
-                        course.lessons.find(l => !enrollment?.completedLessons?.includes(l.id))?.id || 
-                        course.lessons[0].id
-                      }`}
+                      to={`/courses/${courseId}/lessons/${(() => {
+                        let nextLessonId = enrollment?.activeLessonId;
+                        if (!nextLessonId) {
+                          const completed = Array.isArray(enrollment?.completedLessons) ? enrollment.completedLessons : [];
+                          const firstUncompleted = course.lessons.find(l => !completed.includes(l.id));
+                          nextLessonId = firstUncompleted?.id || course.lessons[0].id;
+                        }
+                        return nextLessonId;
+                      })()}`}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors text-center block"
                     >
                       Continue Learning
