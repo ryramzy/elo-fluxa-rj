@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './calendar.css';
+
 /* Toast animations */
 @keyframes slide-in-right {
   from {

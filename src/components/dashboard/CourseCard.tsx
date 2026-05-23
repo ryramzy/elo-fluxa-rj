@@ -39,8 +39,15 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       onClick={handleCardClick}
     >
       {/* Course image */}
-      <div className="h-32 bg-gradient-to-br from-blue-500 to-indigo-600 relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      <div className="h-32 relative bg-gradient-to-br from-blue-500 to-indigo-600">
+        {course.imageUrl ? (
+          <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-4xl opacity-50">
+            {course.emoji || '📚'}
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         <div className="absolute bottom-2 left-2 text-white">
           <h3 className="font-bold text-sm">{course.title}</h3>
         </div>

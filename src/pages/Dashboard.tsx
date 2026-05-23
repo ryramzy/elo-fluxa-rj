@@ -14,6 +14,7 @@ import { UpcomingClasses } from '../components/dashboard/UpcomingClasses';
 import { QuickLinks } from '../components/dashboard/QuickLinks';
 import { courses } from '../data/courses';
 import { OnboardingTour } from '../components/dashboard/OnboardingTour';
+import { enrollUserInCourse } from '../lib/firestore';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
@@ -76,8 +77,29 @@ const DashboardWorking: React.FC = () => {
             <CoursesGrid
               courses={courses}
               enrollments={enrollments || []}
-              onEnroll={(courseId) => navigate(`/courses`)}
-              onContinue={(courseId) => navigate(`/courses/${courseId}`)}
+              onEnroll={async (courseId) => {
+                if (!user) return;
+                const course = courses.find(c => c.id === courseId);
+                if (!course) return;
+                try {
+                  await enrollUserInCourse(user.uid, courseId, course.lessons.length);
+                  navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
+                } catch (err) {
+                  console.error('Failed to enroll:', err);
+                  navigate(`/courses/${courseId}`);
+                }
+              }}
+              onContinue={(courseId) => {
+                const course = courses.find(c => c.id === courseId);
+                const enrollment = enrollments?.find(e => e.courseId === courseId);
+                if (enrollment?.activeLessonId) {
+                  navigate(`/courses/${courseId}/lessons/${enrollment.activeLessonId}`);
+                } else if (course?.lessons[0]) {
+                  navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
+                } else {
+                  navigate(`/courses/${courseId}`);
+                }
+              }}
             />
           </div>
 

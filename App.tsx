@@ -104,7 +104,7 @@ function AppShell() {
               {/* Public routes */}
               <Route path="/" element={<About />} />
               <Route path="/sobre" element={<Sobre />} />
-              <Route path="/courses" element={user ? <Navigate to="/dashboard" replace /> : <CoursesPage />} />
+              <Route path="/courses" element={<CoursesPage />} />
               <Route path="/reviews" element={<Testimonials />} />
               <Route path="/dicas" element={<Dicas />} />
 
