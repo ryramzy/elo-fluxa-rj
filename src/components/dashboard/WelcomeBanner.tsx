@@ -31,7 +31,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
                 </div>
                 <span className="text-slate-300 font-medium">{streak} day streak</span>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 tour-step-xp">
                 <div className="flex justify-between text-sm text-slate-400 mb-1">
                   <span>XP to Level {profile?.level + 1 || 2}</span>
                   <span>{xpProgress.total - xpProgress.current} XP</span>

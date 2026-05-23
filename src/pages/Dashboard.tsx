@@ -12,6 +12,8 @@ import { KpiCards } from '../components/dashboard/KpiCards';
 import { CoursesGrid } from '../components/dashboard/CoursesGrid';
 import { UpcomingClasses } from '../components/dashboard/UpcomingClasses';
 import { QuickLinks } from '../components/dashboard/QuickLinks';
+import { courses } from '../data/courses';
+import { OnboardingTour } from '../components/dashboard/OnboardingTour';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
@@ -28,13 +30,6 @@ const DashboardWorking: React.FC = () => {
   console.log('DashboardWorking - profile:', profile?.displayName);
   console.log('DashboardWorking - loading:', loading);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-slate-600">Loading...</div>
-      </div>
-    );
-  }
 
   if (!user) {
     return (
@@ -46,12 +41,16 @@ const DashboardWorking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <OnboardingTour 
+        hasSeenOnboarding={profile?.hasSeenOnboarding || false} 
+        profileLoaded={!profileLoading && !!profile} 
+      />
       <WelcomeBanner profile={profile} streak={streak || 0} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         
         {/* Prominent Booking CTA */}
-        <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden">
+        <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
           <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
           <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
             <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">Ready for your next lesson?</h2>
@@ -73,12 +72,12 @@ const DashboardWorking: React.FC = () => {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 tour-step-courses">
             <CoursesGrid
-              courses={[]}
+              courses={courses}
               enrollments={enrollments || []}
-              onEnroll={() => {}}
-              onContinue={() => {}}
+              onEnroll={(courseId) => navigate(`/courses`)}
+              onContinue={(courseId) => navigate(`/courses/${courseId}`)}
             />
           </div>
 

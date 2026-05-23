@@ -22,18 +22,19 @@ export function useUserProfile(uid: string) {
           const xp = data?.xp || 0;
           const levelInfo = calculateLevel(xp);
           
-          setProfile({
-            displayName: data?.displayName || '',
-            email: data?.email || '',
-            photoURL: data?.photoURL || '',
-            xp,
-            level: levelInfo.level,
-            levelName: levelInfo.name,
-            streakDays: data?.streakDays || 0,
-            lastActiveDate: data?.lastActiveDate || null,
-            badgesEarned: data?.badgesEarned || [],
-            createdAt: data?.createdAt || null,
-          });
+            setProfile({
+              displayName: data?.displayName || '',
+              email: data?.email || '',
+              photoURL: data?.photoURL || '',
+              xp,
+              level: levelInfo.level,
+              levelName: levelInfo.name,
+              streakDays: data?.streakDays || 0,
+              lastActiveDate: data?.lastActiveDate || null,
+              badgesEarned: data?.badgesEarned || [],
+              createdAt: data?.createdAt || null,
+              hasSeenOnboarding: !!data?.hasSeenOnboarding,
+            });
         } else {
           setError('User profile not found');
         }

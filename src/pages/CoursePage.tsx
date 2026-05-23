@@ -143,8 +143,9 @@ const CoursePage: React.FC = () => {
   };
 
   const estimatedTotalTime = course.lessons.reduce((total, lesson) => {
-    const minutes = parseInt(lesson.duration || '0');
-    return total + (isNaN(minutes) ? 0 : minutes);
+    // If lesson.duration doesn't exist, assume 30 minutes per lesson
+    const minutes = parseInt(String((lesson as any).duration || '30'));
+    return total + (isNaN(minutes) ? 30 : minutes);
   }, 0);
 
   const totalLessonXP = course.lessons.reduce((total, lesson) => total + lesson.xpReward, 0);

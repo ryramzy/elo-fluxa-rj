@@ -121,18 +121,11 @@ export default function Navbar({ onNavClick }: NavbarProps) {
           {user && (
             <div className={`hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${textColorClass}`}>
               <a
-                href="#about"
-                onClick={(e) => handleLinkClick(e, 'about')}
-                className={getLinkClasses('about')}
+                href="#dashboard"
+                onClick={(e) => handleLinkClick(e, 'dashboard')}
+                className={getLinkClasses('dashboard')}
               >
-                Sobre
-              </a>
-              <a
-                href="#products"
-                onClick={(e) => handleLinkClick(e, 'products')}
-                className={getLinkClasses('products')}
-              >
-                Cursos
+                Dashboard
               </a>
               <a
                 href="#agenda"
@@ -140,6 +133,13 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 className={getLinkClasses('agenda')}
               >
                 Agenda
+              </a>
+              <a
+                href="#profile"
+                onClick={(e) => handleLinkClick(e, 'profile')}
+                className={getLinkClasses('profile')}
+              >
+                Perfil
               </a>
             </div>
           )}

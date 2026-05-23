@@ -10,12 +10,11 @@ export const BottomNav: React.FC = () => {
     return null;
   }
 
-  const navItems = [
-    { name: 'Home', path: '/dashboard', icon: <FaHome size={24} /> },
-    { name: 'Book', path: '/agenda', icon: <FaCalendarPlus size={24} /> },
-    { name: 'Courses', path: '/courses', icon: <FaGraduationCap size={24} /> },
-    { name: 'Profile', path: '/profile', icon: <FaUser size={24} /> },
-  ];
+    const navItems = [
+      { name: 'Dashboard', path: '/dashboard', icon: <FaHome size={24} /> },
+      { name: 'Agenda', path: '/agenda', icon: <FaCalendarPlus size={24} /> },
+      { name: 'Profile', path: '/profile', icon: <FaUser size={24} /> },
+    ];
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center pb-safe z-50">

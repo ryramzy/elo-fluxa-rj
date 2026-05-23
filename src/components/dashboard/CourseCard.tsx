@@ -65,19 +65,17 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       <div className="p-4">
         {/* Course tags */}
         <div className="flex flex-wrap gap-1 mb-3">
-          {course.tags.map((tag, index) => (
-            <span 
-              key={index}
-              className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded"
-            >
-              {tag}
-            </span>
-          ))}
+          <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">
+            {course.tag}
+          </span>
+          <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">
+            {course.level}
+          </span>
         </div>
         
         {/* XP reward */}
         <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-          +{course.xpReward || 100} XP
+          +{course.lessons.reduce((sum, l) => sum + l.xpReward, 0)} XP
         </div>
         
         {/* Progress bar */}
@@ -85,15 +83,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           <div className="mb-3">
             <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400 mb-1">
               <span>Progress</span>
-              <span>{enrollment?.progress || 0}%</span>
+              <span>{Math.round((enrollment?.completedLessons?.length || 0) / course.totalLessons * 100)}%</span>
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div 
-                className="h-2 rounded-full transition-all"
-                style={{ 
-                  width: `${enrollment?.progress || 0}%`,
-                  backgroundColor: course.accentColor 
-                }}
+                className="h-2 rounded-full transition-all bg-blue-500"
+                style={{ width: `${Math.round((enrollment?.completedLessons?.length || 0) / course.totalLessons * 100)}%` }}
               />
             </div>
           </div>
