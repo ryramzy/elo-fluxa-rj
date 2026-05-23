@@ -15,6 +15,7 @@ const Courses: React.FC = () => {
   const { user } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
   const [selectedFilter, setSelectedFilter] = useState('Todos');
+  const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
 
   // Filter courses by audience
   const filteredCourses = courses.filter(course => {
