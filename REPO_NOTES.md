@@ -41,6 +41,28 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [May 22, 2026] — 10x UX Update & Corrupted Array Bugfix
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Course Navigation Bug Fix**: Resolved a silent crash where corrupted `completedLessons` objects in Firebase would cause `.includes()` to throw a `TypeError`. Added strict `Array.isArray` fallback checks.
+- **Fast Enrollment**: Removed `await` from background tasks (XP and Email) when enrolling to make navigation instant.
+- **Native Swipe Physics**: Replaced rigid tap-zones in `SlideViewer` with `Swiper.js` for an elastic, mobile-native swipe experience.
+- **Top-bar Exit Route**: Added a prominent top-bar and "Sair da Aula" button to the SlideViewer for better trapped-state escape.
+- **Framer Motion**: Added buttery smooth load and hover animations to course catalog cards.
+- **Canvas Confetti**: Added high-performance confetti explosions upon lesson completion.
+- **Speech Synthesis**: Added an "Ouça" (Listen) button to slides that uses native OS Web Speech API to read English phrases in an American accent.
+- **Premium Calendar**: Upgraded `/agenda` from a custom CSS grid to `react-big-calendar`.
+
+### Why
+- The app needed dopamine-driving gamification (Confetti) and fluid motion (Framer/Swiper) to rival premium apps like Duolingo.
+- The `completedLessons` type-safety issue completely broke course continuation.
+
+### Next steps
+- Add a dashboard widget displaying the newly integrated calendar bookings.
+- Allow users to buy specific courses instead of relying purely on subscriptions.
+
+---
 ## [May 21, 2026] — Swipeable Course Slideshow & Student-First Navigation
 **Status:** ✅ COMPLETED
 
