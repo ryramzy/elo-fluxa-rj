@@ -106,11 +106,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         ...doc.data()
       } as TimeSlot));
       
-      // QUICK FIX: If no slots from database, add mock data
       if (slotsData.length === 0) {
-        const mockSlots = generateMockSlots(weekDates);
-        console.log('🔧 QUICK FIX: Using mock slots for debugging', mockSlots);
-        setSlots(mockSlots);
+        setSlots([]);
       } else {
         setSlots(slotsData);
       }
@@ -121,41 +118,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         weekDates: getWeekDates(selectedWeek)
       });
       
-      // QUICK FIX: Fallback to mock data on error
-      const weekDates = getWeekDates(selectedWeek);
-      const mockSlots = generateMockSlots(weekDates);
-      console.log('🔧 QUICK FIX: Error fallback to mock slots', mockSlots);
-      setSlots(mockSlots);
-      setError(''); // Clear error since we have fallback
+      setSlots([]);
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  };
-
-  // Generate mock slots for quick fix
-  const generateMockSlots = (weekDates: string[]): TimeSlot[] => {
-    const mockSlots: TimeSlot[] = [];
-    
-    weekDates.forEach((date, dayIndex) => {
-      timeSlots.forEach((time) => {
-        // Make some slots available, some booked for testing
-        const isBooked = Math.random() > 0.7; // 30% chance of being booked
-        const isPast = new Date(date + ' ' + time) < new Date();
-        
-        mockSlots.push({
-          id: `mock-${date}-${time}`,
-          date,
-          time,
-          duration: 60,
-          available: !isBooked && !isPast,
-          status: isBooked ? 'booked' : 'available',
-          bookedBy: isBooked ? 'demo-student' : null,
-          bookedByName: isBooked ? 'Demo Student' : null
-        });
-      });
-    });
-    
-    return mockSlots;
   };
 
   // Create slots for the week
@@ -231,31 +198,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         throw new AppError('This time slot is no longer available', 'SLOT_NOT_AVAILABLE');
       }
       
-      // QUICK FIX: For mock data, update local state
-      if (slot.id.startsWith('mock-')) {
-        // Update local state for mock data
-        setSlots(prevSlots => 
-          prevSlots.map(s => 
-            s.id === slot.id 
-              ? { 
-                  ...s, 
-                  available: false, 
-                  status: 'booked', 
-                  bookedBy: currentUserId, 
-                  bookedByName: 'Current Student' 
-                }
-              : s
-          )
-        );
-        setSuccess('Slot booked successfully!');
-        setTimeout(() => setSuccess(''), 3000);
-        
-        if (onSlotSelect) {
-          onSlotSelect(slot);
-        }
-        return;
-      }
-      
       // Original Firebase logic for real data
       // Check network status
       if (!checkNetworkStatus()) {
@@ -303,27 +245,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       // Check if user owns this booking
       if (slot.bookedBy !== currentUserId) {
         throw new AppError('You can only cancel your own bookings', 'PERMISSION_DENIED');
-      }
-      
-      // QUICK FIX: For mock data, update local state
-      if (slot.id.startsWith('mock-')) {
-        // Update local state for mock data
-        setSlots(prevSlots => 
-          prevSlots.map(s => 
-            s.id === slot.id 
-              ? { 
-                  ...s, 
-                  available: true, 
-                  status: 'available', 
-                  bookedBy: null, 
-                  bookedByName: null 
-                }
-              : s
-          )
-        );
-        setSuccess('Slot cancelled successfully!');
-        setTimeout(() => setSuccess(''), 3000);
-        return;
       }
       
       // Original Firebase logic for real data
@@ -473,10 +394,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             })}
             startAccessor="start"
             endAccessor="end"
-            views={['week']}
-            defaultView="week"
+            views={['work_week']}
+            defaultView="work_week"
             date={new Date(weekDates[0] + 'T00:00:00')}
             toolbar={false}
+            scrollToTime={new Date(1970, 0, 1, 8, 0, 0)}
             onSelectEvent={(event: any) => {
               const slot = event.resource;
               const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
@@ -492,27 +414,19 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               const slot = event.resource;
               const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
               
-              let style: any = { borderRadius: '8px', border: 'none', padding: '4px 8px', fontSize: '12px', fontWeight: 'bold' };
+              let className = 'rounded-md shadow-sm border-none font-bold text-xs p-1 ';
               
               if (isPast) {
-                style.backgroundColor = '#f1f5f9';
-                style.color = '#94a3b8';
-                style.cursor = 'not-allowed';
+                className += 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed';
               } else if (slot.available) {
-                style.backgroundColor = '#dcfce7';
-                style.color = '#15803d';
-                style.cursor = 'pointer';
+                className += 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 cursor-pointer hover:bg-green-200 dark:hover:bg-green-800/60';
               } else if (slot.bookedBy === currentUserId) {
-                style.backgroundColor = '#ffedd5';
-                style.color = '#c2410c';
-                style.cursor = 'pointer';
+                className += 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-800/60';
               } else {
-                style.backgroundColor = '#fee2e2';
-                style.color = '#b91c1c';
-                style.cursor = 'not-allowed';
+                className += 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 cursor-not-allowed';
               }
               
-              return { style };
+              return { className, style: { border: 'none' } };
             }}
           />
         </div>
