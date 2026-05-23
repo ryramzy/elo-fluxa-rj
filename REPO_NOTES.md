@@ -41,6 +41,24 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [May 23, 2026] — QA Bug Fixes: Routing, CSS Resets, & Missing Assets
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Course Navigation Fix**: Corrected `Dashboard.tsx` where clicking "Enroll" triggered a silent redirect loop. It now correctly awaits `enrollUserInCourse(uid, courseId)` and instantly navigates the student directly to `/courses/:courseId/lessons/:firstLessonId` to begin learning immediately.
+- **Restored `/courses` Route**: Re-enabled the full public course catalog page in `App.tsx` which was accidentally blocked during the Phase 2 latency optimization, and re-wired the "Todos os Cursos" quick link to it.
+- **React Big Calendar Styling**: Diagnosed why the premium agenda calendar looked like a "raw custom-built grid". Tailwind's global CSS resets (`@tailwind base`) were stripping all table properties (`border-width: 0`) required by `react-big-calendar`. Created `calendar.css` to override Tailwind specifically for `.rbc-calendar` elements, fully restoring the premium UI.
+- **Course Card Thumbnails**: Fixed the "blank purple gradient" issue on course cards. The Phase 2 UI upgrade accidentally omitted the actual `<img />` tag inside the hero gradient wrapper. Re-added `course.imageUrl` with a safe fallback to `course.emoji` if the image link ever fails.
+
+### Why
+- The Phase 2 routing overhaul aggressively minimized clicks but unintentionally broke the first-time user enrollment funnel.
+- Global CSS resets from Tailwind are notoriously destructive to 3rd party components that rely on default browser tables.
+- UI consistency is paramount for maintaining the "premium app" feel.
+
+### Next steps
+- Monitor user behavior to ensure the slide viewer completion rates improve with the new direct routing.
+
+---
 ## [May 22, 2026] — 10x UX Update & Corrupted Array Bugfix
 **Status:** ✅ COMPLETED
 
