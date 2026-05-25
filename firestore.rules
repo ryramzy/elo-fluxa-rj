@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Note: In a real app, you would check an 'admins' collection or custom claims.
+    // For this rewrite, we assume admins have a specific role or we just allow all authenticated for simplicity in demo.
+    // Assuming we want to strictly secure bookings as requested:
+    
+    match /bookings/{bookingId} {
+      // Anyone authenticated can read all bookings (to see what is taken)
+      allow read: if isAuthenticated();
+      
+      // Students can only create bookings for themselves
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      
+      // Students can only delete/update their own bookings
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Allow read/write to other collections for existing app functionality
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

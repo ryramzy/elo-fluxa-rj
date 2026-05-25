@@ -13,7 +13,9 @@ import {
   writeBatch,
   addDoc,
   Timestamp,
-  limit
+  limit,
+  runTransaction,
+  deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { TimeSlot, Booking } from '../types';
@@ -611,100 +613,65 @@ export async function getAvailableSlots(
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as TimeSlot));
 }
 
-// Book a slot
+// Book a slot using a transaction to prevent double bookings
 export async function bookSlot(
-  slotId: string,
+  date: string,
+  time: string,
   userId: string,
   userName: string,
   userEmail: string,
   notes?: string
 ): Promise<string> {
-  // Get slot data first
-  const slotRef = doc(db, 'slots', slotId);
-  const slotSnap = await getDoc(slotRef);
-  if (!slotSnap.exists()) {
-    throw new Error('Slot not found');
-  }
-  
-  const slotData = slotSnap.data() as TimeSlot;
-  
-  // Check if slot is still available
-  if (!slotData.available) {
-    throw new Error('SLOT_UNAVAILABLE');
-  }
+  const bookingId = `${date}_${time.replace(':', '')}`;
+  const bookingRef = doc(db, 'bookings', bookingId);
 
-  // Update Firestore with booking info
-  const batch = writeBatch(db);
-  
-  // Mark slot as unavailable
-  batch.update(slotRef, {
-    available: false,
-    status: "booked",
-    bookedBy: userId,
-    bookedByName: userName,
-    updatedAt: serverTimestamp(),
+  await runTransaction(db, async (transaction) => {
+    const bookingDoc = await transaction.get(bookingRef);
+    if (bookingDoc.exists()) {
+      throw new Error('This slot is already booked by someone else.');
+    }
+
+    transaction.set(bookingRef, {
+      userId,
+      userName,
+      userEmail,
+      date,
+      time,
+      duration: 60,
+      status: 'confirmed',
+      googleEventId: null,
+      meetLink: null,
+      notes: notes || '',
+      createdAt: serverTimestamp(),
+    });
   });
 
-  // Create booking record
-  const bookingRef = doc(collection(db, 'bookings'));
-  batch.set(bookingRef, {
-    userId,
-    userName,
-    userEmail,
-    slotId,
-    date: slotData.date,
-    time: slotData.time,
-    duration: slotData.duration,
-    status: 'confirmed',
-    googleEventId: null,
-    meetLink: null,
-    notes: notes || '',
-    createdAt: serverTimestamp(),
-  });
-
-  await batch.commit();
-  return bookingRef.id;
+  return bookingId;
 }
 
 // Cancel a booking
 export async function cancelBooking(
   bookingId: string,
-  slotId: string,
   googleEventId?: string
 ): Promise<void> {
-  // Get booking data to get Google Calendar event ID
-  const bookingDoc = await getDoc(doc(db, 'bookings', bookingId));
+  const bookingRef = doc(db, 'bookings', bookingId);
+  const bookingDoc = await getDoc(bookingRef);
+  
   if (!bookingDoc.exists()) {
     throw new Error('Booking not found');
   }
   
   const bookingData = bookingDoc.data() as Booking;
   
-  // Cancel Google Calendar event if it exists
-  if (bookingData.googleEventId) {
+  if (bookingData.googleEventId || googleEventId) {
     try {
-      await cancelCalendarEvent(bookingData.googleEventId);
+      await cancelCalendarEvent(bookingData.googleEventId || googleEventId);
     } catch (error) {
       console.error('Failed to cancel calendar event:', error);
-      // Continue with Firestore update even if calendar cancellation fails
     }
   }
 
-  // Update Firestore
-  const batch = writeBatch(db);
-  batch.update(doc(db, 'bookings', bookingId), {
-    status: 'cancelled',
-    updatedAt: serverTimestamp(),
-  });
-  batch.update(doc(db, 'slots', slotId), {
-    available: true,
-    bookedBy: null,
-    bookedByName: null,
-    googleEventId: null,
-    meetLink: null,
-    updatedAt: serverTimestamp(),
-  });
-  await batch.commit();
+  await deleteDoc(bookingRef);
 }
 
 // Get user's bookings

@@ -6,15 +6,14 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
-interface TimeSlot {
+interface Booking {
   id: string;
   date: string;
   time: string;
-  duration: number;
-  available: boolean;
+  userId: string;
+  userName: string;
+  userEmail?: string;
   status: string;
-  bookedBy?: string;
-  bookedByName?: string;
   createdAt?: any;
 }
 
@@ -34,7 +33,7 @@ const Admin: React.FC = () => {
   
   useDocumentTitle('Admin - Student Bookings');
   
-  const [slots, setSlots] = useState<TimeSlot[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
@@ -58,8 +57,7 @@ const Admin: React.FC = () => {
     return weekDates;
   };
 
-  // Load slots for the week
-  const loadWeekSlots = async () => {
+  const loadWeekBookings = async () => {
     setLoading(true);
     try {
       const weekDates = getWeekDates(selectedWeek);
@@ -68,40 +66,38 @@ const Admin: React.FC = () => {
       
       console.log('🔄 Admin loading bookings for week:', weekStart, 'to', weekEnd);
       
-      const slotsQuery = query(
-        collection(db, 'slots'),
+      const bookingsQuery = query(
+        collection(db, 'bookings'),
         where('date', '>=', weekStart),
-        where('date', '<=', weekEnd),
-        orderBy('date'),
-        orderBy('time')
+        where('date', '<=', weekEnd)
       );
       
-      const snapshot = await getDocs(slotsQuery);
-      const slotsData = snapshot.docs.map(doc => ({
+      const snapshot = await getDocs(bookingsQuery);
+      const bookingsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      } as TimeSlot));
+      } as Booking));
       
-      console.log(`📊 Found ${slotsData.length} slots for admin view`);
-      setSlots(slotsData);
+      console.log(`📊 Found ${bookingsData.length} bookings for admin view`);
+      setBookings(bookingsData);
     } catch (error) {
-      console.error('Error loading slots:', error);
+      console.error('Error loading bookings:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete slot function
-  const handleDeleteSlot = async (slotId: string) => {
-    if (!confirm('Are you sure you want to delete this time slot?')) return;
+  // Delete booking function
+  const handleDeleteBooking = async (bookingId: string) => {
+    if (!confirm('Are you sure you want to delete this booking?')) return;
     
     try {
-      await deleteDoc(doc(db, 'slots', slotId));
-      console.log('✅ Slot deleted successfully');
-      loadWeekSlots(); // Reload slots
+      await deleteDoc(doc(db, 'bookings', bookingId));
+      console.log('✅ Booking deleted successfully');
+      loadWeekBookings(); // Reload bookings
     } catch (error) {
-      console.error('Error deleting slot:', error);
-      alert('Error deleting slot. Please try again.');
+      console.error('Error deleting booking:', error);
+      alert('Error deleting booking. Please try again.');
     }
   };
 
@@ -188,7 +184,7 @@ const Admin: React.FC = () => {
 
   useEffect(() => {
     if (isAdmin) {
-      loadWeekSlots();
+      loadWeekBookings();
       loadUsers();
       loadEnrollments();
     }
@@ -350,8 +346,8 @@ const Admin: React.FC = () => {
             </div>
           )}
 
-          {/* No slots */}
-          {!loading && slots.length === 0 && (
+          {/* No bookings */}
+          {!loading && bookings.length === 0 && (
             <div className="text-center py-8">
               <p className="text-slate-600 dark:text-slate-400">
                 No bookings found for this week
@@ -360,7 +356,7 @@ const Admin: React.FC = () => {
           )}
 
           {/* Bookings Grid */}
-          {!loading && slots.length > 0 && (
+          {!loading && (
             <div className="overflow-x-auto">
               <div className="min-w-[800px]">
                 {/* Header Row */}
@@ -383,30 +379,26 @@ const Admin: React.FC = () => {
                       {time}
                     </div>
                     {weekDates.map((date) => {
-                      const slot = slots.find(s => s.date === date && s.time === time);
+                      const booking = bookings.find(b => b.date === date && b.time === time);
                       const isPast = new Date(date + ' ' + time) < new Date();
                       
                       return (
                         <div key={`${date}-${time}`} className="p-1">
-                          {slot ? (
+                          {booking ? (
                             <div className={`w-full h-12 rounded-lg text-xs font-medium p-2 ${
                               isPast
                                 ? 'bg-slate-100 dark:bg-slate-700 text-slate-400'
-                                : slot.available
-                                ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
-                                : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                                : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
                             }`}>
-                              <div className="font-medium">
-                                {slot.available ? 'Available' : slot.bookedByName || 'Booked'}
+                              <div className="font-medium truncate">
+                                {booking.userName || 'Booked'}
                               </div>
-                              {!slot.available && (
-                                <div className="text-xs opacity-75">
-                                  {slot.date} {slot.time}
-                                </div>
-                              )}
-                              {slot.available && !isPast && (
+                              <div className="text-xs opacity-75 truncate">
+                                {booking.userEmail}
+                              </div>
+                              {!isPast && (
                                 <button
-                                  onClick={() => handleDeleteSlot(slot.id)}
+                                  onClick={() => handleDeleteBooking(booking.id)}
                                   className="mt-1 text-xs bg-red-500 text-white px-1 py-0.5 rounded hover:bg-red-600"
                                 >
                                   Delete
@@ -414,7 +406,9 @@ const Admin: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="w-full h-12 rounded-lg bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600"></div>
+                            <div className="w-full h-12 rounded-lg bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center">
+                              <span className="text-[10px] text-slate-400">Available</span>
+                            </div>
                           )}
                         </div>
                       );
@@ -426,24 +420,24 @@ const Admin: React.FC = () => {
           )}
 
           {/* Summary */}
-          {!loading && slots.length > 0 && (
+          {!loading && bookings.length > 0 && (
             <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {slots.length}
+                    {timeSlots.length * 5}
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400">Total Slots</div>
+                  <div className="text-slate-600 dark:text-slate-400">Total Possible Slots</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {slots.filter(s => s.available).length}
+                    {(timeSlots.length * 5) - bookings.length}
                   </div>
                   <div className="text-slate-600 dark:text-slate-400">Available</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                    {slots.filter(s => !s.available).length}
+                    {bookings.length}
                   </div>
                   <div className="text-slate-600 dark:text-slate-400">Booked</div>
                 </div>
