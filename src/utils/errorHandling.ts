@@ -55,6 +55,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   
   // App errors
   'SLOT_NOT_AVAILABLE': 'This time slot is no longer available',
+  'DOUBLE_BOOKED': 'This slot was just booked by someone else. Please pick another time.',
   'BOOKING_FAILED': 'Failed to book the slot. Please try again',
   'SLOT_CREATION_FAILED': 'Failed to create time slots. Please try again',
   'USER_NOT_FOUND': 'User not found. Please log in again',

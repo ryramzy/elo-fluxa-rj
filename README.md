@@ -39,6 +39,14 @@ Inside `mcp_server/server.py` runs a FastMCP agent handling logic such as:
 
 ## Recent Important Fixes
 
+### Booking Architecture & Security Refactor (2026-05-25)
+**Problem**: The application previously fetched 70 blank slot documents per week to prove availability, causing extreme latency. It also required manual regeneration of slots. Furthermore, double-booking race conditions could occur.
+
+**Solution**:
+- **Default-Available Architecture**: We eliminated the `slots` collection entirely. The Mon-Fri 8AM-9PM schedule is inherently considered open. We now exclusively query the `bookings` collection. An empty schedule returns 0 documents, making the calendar load instantly and scaling infinitely into the future without manual slot creation.
+- **Transactional Consistency**: The `bookSlot` function now uses deterministic document IDs (`YYYY-MM-DD_HHMM`) and a strict `runTransaction` check to guarantee that double bookings cannot occur simultaneously.
+- **Firestore Security Rules**: Shipped `firestore.rules` that restrict students to creating/deleting exclusively their own booking documents (`request.auth.uid == resource.data.userId`), while granting admins full control.
+
 ### Course Card Image Loading Fix (2026-04-14)
 **Problem**: Hip Hop and Law Enforcement course cards displayed emoji placeholders instead of images due to broken Unsplash URLs returning binary data.
 
@@ -60,6 +68,7 @@ Inside `mcp_server/server.py` runs a FastMCP agent handling logic such as:
 - Added comprehensive CSS dark mode support
 - localStorage persistence for user preferences
 - System preference detection
+
 ### Enrollment Flow & Firestore Index Fix (2026-05-22)
 **Problem 1**: Enrolling in a course by clicking "Começar de graça" resulted in a silent failure where the user was not navigated to the course and no enrollment document was created.
 **Problem 2**: Course duration in the sidebar was rendering as `NaNh NaNmin` when lesson durations were undefined or missing.
