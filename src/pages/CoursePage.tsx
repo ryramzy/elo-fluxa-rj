@@ -7,6 +7,7 @@ import { courses, Course, Lesson } from '../data/courses';
 import { checkCourseAccess, enrollUserInCourse } from '../lib/firestore';
 import { XP_REWARDS, awardXP } from '../lib/xpSystem';
 import SubscriptionModal from '../components/SubscriptionModal';
+import { sounds } from '../utils/sounds';
 
 const CoursePage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -19,6 +20,8 @@ const CoursePage: React.FC = () => {
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [enrollError, setEnrollError] = useState<string | null>(null);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [enrollSuccess, setEnrollSuccess] = useState(false);
 
   const course = courses.find(c => c.id === courseId);
   const enrollment = enrollments.find(e => e.courseId === courseId);
@@ -65,6 +68,7 @@ const CoursePage: React.FC = () => {
   const enrollInCourse = async () => {
     if (!user?.uid) return;
     setEnrollError(null);
+    setIsEnrolling(true);
     
     try {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
@@ -88,10 +92,17 @@ const CoursePage: React.FC = () => {
       setSubscriptionModalOpen(false);
       setSelectedCourseForEnroll(null);
       
-      // Immediately start the course
-      navigate(`/courses/${course.id}/lessons/${course.lessons[0].id}`);
+      // Play sound, show success state, and delay navigation slightly for UX
+      sounds.playEnrollSuccess();
+      setEnrollSuccess(true);
+      setIsEnrolling(false);
+      
+      setTimeout(() => {
+        navigate(`/courses/${course.id}/lessons/${course.lessons[0].id}`);
+      }, 1500);
     } catch (error: any) {
       console.error('Error enrolling in course:', error);
+      setIsEnrolling(false);
       setEnrollError(error.message || 'Failed to enroll in the course. Please try again or contact support.');
     }
   };
@@ -418,9 +429,31 @@ const CoursePage: React.FC = () => {
                 ) : (
                   <button 
                     onClick={handleEnrollClick}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors"
+                    disabled={isEnrolling || enrollSuccess}
+                    className={`w-full font-medium py-2 rounded transition-all duration-300 flex items-center justify-center gap-2 ${
+                      enrollSuccess 
+                        ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    } ${isEnrolling ? 'opacity-80 cursor-wait' : ''}`}
                   >
-                    Enroll in Course
+                    {isEnrolling ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processando...
+                      </>
+                    ) : enrollSuccess ? (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Matriculado! 🎉
+                      </>
+                    ) : (
+                      'Enroll in Course'
+                    )}
                   </button>
                 )}
                 

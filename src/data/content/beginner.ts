@@ -4,14 +4,14 @@ export const beginnerContent: Record<string, Record<string, { id: string; title:
       id: "be-dl-01",
       title: "Greetings & introductions",
       slides: [
-        "INTRO|||Welcome to Daily English|||In this lesson, you'll learn how to say hello and introduce yourself naturally. No robotic phrases!|||Elo: Hi there! I'm Elo. Como você costuma dizer 'olá' em inglês?",
-        "VOCAB|||Saying Hello|||'Hi' and 'Hey' are much more common than 'Hello' in daily life. Use 'Hey' with friends, and 'Hi' almost anywhere.|||Elo: Let's practice. Say 'Hi, my name is [Your Name]' out loud. Ready?",
-        "CONCEPT|||I am vs. My name is|||'I'm [Name]' is casual and very common. 'My name is [Name]' is a bit more formal. Both are great!|||Elo: Which one sounds more like your style? 'I'm João' or 'My name is João'?",
-        "EXAMPLE|||Nice to meet you|||A: Hi, I'm Sarah. — B: Nice to meet you, I'm Alex. — A: Nice to meet you too.|||Elo: Simple and perfect. Can you say: 'Nice to meet you!'?",
-        "CULTURE|||How are you?|||In the US, 'How are you?' is often just a greeting, not a real question about your feelings. The standard answer is just 'Good, you?'|||Elo: Se eu disser 'Hey, how are you?', o que você responde?",
-        "DRILL|||Your Turn: Greeting|||Imagine you are walking into a coffee shop and the barista says 'Hi, how are you?'|||Elo: Respond exactly how an American would. (Hint: Keep it short!)",
-        "ROLEPLAY|||Meeting a Colleague|||You are starting a new job. Someone walks up to you and says 'Hi, I'm Mark from Marketing.'|||Elo: It's your turn. Introduce yourself to Mark and tell him it's nice to meet him.",
-        "REVIEW|||Great Job!|||You learned: 'Hi/Hey', 'I'm...', and 'Good, you?'. You're ready to meet people!|||Elo: Amazing work! Book a quick session with me and let's practice this live."
+        "INTRO|||Welcome to Daily English|||In this lesson, you'll learn how to say hello and introduce yourself naturally. **No robotic phrases!**\n\n*   Natural greetings\n*   Introducing yourself\n*   Small talk basics|||Elo: Hi there! I'm Elo. Como você costuma dizer 'olá' em inglês?",
+        "VOCAB|||Saying Hello|||**'Hi'** and **'Hey'** are much more common than 'Hello' in daily life.\n\n| Greeting | Usage |\n| :--- | :--- |\n| **Hey** | Friends and family |\n| **Hi** | Almost anywhere |\n| **Hello** | Formal situations |||Elo: Let's practice. Say 'Hi, my name is [Your Name]' out loud. Ready?",
+        "CONCEPT|||I am vs. My name is|||* **'I'm [Name]'** is casual and very common.\n* **'My name is [Name]'** is a bit more formal.\n\nBoth are great!|||Elo: Which one sounds more like your style? 'I'm João' or 'My name is João'?",
+        "EXAMPLE|||Nice to meet you|||**A:** Hi, I'm Sarah. \n**B:** Nice to meet you, I'm Alex. \n**A:** Nice to meet you too.|||Elo: Simple and perfect. Can you say: 'Nice to meet you!'?",
+        "CULTURE|||How are you?|||In the US, *'How are you?'* is often just a greeting, not a real question about your feelings. \n\n> The standard answer is just **'Good, you?'**|||Elo: Se eu disser 'Hey, how are you?', o que você responde?",
+        "DRILL|||Your Turn: Greeting|||Imagine you are walking into a coffee shop and the barista says:\n\n*\"Hi, how are you?\"*|||Elo: Respond exactly how an American would. (Hint: Keep it short!)",
+        "ROLEPLAY|||Meeting a Colleague|||You are starting a new job. Someone walks up to you and says:\n\n> *\"Hi, I'm Mark from Marketing.\"*|||Elo: It's your turn. Introduce yourself to Mark and tell him it's nice to meet him.",
+        "REVIEW|||Great Job!|||You learned:\n1. **Hi/Hey**\n2. **I'm...**\n3. **Good, you?**\n\nYou're ready to meet people!|||Elo: Amazing work! Book a quick session with me and let's practice this live."
       ]
     },
     "be-dl-02": {

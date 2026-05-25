@@ -9,6 +9,9 @@ import { updateLessonProgress } from '../lib/firestore';
 import { SlideViewer } from '../components/course/SlideViewer';
 import { SlideCompletionState } from '../components/course/SlideCompletionState';
 import confetti from 'canvas-confetti';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { sounds } from '../utils/sounds';
 
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -57,6 +60,9 @@ const LessonPage: React.FC = () => {
       await updateLessonProgress(user.uid, courseId, lessonId, initialSlide, true);
       await awardXP(user.uid, lesson.xpReward, `lesson completed: ${lesson.title}`);
       setIsCompleted(true);
+      
+      // Play lesson complete sound
+      sounds.playLessonComplete();
       
       // Trigger Confetti!
       const duration = 3000;
@@ -132,8 +138,10 @@ const LessonPage: React.FC = () => {
                 </span>
               )}
               {body && (
-                <div className="text-slate-100 text-lg md:text-xl leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto">
-                  {body}
+                <div className="text-slate-100 text-lg md:text-xl leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto prose prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {body}
+                  </ReactMarkdown>
                 </div>
               )}
               {eloPrompt && (
