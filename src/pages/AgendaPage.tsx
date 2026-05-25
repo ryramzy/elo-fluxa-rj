@@ -4,52 +4,27 @@ import type { TimeSlot } from '../types';
 
 const AgendaPage = () => {
   const handleSlotSelect = (slot: TimeSlot) => {
-    console.log('Slot selected:', slot);
-    // Handle successful booking if needed
+    // Analytics or additional side effects can go here.
+    // The VisualSlotPicker handles the actual booking logic.
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Agenda - Book Your Class
+    <div className="min-h-screen bg-[#020617] py-12 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#020617] to-[#020617]">
+      
+      {/* Page Header */}
+      <div className="max-w-7xl mx-auto mb-10 text-center">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight mb-4">
+          Schedule Your Session
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Choose your preferred time slot from the visual calendar below
+        <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">
+          Select an available time slot below to instantly book your next 1-hour session. 
+          All times are shown in your local timezone.
         </p>
       </div>
 
+      {/* Main Calendar Component */}
       <VisualSlotPicker onSlotSelect={handleSlotSelect} />
 
-      {/* Instructions */}
-      <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-4">
-          How to Book Your Classes:
-        </h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
-          <div>
-            <h4 className="font-medium mb-2">📅 Find Your Time</h4>
-            <ul className="space-y-1">
-              <li>• Use "Current Week" to see today's availability</li>
-              <li>• Browse future weeks with Previous/Next buttons</li>
-              <li>• Green slots are available for booking</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-2">✨ Book & Cancel</h4>
-            <ul className="space-y-1">
-              <li>• Click any green slot to book it instantly</li>
-              <li>• Orange slots are your bookings - click to cancel</li>
-              <li>• Red slots are booked by other students</li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-800 rounded-lg">
-          <p className="text-xs text-blue-700 dark:text-blue-300">
-            <strong>📚 Class Schedule:</strong> Monday-Friday, 8AM-9PM (60-minute sessions)
-          </p>
-        </div>
-      </div>
     </div>
   );
 };

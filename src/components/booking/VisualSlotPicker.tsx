@@ -1,22 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where, orderBy, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firestore';
-import { AppError, FirebaseError, getErrorMessage, logError, retryOperation, checkNetworkStatus } from '../../utils/errorHandling';
-import { Calendar, dateFnsLocalizer, Event } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import { enUS } from 'date-fns/locale';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-const locales = {
-  'en-US': enUS,
-};
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
+import { AppError, getErrorMessage, logError } from '../../utils/errorHandling';
 
 interface TimeSlot {
   id: string;
@@ -35,59 +20,57 @@ interface VisualSlotPickerProps {
 }
 
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
-  onSlotSelect,
-  selectedDate
+  onSlotSelect
 }) => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(false);
-  const [creating, setCreating] = useState(false);
   const [booking, setBooking] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [currentUserId] = useState('current-user-id'); // This would come from auth
+  const [currentUserId] = useState('current-user-id'); // In a real app, from auth context
+  
+  const [toast, setToast] = useState<{message: string, type: 'error'|'success'} | null>(null);
 
-  // Time slots for Monday-Friday, 8AM-9PM
+  const showToast = (message: string, type: 'error' | 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Fixed time slots from 8:00 to 21:00
   const timeSlots = [
     '08:00', '09:00', '10:00', '11:00', '12:00',
     '13:00', '14:00', '15:00', '16:00', '17:00',
     '18:00', '19:00', '20:00', '21:00'
   ];
 
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  
-  // Get week dates based on offset
+  // Get Monday to Friday dates
   const getWeekDates = (offset: number) => {
     const today = new Date();
     const currentDay = today.getDay();
+    // If Sunday (0), offset by -6 to get Monday. Otherwise 1 - currentDay.
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     const monday = new Date(today);
     monday.setDate(today.getDate() + mondayOffset + (offset * 7));
     
     const weekDates = [];
+    // Only 5 days (Monday to Friday)
     for (let i = 0; i < 5; i++) {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
-      weekDates.push(date.toISOString().split('T')[0]);
+      weekDates.push(date);
     }
     return weekDates;
   };
 
-  // Load slots for the week
+  const weekDates = getWeekDates(selectedWeek);
+
   const loadWeekSlots = async () => {
     setLoading(true);
-    setError('');
+    setToast(null);
     
     try {
-      // Check network status
-      if (!checkNetworkStatus()) {
-        throw new AppError('No internet connection. Please check your connection and try again.', 'NETWORK_ERROR');
-      }
-      
-      const weekDates = getWeekDates(selectedWeek);
-      const weekStart = weekDates[0];
-      const weekEnd = weekDates[4];
+      const weekStart = weekDates[0].toISOString().split('T')[0];
+      const weekEnd = weekDates[4].toISOString().split('T')[0];
       
       const slotsQuery = query(
         collection(db, 'slots'),
@@ -97,358 +80,261 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         orderBy('time')
       );
       
-      const snapshot = await retryOperation(async () => {
-        return await getDocs(slotsQuery);
-      }, 3, 1000);
-      
+      const snapshot = await getDocs(slotsQuery);
       const slotsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as TimeSlot));
       
-      if (slotsData.length === 0) {
-        setSlots([]);
-      } else {
-        setSlots(slotsData);
-      }
+      setSlots(slotsData);
     } catch (err) {
-      logError(err, { 
-        action: 'loadWeekSlots', 
-        selectedWeek,
-        weekDates: getWeekDates(selectedWeek)
-      });
-      
-      setSlots([]);
-      setError(getErrorMessage(err));
+      logError(err, { action: 'loadWeekSlots', selectedWeek });
+      showToast(getErrorMessage(err), 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  // Create slots for the week
-  const createWeekSlots = async () => {
-    setCreating(true);
-    setError('');
-    
-    try {
-      // Check network status
-      if (!checkNetworkStatus()) {
-        throw new AppError('No internet connection. Please check your connection and try again.', 'NETWORK_ERROR');
-      }
-      
-      const weekDates = getWeekDates(selectedWeek);
-      let createdCount = 0;
-      
-      for (const date of weekDates) {
-        for (const time of timeSlots) {
-          try {
-            // Check if slot already exists
-            const existingQuery = query(
-              collection(db, 'slots'),
-              where('date', '==', date),
-              where('time', '==', time)
-            );
-            const existingSnapshot = await getDocs(existingQuery);
-
-            if (existingSnapshot.empty) {
-              // Create new slot
-              const slotData = {
-                date: date,
-                time: time,
-                duration: 60,
-                available: true,
-                status: 'available',
-                bookedBy: null,
-                bookedByName: null,
-                meetLink: null,
-                googleEventId: null,
-                createdAt: serverTimestamp()
-              };
-              await retryOperation(async () => {
-                return await addDoc(collection(db, 'slots'), slotData);
-              });
-              createdCount++;
-            }
-          } catch (slotError) {
-            logError(slotError, { action: 'createSlot', date, time });
-            // Continue with other slots even if one fails
-          }
-        }
-      }
-      
-      await loadWeekSlots();
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      logError(err, { action: 'createWeekSlots', selectedWeek });
-      setError(getErrorMessage(err));
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  // Book a slot
   const bookSlot = async (slot: TimeSlot) => {
+    if (booking || cancelling) return;
     setBooking(true);
-    setError('');
     
     try {
-      // Check if slot is still available
       if (!slot.available) {
         throw new AppError('This time slot is no longer available', 'SLOT_NOT_AVAILABLE');
       }
       
-      // Original Firebase logic for real data
-      // Check network status
-      if (!checkNetworkStatus()) {
-        throw new AppError('No internet connection. Please check your connection and try again.', 'NETWORK_ERROR');
-      }
-      
       const testUserName = 'Current Student';
       
-      await retryOperation(async () => {
-        return await updateDoc(doc(db, 'slots', slot.id), {
-          available: false,
-          status: 'booked',
-          bookedBy: currentUserId,
-          bookedByName: testUserName,
-          updatedAt: serverTimestamp()
-        });
+      await updateDoc(doc(db, 'slots', slot.id), {
+        available: false,
+        status: 'booked',
+        bookedBy: currentUserId,
+        bookedByName: testUserName,
+        updatedAt: serverTimestamp()
       });
       
       await loadWeekSlots();
-      setSuccess('Slot booked successfully!');
-      setTimeout(() => setSuccess(''), 3000);
+      showToast('Slot booked successfully!', 'success');
       
       if (onSlotSelect) {
         onSlotSelect(slot);
       }
     } catch (err) {
-      logError(err, { 
-        action: 'bookSlot', 
-        slotId: slot.id, 
-        slotDate: slot.date, 
-        slotTime: slot.time 
-      });
-      setError(getErrorMessage(err));
+      logError(err, { action: 'bookSlot', slotId: slot.id });
+      showToast(getErrorMessage(err), 'error');
     } finally {
       setBooking(false);
     }
   };
 
-  // Cancel/Unreserve a slot
   const cancelSlot = async (slot: TimeSlot) => {
+    if (booking || cancelling) return;
     setCancelling(true);
-    setError('');
     
     try {
-      // Check if user owns this booking
       if (slot.bookedBy !== currentUserId) {
         throw new AppError('You can only cancel your own bookings', 'PERMISSION_DENIED');
       }
       
-      // Original Firebase logic for real data
-      // Check network status
-      if (!checkNetworkStatus()) {
-        throw new AppError('No internet connection. Please check your connection and try again.', 'NETWORK_ERROR');
-      }
-      
-      await retryOperation(async () => {
-        return await updateDoc(doc(db, 'slots', slot.id), {
-          available: true,
-          status: 'available',
-          bookedBy: null,
-          bookedByName: null,
-          updatedAt: serverTimestamp()
-        });
+      await updateDoc(doc(db, 'slots', slot.id), {
+        available: true,
+        status: 'available',
+        bookedBy: null,
+        bookedByName: null,
+        updatedAt: serverTimestamp()
       });
       
       await loadWeekSlots();
-      setSuccess('Slot cancelled successfully!');
-      setTimeout(() => setSuccess(''), 3000);
+      showToast('Slot cancelled successfully!', 'success');
     } catch (err) {
-      logError(err, { 
-        action: 'cancelSlot', 
-        slotId: slot.id, 
-        slotDate: slot.date, 
-        slotTime: slot.time 
-      });
-      setError(getErrorMessage(err));
+      logError(err, { action: 'cancelSlot', slotId: slot.id });
+      showToast(getErrorMessage(err), 'error');
     } finally {
       setCancelling(false);
     }
-  };
-
-  // Jump to current week
-  const jumpToCurrentWeek = () => {
-    setSelectedWeek(0);
   };
 
   useEffect(() => {
     loadWeekSlots();
   }, [selectedWeek]);
 
-  const weekDates = getWeekDates(selectedWeek);
-  const currentWeek = getWeekDates(0);
-  const isCurrentWeek = selectedWeek === 0;
+  // Find a slot for a specific date and time
+  const getSlot = (dateStr: string, time: string) => {
+    return slots.find(s => s.date === dateStr && s.time === time);
+  };
+
+  // Check if a time is in the past
+  const isPast = (dateStr: string, time: string) => {
+    return new Date(`${dateStr}T${time}:00`) < new Date();
+  };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-[#0f172a]/80 rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative">
+      
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`absolute top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg backdrop-blur-md border animate-in slide-in-from-top-4 fade-in duration-300 ${
+          toast.type === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-100' : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-100'
+        }`}>
+          {toast.message}
+        </div>
+      )}
+
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Book Your Class Time
-          </h2>
-          <div className="flex gap-2">
+      <div className="p-6 md:p-8 border-b border-white/5 bg-white/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+              Book Your Class
+            </h2>
+            <p className="text-slate-400 mt-1 text-sm md:text-base">
+              Week of {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded-xl border border-white/5">
             <button
               onClick={() => setSelectedWeek(selectedWeek - 1)}
-              className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
             >
-              ← Previous
+              Previous
             </button>
             <button
-              onClick={jumpToCurrentWeek}
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                isCurrentWeek 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
+              onClick={() => setSelectedWeek(0)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                selectedWeek === 0 
+                  ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              Current Week
+              Today
             </button>
             <button
               onClick={() => setSelectedWeek(selectedWeek + 1)}
-              className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
             >
-              Next →
+              Next
             </button>
           </div>
         </div>
-        
-        <div className="text-sm text-slate-600 dark:text-slate-400">
-          {isCurrentWeek ? 'This Week - Available Times' : `Week of ${new Date(weekDates[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/5">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
+            <span className="text-xs font-medium text-slate-300">Available</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500/80 shadow-[0_0_10px_rgba(59,130,246,0.4)]" />
+            <span className="text-xs font-medium text-slate-300">Your Booking</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-slate-700/80" />
+            <span className="text-xs font-medium text-slate-400">Booked/Unavailable</span>
+          </div>
         </div>
       </div>
 
-      {/* Messages */}
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
-          {error}
-        </div>
-      )}
+      {/* Calendar Grid Container */}
+      <div className="relative p-6 md:p-8 bg-[#0f172a]/40 min-h-[500px]">
+        {loading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f172a]/50 backdrop-blur-sm z-10">
+            <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+            <p className="mt-4 text-slate-400 font-medium">Loading availability...</p>
+          </div>
+        ) : null}
 
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-lg">
-          {success}
-        </div>
-      )}
+        <div className="overflow-x-auto pb-4">
+          <div className="min-w-[800px]">
+            {/* Days Header */}
+            <div className="grid grid-cols-6 gap-4 mb-4">
+              <div className="text-right pr-4 text-slate-500 text-xs font-medium uppercase tracking-wider pt-2">
+                Time
+              </div>
+              {weekDates.map((date, i) => {
+                const isToday = date.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+                return (
+                  <div key={i} className={`flex flex-col items-center p-3 rounded-2xl transition-all ${isToday ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-transparent'}`}>
+                    <span className={`text-sm font-semibold mb-1 ${isToday ? 'text-blue-400' : 'text-slate-300'}`}>
+                      {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <span className={`text-2xl font-bold ${isToday ? 'text-white' : 'text-slate-400'}`}>
+                      {date.getDate()}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
 
-      {/* Create Slots Button */}
-      {slots.length === 0 && !loading && (
-        <div className="text-center py-8">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            No slots available for this week
-          </p>
-          <button
-            onClick={createWeekSlots}
-            disabled={creating}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-          >
-            {creating ? 'Creating...' : 'Create Week Slots'}
-          </button>
-        </div>
-      )}
+            {/* Time Grid */}
+            <div className="space-y-3 relative">
+              {timeSlots.map((time) => (
+                <div key={time} className="grid grid-cols-6 gap-4 group">
+                  {/* Time Label */}
+                  <div className="text-right pr-4 py-3 text-slate-400 text-sm font-medium flex items-center justify-end transform -translate-y-0.5">
+                    {time}
+                  </div>
+                  
+                  {/* Slots for each day */}
+                  {weekDates.map((date) => {
+                    const dateStr = date.toISOString().split('T')[0];
+                    const slot = getSlot(dateStr, time);
+                    const past = isPast(dateStr, time);
+                    
+                    let slotState = 'empty';
+                    if (slot) {
+                      if (slot.available) slotState = 'available';
+                      else if (slot.bookedBy === currentUserId) slotState = 'mine';
+                      else slotState = 'booked';
+                    }
 
-      {/* Loading */}
-      {loading && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">Loading...</p>
-        </div>
-      )}
-
-      {/* Calendar Grid */}
-      {slots.length > 0 && (
-        <div className="h-[600px] mt-4">
-          <Calendar
-            localizer={localizer}
-            events={slots.map(slot => {
-              const [year, month, day] = slot.date.split('-');
-              const [hours, minutes] = slot.time.split(':');
-              const start = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
-              const end = new Date(start.getTime() + (slot.duration || 60) * 60000);
-              
-              let title = '';
-              if (slot.available) title = 'Available';
-              else if (slot.bookedBy === currentUserId) title = 'Your Booking';
-              else title = `Booked ${slot.bookedByName || ''}`;
-
-              return {
-                id: slot.id,
-                title,
-                start,
-                end,
-                resource: slot
-              };
-            })}
-            startAccessor="start"
-            endAccessor="end"
-            views={['work_week']}
-            defaultView="work_week"
-            date={new Date(weekDates[0] + 'T00:00:00')}
-            toolbar={false}
-            scrollToTime={new Date(1970, 0, 1, 8, 0, 0)}
-            onSelectEvent={(event: any) => {
-              const slot = event.resource;
-              const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
-              if (!isPast && !booking && !cancelling) {
-                if (slot.available) {
-                  bookSlot(slot);
-                } else if (slot.bookedBy === currentUserId) {
-                  cancelSlot(slot);
-                }
-              }
-            }}
-            eventPropGetter={(event: any) => {
-              const slot = event.resource;
-              const isPast = new Date(slot.date + 'T' + slot.time + ':00') < new Date();
-              
-              let className = 'rounded-md shadow-sm border-none font-bold text-xs p-1 ';
-              
-              if (isPast) {
-                className += 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed';
-              } else if (slot.available) {
-                className += 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 cursor-pointer hover:bg-green-200 dark:hover:bg-green-800/60';
-              } else if (slot.bookedBy === currentUserId) {
-                className += 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-800/60';
-              } else {
-                className += 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 cursor-not-allowed';
-              }
-              
-              return { className, style: { border: 'none' } };
-            }}
-          />
-        </div>
-      )}
-
-      {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-4 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-100 dark:bg-green-900 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Available - Click to Book</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-orange-100 dark:bg-orange-900 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Your Booking - Click to Cancel</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-100 dark:bg-red-900 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Booked by Others</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-slate-100 dark:bg-slate-700 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Past Time</span>
+                    return (
+                      <div key={`${dateStr}-${time}`} className="relative h-14">
+                        {past ? (
+                          // Past slot
+                          <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+                            <span className="text-xs text-slate-600 font-medium">—</span>
+                          </div>
+                        ) : slotState === 'empty' ? (
+                          // No slot created by admin
+                          <div className="absolute inset-0 rounded-xl bg-slate-900/30 border border-white/5 border-dashed flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-xs text-slate-600 font-medium">Closed</span>
+                          </div>
+                        ) : slotState === 'available' ? (
+                          // Available slot
+                          <button
+                            onClick={() => bookSlot(slot!)}
+                            disabled={booking || cancelling}
+                            className="absolute inset-0 w-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <span className="text-sm font-bold tracking-wide">Available</span>
+                            <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
+                          </button>
+                        ) : slotState === 'mine' ? (
+                          // User's booking
+                          <button
+                            onClick={() => cancelSlot(slot!)}
+                            disabled={booking || cancelling}
+                            className="absolute inset-0 w-full rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <span className="text-sm font-bold tracking-wide group-hover/btn:hidden">Your Class</span>
+                            <span className="text-sm font-bold tracking-wide hidden group-hover/btn:block">Cancel?</span>
+                          </button>
+                        ) : (
+                          // Booked by someone else
+                          <div className="absolute inset-0 rounded-xl bg-slate-800/60 border border-white/5 flex flex-col items-center justify-center cursor-not-allowed overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-slate-900/50" />
+                            <span className="text-sm font-medium text-slate-500 relative z-10">Booked</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
