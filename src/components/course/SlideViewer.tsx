@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
+import { speakText } from '../../utils/tts';
 
 interface Slide {
   id: string;
@@ -32,21 +33,18 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
     swiperRef.current?.slidePrev();
   };
 
-  const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.85; // Slightly slower for clarity
-      window.speechSynthesis.speak(utterance);
-    }
+  const handleSpeakText = (text: string) => {
+    speakText(text);
   };
 
   return (
     <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col font-sans text-white touch-none">
       
       {/* Top Bar Navigation */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex flex-col gap-3 z-30 bg-gradient-to-b from-slate-900/80 to-transparent">
+      <div 
+        className="absolute top-0 left-0 right-0 p-4 flex flex-col gap-3 z-30 bg-gradient-to-b from-slate-900/80 to-transparent"
+        style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top))' }}
+      >
         <div className="flex items-center justify-between">
           <button 
             onClick={(e) => { e.stopPropagation(); onClose(); }} 
@@ -60,7 +58,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
           
           {slides[currentIndex]?.spokenText && (
             <button
-              onClick={() => speakText(slides[currentIndex].spokenText!)}
+              onClick={() => handleSpeakText(slides[currentIndex].spokenText!)}
               className="flex items-center gap-2 px-3 py-2 text-blue-100 hover:text-white bg-blue-600/50 hover:bg-blue-500/80 rounded-lg backdrop-blur-md transition-colors border border-blue-400/30 shadow-[0_0_15px_rgba(37,99,235,0.3)] animate-pulse"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,6 +94,8 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         }}
         className="w-full h-full"
         spaceBetween={50}
+        threshold={15} // Requires 15px of movement to start sliding (prevents accidental swipes)
+        resistanceRatio={0.65} // Makes it harder to over-swipe past the edges
       >
         {slides.map((slide, idx) => (
           <SwiperSlide key={slide.id} className="relative w-full h-full flex flex-col justify-center px-8">
@@ -106,7 +106,13 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
               />
             )}
             
-            <div className="relative z-10 max-w-lg mx-auto w-full h-full flex flex-col justify-center animate-fade-in-up pb-20 pt-24">
+            <div 
+              className="relative z-10 max-w-lg mx-auto w-full h-full flex flex-col justify-center animate-fade-in-up"
+              style={{ 
+                paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
+                paddingTop: 'calc(6rem + env(safe-area-inset-top))'
+              }}
+            >
               {slide.title && (
                 <h2 className="text-3xl font-serif font-bold mb-6 text-blue-300 leading-tight">
                   {slide.title}
@@ -121,7 +127,10 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
       </Swiper>
       
       {/* Navigation Controls Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 flex justify-between z-20 bg-gradient-to-t from-slate-900 to-transparent">
+      <div 
+        className="absolute bottom-0 left-0 right-0 p-6 flex justify-between z-20 bg-gradient-to-t from-slate-900 to-transparent"
+        style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}
+      >
         <button 
           onClick={handlePrev}
           className={`p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
