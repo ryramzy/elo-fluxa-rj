@@ -25,7 +25,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Hardball vs Softball|||American negotiations can be very direct ('playing hardball'). Don't take aggressive tactics personally; it's just business.|||Elo: Keep your emotions out of it. It's a game of numbers.",
         "DRILL|||Translation|||Translate: 'Nós podemos ceder no preço se vocês fecharem agora.'|||Elo: Use 'compromise on the price' and 'close the deal'.",
         "ROLEPLAY|||Salary Negotiation|||HR offers you $80k. You know the market rate is $95k.|||Elo: Reject the $80k politely and state your required salary based on market research.",
-        "REVIEW|||Deal Closed|||You learned: Dealbreakers, the power of silence, and firm pushback.|||Elo: You negotiated that lesson perfectly."
+        "REVIEW|||Deal Closed|||You learned: Dealbreakers, the power of silence, and firm pushback.|||Elo: You negotiated that perfectly."
       ]
     },
     "adv-biz-03": {
@@ -39,7 +39,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||The Steve Jobs Style|||American presentations favor clean, minimalist slides with lots of storytelling, unlike the text-heavy slides often used elsewhere.|||Elo: Bullet points kill presentations. Use pictures and tell a story.",
         "DRILL|||Translation|||Translate: 'O retorno sobre o investimento será enorme.'|||Elo: Use 'ROI' and 'massive'.",
         "ROLEPLAY|||The Elevator Pitch|||You step into an elevator with an investor. You have 30 seconds to pitch your app idea.|||Elo: Give me a 3-sentence pitch: The problem, your solution, and the traction.",
-        "REVIEW|||Standing Ovation|||You learned: Hooks, signposting, and pitching vocabulary.|||Elo: I'm sold! Here's a million dollars for your idea."
+        "REVIEW|||Standing Ovation|||You learned: Hooks, signposting, and pitching vocabulary.|||Elo: I'm sold. Your idea is clear."
       ]
     },
     "adv-biz-04": {
@@ -53,7 +53,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Time is Money|||Punctuality in the US/Germany is strict. 'On time' means 5 minutes early. In other cultures, time is flexible.|||Elo: If a meeting starts at 9:00 AM, log into Zoom at 8:58 AM.",
         "DRILL|||Translation|||Translate: 'Isso está errado. Refaça.' para o inglês corporativo polido.|||Elo: Say 'I think we need to revisit this. Can you take another look?'",
         "ROLEPLAY|||The Late Client|||Your client is 20 minutes late to a Zoom call. They finally join.|||Elo: Greet them professionally without showing anger, and pivot immediately to the agenda.",
-        "REVIEW|||Global Executive|||You learned: Low-context communication, softening feedback, and punctuality expectations.|||Elo: You are ready to manage international teams!"
+        "REVIEW|||Global Executive|||You learned: Low-context communication, softening feedback, and punctuality expectations.|||Elo: You are ready to manage international teams."
       ]
     },
     "adv-biz-05": {
@@ -67,7 +67,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Exclamation Points!|||In American business emails, using one exclamation point is friendly ('Thanks!'). Using none can seem cold. Using three is unprofessional.|||Elo: It's a delicate balance. 'Thanks!' is safe.",
         "DRILL|||Translation|||Translate: 'Estou te escrevendo para saber sobre o projeto.'|||Elo: Use 'I'm reaching out to touch base on...'",
         "ROLEPLAY|||The Chase|||A colleague hasn't replied to your urgent email from yesterday.|||Elo: Write a polite follow-up sentence. 'Just bubbling this up to the top of your inbox...'",
-        "REVIEW|||Inbox Zero|||You learned: BLUF, email jargon, and the exclamation point rule.|||Elo: Great! Now please reply to my email by EOD."
+        "REVIEW|||Inbox Zero|||You learned: BLUF, email jargon, and the exclamation point rule.|||Elo: That's the framework. Now please reply to my email by EOD."
       ]
     },
     "adv-biz-06": {
@@ -81,7 +81,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||The Open Door Policy|||Many US companies promote an 'open door policy', meaning you can skip hierarchy and talk to senior leaders.|||Elo: However, always keep your direct manager in the loop (informed).",
         "DRILL|||Translation|||Translate: 'Você tem tempo para fazer essa tarefa?'|||Elo: Use the word 'bandwidth'.",
         "ROLEPLAY|||The Bottleneck|||Your coworker in another department is delaying your project.|||Elo: Approach them politely (manage sideways) and ask how you can unblock the situation.",
-        "REVIEW|||Leadership Material|||You learned: Bandwidth, managing up, and avoiding micromanagement.|||Elo: I foresee a promotion in your future."
+        "REVIEW|||Leadership Material|||You learned: Bandwidth, managing up, and avoiding micromanagement.|||Elo: You did the work."
       ]
     },
     "adv-biz-07": {
@@ -95,7 +95,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Transparency|||American business culture values extreme transparency during a crisis. Hiding a mistake is usually worse than the mistake itself.|||Elo: Own up to it fast, and fix it fast.",
         "DRILL|||Translation|||Translate: 'Nós precisamos minimizar os danos.'|||Elo: Use 'mitigate' or 'damage control'.",
         "ROLEPLAY|||The Outage|||Your software company's servers just crashed globally. Clients are furious.|||Elo: Draft a quick 2-sentence update for the clients taking ownership and promising a fix.",
-        "REVIEW|||Crisis Averted|||You learned: Mitigation, owning mistakes, and action plans.|||Elo: You handled that fire perfectly. The crisis is over."
+        "REVIEW|||Crisis Averted|||You learned: Mitigation, owning mistakes, and action plans.|||Elo: You handled that perfectly. The crisis is over."
       ]
     },
     "adv-biz-08": {
@@ -109,7 +109,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Informational Interviews|||In the US, it's very common to ask senior professionals for a 15-minute 'informational coffee' just to learn about their career path.|||Elo: People love talking about themselves. Just ask!",
         "DRILL|||Translation|||Translate: 'Nós temos muito em comum.'|||Elo: Use 'We have a lot of common ground.'",
         "ROLEPLAY|||The LinkedIn Message|||You met a VP of Marketing at a conference.|||Elo: Write a short message to connect with them on LinkedIn, mentioning the conference.",
-        "REVIEW|||Fully Connected|||You learned: Warm intros, picking brains, and the power of the follow-up.|||Elo: Congratulations on finishing Advanced Business Communication! You are an executive now."
+        "REVIEW|||Fully Connected|||You learned: Warm intros, picking brains, and the power of the follow-up.|||Elo: You did the work. You have completed Advanced Business Communication."
       ]
     }
   },
@@ -125,7 +125,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Business Cards vs LinkedIn|||Physical business cards are becoming rare in tech/modern business. Saying 'Let's connect on LinkedIn' is the new standard.|||Elo: Make sure your LinkedIn is updated in English!",
         "DRILL|||Translation|||Translate: 'Foi um prazer conhecê-lo.' (At the end of a meeting).|||Elo: 'It was a pleasure meeting you' or 'Great to meet you'.",
         "ROLEPLAY|||The Conference|||Introduce your colleague, John, to a new client you just met.|||Elo: Use 'I'd like to introduce you to...'",
-        "REVIEW|||Network Expanded|||You learned: Formal introductions, titles, and LinkedIn culture.|||Elo: Great start! Keep expanding that network."
+        "REVIEW|||Network Expanded|||You learned: Formal introductions, titles, and LinkedIn culture.|||Elo: Good start. Keep expanding that network."
       ]
     },
     "biz-02": {
@@ -139,7 +139,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Punctuality|||If a meeting is for 10:00, be there at 9:58. If you join at 10:05, you are severely late.|||Elo: Respect people's time. Time is money.",
         "DRILL|||Translation|||Translate: 'Quem vai fazer a ata da reunião?'|||Elo: Use 'take the minutes'.",
         "ROLEPLAY|||The Chairperson|||You are running a meeting. People are off-topic.|||Elo: Tell the room it's time to get back to the agenda.",
-        "REVIEW|||Meeting Adjourned|||You learned: Agendas, action items, tabling topics, and summarizing.|||Elo: Meeting adjourned! (That means the meeting is officially over)."
+        "REVIEW|||Meeting Adjourned|||You learned: Agendas, action items, tabling topics, and summarizing.|||Elo: Meeting adjourned. (That means the meeting is officially over)."
       ]
     },
     "biz-03": {
@@ -167,7 +167,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Camera On or Off?|||Company cultures vary, but usually, small meetings (under 5 people) = camera ON. Huge town halls = camera OFF.|||Elo: Look at what the boss is doing and copy them.",
         "DRILL|||Translation|||Translate: 'Minha internet está ruim, vou desligar a câmera.'|||Elo: 'My connection is bad, I'm going to turn off my video.'",
         "ROLEPLAY|||The Tech Glitch|||You are presenting, but people say they can't see your screen.|||Elo: Tell them you will stop sharing and try again.",
-        "REVIEW|||Call Ended|||You learned: Lag, breaking up, and muting etiquette.|||Elo: Thanks for joining the call. Have a great day!"
+        "REVIEW|||Call Ended|||You learned: Lag, breaking up, and muting etiquette.|||Elo: Thanks for joining the call. Have a great day."
       ]
     },
     "biz-05": {
@@ -195,7 +195,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Jargon Overload|||Sometimes people use too many idioms and sound silly. This is called 'corporate jargon'. Use them naturally, but don't force them.|||Elo: You don't want to sound like a robot.",
         "DRILL|||Translation|||Translate: 'Nós precisamos pensar fora da caixa para resolver isso.'|||Elo: 'We need to think outside the box to solve this.'",
         "ROLEPLAY|||The Brainstorm|||You want to start a creative meeting.|||Elo: Tell the team to 'get the ball rolling' and 'think outside the box'.",
-        "REVIEW|||Master of the Jargon|||You learned: Crucial idioms, Make vs Do, and avoiding jargon overload.|||Elo: You've completed the Business English module! Excellent work."
+        "REVIEW|||Master of the Jargon|||You learned: Crucial idioms, Make vs Do, and avoiding jargon overload.|||Elo: You did the work. You've completed the Business English module."
       ]
     }
   },
@@ -211,7 +211,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Failure is Good?|||In Silicon Valley, 'failing fast' is encouraged. It means trying quickly, realizing it doesn't work, and moving on without wasting years.|||Elo: Fail fast, learn faster.",
         "DRILL|||Translation|||Translate: 'Nós precisamos de mais investimento.'|||Elo: Use 'We need to raise a seed round' or 'secure funding'.",
         "ROLEPLAY|||The Pitch Check|||An investor asks: 'What's your current burn rate?'|||Elo: Tell them it's low because you are bootstrapping.",
-        "REVIEW|||Founder Mode|||You learned: Runway, burn rate, bootstrapping, and disruption.|||Elo: Good luck with the next Unicorn!"
+        "REVIEW|||Founder Mode|||You learned: Runway, burn rate, bootstrapping, and disruption.|||Elo: Good luck with the next Unicorn."
       ]
     },
     "biz-inn-02": {
@@ -267,7 +267,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Hackathons|||Tech companies host 24-48 hour 'hackathons' where employees drop normal work to build wild, innovative projects.|||Elo: Innovation often happens when you break the routine.",
         "DRILL|||Translation|||Translate: 'Isso vai mudar completamente a indústria.'|||Elo: Use 'disrupt' or 'paradigm shift'.",
         "ROLEPLAY|||The Town Hall|||You are addressing the company.|||Elo: Emphasize the need for 'psychological safety' to foster 'disruption'.",
-        "REVIEW|||Visionary|||You learned: Psychological safety, paradigm shifts, and disruption.|||Elo: You've completed Business Innovation! Go change the world."
+        "REVIEW|||Visionary|||You learned: Psychological safety, paradigm shifts, and disruption.|||Elo: You did the work. You've completed Business Innovation."
       ]
     }
   },
@@ -283,7 +283,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||The 3-Second Rule|||On social media, you have 3 seconds to grab someone's attention before they scroll. Your hook must be instant.|||Elo: Make it catchy, make it fast.",
         "DRILL|||Translation|||Translate: 'O texto precisa ser mais atrativo.'|||Elo: Use 'The copy needs to be more catchy.'",
         "ROLEPLAY|||The Review|||You are reviewing a billboard design. The text is too long and boring.|||Elo: Tell the team to focus on the 'benefits' and add a clear 'CTA'.",
-        "REVIEW|||Copywriter|||You learned: CTA, Copy vs Copies, and Benefits vs Features.|||Elo: Click here to proceed to the next lesson! (See my CTA?)"
+        "REVIEW|||Copywriter|||You learned: CTA, Copy vs Copies, and Benefits vs Features.|||Elo: Click here to proceed to the next lesson. (See my CTA?)"
       ]
     },
     "biz-mkt-02": {
@@ -311,7 +311,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Vanity Metrics|||Metrics that look good but don't translate to sales (e.g., millions of likes but zero purchases) are called 'Vanity Metrics'.|||Elo: Don't get fooled by vanity metrics.",
         "DRILL|||Translation|||Translate: 'Vamos testar duas versões para otimizar os resultados.'|||Elo: Use 'A/B test' and 'optimize'.",
         "ROLEPLAY|||The Analysis|||Your boss asks why website sales are down even though traffic is up.|||Elo: Explain that the 'bounce rate' is high and you need to run an 'A/B test'.",
-        "REVIEW|||Data Analyst|||You learned: Bounce rates, A/B testing, and vanity metrics.|||Elo: The data shows you are learning fast!"
+        "REVIEW|||Data Analyst|||You learned: Bounce rates, A/B testing, and vanity metrics.|||Elo: The data shows you are progressing."
       ]
     },
     "biz-mkt-04": {
@@ -325,7 +325,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Scope Creep|||When a client keeps adding small requests until the project becomes massive, that's 'Scope Creep'. It destroys profitability.|||Elo: Guard against scope creep!",
         "DRILL|||Translation|||Translate: 'Quais são os materiais que precisamos entregar?'|||Elo: Use the word 'deliverables' or 'assets'.",
         "ROLEPLAY|||The Feedback Session|||The agency sends you an ad. The logo is too small and the colors are dull.|||Elo: Give specific, constructive feedback. Don't say 'Make it pop'.",
-        "REVIEW|||Art Director|||You learned: Deliverables, Assets, Scope Creep, and specific feedback.|||Elo: Great creative direction!"
+        "REVIEW|||Art Director|||You learned: Deliverables, Assets, Scope Creep, and specific feedback.|||Elo: Solid creative direction."
       ]
     },
     "biz-mkt-05": {
@@ -339,7 +339,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||The Black Friday Mentality|||American retail relies heavily on manufactured urgency and massive discounts to trigger impulse buying.|||Elo: It's all psychological warfare.",
         "DRILL|||Translation|||Translate: 'Precisamos de depoimentos de clientes para prova social.'|||Elo: 'We need customer testimonials for social proof.'",
         "ROLEPLAY|||The Launch Strategy|||You are launching a new online course.|||Elo: Pitch a strategy using 'FOMO' and 'Scarcity' to get early sales.",
-        "REVIEW|||Psychologist|||You learned: FOMO, Social proof, and Scarcity.|||Elo: You've completed Business Marketing! Now go sell something."
+        "REVIEW|||Psychologist|||You learned: FOMO, Social proof, and Scarcity.|||Elo: You did the work. You've completed Business Marketing."
       ]
     }
   },
@@ -355,7 +355,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||The Consultant Speak|||Firms like McKinsey have popularized a highly structured, framework-heavy way of speaking. It can sound pretentious, but it's effective.|||Elo: Sounding smart is half the battle in strategy.",
         "DRILL|||Translation|||Translate: 'Quais são nossos pontos fortes e fracos?'|||Elo: 'What are our strengths and weaknesses?' (Or just say SWOT).",
         "ROLEPLAY|||The Board Meeting|||Your company is fighting 10 competitors in a price war.|||Elo: Suggest finding a 'Blue Ocean' and focusing on your 'core competencies'.",
-        "REVIEW|||Strategist|||You learned: Core competencies, Blue Oceans, and SWOT.|||Elo: You are thinking like a CEO now."
+        "REVIEW|||Strategist|||You learned: Core competencies, Blue Oceans, and SWOT.|||Elo: You are thinking strategically now."
       ]
     },
     "biz-str-02": {
@@ -411,7 +411,7 @@ export const advancedBusinessContent: Record<string, Record<string, { id: string
         "CULTURE|||Purpose-Driven Business|||Modern workers (especially Gen Z and Millennials) demand that companies have a purpose beyond just making money (ESG, sustainability).|||Elo: Companies must prove they care about the world.",
         "DRILL|||Translation|||Translate: 'Nosso modelo de negócios precisa ser escalável.'|||Elo: 'Our business model needs to be scalable.'",
         "ROLEPLAY|||The Town Hall Conclusion|||You are the CEO wrapping up the yearly meeting.|||Elo: Remind the company of the 'North Star' and the 'long-term vision' for the future.",
-        "REVIEW|||Visionary Leader|||You learned: North stars, roadmaps, pivoting, and scalability.|||Elo: You have completed the entire Advanced track! Your English is now truly executive level."
+        "REVIEW|||Visionary Leader|||You learned: North stars, roadmaps, pivoting, and scalability.|||Elo: You did the work. You have completed the Advanced track."
       ]
     }
   }

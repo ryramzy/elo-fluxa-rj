@@ -11,7 +11,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The Metric System Exception|||While the US uses imperial units (inches, feet) for mechanical engineering, electrical engineering globally (including the US) uses the metric SI system (Volts, Amps, Meters).|||Elo: A rare moment of agreement!",
         "DRILL|||Translation|||Translate: 'A corrente está muito alta para este fio.'|||Elo: 'The current is too high for this wire.'",
         "ROLEPLAY|||The Lab Partner|||Your partner asks why the LED blew up.|||Elo: Explain that there was no 'resistor' in series to limit the 'current'.",
-        "REVIEW|||Fully Charged|||You learned: Core components, Current vs Voltage, and parallel/series wiring.|||Elo: Great start! Let's keep the resistance low for the next lesson."
+        "REVIEW|||Fully Charged|||You learned: Core components, Current vs Voltage, and parallel/series wiring.|||Elo: Solid start. Let's keep the resistance low for the next lesson."
       ]
     },
     "ee-02": {
@@ -25,7 +25,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Standardization|||IEEE (Institute of Electrical and Electronics Engineers) sets the standards. Knowing how to read IEEE documentation is crucial.|||Elo: It's pronounced 'I-triple-E'.",
         "DRILL|||Translation|||Translate: 'Verifique o datasheet (folha de dados) para ver a voltagem máxima.'|||Elo: 'Check the datasheet for the maximum voltage.'",
         "ROLEPLAY|||The Design Review|||Your manager asks you to explain your circuit design.|||Elo: Guide them through it: 'The input signal flows through the capacitor and into the transistor...'",
-        "REVIEW|||PCB Designer|||You learned: Schematic terms, signal flow, and IEEE pronunciation.|||Elo: Your technical explanations are becoming crystal clear."
+        "REVIEW|||PCB Designer|||You learned: Schematic terms, signal flow, and IEEE pronunciation.|||Elo: Your technical explanations are becoming clear."
       ]
     },
     "ee-03": {
@@ -39,7 +39,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||OSHA|||In the US, OSHA (Occupational Safety and Health Administration) enforces workplace safety. An OSHA violation is a serious legal issue.|||Elo: Never mess with OSHA regulations.",
         "DRILL|||Translation|||Translate: 'Aterre o equipamento antes de consertá-lo.'|||Elo: 'Ground the equipment before repairing it.'",
         "ROLEPLAY|||The Safety Briefing|||You are in charge of a lab session with new interns.|||Elo: Give them two strict safety commands using the imperative form.",
-        "REVIEW|||Safety Inspector|||You learned: LOTO, PPE, hazard reporting, and OSHA.|||Elo: Everyone went home safe today. Good job."
+        "REVIEW|||Safety Inspector|||You learned: LOTO, PPE, hazard reporting, and OSHA.|||Elo: Everyone went home safe today."
       ]
     },
     "ee-04": {
@@ -53,7 +53,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The Maker Movement|||In the US, the 'Maker' culture (DIY electronics, Arduino, Raspberry Pi) is huge and has created a casual, hobbyist vocabulary that mixes with professional EE.|||Elo: Are you a maker?",
         "DRILL|||Translation|||Translate: 'Eu preciso soldar este componente na placa.'|||Elo: 'I need to solder this component to the board.' (Remember the silent L!)",
         "ROLEPLAY|||The Broken Prototype|||Your prototype isn't working. A colleague asks what you've tested so far.|||Elo: Tell them you used the multimeter and found a 'short to ground'.",
-        "REVIEW|||Lab Tech|||You learned: Oscilloscopes, soldering pronunciation, and describing spikes.|||Elo: Your prototype is finally working!"
+        "REVIEW|||Lab Tech|||You learned: Oscilloscopes, soldering pronunciation, and describing spikes.|||Elo: Your prototype is working."
       ]
     },
     "ee-05": {
@@ -67,7 +67,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The Whiteboard Interview|||Tech companies often use 'Whiteboard Interviews' where you must design a system on a whiteboard while explaining your thought process out loud in English.|||Elo: You have to speak AND draw at the same time!",
         "DRILL|||Translation|||Translate: 'O projeto atende a todas as especificações.'|||Elo: 'The design meets all the specs.'",
         "ROLEPLAY|||The Final Pitch|||You are presenting a new power supply design to the CEO.|||Elo: Tell them the efficiency is high, 'which means' it will save the company money.",
-        "REVIEW|||Chief Engineer|||You learned: Explaining specs, using 'which means', and feasibility.|||Elo: You've completed the EE module! The power is in your hands."
+        "REVIEW|||Chief Engineer|||You learned: Explaining specs, using 'which means', and feasibility.|||Elo: You did the work. You've completed the EE module."
       ]
     }
   },
@@ -83,7 +83,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Asynchronous Work|||Remote teams work 'async'. You must write clear messages because your coworker in India might be asleep.|||Elo: Over-communicate in writing!",
         "DRILL|||Translation|||Translate: 'Esta biblioteca está obsoleta (deprecated).'|||Elo: 'This library is deprecated.'",
         "ROLEPLAY|||The Code Review|||You see a colleague hardcoded a password in the code.|||Elo: Leave a polite comment suggesting they use an environment variable instead.",
-        "REVIEW|||Team Player|||You learned: Tech debt, deprecated, async culture, and blame-free language.|||Elo: Your soft skills are as sharp as your coding skills."
+        "REVIEW|||Team Player|||You learned: Tech debt, deprecated, async culture, and blame-free language.|||Elo: Your soft skills are improving alongside your coding skills."
       ]
     },
     "fs-02": {
@@ -97,7 +97,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Rubber Duck Debugging|||A common practice where a dev explains their code line-by-line to a rubber duck on their desk to find the bug.|||Elo: Explaining it out loud forces your brain to slow down. Quack!",
         "DRILL|||Translation|||Translate: 'Parece bom para mim. Aprovado.'|||Elo: 'LGTM. Approved.'",
         "ROLEPLAY|||The Bug Report|||A user says the login button doesn't work.|||Elo: Write a 1-sentence issue describing the 'Steps to reproduce'.",
-        "REVIEW|||Reviewer Extraordinaire|||You learned: LGTM, Nits, Steps to reproduce, and Rubber Duck debugging.|||Elo: Your PR is approved and merged!"
+        "REVIEW|||Reviewer Extraordinaire|||You learned: LGTM, Nits, Steps to reproduce, and Rubber Duck debugging.|||Elo: Your PR is approved and merged."
       ]
     },
     "fs-03": {
@@ -111,7 +111,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The 'Hello' Problem|||Never just send 'Hello' and wait for a reply. It forces the other person to wait. Send 'Hello, I have a question about the API...'|||Elo: Give them all the context immediately.",
         "DRILL|||Translation|||Translate: 'Me dê um toque quando você terminar.'|||Elo: 'Ping me when you're done.'",
         "ROLEPLAY|||The Quick Fix|||You need 5 minutes of help from a senior dev.|||Elo: Message them: 'Hey, do you have 5 minutes to hop on a quick call?'",
-        "REVIEW|||Slack Master|||You learned: Pinging, threading, and avoiding the 'Hello' problem.|||Elo: *Slack notification sound* Good job!"
+        "REVIEW|||Slack Master|||You learned: Pinging, threading, and avoiding the 'Hello' problem.|||Elo: *Slack notification sound* Handled perfectly."
       ]
     },
     "fs-04": {
@@ -125,7 +125,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Markdown Everywhere|||Tech docs are almost exclusively written in Markdown (.md files). Knowing Markdown formatting is a basic literacy skill for developers.|||Elo: Do you know how to make text **bold** in Markdown?",
         "DRILL|||Translation|||Translate: 'Este endpoint retorna um erro 404 se o usuário não for encontrado.'|||Elo: 'This endpoint returns a 404 error if the user is not found.'",
         "ROLEPLAY|||The README|||You built a new open-source tool.|||Elo: Write a 1-sentence instruction on how to install it using the imperative voice.",
-        "REVIEW|||Technical Writer|||You learned: Endpoints, payloads, prerequisites, and active voice.|||Elo: Your documentation is impeccable."
+        "REVIEW|||Technical Writer|||You learned: Endpoints, payloads, prerequisites, and active voice.|||Elo: Your documentation is clear."
       ]
     },
     "fs-05": {
@@ -139,7 +139,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The FAANG Dream|||FAANG (Facebook, Amazon, Apple, Netflix, Google) or MAANG sets the standard for interviews. They care heavily about Data Structures and Algorithms (DSA).|||Elo: Time to grind LeetCode!",
         "DRILL|||Translation|||Translate: 'Qual é a complexidade de tempo deste algoritmo?'|||Elo: 'What is the time complexity of this algorithm?'",
         "ROLEPLAY|||The Algorithm|||The interviewer asks why you used a specific loop.|||Elo: Explain that you did it to 'optimize performance' and 'reduce time complexity'.",
-        "REVIEW|||Hired!|||You learned: Trade-offs, thinking out loud, and interview stages.|||Elo: You passed! Welcome to Full Stack Development."
+        "REVIEW|||Hired!|||You learned: Trade-offs, thinking out loud, and interview stages.|||Elo: You passed. Welcome to Full Stack Development."
       ]
     }
   },
@@ -169,7 +169,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The App Store Review|||Getting an app approved by Apple is notoriously difficult and arbitrary. 'We got rejected by Apple again' is a common complaint.|||Elo: Have you ever survived the App Store review process?",
         "DRILL|||Translation|||Translate: 'O aplicativo está travando no Android.'|||Elo: 'The app is crashing on Android.'",
         "ROLEPLAY|||The Release Strategy|||Your boss asks how to send an urgent bug fix without waiting for Apple's approval.|||Elo: Suggest pushing an 'OTA (Over The Air) update'.",
-        "REVIEW|||Mobile Master|||You learned: Native modules, OTA updates, dropping frames, and TestFlight.|||Elo: Your app has been approved for the App Store!"
+        "REVIEW|||Mobile Master|||You learned: Native modules, OTA updates, dropping frames, and TestFlight.|||Elo: Your app has been approved for the App Store."
       ]
     },
     "swe-03": {
@@ -183,7 +183,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The 'Five Nines'|||High availability is measured in 'nines'. 99.999% uptime is the gold standard ('Five Nines'), allowing only 5 minutes of downtime per year.|||Elo: Does your code have Five Nines of reliability?",
         "DRILL|||Translation|||Translate: 'Precisamos adicionar um cache para reduzir a latência.'|||Elo: 'We need to add a cache to reduce latency.'",
         "ROLEPLAY|||The Architecture Review|||Your team wants to put everything on one giant server.|||Elo: Warn them that this creates a 'single point of failure' and suggest 'horizontal scaling'.",
-        "REVIEW|||Software Architect|||You learned: Load balancers, scaling horizontally, latency, and the Five Nines.|||Elo: Your system architecture is brilliant."
+        "REVIEW|||Software Architect|||You learned: Load balancers, scaling horizontally, latency, and the Five Nines.|||Elo: Your system architecture is sound."
       ]
     },
     "swe-04": {
@@ -211,7 +211,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Hacktoberfest|||Every October, the global dev community celebrates 'Hacktoberfest' to encourage OSS contributions. You even get a free t-shirt!|||Elo: It's a great way to practice your OSS English.",
         "DRILL|||Translation|||Translate: 'Obrigado por apontar isso, eu vou consertar na próxima revisão.'|||Elo: 'Thanks for pointing that out, I'll fix it in the next commit/revision.'",
         "ROLEPLAY|||The First PR|||You want to fix a typo in the documentation of a famous library.|||Elo: Write a short PR description: 'This PR fixes a minor typo in the README.'",
-        "REVIEW|||OSS Contributor|||You learned: Maintainers, Upstream, polite proposals, and handling rejection.|||Elo: The community thanks you for your contribution!"
+        "REVIEW|||OSS Contributor|||You learned: Maintainers, Upstream, polite proposals, and handling rejection.|||Elo: The community thanks you for your contribution."
       ]
     },
     "swe-06": {
@@ -225,7 +225,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Impostor Syndrome|||A massive phenomenon in tech where successful developers feel like frauds who will be 'found out'. Great leaders acknowledge and normalize this feeling.|||Elo: Have you ever felt impostor syndrome?",
         "DRILL|||Translation|||Translate: 'Como posso te ajudar a destravar (unblock) essa tarefa?'|||Elo: 'How can I help unblock you on this task?'",
         "ROLEPLAY|||The Mentorship|||Your junior developer is stressed and experiencing impostor syndrome.|||Elo: Reassure them that it's normal and offer to 'mentor' them on the next project.",
-        "REVIEW|||Tech Lead|||You learned: Unblocking, 1-on-1s, shielding the team, and Impostor Syndrome.|||Elo: You've completed SWE 2026! You are ready to lead the future."
+        "REVIEW|||Tech Lead|||You learned: Unblocking, 1-on-1s, shielding the team, and Impostor Syndrome.|||Elo: You did the work. You've completed SWE 2026."
       ]
     }
   },
@@ -283,7 +283,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Turning on Red|||In most of the US, it is legal to turn right at a red light (after stopping completely), unless a sign says 'No Turn on Red'.|||Elo: This confuses many European and South American drivers!",
         "DRILL|||Translation|||Translate: 'Use a seta antes de mudar de faixa.'|||Elo: 'Use your turn signal (or blinker) before changing lanes.'",
         "ROLEPLAY|||The Traffic Stop|||A police officer pulls you over and asks: 'Do you know why I pulled you over?'|||Elo: Politely say: 'No officer, was I speeding?'",
-        "REVIEW|||Road Trip Ready|||You learned: Yielding, merging, wipers, and turning on red.|||Elo: Buckle up, you're ready for an American road trip!"
+        "REVIEW|||Road Trip Ready|||You learned: Yielding, merging, wipers, and turning on red.|||Elo: Buckle up, you're ready for an American road trip."
       ]
     },
     "car-05": {
@@ -297,7 +297,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The Dealership vs Independent Shop|||Dealerships (concessionárias) are notoriously expensive for repairs in the US. Many prefer trusted independent 'mom and pop' repair shops.|||Elo: Always get a second opinion on a big repair bill!",
         "DRILL|||Translation|||Translate: 'O pneu está furado e o motor está vazando óleo.'|||Elo: 'The tire is flat and the engine is leaking oil.'",
         "ROLEPLAY|||The Breakdown|||Your car won't start. You call a tow truck (guincho).|||Elo: Explain that the battery is dead and you need a 'jump start'.",
-        "REVIEW|||Gearhead|||You learned: Hood, Trunk, Grinding noises, and Labor costs.|||Elo: You've finished the Automotive track! Drive safely."
+        "REVIEW|||Gearhead|||You learned: Hood, Trunk, Grinding noises, and Labor costs.|||Elo: You did the work. You've finished the Automotive track. Drive safely."
       ]
     }
   },
@@ -313,7 +313,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||TSA PreCheck|||Many Americans pay for 'TSA PreCheck' to skip the regular security line and avoid taking off their shoes and belts.|||Elo: It's the ultimate airport luxury.",
         "DRILL|||Translation|||Translate: 'A que horas começa o embarque para o voo para Nova York?'|||Elo: 'What time does boarding start for the flight to New York?'",
         "ROLEPLAY|||The Heavy Bag|||The agent says: 'Your bag is overweight. There is a $50 fee.'|||Elo: Ask if you can open the bag and move some items to your 'carry-on' to avoid the fee.",
-        "REVIEW|||Cleared for Takeoff|||You learned: Luggage vs bags, carry-ons, and security bins.|||Elo: Have a safe flight!"
+        "REVIEW|||Cleared for Takeoff|||You learned: Luggage vs bags, carry-ons, and security bins.|||Elo: Have a safe flight."
       ]
     },
     "trv-02": {
@@ -327,7 +327,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Tipping Housekeeping|||In the US, it is customary to leave a few dollars ($2-$5 per day) on the pillow or desk for the housekeeping staff when you check out.|||Elo: It's a small gesture that goes a long way.",
         "DRILL|||Translation|||Translate: 'Posso fazer o check-out mais tarde? Meu voo é só à noite.'|||Elo: 'Can I get a late check-out? My flight is only in the evening.'",
         "ROLEPLAY|||The Lost Key|||You left your key card inside your room.|||Elo: Go to the 'front desk', explain the situation, and ask for a replacement key card.",
-        "REVIEW|||Checked In|||You learned: Incidentals, amenities, late check-outs, and tipping housekeeping.|||Elo: Enjoy your stay!"
+        "REVIEW|||Checked In|||You learned: Incidentals, amenities, late check-outs, and tipping housekeeping.|||Elo: Enjoy your stay."
       ]
     },
     "trv-03": {
@@ -341,7 +341,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||Tap Water is Free|||In the US, 'tap water' (water from the sink) is safe, free, and served with ice immediately when you sit down. You don't have to pay for bottled water.|||Elo: Save money, drink the tap water!",
         "DRILL|||Translation|||Translate: 'Nós gostaríamos de dividir a conta, por favor.'|||Elo: 'We'd like to split the bill/check, please.'",
         "ROLEPLAY|||The Wrong Dish|||The waiter brings you chicken, but you ordered pasta.|||Elo: Politely call the waiter over and explain the mix-up.",
-        "REVIEW|||Food Critic|||You learned: Tap water, dressing on the side, doggy bags, and sending food back.|||Elo: Bon appétit!"
+        "REVIEW|||Food Critic|||You learned: Tap water, dressing on the side, doggy bags, and sending food back.|||Elo: Bon appétit."
       ]
     },
     "trv-04": {
@@ -369,7 +369,7 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "CULTURE|||The 'How are you' Trap (Revisited)|||Remember from Beginner: When the cashier says 'Hi, how are you?', they don't want a real answer. Say 'Good, you?', pay, and leave.|||Elo: Efficiency and friendliness combined.",
         "DRILL|||Translation|||Translate: 'Com licença, você está na fila?'|||Elo: 'Excuse me, are you in line?' (Crucial question!)",
         "ROLEPLAY|||The Supermarket|||You are blocking the aisle with your shopping cart. Someone needs to pass.|||Elo: Move your cart, apologize, and say 'Go ahead'.",
-        "REVIEW|||World Traveler|||You learned: Line etiquette, the apology reflex, and declining politely.|||Elo: You've completed the Travel module, and the entire ELO! curriculum! You are ready for the world."
+        "REVIEW|||World Traveler|||You learned: Line etiquette, the apology reflex, and declining politely.|||Elo: You did the work. You've completed the Travel module, and the entire curriculum."
       ]
     }
   }
