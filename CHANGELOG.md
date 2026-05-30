@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- TTS abstraction layer (`src/utils/tts.ts`) prioritizing natural-sounding system voices (e.g., 'Samantha', 'Google US English').
 - Dark mode toggle functionality in navbar with sun/moon icons
 - Dark mode context provider with localStorage persistence
 - Comprehensive dark mode CSS styling for all components
 
 ### Fixed
+- Mobile `SlideViewer` safe area padding (`env(safe-area-inset)`) to prevent notch cut-offs.
+- `Swiper` sensitivity in `SlideViewer` (added `threshold` and `resistanceRatio`) to prevent accidental slide changes.
 - **CRITICAL**: Dark mode conflict between Context API and useDarkMode hook - standardized on hook approach, removed Context implementation
 - Fixed Navbar.tsx useDarkMode import path (../src/hooks -> ../src/hooks)
 - Added FOUC prevention script to index.html
@@ -26,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed z-index layering so images are visible under colored overlays
 
 ### Changed
+- Refined all English lesson dialogue (`beginner`, `intermediate`, `advanced-business`, `specialty`) to remove excessive hype and exclamation marks, ensuring a calm, supportive coaching tone.
 - Hip Hop course card: Purple SVG background with "Hip Hop" text (was broken mic emoji)
 - Law Enforcement course card: Green SVG background with "Law Enforcement" text (was broken car emoji)
 - Both cards maintain "New" badges and proper styling consistency

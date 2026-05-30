@@ -10,6 +10,8 @@
 - [FIXED] Google Meet link generation working on booking confirmation
 - [FIXED] Booking cancellation with Calendar event cleanup
 - [FIXED] AgendaPage UI with cancel buttons and confirmation dialogs
+- [FIXED] Robotic TTS voice mitigated via abstraction layer prioritizing natural OS voices
+- [FIXED] Mobile SlideViewer safe-area cutoffs and hyper-sensitive swiping
 
 ## LOW - BACKLOG
 - [OPEN] Add booking reminders/notifications
