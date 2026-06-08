@@ -42,13 +42,13 @@ export const speakText = (text: string) => {
 
   if (selectedVoice) {
     utterance.voice = selectedVoice;
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`[TTS] Selected voice: ${selectedVoice.name} (${selectedVoice.lang})`);
     }
   } else {
     // Fallback if no specific voice is matched
     utterance.lang = 'en-US';
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('[TTS] Using default system voice');
     }
   }

@@ -15,10 +15,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   useEffect(() => {
     const sequence = [
-      { phase: 'fade-in', duration: 300 },
-      { phase: 'slide-up', duration: 200 },
-      { phase: 'glow', duration: 400 },
-      { phase: 'fade-out', duration: 300 }
+      { phase: 'fade-in' as const, duration: 300 },
+      { phase: 'slide-up' as const, duration: 200 },
+      { phase: 'glow' as const, duration: 400 },
+      { phase: 'fade-out' as const, duration: 300 }
     ];
 
     let currentIndex = 0;
@@ -95,7 +95,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .elo-letter {
           transition: all 0.3s ease;
         }
@@ -118,7 +118,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           animation: letterPulse 2s ease-in-out infinite;
           animation-delay: 0.1s;
         }
-      `}</style>
+      ` }} />
     </div>
   );
 }

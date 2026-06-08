@@ -23,7 +23,7 @@ interface SlideViewerProps {
 
 export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide = 0, onSlideChange, onComplete, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialSlide);
-  const swiperRef = useRef<SwiperType>();
+  const swiperRef = useRef<SwiperType | undefined>(undefined);
 
   const handleNext = () => {
     swiperRef.current?.slideNext();

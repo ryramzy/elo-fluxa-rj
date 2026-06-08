@@ -232,7 +232,7 @@ export default function About() {
                       }}
                       onError={(e) => {
                         console.error('Image failed to load:', course.imageUrl, e);
-                        e.target.style.display = 'none';
+                        (e.target as HTMLImageElement).style.display = 'none';
                       }}
                     />
                     <div 

@@ -24,11 +24,12 @@ interface StudentProfile {
 
 interface Booking {
   id: string;
-  uid: string;
-  studentName: string;
-  studentEmail: string;
-  datetime: any;
-  status: 'booked' | 'confirmed' | 'completed' | 'cancelled';
+  userId: string;
+  userName: string;
+  userEmail: string;
+  date: string;
+  time: string;
+  status: 'confirmed' | 'cancelled' | 'completed';
   createdAt: any;
 }
 
@@ -72,7 +73,7 @@ const AdminStudentProfile: React.FC = () => {
       
       // Load bookings
       const allBookings = await getAllBookings();
-      const studentBookings = allBookings.filter(b => b.uid === uid);
+      const studentBookings = allBookings.filter(b => b.userId === uid) as unknown as Booking[];
       setBookings(studentBookings);
       
       // Load enrollments
@@ -323,7 +324,7 @@ const AdminStudentProfile: React.FC = () => {
                               className="h-2 rounded-full"
                               style={{ 
                                 width: `${enrollment.progress}%`,
-                                backgroundColor: course.accentColor 
+                                backgroundColor: course.accentColor || '#3B82F6'
                               }}
                             />
                           </div>
@@ -364,10 +365,10 @@ const AdminStudentProfile: React.FC = () => {
                   {bookings.map(booking => (
                     <tr key={booking.id} className="border-b border-slate-100">
                       <td className="py-3 px-4 text-sm text-slate-900">
-                        {formatDate(booking.datetime).split(',')[0]}
+                        {booking.date}
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-900">
-                        {formatDate(booking.datetime).split(',')[1]}
+                        {booking.time}
                       </td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>

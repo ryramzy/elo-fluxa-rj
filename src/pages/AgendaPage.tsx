@@ -3,7 +3,7 @@ import { VisualSlotPicker } from '../components/booking/VisualSlotPicker';
 import type { TimeSlot } from '../types';
 
 const AgendaPage = () => {
-  const handleSlotSelect = (slot: TimeSlot) => {
+  const handleSlotSelect = (date: string, time: string) => {
     // Analytics or additional side effects can go here.
     // The VisualSlotPicker handles the actual booking logic.
   };

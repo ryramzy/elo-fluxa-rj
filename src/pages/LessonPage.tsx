@@ -12,6 +12,7 @@ import confetti from 'canvas-confetti';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { sounds } from '../utils/sounds';
+import { VoicePractice } from '../components/course/VoicePractice';
 
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -144,7 +145,11 @@ const LessonPage: React.FC = () => {
                   </ReactMarkdown>
                 </div>
               )}
-              {eloPrompt && (
+              {eloPrompt && (type === 'DRILL' || type === 'ROLEPLAY') ? (
+                <div className="mt-4">
+                  <VoicePractice eloPrompt={eloPrompt} />
+                </div>
+              ) : eloPrompt ? (
                 <div className="mt-8 bg-blue-900/40 border border-blue-500/30 rounded-2xl p-5 relative">
                   <div className="absolute -top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-blue-900/50">
                     <span className="text-base">✨</span> Elo
@@ -153,7 +158,7 @@ const LessonPage: React.FC = () => {
                     "{eloPrompt}"
                   </p>
                 </div>
-              )}
+              ) : null}
             </div>
           )
         });

@@ -16,6 +16,13 @@ export interface Course {
   imageUrl: string;
   totalLessons: number;
   lessons: LessonMetadata[];
+  // Legacy fields for backward compatibility
+  audience?: string;
+  accentColor?: string;
+  totalXpReward?: number;
+  aboutText?: string;
+  whoThisIsFor?: string;
+  whatYouWillLearn?: string[];
 }
 
 export const courses: Course[] = [

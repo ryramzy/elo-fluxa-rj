@@ -105,7 +105,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const linkBaseClasses =
     'hover:text-blue-500 transition-colors relative after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
 
-  const getLinkClasses = (id: typeof activeSection) =>
+  const getLinkClasses = (id: string) =>
     `${linkBaseClasses} ${
       activeSection === id ? 'font-extrabold after:w-full' : 'after:w-0'
     }`;
@@ -187,7 +187,20 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 </button>
                 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50 divide-y divide-slate-750">
+                    {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
+                      <a
+                        href="/admin"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate('/admin');
+                          setUserDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm font-semibold text-blue-400 hover:bg-slate-700 transition-colors"
+                      >
+                        Painel Admin 👑
+                      </a>
+                    )}
                     <a
                       href="/dashboard"
                       onClick={(e) => {
@@ -269,19 +282,31 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 <div className="text-center text-slate-600 mb-2">
                   {user.displayName || user.email}
                 </div>
+                {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
+                  <button 
+                    onClick={() => {
+                      navigate('/admin');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg flex items-center justify-center gap-2"
+                    style={{ width: '100%', maxWidth: '300px' }}
+                  >
+                    Painel Admin 👑
+                  </button>
+                )}
                 <button 
                   onClick={() => {
                     navigate('/dashboard');
                     setMobileMenuOpen(false);
                   }}
-                  className="bg-blue-600 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-blue-700 transition-colors rounded-lg"
+                  className="bg-slate-800 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-700 transition-colors rounded-lg"
                   style={{ width: '100%', maxWidth: '300px' }}
                 >
                   Meu painel
                 </button>
                 <button 
                   onClick={handleSignOut} 
-                  className="bg-slate-800 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-700 transition-colors rounded-lg"
+                  className="bg-slate-900 border border-slate-700 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-800 transition-colors rounded-lg"
                   style={{ width: '100%', maxWidth: '300px' }}
                 >
                    Sair

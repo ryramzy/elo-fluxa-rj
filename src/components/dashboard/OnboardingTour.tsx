@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Joyride, CallBackProps, STATUS } from 'react-joyride';
+import { Joyride, STATUS } from 'react-joyride';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firestore';
 import { useAuth } from '../../hooks/useAuth';
@@ -22,7 +22,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
     }
   }, [hasSeenOnboarding, profileLoaded, user]);
 
-  const handleJoyrideCallback = async (data: CallBackProps) => {
+  const handleJoyrideCallback = async (data: any) => {
     const { status } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
@@ -67,8 +67,10 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
     }
   ];
 
+  const JoyrideComponent = Joyride as any;
+
   return (
-    <Joyride
+    <JoyrideComponent
       steps={steps}
       run={run}
       continuous
@@ -87,7 +89,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
         buttonBack: {
           color: '#64748b',
         }
-      }}
+      } as any}
       locale={{
         back: 'Voltar',
         close: 'Fechar',

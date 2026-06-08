@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useEnrollments } from '../hooks/useEnrollments';
-import { courses, Course, Lesson } from '../data/courses';
+import { courses, Course, LessonMetadata } from '../data/courses';
 import { checkCourseAccess, enrollUserInCourse } from '../lib/firestore';
 import { XP_REWARDS, awardXP } from '../lib/xpSystem';
 import SubscriptionModal from '../components/SubscriptionModal';
@@ -129,13 +129,13 @@ const CoursePage: React.FC = () => {
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
-  const handleLessonClick = async (lesson: Lesson) => {
+  const handleLessonClick = async (lesson: LessonMetadata) => {
     if (!user?.uid) {
       navigate('/login', { state: { returnTo: `/courses/${courseId}/lessons/${lesson.id}` } });
       return;
     }
 
-    if (lesson.free || isEnrolled) {
+    if (lesson.lessonIndex === 0 || isEnrolled) {
       navigate(`/courses/${courseId}/lessons/${lesson.id}`);
     } else {
       setSelectedCourseForEnroll(course.id);
@@ -143,7 +143,7 @@ const CoursePage: React.FC = () => {
     }
   };
 
-  const getLessonTypeColor = (type: Lesson['type']) => {
+  const getLessonTypeColor = (type: string) => {
     switch (type) {
       case 'video': return 'bg-blue-100 text-blue-700';
       case 'reading': return 'bg-amber-100 text-amber-700';
@@ -165,8 +165,8 @@ const CoursePage: React.FC = () => {
     <div className="min-h-screen bg-slate-50">
       {/* Course Hero Banner */}
       <div 
-        className="relative h-64 flex items-center justify-center"
-        style={{ backgroundColor: course.color }}
+        className="relative h-64 flex items-center justify-center animate-fade-in"
+        style={{ backgroundColor: course.accentColor || '#3B82F6' }}
       >
         <button
           onClick={() => navigate('/dashboard')}
@@ -181,9 +181,9 @@ const CoursePage: React.FC = () => {
           <div className="text-6xl mb-4">{course.emoji}</div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">{course.title}</h1>
           <div className="flex items-center justify-center gap-4 text-sm text-slate-600">
-            <span className="bg-slate-100 px-3 py-1 rounded-full">{course.audience}</span>
+            <span className="bg-slate-100 px-3 py-1 rounded-full">{course.audience || 'Todos os níveis'}</span>
             <span>{course.lessons.length} lessons</span>
-            <span>+{course.totalXpReward} XP</span>
+            <span>+{course.totalXpReward || totalLessonXP} XP</span>
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ const CoursePage: React.FC = () => {
                 className="h-2 rounded-full transition-all duration-300"
                 style={{ 
                   width: `${enrollment?.progress || 0}%`,
-                  backgroundColor: course.accentColor 
+                  backgroundColor: course.accentColor || '#3B82F6' 
                 }}
               />
             </div>
@@ -246,7 +246,7 @@ const CoursePage: React.FC = () => {
                     {course.lessons.map((lesson, index) => {
                       const isCompleted = Array.isArray(enrollment?.completedLessons) ? enrollment.completedLessons.includes(lesson.id) : false;
                       const isCurrent = enrollment?.activeLessonId === lesson.id || (!enrollment?.activeLessonId && index === 0);
-                      const canAccess = lesson.free || isEnrolled;
+                      const canAccess = lesson.lessonIndex === 0 || isEnrolled;
                       
                       return (
                         <div
@@ -262,16 +262,16 @@ const CoursePage: React.FC = () => {
                         >
                           <div className="flex items-center flex-1">
                             <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-medium text-slate-600 mr-4">
-                              {isCompleted ? '??' : index + 1}
+                              {isCompleted ? '✓' : index + 1}
                             </div>
                             <div className="flex-1">
                               <h3 className="font-medium text-slate-900">{lesson.title}</h3>
                               <div className="flex items-center gap-3 mt-1">
-                                <span className="text-sm text-slate-600">{lesson.duration}</span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${getLessonTypeColor(lesson.type)}`}>
-                                  {lesson.type}
+                                <span className="text-sm text-slate-600">30 min</span>
+                                <span className={`text-xs px-2 py-1 rounded-full ${getLessonTypeColor('conversation')}`}>
+                                  Conversação
                                 </span>
-                                {lesson.free && (
+                                {lesson.lessonIndex === 0 && (
                                   <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
                                     Grátis
                                   </span>
@@ -312,18 +312,18 @@ const CoursePage: React.FC = () => {
                 <div className="p-6 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-3">About this course</h3>
-                    <p className="text-slate-700 leading-relaxed">{course.aboutText}</p>
+                    <p className="text-slate-700 leading-relaxed">{course.aboutText || course.description}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-3">Who this is for</h3>
-                    <p className="text-slate-700 leading-relaxed">{course.whoThisIsFor}</p>
+                    <p className="text-slate-700 leading-relaxed">{course.whoThisIsFor || 'Estudantes buscando destravar a conversação.'}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-3">What you will learn</h3>
                     <ul className="space-y-2">
-                      {course.whatYouWillLearn.map((item, index) => (
+                      {(course.whatYouWillLearn || ['Vocabulário prático', 'Expressões do dia a dia', 'Confiança para falar']).map((item, index) => (
                         <li key={index} className="flex items-start">
                           <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -363,7 +363,7 @@ const CoursePage: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Total XP</span>
-                  <span className="font-medium text-slate-900">+{course.totalXpReward} XP</span>
+                  <span className="font-medium text-slate-900">+{course.totalXpReward || totalLessonXP} XP</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Total Time</span>

@@ -284,33 +284,22 @@ export async function getAllUsers(): Promise<UserProfile[]> {
   }
 }
 
-export async function getAllBookings(): Promise<(LegacyBooking & { uid: string })[]> {
+export async function getAllBookings(): Promise<Booking[]> {
   try {
     const bookingsQuery = query(
       collection(db, 'bookings'),
-      orderBy('datetime', 'asc')
+      orderBy('date', 'desc')
     );
     const querySnapshot = await getDocs(bookingsQuery);
     
-    const bookings = querySnapshot.docs.map(doc => ({
-      ...doc.data(),
-      uid: doc.id
-    } as LegacyBooking & { uid: string }));
-
-    // Join with user data
-    const bookingsWithUserDetails = await Promise.all(
-      bookings.map(async (booking) => {
-        const userDoc = await getDoc(doc(collection(db, 'users'), booking.uid));
-        const userData = userDoc.data();
-        return {
-          ...booking,
-          displayName: userData?.displayName || 'Unknown',
-          email: userData?.email || 'unknown@example.com'
-        };
-      })
-    );
-
-    return bookingsWithUserDetails;
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt
+      } as unknown as Booking;
+    });
   } catch (error) {
     console.error('Error getting all bookings:', error);
     throw error;

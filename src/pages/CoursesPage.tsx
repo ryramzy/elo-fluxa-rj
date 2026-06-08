@@ -18,10 +18,11 @@ const Courses: React.FC = () => {
   const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
 
   const filteredCourses = courses.filter(course => {
+    const audience = course.audience || (course.tag === 'Business' ? 'Profissionais' : 'Amantes de cultura');
     if (selectedFilter === 'Todos') return true;
-    if (selectedFilter === 'Profissional') return course.audience === 'Profissionais';
-    if (selectedFilter === 'Cultura') return course.audience === 'Amantes de cultura';
-    if (selectedFilter === 'Acadêmico') return course.audience === 'Estudantes';
+    if (selectedFilter === 'Profissional') return audience === 'Profissionais';
+    if (selectedFilter === 'Cultura') return audience === 'Amantes de cultura';
+    if (selectedFilter === 'Acadêmico') return audience === 'Estudantes';
     return true;
   });
 
@@ -51,8 +52,8 @@ const Courses: React.FC = () => {
 
   const getProgressPercentage = (courseId: string) => {
     const enrollment = enrollments.find(e => e.courseId === courseId);
-    if (!enrollment || !enrollment.progress) return 0;
-    return Math.round((enrollment.progress.completedLessons / enrollment.progress.totalLessons) * 100);
+    if (!enrollment) return 0;
+    return typeof enrollment.progress === 'number' ? enrollment.progress : 0;
   };
 
   const getButtonText = (courseId: string) => {
@@ -128,10 +129,10 @@ const Courses: React.FC = () => {
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0" style={{ backgroundColor: course.accentColor + '40' }} />
+                      <div className="absolute inset-0" style={{ backgroundColor: (course.accentColor || '#3B82F6') + '40' }} />
                       <div className="absolute bottom-4 left-4 text-4xl">{course.emoji}</div>
                       <div className="absolute top-4 right-4">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: course.accentColor }}>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: course.accentColor || '#3B82F6' }}>
                           {course.tag}
                         </span>
                       </div>
@@ -142,8 +143,8 @@ const Courses: React.FC = () => {
                       <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">{course.description}</p>
                       
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">{course.audience}</span>
-                        <span className="text-sm font-semibold" style={{ color: course.accentColor }}>+{course.totalXpReward} XP</span>
+                        <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">{course.audience || 'Todos os níveis'}</span>
+                        <span className="text-sm font-semibold" style={{ color: course.accentColor || '#3B82F6' }}>+{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP</span>
                       </div>
 
                       <div className="mb-4">
@@ -152,13 +153,13 @@ const Courses: React.FC = () => {
                           <span>{progress}%</span>
                         </div>
                         <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                          <div className="h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%`, backgroundColor: course.accentColor }} />
+                          <div className="h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%`, backgroundColor: course.accentColor || '#3B82F6' }} />
                         </div>
                       </div>
 
                       <button
                         className="w-full py-3 rounded-lg font-medium transition-colors text-white"
-                        style={{ backgroundColor: course.accentColor }}
+                        style={{ backgroundColor: course.accentColor || '#3B82F6' }}
                       >
                         {getButtonText(course.id)}
                       </button>
@@ -202,10 +203,10 @@ const Courses: React.FC = () => {
                       alt={course.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0" style={{ backgroundColor: course.accentColor + '40' }} />
+                    <div className="absolute inset-0" style={{ backgroundColor: (course.accentColor || '#3B82F6') + '40' }} />
                     <div className="absolute bottom-4 left-4 text-4xl">{course.emoji}</div>
                     <div className="absolute top-4 right-4">
-                      <span className="px-3 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: course.accentColor }}>
+                      <span className="px-3 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: course.accentColor || '#3B82F6' }}>
                         {course.tag}
                       </span>
                     </div>
@@ -216,8 +217,8 @@ const Courses: React.FC = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">{course.description}</p>
                     
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">{course.audience}</span>
-                      <span className="text-sm font-semibold" style={{ color: course.accentColor }}>+{course.totalXpReward} XP</span>
+                      <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">{course.audience || 'Todos os níveis'}</span>
+                      <span className="text-sm font-semibold" style={{ color: course.accentColor || '#3B82F6' }}>+{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP</span>
                     </div>
 
                     <div className="text-sm text-slate-500 dark:text-slate-400 mb-4">
@@ -226,9 +227,9 @@ const Courses: React.FC = () => {
 
                     <button
                       className="w-full py-3 rounded-lg font-medium transition-colors text-white"
-                      style={{ backgroundColor: course.accentColor }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = course.accentColor + 'DD'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = course.accentColor}
+                      style={{ backgroundColor: course.accentColor || '#3B82F6' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = (course.accentColor || '#3B82F6') + 'DD'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = course.accentColor || '#3B82F6'}
                     >
                       {getButtonText(course.id)}
                     </button>

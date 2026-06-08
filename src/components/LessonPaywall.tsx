@@ -13,8 +13,8 @@ const LessonPaywall: React.FC<LessonPaywallProps> = ({ courseId, lessonTitle, on
   
   if (!course) return null;
 
-  const remainingLessons = course.lessons.filter(l => !l.free).length;
-  const totalXP = course.lessons.filter(l => !l.free).reduce((sum, lesson) => sum + lesson.xpReward, 0);
+  const remainingLessons = course.lessons.filter(l => l.lessonIndex !== 0).length;
+  const totalXP = course.lessons.filter(l => l.lessonIndex !== 0).reduce((sum, lesson) => sum + lesson.xpReward, 0);
   
   return (
     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-8 text-white text-center">

@@ -37,7 +37,7 @@ const qaDebug = async () => {
     mon.setHours(0,0,0,0);
     const sun = new Date(mon);
     sun.setDate(mon.getDate() + 6);
-    const fmt = (d: Date) => d.toISOString().split('T')[0];
+    const fmt = (d) => d.toISOString().split('T')[0];
     const weekFrom = fmt(mon);
     const weekTo = fmt(sun);
     

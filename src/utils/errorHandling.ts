@@ -91,7 +91,7 @@ export function logError(error: any, context?: Record<string, any>) {
   console.error('App Error:', errorInfo);
   
   // In production, send to error logging service
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.PROD) {
     // Add your error logging service here (e.g., Sentry, LogRocket, etc.)
     // For now, just log to console
     console.error('Production Error:', errorInfo);

@@ -4,7 +4,7 @@ import { useToast } from './useToast';
 export function useSafeAsync<T>() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { addToast } = useToast();
+  const { showToast } = useToast();
 
   const run = useCallback(async (
     promise: Promise<T>,
@@ -22,7 +22,7 @@ export function useSafeAsync<T>() {
       const data = await promise;
       
       if (options?.successMessage) {
-        addToast(options.successMessage, 'success');
+        showToast({ message: options.successMessage, type: 'success' });
       }
       
       if (options?.onSuccess) {
@@ -36,7 +36,7 @@ export function useSafeAsync<T>() {
       setError(errorObj);
       
       const message = options?.errorMessage || err.message || 'Um erro ocorreu. Tente novamente.';
-      addToast(message, 'error');
+      showToast({ message, type: 'error' });
       
       if (options?.onError) {
         options.onError(errorObj);
@@ -46,7 +46,7 @@ export function useSafeAsync<T>() {
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [showToast]);
 
   return { run, loading, error };
 }

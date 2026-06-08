@@ -8,10 +8,10 @@ import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { trackEvent } from '../services/trackingService.ts';
 
 interface FooterProps {
-  onLinkClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
+  onLinkClick?: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
+const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [email, setEmail] = useState('');
 

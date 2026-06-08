@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useEnrollments } from '../hooks/useEnrollments';
+import { useBookings } from '../hooks/useBookings';
 import { useStreak } from '../hooks/useStreak';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useNavigate } from 'react-router-dom';
@@ -20,10 +21,11 @@ const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
   const { enrollments, loading: enrollmentsLoading } = useEnrollments(user?.uid || '');
+  const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { streak } = useStreak(user?.uid || '');
   const navigate = useNavigate();
   
-  const loading = profileLoading || enrollmentsLoading;
+  const loading = profileLoading || enrollmentsLoading || bookingsLoading;
   
   useDocumentTitle('Dashboard');
 
@@ -31,6 +33,25 @@ const DashboardWorking: React.FC = () => {
   console.log('DashboardWorking - profile:', profile?.displayName);
   console.log('DashboardWorking - loading:', loading);
 
+  const getWeeklyBookingsCount = (userBookings: any[]) => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    // Monday is day 1, Sunday is day 0 in JS getDay()
+    const monday = new Date(today);
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    monday.setDate(today.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return userBookings.filter(b => {
+      if (b.status !== 'confirmed') return false;
+      const bDate = new Date(`${b.date}T00:00:00`);
+      return bDate >= monday && bDate <= sunday;
+    }).length;
+  };
 
   if (!user) {
     return (
@@ -66,10 +87,10 @@ const DashboardWorking: React.FC = () => {
         </div>
 
         <KpiCards
-          bookings={[]}
+          bookings={bookings || []}
           enrollments={enrollments || []}
           profile={profile}
-          weeklyBookingsCount={0}
+          weeklyBookingsCount={getWeeklyBookingsCount(bookings || [])}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -105,7 +126,7 @@ const DashboardWorking: React.FC = () => {
 
           <div className="space-y-6">
             <UpcomingClasses
-              bookings={[]}
+              bookings={bookings || []}
               onNavigateToAgenda={() => navigate('/agenda')}
             />
             <QuickLinks

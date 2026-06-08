@@ -47,6 +47,21 @@ class SoundEngine {
     }
   }
 
+  public playSuccess() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+
+      const t = this.ctx.currentTime;
+      
+      // A bright, quick double chime (E5, A5)
+      this.playNote(659.25, t, 0.1);       // E5
+      this.playNote(880.00, t + 0.08, 0.25); // A5
+    } catch (err) {
+      console.warn('Audio playback failed', err);
+    }
+  }
+
   private playNote(frequency: number, startTime: number, duration: number) {
     if (!this.ctx) return;
 
