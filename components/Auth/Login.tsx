@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { LOGIN_COPY_VARIANTS, DEFAULT_LOGIN_VARIANT, LoginCopyVariant } from '../../src/constants/loginCopy';
+import { trackEvent } from '../../src/utils/analytics';
 
 interface LoginProps {
   copyVariant?: LoginCopyVariant;
@@ -25,6 +26,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      trackEvent('auth_login', { method: 'email' });
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
@@ -38,6 +40,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
     setLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
+      trackEvent('auth_login', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login with Google');

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../firebase';
 import { useNavigate, Link } from 'react-router-dom';
+import { trackEvent } from '../../src/utils/analytics';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ const Signup = () => {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      trackEvent('auth_signup', { method: 'email' });
       navigate('/agenda');
     } catch (err: any) {
       setError(err.message || 'Failed to create an account');
@@ -36,6 +38,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
+      trackEvent('auth_signup', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to sign up with Google');

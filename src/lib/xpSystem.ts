@@ -31,6 +31,7 @@ export async function awardXP(uid: string, amount: number, reason: string) {
         lastActiveDate: new Date(),
         badgesEarned: [],
         createdAt: new Date(),
+        role: 'student',
       });
       return;
     }

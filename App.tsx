@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
@@ -32,15 +32,26 @@ import AgendaPage from './src/pages/AgendaPage';
 import Sobre from './src/pages/Sobre';
 import Dicas from './src/pages/Dicas';
 import NotFound from './src/pages/NotFound';
+import ProfilePage from './src/pages/ProfilePage';
+import AiCoachPage from './src/pages/AiCoachPage';
 
 
 
 function AppShell() {
-  const [hasEntered, setHasEntered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toasts, removeToast } = useToast();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      if (user && (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup')) {
+        navigate('/dashboard', { replace: true });
+      } else if (!user && location.pathname === '/') {
+        navigate('/login', { replace: true });
+      }
+    }
+  }, [user, loading, location.pathname, navigate]);
 
   useEffect(() => {
     // Scroll to top or specific area on route change
@@ -50,14 +61,17 @@ function AppShell() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     
-    const tabMap: Record<string, string> = {
-      'dashboard': '/dashboard',
-      'agenda': '/agenda',
-      'profile': '/profile'
-    };
+    if (targetId === 'agenda') {
+      navigate('/dashboard', { state: { tab: 'booking' } });
+    } else {
+      const tabMap: Record<string, string> = {
+        'dashboard': '/dashboard',
+        'profile': '/profile'
+      };
 
-    const targetRoute = tabMap[targetId] || '/';
-    navigate(targetRoute);
+      const targetRoute = tabMap[targetId] || '/';
+      navigate(targetRoute);
+    }
 
     requestAnimationFrame(() => {
       const element = document.getElementById('content-area');
@@ -70,10 +84,10 @@ function AppShell() {
     });
   };
 
-  if (!hasEntered && location.pathname === '/') {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 font-sans text-[#1A1A1A] animate-fade-in-up">
-        <Hero onEnter={() => setHasEntered(true)} />
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -136,7 +150,12 @@ function AppShell() {
               } />
               <Route path="/profile" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/ai-coach" element={
+                <ProtectedRoute>
+                  <AiCoachPage />
                 </ProtectedRoute>
               } />
 

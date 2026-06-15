@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '../../lib/firestore';
 import { getErrorMessage, logError } from '../../utils/errorHandling';
+import { useAuth } from '../../hooks/useAuth';
 
 interface Booking {
   id: string;
@@ -24,7 +25,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [booking, setBooking] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [currentUserId] = useState('current-user-id'); // In a real app, from auth context
+  const { user } = useAuth();
+  const currentUserId = user?.uid || '';
   
   const [toast, setToast] = useState<{message: string, type: 'error'|'success'} | null>(null);
 
@@ -93,10 +95,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     setBooking(true);
     
     try {
-      const testUserName = 'Current Student';
-      const testUserEmail = 'student@example.com';
+      const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
+      const studentEmail = user?.email || 'estudante@elo.com';
       
-      await firestoreBookSlot(date, time, currentUserId, testUserName, testUserEmail);
+      await firestoreBookSlot(date, time, currentUserId, studentName, studentEmail);
       
       await loadWeekBookings();
       showToast('Slot booked successfully!', 'success');

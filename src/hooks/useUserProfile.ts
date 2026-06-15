@@ -34,6 +34,9 @@ export function useUserProfile(uid: string) {
               badgesEarned: data?.badgesEarned || [],
               createdAt: data?.createdAt || null,
               hasSeenOnboarding: !!data?.hasSeenOnboarding,
+              role: data?.role || 'student',
+              bio: data?.bio || '',
+              targetGoal: data?.targetGoal || '',
             });
         } else {
           setError('User profile not found');

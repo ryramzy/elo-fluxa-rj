@@ -36,6 +36,10 @@ export interface UserProfile {
   planActivatedAt: Timestamp | null;
   bookingsThisMonth: number;
   bookingLimit: number;
+  role: 'student' | 'tutor' | 'admin';
+  bio?: string;
+  targetGoal?: string;
+  tutorNotes?: string;
 }
 
 export interface Enrollment {
@@ -67,6 +71,16 @@ export interface AvailableSlot {
 }
 
 // Helper functions
+export async function updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
+  try {
+    const userRef = doc(collection(db, 'users'), uid);
+    await updateDoc(userRef, updates as any);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+}
+
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   try {
     const docRef = doc(collection(db, 'users'), uid);
@@ -85,21 +99,22 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 export async function updateUserXP(uid: string, xpToAdd: number): Promise<void> {
   try {
     const userRef = doc(collection(db, 'users'), uid);
-    const userDoc = await getDoc(userRef);
-    
-    if (userDoc.exists()) {
-      const currentXP = userDoc.data()?.xp || 0;
-      const newXP = currentXP + xpToAdd;
-      const newLevel = calculateLevel(newXP);
-      
-      await updateDoc(userRef, {
-        xp: newXP,
-        level: newLevel.level,
-        lastActiveDate: serverTimestamp()
-      });
-    }
+    await runTransaction(db, async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      if (userDoc.exists()) {
+        const currentXP = userDoc.data()?.xp || 0;
+        const newXP = currentXP + xpToAdd;
+        const newLevel = calculateLevel(newXP);
+        
+        transaction.update(userRef, {
+          xp: newXP,
+          level: newLevel.level,
+          lastActiveDate: serverTimestamp()
+        });
+      }
+    });
   } catch (error) {
-    console.error('Error updating user XP:', error);
+    console.error('Error updating user XP atomically:', error);
     throw error;
   }
 }

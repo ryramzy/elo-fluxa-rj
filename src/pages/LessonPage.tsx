@@ -13,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { sounds } from '../utils/sounds';
 import { VoicePractice } from '../components/course/VoicePractice';
+import { trackEvent } from '../utils/analytics';
 
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -29,6 +30,12 @@ const LessonPage: React.FC = () => {
 
   const enrollment = enrollments.find(e => e.courseId === courseId);
   const initialSlide = enrollment?.activeLessonId === lessonId ? (enrollment?.activeSlideIndex || 0) : 0;
+
+  useEffect(() => {
+    if (courseId && lessonId) {
+      trackEvent('lesson_start', { courseId, lessonId });
+    }
+  }, [courseId, lessonId]);
 
   if (!course || !lesson) {
     return (
@@ -49,6 +56,7 @@ const LessonPage: React.FC = () => {
   const handleSlideChange = async (index: number) => {
     if (!user?.uid || !courseId || !lessonId) return;
     try {
+      trackEvent('slide_view', { courseId, lessonId, slideIndex: index });
       await updateLessonProgress(user.uid, courseId, lessonId, index, false);
     } catch (error) {
       console.error('Error saving slide progress:', error);
@@ -58,6 +66,7 @@ const LessonPage: React.FC = () => {
   const handleCompleteLesson = async () => {
     if (!user?.uid || !courseId || !lessonId) return;
     try {
+      trackEvent('lesson_complete', { courseId, lessonId });
       await updateLessonProgress(user.uid, courseId, lessonId, initialSlide, true);
       await awardXP(user.uid, lesson.xpReward, `lesson completed: ${lesson.title}`);
       setIsCompleted(true);
@@ -179,7 +188,7 @@ const LessonPage: React.FC = () => {
         <SlideCompletionState 
           xpReward={lesson.xpReward}
           onNextLesson={handleNextLesson}
-          onBookLesson={() => navigate('/agenda')}
+          onBookLesson={() => navigate('/dashboard', { state: { tab: 'booking' } })}
           hasNextLesson={!isLastLesson}
         />
       )

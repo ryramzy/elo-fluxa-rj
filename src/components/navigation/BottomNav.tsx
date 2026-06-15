@@ -11,9 +11,9 @@ export const BottomNav: React.FC = () => {
   }
 
     const navItems = [
-      { name: 'Dashboard', path: '/dashboard', icon: <FaHome size={24} /> },
-      { name: 'Agenda', path: '/agenda', icon: <FaCalendarPlus size={24} /> },
-      { name: 'Profile', path: '/profile', icon: <FaUser size={24} /> },
+      { name: 'Dashboard', path: '/dashboard', icon: <FaHome size={24} />, state: null },
+      { name: 'Agenda', path: '/dashboard', icon: <FaCalendarPlus size={24} />, state: { tab: 'booking' } },
+      { name: 'Profile', path: '/profile', icon: <FaUser size={24} />, state: null },
     ];
 
   return (
@@ -22,9 +22,10 @@ export const BottomNav: React.FC = () => {
         <NavLink
           key={item.name}
           to={item.path}
+          state={item.state}
           className={({ isActive }) =>
             `flex flex-col items-center justify-center w-full py-3 transition-colors ${
-              isActive
+              isActive && (!item.state || isActive) // simple active styling check
                 ? 'text-blue-600 dark:text-blue-400'
                 : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`

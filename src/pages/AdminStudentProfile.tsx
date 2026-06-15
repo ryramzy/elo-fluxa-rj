@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { getUserProfile, getAllBookings, getAllEnrollments, updateUserXP, updateUserPlan } from '../lib/firestore';
+import { getUserProfile, getAllBookings, getAllEnrollments, updateUserXP, updateUserPlan, updateUserProfile } from '../lib/firestore';
 import { awardXP } from '../lib/xpSystem';
 import { courses } from '../data/courses';
 
@@ -20,6 +20,7 @@ interface StudentProfile {
   planActivatedAt: any;
   bookingsThisMonth: number;
   bookingLimit: number;
+  tutorNotes?: string;
 }
 
 interface Booking {
@@ -69,6 +70,7 @@ const AdminStudentProfile: React.FC = () => {
       const profile = await getUserProfile(uid);
       if (profile) {
         setStudent({ ...profile, uid });
+        setAdminNotes(profile.tutorNotes || '');
       }
       
       // Load bookings
@@ -92,11 +94,14 @@ const AdminStudentProfile: React.FC = () => {
     if (!uid) return;
     
     try {
-      // Save admin notes to Firestore
-      console.log('Saving admin notes:', adminNotes);
-      // TODO: Implement actual Firestore update
+      setLoading(true);
+      await updateUserProfile(uid, { tutorNotes: adminNotes });
+      alert('Anotações salvas com sucesso!');
     } catch (error) {
       console.error('Error saving notes:', error);
+      alert('Erro ao salvar as anotações.');
+    } finally {
+      setLoading(false);
     }
   };
 
