@@ -91,6 +91,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   const handleBookSlot = async (date: string, time: string) => {
+    if (user?.isGuest) {
+      showToast('Crie uma conta para agendar uma aula!', 'error');
+      return;
+    }
     if (booking || cancelling) return;
     setBooking(true);
     

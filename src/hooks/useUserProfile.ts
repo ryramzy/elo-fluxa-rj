@@ -14,6 +14,28 @@ export function useUserProfile(uid: string) {
       return;
     }
 
+    if (uid === 'guest_user') {
+      setProfile({
+        displayName: 'Visitante',
+        email: 'guest@elospeak.com.br',
+        photoURL: '',
+        xp: 0,
+        level: 1,
+        levelName: 'Beginner',
+        streakDays: 0,
+        lastActiveDate: null,
+        badgesEarned: [],
+        createdAt: null,
+        hasSeenOnboarding: true,
+        role: 'student',
+        bio: 'Visitante testando o app',
+        targetGoal: 'Falar inglês americano fluente',
+        isGuest: true
+      });
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onSnapshot(
       doc(db, 'users', uid),
       (docSnapshot) => {

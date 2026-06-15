@@ -26,7 +26,11 @@ interface User {
   lastLogin?: any;
 }
 
-const Admin: React.FC = () => {
+interface AdminProps {
+  onSwitchToStudentView?: () => void;
+}
+
+const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminGuard();
   const navigate = useNavigate();
@@ -217,13 +221,23 @@ const Admin: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Manage students, bookings, and revenue
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Manage students, bookings, and revenue
+            </p>
+          </div>
+          {onSwitchToStudentView && (
+            <button
+              onClick={onSwitchToStudentView}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider text-xs px-5 py-3 rounded-lg shadow-md transition-all hover:scale-105"
+            >
+              Visualizar como Aluno
+            </button>
+          )}
         </div>
 
         {/* Revenue Summary */}

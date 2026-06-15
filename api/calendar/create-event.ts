@@ -38,64 +38,81 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Initialize Google Calendar API with service account
-    const credentials = JSON.parse(serviceAccountJson);
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
-    });
+    try {
+      const credentials = JSON.parse(serviceAccountJson);
+      const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/calendar'],
+      });
 
-    const calendar = google.calendar({ version: 'v3', auth });
+      const calendar = google.calendar({ version: 'v3', auth });
 
-    // Create calendar event with Google Meet
-    const event = {
-      summary,
-      description,
-      start: {
-        dateTime: startDateTime,
-        timeZone: 'America/Sao_Paulo',
-      },
-      end: {
-        dateTime: endDateTime,
-        timeZone: 'America/Sao_Paulo',
-      },
-      attendees: [
-        { email: attendeeEmail, displayName: attendeeName },
-      ],
-      conferenceData: {
-        createRequest: {
-          requestId: `elo_matt_${Date.now()}`,
-          conferenceSolutionKey: { type: 'hangoutsMeet' },
+      // Create calendar event with Google Meet
+      const event = {
+        summary,
+        description,
+        start: {
+          dateTime: startDateTime,
+          timeZone: 'America/Sao_Paulo',
         },
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: 'email', minutes: 60 * 24 }, // 1 day before
-          { method: 'popup', minutes: 30 }, // 30 minutes before
+        end: {
+          dateTime: endDateTime,
+          timeZone: 'America/Sao_Paulo',
+        },
+        attendees: [
+          { email: attendeeEmail, displayName: attendeeName },
         ],
-      },
-    };
+        conferenceData: {
+          createRequest: {
+            requestId: `elo_matt_${Date.now()}`,
+            conferenceSolutionKey: { type: 'hangoutsMeet' },
+          },
+        },
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: 'email', minutes: 60 * 24 }, // 1 day before
+            { method: 'popup', minutes: 30 }, // 30 minutes before
+          ],
+        },
+      };
 
-    const eventResponse = await calendar.events.insert({
-      calendarId,
-      requestBody: event,
-      conferenceDataVersion: 1,
-    });
+      const eventResponse = await calendar.events.insert({
+        calendarId,
+        requestBody: event,
+        conferenceDataVersion: 1,
+      });
 
-    const createdEvent = eventResponse.data;
+      const createdEvent = eventResponse.data;
 
-    if (!createdEvent.id) {
-      throw new Error('Failed to create calendar event');
+      if (!createdEvent.id) {
+        throw new Error('Failed to create calendar event');
+      }
+
+      const response = {
+        eventId: createdEvent.id,
+        meetLink: createdEvent.hangoutLink || createdEvent.conferenceData?.entryPoints?.[0]?.uri || `https://meet.google.com/elo-${Date.now()}`,
+        htmlLink: createdEvent.htmlLink || `https://calendar.google.com`,
+      };
+
+      console.log('Calendar event created successfully:', response);
+      res.status(200).json(response);
+    } catch (apiError: any) {
+      console.error('Google Calendar integration failed. Falling back to Jitsi Meet:', apiError);
+      
+      const sanitizedAttendeeName = attendeeName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      const fallbackMeetingId = `elo-class-${sanitizedAttendeeName}-${Date.now().toString().slice(-4)}`;
+      
+      const response = {
+        eventId: `fallback_event_${Date.now()}`,
+        meetLink: `https://meet.jit.si/${fallbackMeetingId}`,
+        htmlLink: `https://meet.jit.si/${fallbackMeetingId}`,
+        isFallback: true
+      };
+      
+      console.log('Calendar fallback event returned successfully:', response);
+      res.status(200).json(response);
     }
-
-    const response = {
-      eventId: createdEvent.id,
-      meetLink: createdEvent.hangoutLink || createdEvent.conferenceData?.entryPoints?.[0]?.uri,
-      htmlLink: createdEvent.htmlLink,
-    };
-
-    console.log('Calendar event created successfully:', response);
-    res.status(200).json(response);
 
   } catch (error) {
     console.error('Error creating calendar event:', error);

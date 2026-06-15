@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { sendChatMessage, ChatMessage } from '../services/geminiService';
-import { FaArrowLeft, FaPaperPlane, FaVolumeUp, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaArrowLeft, FaPaperPlane, FaVolumeUp, FaCheckCircle, FaExclamationCircle, FaMicrophone } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent } from '../utils/analytics';
 import { useToast } from '../hooks/useToast';
@@ -76,11 +76,62 @@ const AiCoachPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [analyzingIndex, setAnalyzingIndex] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast({ type: 'error', message: 'Reconhecimento de voz não é suportado neste navegador.' });
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+    } else {
+      const rec = new SpeechRecognition();
+      rec.lang = 'en-US';
+      rec.continuous = false;
+      rec.interimResults = false;
+
+      rec.onstart = () => {
+        setIsListening(true);
+      };
+
+      rec.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev + (prev ? ' ' : '') + transcript);
+      };
+
+      rec.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      rec.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = rec;
+      rec.start();
+    }
+  };
 
   const selectScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario);
@@ -308,9 +359,22 @@ const AiCoachPage: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
-              placeholder="Digite sua mensagem em inglês..."
+              placeholder={isListening ? "Ouvindo... fale em inglês" : "Digite sua mensagem em inglês ou use o microfone..."}
               className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
             />
+            <button
+              type="button"
+              onClick={toggleListening}
+              disabled={loading}
+              className={`p-4 rounded-xl shadow-md transition-all flex items-center justify-center ${
+                isListening 
+                  ? 'bg-red-500 hover:bg-red-650 text-white animate-pulse' 
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-650 dark:text-slate-350'
+              }`}
+              title={isListening ? 'Parar de escutar' : 'Falar (Voz)'}
+            >
+              <FaMicrophone size={14} />
+            </button>
             <button
               type="submit"
               disabled={!input.trim() || loading}

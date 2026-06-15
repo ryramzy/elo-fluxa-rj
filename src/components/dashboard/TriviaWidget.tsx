@@ -85,13 +85,16 @@ export const TriviaWidget: React.FC = () => {
     if (answer === questionData.correctAnswer) {
       setAnsweredStatus('correct');
       trackEvent('trivia_solve', { correct: true });
-      showToast({ type: 'success', message: 'Correct! +20 XP awarded.' });
-      
-      if (user?.uid) {
-        try {
-          await updateUserXP(user.uid, 20);
-        } catch (err) {
-          console.error('Error awarding trivia XP:', err);
+      if (user?.isGuest) {
+        showToast({ type: 'success', message: 'Correto! Crie uma conta para salvar seus pontos de XP!' });
+      } else {
+        showToast({ type: 'success', message: 'Correct! +20 XP awarded.' });
+        if (user?.uid) {
+          try {
+            await updateUserXP(user.uid, 20);
+          } catch (err) {
+            console.error('Error awarding trivia XP:', err);
+          }
         }
       }
     } else {

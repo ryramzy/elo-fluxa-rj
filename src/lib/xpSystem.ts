@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from './firestore';
+import { db, createNotification } from './firestore';
 import { auth } from '../../firebase';
 
 // XP award amounts
@@ -14,6 +14,7 @@ export const XP_REWARDS = {
 
 // Award XP to user and handle level progression
 export async function awardXP(uid: string, amount: number, reason: string) {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(db, 'users', uid);
     const userDoc = await getDoc(userRef);
@@ -54,6 +55,7 @@ export async function awardXP(uid: string, amount: number, reason: string) {
     });
 
     console.log(`Awarded ${amount} XP to user ${uid} for ${reason}. New total: ${newXP}`);
+    await createNotification(uid, 'XP Conquistado! ⚡', `Você ganhou +${amount} XP por: ${reason}!`);
   } catch (error) {
     console.error('Error awarding XP:', error);
     throw error;
@@ -62,6 +64,7 @@ export async function awardXP(uid: string, amount: number, reason: string) {
 
 // Award first login bonus (one-time)
 export async function awardFirstLoginBonus(uid: string) {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(db, 'users', uid);
     const userDoc = await getDoc(userRef);
@@ -79,6 +82,7 @@ export async function awardFirstLoginBonus(uid: string) {
 
 // Award XP for course completion
 export async function awardCourseCompletion(uid: string, courseId: string) {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(db, 'users', uid);
     const userDoc = await getDoc(userRef);

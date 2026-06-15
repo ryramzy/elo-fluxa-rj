@@ -4,17 +4,25 @@ import { auth, googleProvider } from '../../firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { LOGIN_COPY_VARIANTS, DEFAULT_LOGIN_VARIANT, LoginCopyVariant } from '../../src/constants/loginCopy';
 import { trackEvent } from '../../src/utils/analytics';
+import { useAuth } from '../../src/hooks/useAuth';
 
 interface LoginProps {
   copyVariant?: LoginCopyVariant;
 }
 
 const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
+  const { signInAsGuest } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleGuestSignIn = () => {
+    trackEvent('auth_login', { method: 'guest' });
+    signInAsGuest();
+    navigate('/dashboard');
+  };
 
   // Get copy for current variant
   const copy = LOGIN_COPY_VARIANTS[copyVariant];
@@ -115,6 +123,15 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50"
           >
             {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleGuestSignIn}
+            disabled={loading}
+            className="w-full bg-slate-700 hover:bg-slate-650 text-white font-bold py-4 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50 border border-slate-600 mt-3"
+          >
+            Continuar como Visitante (10 min)
           </button>
         </form>
 

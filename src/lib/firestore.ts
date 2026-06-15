@@ -72,6 +72,7 @@ export interface AvailableSlot {
 
 // Helper functions
 export async function updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(collection(db, 'users'), uid);
     await updateDoc(userRef, updates as any);
@@ -82,6 +83,23 @@ export async function updateUserProfile(uid: string, updates: Partial<UserProfil
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  if (uid === 'guest_user') {
+    return {
+      displayName: 'Visitante',
+      email: 'guest@elospeak.com.br',
+      xp: 0,
+      level: 1,
+      streakDays: 0,
+      lastActiveDate: Timestamp.now(),
+      badgesEarned: [],
+      createdAt: Timestamp.now(),
+      plan: 'free',
+      planActivatedAt: null,
+      bookingsThisMonth: 0,
+      bookingLimit: 0,
+      role: 'student'
+    };
+  }
   try {
     const docRef = doc(collection(db, 'users'), uid);
     const docSnap = await getDoc(docRef);
@@ -97,6 +115,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateUserXP(uid: string, xpToAdd: number): Promise<void> {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(collection(db, 'users'), uid);
     await runTransaction(db, async (transaction) => {
@@ -152,11 +171,39 @@ export async function updateLessonProgress(
   slideIndex: number,
   isCompleted: boolean = false
 ): Promise<void> {
+  if (uid === 'guest_user') {
+    const stored = sessionStorage.getItem('elo_guest_enrollments');
+    const enrollments = stored ? JSON.parse(stored) : [];
+    const idx = enrollments.findIndex((e: any) => e.courseId === courseId);
+    if (idx !== -1) {
+      const data = enrollments[idx];
+      const completedLessons = data.completedLessons || [];
+      const updates: any = {
+        ...data,
+        activeLessonId: lessonId,
+        activeSlideIndex: slideIndex,
+      };
+
+      if (isCompleted && !completedLessons.includes(lessonId)) {
+        completedLessons.push(lessonId);
+        updates.completedLessons = completedLessons;
+        updates.lessonsCompleted = completedLessons.length;
+        updates.progress = Math.round((completedLessons.length / data.totalLessons) * 100);
+      }
+      
+      enrollments[idx] = updates;
+      sessionStorage.setItem('elo_guest_enrollments', JSON.stringify(enrollments));
+      window.dispatchEvent(new Event('guest_enrollments_updated'));
+    }
+    return;
+  }
   try {
     const queries = [
       query(collection(db, 'enrollments'), where('userId', '==', uid), where('courseId', '==', courseId)),
       query(collection(db, `users/${uid}/courses`), where('courseId', '==', courseId))
     ];
+
+    let showCompletionNotification = false;
 
     for (const q of queries) {
       const snapshot = await getDocs(q);
@@ -175,10 +222,19 @@ export async function updateLessonProgress(
           updates.completedLessons = completedLessons;
           updates.lessonsCompleted = completedLessons.length;
           updates.progress = Math.round((completedLessons.length / data.totalLessons) * 100);
+          showCompletionNotification = true;
         }
 
         await updateDoc(docRef, updates);
       }
+    }
+
+    if (showCompletionNotification) {
+      await createNotification(
+        uid, 
+        'Lição Concluída! 🎉', 
+        `Você concluiu a lição no curso: ${courseId.replace(/-/g, ' ').toUpperCase()}`
+      );
     }
   } catch (error) {
     console.error('Error updating lesson progress:', error);
@@ -216,6 +272,9 @@ export async function getUpcomingBookings(uid: string): Promise<LegacyBooking[]>
 }
 
 export async function createBooking(uid: string, datetime: Date): Promise<string> {
+  if (uid === 'guest_user') {
+    throw new Error('Guests cannot create bookings.');
+  }
   try {
     const user = auth.currentUser;
     if (!user) {
@@ -240,6 +299,7 @@ export async function createBooking(uid: string, datetime: Date): Promise<string
 }
 
 export async function updateStreak(uid: string): Promise<void> {
+  if (uid === 'guest_user') return;
   try {
     const userRef = doc(collection(db, 'users'), uid);
     const userDoc = await getDoc(userRef);
@@ -431,6 +491,9 @@ export async function updateUserPlan(uid: string, plan: 'free' | 'pro' | 'elite'
 }
 
 export async function checkCourseAccess(uid: string, courseId: string): Promise<{ canAccess: boolean; reason?: string }> {
+  if (uid === 'guest_user') {
+    return { canAccess: true };
+  }
   try {
     const userDoc = await getDoc(doc(collection(db, 'users'), uid));
     if (!userDoc.exists()) {
@@ -467,6 +530,26 @@ export async function checkCourseAccess(uid: string, courseId: string): Promise<
 }
 
 export async function enrollUserInCourse(uid: string, courseId: string, totalLessons: number): Promise<void> {
+  if (uid === 'guest_user') {
+    const stored = sessionStorage.getItem('elo_guest_enrollments');
+    const enrollments = stored ? JSON.parse(stored) : [];
+    if (!enrollments.some((e: any) => e.courseId === courseId)) {
+      enrollments.push({
+        courseId,
+        enrolledAt: { toMillis: () => Date.now(), toDate: () => new Date() },
+        progress: 0,
+        lessonsCompleted: 0,
+        totalLessons,
+        xpEarned: 0,
+        activeLessonId: '',
+        activeSlideIndex: 0,
+        completedLessons: []
+      });
+      sessionStorage.setItem('elo_guest_enrollments', JSON.stringify(enrollments));
+      window.dispatchEvent(new Event('guest_enrollments_updated'));
+    }
+    return;
+  }
   let isEnrolled = false;
   
   try {
@@ -532,6 +615,8 @@ export async function enrollUserInCourse(uid: string, courseId: string, totalLes
   } catch (error) {
     console.warn('Error writing to root enrollments:', error);
   }
+
+  await createNotification(uid, 'Curso Matriculado! 🎓', `Você se matriculou no curso: ${courseId.replace(/-/g, ' ').toUpperCase()}`);
 }
 
 export async function incrementBookingCount(uid: string): Promise<void> {
@@ -626,8 +711,13 @@ export async function bookSlot(
   userEmail: string,
   notes?: string
 ): Promise<string> {
+  if (userId === 'guest_user') {
+    throw new Error('Guests cannot book sessions.');
+  }
   const bookingId = `${date}_${time.replace(':', '')}`;
   const bookingRef = doc(db, 'bookings', bookingId);
+  const notifId = `booking_notif_${Date.now()}`;
+  const notifRef = doc(db, 'users', userId, 'notifications', notifId);
 
   await runTransaction(db, async (transaction) => {
     const bookingDoc = await transaction.get(bookingRef);
@@ -647,6 +737,13 @@ export async function bookSlot(
       meetLink: null,
       notes: notes || '',
       createdAt: serverTimestamp(),
+    });
+
+    transaction.set(notifRef, {
+      title: 'Aula agendada! 🗓️',
+      message: `Sua aula de inglês para o dia ${date} às ${time} foi agendada.`,
+      read: false,
+      createdAt: serverTimestamp()
     });
   });
 
@@ -690,6 +787,26 @@ export async function getUserBookings(
   );
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
+}
+
+// Create real-time notification in Firestore
+export async function createNotification(
+  uid: string,
+  title: string,
+  message: string
+): Promise<void> {
+  if (uid === 'guest_user') return;
+  try {
+    const notificationsRef = collection(db, 'users', uid, 'notifications');
+    await addDoc(notificationsRef, {
+      title,
+      message,
+      read: false,
+      createdAt: serverTimestamp()
+    });
+  } catch (error) {
+    console.error('Error creating notification:', error);
+  }
 }
 
 // Export db for use in hooks

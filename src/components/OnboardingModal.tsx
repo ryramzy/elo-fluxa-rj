@@ -35,7 +35,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
   }, [isOpen, user]);
 
   const checkOnboardingStatus = async () => {
-    if (!user) return;
+    if (!user || user.uid === 'guest_user') return;
     
     try {
       const userDoc = doc(db, 'users', user.uid);
@@ -55,6 +55,30 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
     setLoading(true);
 
     if (!user) return;
+
+    if (user.uid === 'guest_user') {
+      const course = courses.find(c => c.id === courseId);
+      const stored = sessionStorage.getItem('elo_guest_enrollments');
+      const enrollments = stored ? JSON.parse(stored) : [];
+      if (!enrollments.some((e: any) => e.courseId === courseId)) {
+        enrollments.push({
+          courseId,
+          enrolledAt: { toMillis: () => Date.now(), toDate: () => new Date() },
+          progress: 0,
+          lessonsCompleted: 0,
+          totalLessons: course?.lessons.length || 0,
+          xpEarned: 0,
+          activeLessonId: '',
+          activeSlideIndex: 0,
+          completedLessons: []
+        });
+        sessionStorage.setItem('elo_guest_enrollments', JSON.stringify(enrollments));
+        window.dispatchEvent(new Event('guest_enrollments_updated'));
+      }
+      setLoading(false);
+      setCurrentStep(3);
+      return;
+    }
 
     try {
       // Update user profile with primary course

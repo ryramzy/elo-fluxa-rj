@@ -15,6 +15,27 @@ export function useEnrollments(uid: string) {
       return;
     }
 
+    if (uid === 'guest_user') {
+      const loadGuestEnrollments = () => {
+        const stored = sessionStorage.getItem('elo_guest_enrollments');
+        const list = stored ? JSON.parse(stored) : [];
+        const enrollmentsWithCourses = list.map((enrollment: any) => {
+          const course = courses.find(c => c.id === enrollment.courseId);
+          return { ...enrollment, course };
+        });
+        setEnrollments(enrollmentsWithCourses);
+        setLoading(false);
+      };
+
+      loadGuestEnrollments();
+
+      const handleUpdate = () => {
+        loadGuestEnrollments();
+      };
+      window.addEventListener('guest_enrollments_updated', handleUpdate);
+      return () => window.removeEventListener('guest_enrollments_updated', handleUpdate);
+    }
+
     let legacyData: any[] = [];
     let rootData: any[] = [];
 

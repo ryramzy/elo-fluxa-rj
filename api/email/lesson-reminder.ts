@@ -1,12 +1,12 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getDocs, query, collection, where, orderBy, Timestamp } from 'firebase/firestore';
+import { getDocs, query, collection, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../src/lib/firebase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Send reminder for each booking
     const results = await Promise.allSettled(
       bookings.map(async (booking: any) => {
-        const { userName, userEmail, date, time, duration, meetLink, notes } = booking;
+        const { userId, userName, userEmail, date, time, duration, meetLink, notes } = booking;
         
         // Check if lesson is within 24 hours
         const lessonDateTime = new Date(`${date}T${time}:00-03:00`);
@@ -120,6 +120,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               </div>
             `,
           });
+
+          if (!error && userId) {
+            try {
+              const notificationsRef = collection(db, 'users', userId, 'notifications');
+              await addDoc(notificationsRef, {
+                title: 'Lembrete de Aula! ⏰',
+                message: `Sua aula está agendada para amanhã (${formattedDate}) às ${time}.`,
+                read: false,
+                createdAt: serverTimestamp()
+              });
+            } catch (notifErr) {
+              console.error('Error creating reminder notification:', notifErr);
+            }
+          }
 
           return { bookingId: booking.id, success: !error, error };
         }

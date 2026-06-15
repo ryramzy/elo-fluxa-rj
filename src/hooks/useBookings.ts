@@ -9,7 +9,7 @@ export function useBookings(uid: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!uid) {
+    if (!uid || uid === 'guest_user') {
       setBookings([]);
       setLoading(false);
       return;

@@ -34,6 +34,7 @@ import Dicas from './src/pages/Dicas';
 import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
 import AiCoachPage from './src/pages/AiCoachPage';
+import { GuestBanner } from './src/components/GuestBanner';
 
 
 
@@ -105,6 +106,7 @@ function AppShell() {
           id="content-area"
           className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)]"
         >
+          {user?.isGuest && <GuestBanner />}
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

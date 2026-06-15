@@ -79,16 +79,42 @@ const DashboardWorking: React.FC = () => {
     );
   }
 
+  const [isAdminView, setIsAdminView] = useState(true);
+
+  useEffect(() => {
+    const savedView = sessionStorage.getItem('elo_admin_view');
+    if (savedView !== null) {
+      setIsAdminView(savedView === 'true');
+    }
+  }, []);
+
+  const toggleViewMode = () => {
+    const newView = !isAdminView;
+    setIsAdminView(newView);
+    sessionStorage.setItem('elo_admin_view', String(newView));
+  };
+
   // Unified Ecosystem: Render Tutor Dashboard if user has tutor or admin role
   const adminUid = import.meta.env.VITE_ADMIN_UID;
   const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || user.uid.trim() === adminUid?.trim();
   
-  if (isTutorOrAdmin) {
-    return <Admin />;
+  if (isTutorOrAdmin && isAdminView) {
+    return <Admin onSwitchToStudentView={toggleViewMode} />;
   }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      {isTutorOrAdmin && (
+        <div className="w-full bg-blue-600 text-white text-center py-3 px-4 font-bold text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-4">
+          <span>Você está no modo de visualização de aluno.</span>
+          <button 
+            onClick={toggleViewMode}
+            className="bg-white text-blue-600 px-4 py-1.5 rounded-lg font-extrabold hover:bg-slate-100 transition-colors shadow-sm"
+          >
+            Voltar para o Painel Admin
+          </button>
+        </div>
+      )}
       <OnboardingTour 
         hasSeenOnboarding={profile?.hasSeenOnboarding || false} 
         profileLoaded={!profileLoading && !!profile} 

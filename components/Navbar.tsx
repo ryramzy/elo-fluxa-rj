@@ -9,6 +9,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
+import { NotificationDropdown } from '../src/components/navigation/NotificationDropdown';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
@@ -185,60 +186,63 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 Entrar
               </button>
             ) : (
-              <div className="relative user-dropdown">
-                <button
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 text-[10px] font-medium hidden sm:block text-white hover:text-blue-400 transition-colors"
-                >
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="Avatar" className="w-8 h-8 rounded-full" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                      {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
-                    </div>
-                  )}
-                  <span className="hidden sm:block">
-                    {user.displayName || user.email}
-                  </span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                
-                {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50 divide-y divide-slate-750">
-                    {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
+              <div className="flex items-center gap-4">
+                <NotificationDropdown />
+                <div className="relative user-dropdown">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 text-[10px] font-medium hidden sm:block text-white hover:text-blue-400 transition-colors"
+                  >
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt="Avatar" className="w-8 h-8 rounded-full" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                        {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                      </div>
+                    )}
+                    <span className="hidden sm:block">
+                      {user.displayName || user.email}
+                    </span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50 divide-y divide-slate-750">
+                      {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
+                        <a
+                          href="/admin"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/admin');
+                            setUserDropdownOpen(false);
+                          }}
+                          className="block px-4 py-2 text-sm font-semibold text-blue-400 hover:bg-slate-700 transition-colors"
+                        >
+                          Painel Admin 👑
+                        </a>
+                      )}
                       <a
-                        href="/admin"
+                        href="/dashboard"
                         onClick={(e) => {
                           e.preventDefault();
-                          navigate('/admin');
+                          navigate('/dashboard');
                           setUserDropdownOpen(false);
                         }}
-                        className="block px-4 py-2 text-sm font-semibold text-blue-400 hover:bg-slate-700 transition-colors"
+                        className="block px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
                       >
-                        Painel Admin 👑
+                        Meu painel
                       </a>
-                    )}
-                    <a
-                      href="/dashboard"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/dashboard');
-                        setUserDropdownOpen(false);
-                      }}
-                      className="block px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
-                    >
-                      Meu painel
-                    </a>
-                    <button
-                      onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
-                    >
-                      Sair
-                    </button>
-                  </div>
-                )}
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-slate-700 transition-colors"
+                      >
+                        Sair
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             

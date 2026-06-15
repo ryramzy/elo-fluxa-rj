@@ -8,7 +8,8 @@ export function useStreak(uid: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!uid) {
+    if (!uid || uid === 'guest_user') {
+      setStreak(0);
       setLoading(false);
       return;
     }
@@ -28,6 +29,7 @@ export function useStreak(uid: string) {
   }, [uid]);
 
   const awardStreakXP = async () => {
+    if (uid === 'guest_user') return;
     try {
       await awardXP(uid, XP_REWARDS.STREAK_DAY, 'streak day');
     } catch (err) {

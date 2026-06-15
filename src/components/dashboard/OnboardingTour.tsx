@@ -30,7 +30,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
       setRun(false);
       
       // Update Firestore so they never see it again
-      if (user) {
+      if (user && user.uid !== 'guest_user') {
         try {
           const userRef = doc(db, 'users', user.uid);
           await updateDoc(userRef, {
