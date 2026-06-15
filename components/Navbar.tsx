@@ -83,9 +83,14 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   }, []);
 
   const getActiveSection = () => {
-    if (location.pathname.startsWith('/courses') || location.pathname.startsWith('/product')) return 'products';
-    if (location.pathname.startsWith('/agenda')) return 'agenda';
-    return 'about';
+    if (location.pathname === '/dashboard') {
+      if (location.state?.tab === 'booking') return 'agenda';
+      return 'dashboard';
+    }
+    if (location.pathname.startsWith('/courses')) return 'courses';
+    if (location.pathname === '/ai-coach') return 'ai-coach';
+    if (location.pathname === '/profile') return 'profile';
+    return '';
   };
   const activeSection = getActiveSection();
 
@@ -121,21 +126,35 @@ export default function Navbar({ onNavClick }: NavbarProps) {
           {user && (
             <div className={`hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${textColorClass}`}>
               <a
-                href="#dashboard"
+                href="/dashboard"
                 onClick={(e) => handleLinkClick(e, 'dashboard')}
                 className={getLinkClasses('dashboard')}
               >
                 Dashboard
               </a>
               <a
-                href="#agenda"
+                href="/courses"
+                onClick={(e) => handleLinkClick(e, 'courses')}
+                className={getLinkClasses('courses')}
+              >
+                Cursos
+              </a>
+              <a
+                href="/ai-coach"
+                onClick={(e) => handleLinkClick(e, 'ai-coach')}
+                className={getLinkClasses('ai-coach')}
+              >
+                Tutor IA
+              </a>
+              <a
+                href="/dashboard"
                 onClick={(e) => handleLinkClick(e, 'agenda')}
                 className={getLinkClasses('agenda')}
               >
                 Agenda
               </a>
               <a
-                href="#profile"
+                href="/profile"
                 onClick={(e) => handleLinkClick(e, 'profile')}
                 className={getLinkClasses('profile')}
               >
@@ -241,25 +260,39 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             {user && (
               <>
                 <a
-                  href="#about"
-                  onClick={(e) => handleLinkClick(e, 'about')}
-                  className={activeSection === 'about' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
+                  href="/dashboard"
+                  onClick={(e) => handleLinkClick(e, 'dashboard')}
+                  className={activeSection === 'dashboard' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
                 >
-                  Sobre
+                  Painel
                 </a>
                 <a
-                  href="#products"
-                  onClick={(e) => handleLinkClick(e, 'products')}
-                  className={activeSection === 'products' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
+                  href="/courses"
+                  onClick={(e) => handleLinkClick(e, 'courses')}
+                  className={activeSection === 'courses' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
                 >
                   Cursos
                 </a>
                 <a
-                  href="#agenda"
+                  href="/ai-coach"
+                  onClick={(e) => handleLinkClick(e, 'ai-coach')}
+                  className={activeSection === 'ai-coach' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
+                >
+                  Tutor IA
+                </a>
+                <a
+                  href="/dashboard"
                   onClick={(e) => handleLinkClick(e, 'agenda')}
-                  className={activeSection === 'agenda' ? 'text-blue-400' : 'hover:text-blue-400 transition-colors'}
+                  className={activeSection === 'agenda' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
                 >
                   Agenda
+                </a>
+                <a
+                  href="/profile"
+                  onClick={(e) => handleLinkClick(e, 'profile')}
+                  className={activeSection === 'profile' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
+                >
+                  Perfil
                 </a>
               </>
             )}

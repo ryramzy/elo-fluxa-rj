@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { FaHome, FaCalendarPlus, FaGraduationCap, FaUser } from 'react-icons/fa';
+import { FaHome, FaCalendarPlus, FaGraduationCap, FaUser, FaRobot } from 'react-icons/fa';
 
 export const BottomNav: React.FC = () => {
   const { user } = useAuth();
@@ -11,9 +11,11 @@ export const BottomNav: React.FC = () => {
   }
 
     const navItems = [
-      { name: 'Dashboard', path: '/dashboard', icon: <FaHome size={24} />, state: null },
-      { name: 'Agenda', path: '/dashboard', icon: <FaCalendarPlus size={24} />, state: { tab: 'booking' } },
-      { name: 'Profile', path: '/profile', icon: <FaUser size={24} />, state: null },
+      { name: 'Painel', path: '/dashboard', icon: <FaHome size={22} />, state: null },
+      { name: 'Cursos', path: '/courses', icon: <FaGraduationCap size={22} />, state: null },
+      { name: 'Tutor IA', path: '/ai-coach', icon: <FaRobot size={22} />, state: null },
+      { name: 'Agenda', path: '/dashboard', icon: <FaCalendarPlus size={22} />, state: { tab: 'booking' } },
+      { name: 'Perfil', path: '/profile', icon: <FaUser size={22} />, state: null },
     ];
 
   return (
@@ -32,7 +34,7 @@ export const BottomNav: React.FC = () => {
           }
         >
           {item.icon}
-          <span className="text-[10px] font-medium mt-1 tracking-wide uppercase">{item.name}</span>
+          <span className="text-[9px] font-medium mt-1 tracking-wide uppercase">{item.name}</span>
         </NavLink>
       ))}
     </div>

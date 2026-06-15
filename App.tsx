@@ -63,9 +63,12 @@ function AppShell() {
     
     if (targetId === 'agenda') {
       navigate('/dashboard', { state: { tab: 'booking' } });
+    } else if (targetId === 'dashboard') {
+      navigate('/dashboard', { state: { tab: 'overview' } });
     } else {
       const tabMap: Record<string, string> = {
-        'dashboard': '/dashboard',
+        'courses': '/courses',
+        'ai-coach': '/ai-coach',
         'profile': '/profile'
       };
 
