@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { getUserProfile, getAllBookings, getAllEnrollments, updateUserXP, updateUserPlan, updateUserProfile } from '../lib/firestore';
 import { awardXP } from '../lib/xpSystem';
 import { courses } from '../data/courses';
+import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
 
 interface StudentProfile {
   uid: string;
@@ -32,6 +33,12 @@ interface Booking {
   time: string;
   status: 'confirmed' | 'cancelled' | 'completed';
   createdAt: any;
+  tutorNotes?: {
+    pronunciation: string;
+    vocabulary: string;
+    homework: string;
+    submittedAt: any;
+  };
 }
 
 interface Enrollment {
@@ -53,6 +60,7 @@ const AdminStudentProfile: React.FC = () => {
   const [adminNotes, setAdminNotes] = useState('');
   const [xpAmount, setXpAmount] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<'free' | 'pro' | 'elite'>('free');
+  const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (!uid || !adminUser) return;
@@ -363,7 +371,7 @@ const AdminStudentProfile: React.FC = () => {
                     <th className="text-left py-2 px-4 text-sm font-medium text-slate-700">Time</th>
                     <th className="text-left py-2 px-4 text-sm font-medium text-slate-700">Status</th>
                     <th className="text-left py-2 px-4 text-sm font-medium text-slate-700">Course Context</th>
-                    <th className="text-left py-2 px-4 text-sm font-medium text-slate-700">Notes</th>
+                    <th className="text-left py-2 px-4 text-sm font-medium text-slate-700">Feedback</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -381,12 +389,19 @@ const AdminStudentProfile: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600">
-                        {/* TODO: Add course context from enrollment */}
                         General English
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600">
-                        {/* TODO: Add booking notes */}
-                        -
+                        <button
+                          onClick={() => setSelectedBookingForFeedback(booking as any)}
+                          className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 ${
+                            booking.tutorNotes
+                              ? 'bg-emerald-150 text-emerald-800 hover:bg-emerald-200'
+                              : 'bg-blue-600 text-white hover:bg-blue-700'
+                          }`}
+                        >
+                          {booking.tutorNotes ? '📝 Ver/Editar Feedback' : '➕ Adicionar Feedback'}
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -464,17 +479,27 @@ const AdminStudentProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Book Class */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Book Class</label>
-              <button className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors">
-                Book Class for Student
-              </button>
-            </div>
-          </div>
+        {/* Book Class */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Book Class</label>
+          <button className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors">
+            Book Class for Student
+          </button>
         </div>
-      </div>
-    </div>
+      </div> {/* grid */}
+    </div> {/* Quick Actions container */}
+  </div> {/* max-w-6xl mx-auto px-6 py-8 */}
+  
+  {selectedBookingForFeedback && (
+    <BookingFeedbackModal
+      booking={selectedBookingForFeedback as any}
+      onClose={() => {
+        setSelectedBookingForFeedback(null);
+        loadStudentData();
+      }}
+    />
+  )}
+</div>
   );
 };
 

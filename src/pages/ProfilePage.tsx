@@ -16,6 +16,7 @@ const ProfilePage: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [targetGoal, setTargetGoal] = useState('');
+  const [phone, setPhone] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -24,6 +25,7 @@ const ProfilePage: React.FC = () => {
       setDisplayName(profile.displayName || '');
       setBio(profile.bio || '');
       setTargetGoal(profile.targetGoal || '');
+      setPhone(profile.phone || '');
     }
   }, [profile]);
 
@@ -50,6 +52,7 @@ const ProfilePage: React.FC = () => {
         displayName,
         bio,
         targetGoal,
+        phone,
       });
       setIsEditing(false);
       showToast({ type: 'success', message: 'Perfil atualizado com sucesso!' });
@@ -186,6 +189,24 @@ const ProfilePage: React.FC = () => {
               />
             ) : (
               <p className="text-slate-800 dark:text-slate-200 font-medium py-1">{displayName || <em className="text-slate-400">Não configurado</em>}</p>
+            )}
+          </div>
+
+          {/* WhatsApp / Telefone */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              WhatsApp / Telefone
+            </label>
+            {isEditing ? (
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(21) 99999-9999"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+              />
+            ) : (
+              <p className="text-slate-800 dark:text-slate-200 font-medium py-1">{phone || <em className="text-slate-400">Não configurado</em>}</p>
             )}
           </div>
 

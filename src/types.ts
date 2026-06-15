@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface TimeSlot {
   id: string;
   date: string;           // ISO string: "2026-04-21"
@@ -27,4 +29,10 @@ export interface Booking {
   meetLink?: string;      // placeholder for tonight
   notes?: string;
   createdAt: Date;
+  tutorNotes?: {
+    pronunciation: string;
+    vocabulary: string;
+    homework: string;
+    submittedAt: Timestamp;
+  };
 }

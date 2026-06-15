@@ -5,6 +5,8 @@ import { useAdminGuard } from '../hooks/useAdminGuard';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
+import { useToast } from '../hooks/useToast';
+import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
 
 interface Booking {
   id: string;
@@ -15,6 +17,12 @@ interface Booking {
   userEmail?: string;
   status: string;
   createdAt?: any;
+  tutorNotes?: {
+    pronunciation: string;
+    vocabulary: string;
+    homework: string;
+    submittedAt: any;
+  };
 }
 
 interface User {
@@ -23,7 +31,10 @@ interface User {
   email: string;
   plan: 'free' | 'pro' | 'elite';
   createdAt: any;
-  lastLogin?: any;
+  lastActiveDate?: any;
+  streakDays?: number;
+  phone?: string;
+  xp?: number;
 }
 
 interface AdminProps {
@@ -34,6 +45,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminGuard();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   
   useDocumentTitle('Admin - Student Bookings');
   
@@ -43,6 +55,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [selectedWeek, setSelectedWeek] = useState(0);
   const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
 
   // Get week dates based on offset
   const getWeekDates = (offset: number) => {
@@ -143,11 +156,43 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
         user.uid === userId ? { ...user, plan: newPlan } : user
       ));
       
-      alert(`User upgraded to ${newPlan.toUpperCase()}`);
+      showToast({ type: 'success', message: `Plano atualizado para ${newPlan.toUpperCase()}` });
     } catch (error) {
       console.error('Error upgrading user:', error);
-      alert('Error upgrading user');
+      showToast({ type: 'error', message: 'Erro ao atualizar plano' });
     }
+  };
+
+  // Save edited phone number
+  const handlePhoneSave = async (userId: string, newPhone: string) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        phone: newPhone
+      });
+      setUsers(prev => prev.map(u => u.uid === userId ? { ...u, phone: newPhone } : u));
+      showToast({ type: 'success', message: 'Telefone atualizado com sucesso!' });
+    } catch (error) {
+      console.error('Error saving phone number:', error);
+      showToast({ type: 'error', message: 'Erro ao salvar o telefone.' });
+    }
+  };
+
+  // Determine low engagement (no activity in 5 days)
+  const isInactive = (student: User) => {
+    if (!student.lastActiveDate) return true;
+    const lastActive = student.lastActiveDate.toDate ? student.lastActiveDate.toDate() : new Date(student.lastActiveDate);
+    const diffTime = Math.abs(new Date().getTime() - lastActive.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 5;
+  };
+
+  // Prefilled WhatsApp nudge link
+  const getWhatsAppLink = (student: User) => {
+    if (!student.phone) return '';
+    const cleanPhone = student.phone.replace(/\D/g, '');
+    const formattedPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+    const message = `Oi ${student.displayName}, tudo bem? Notei que você ficou sem praticar no Elo esta semana. Vamos agendar nossa próxima aula de conversação?`;
+    return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
   };
 
   // WhatsApp contact
@@ -399,21 +444,28 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
                       return (
                         <div key={`${date}-${time}`} className="p-1">
                           {booking ? (
-                            <div className={`w-full h-12 rounded-lg text-xs font-medium p-2 ${
-                              isPast
-                                ? 'bg-slate-100 dark:bg-slate-700 text-slate-400'
-                                : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                            }`}>
-                              <div className="font-medium truncate">
-                                {booking.userName || 'Booked'}
+                            <div 
+                              onClick={() => setSelectedBookingForFeedback(booking)}
+                              className={`w-full h-12 rounded-lg text-xs font-medium p-2 cursor-pointer hover:shadow transition-shadow ${
+                                isPast
+                                  ? 'bg-slate-100 dark:bg-slate-700 text-slate-400'
+                                  : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                              }`}
+                            >
+                              <div className="font-semibold truncate flex items-center justify-between">
+                                <span>{booking.userName || 'Booked'}</span>
+                                {booking.tutorNotes && <span className="text-[10px]" title="Feedback preenchido">📝</span>}
                               </div>
-                              <div className="text-xs opacity-75 truncate">
+                              <div className="text-[10px] opacity-75 truncate">
                                 {booking.userEmail}
                               </div>
                               {!isPast && (
                                 <button
-                                  onClick={() => handleDeleteBooking(booking.id)}
-                                  className="mt-1 text-xs bg-red-500 text-white px-1 py-0.5 rounded hover:bg-red-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteBooking(booking.id);
+                                  }}
+                                  className="mt-1 text-[9px] bg-red-500 text-white px-1 py-0.5 rounded hover:bg-red-600 transition-colors"
                                 >
                                   Delete
                                 </button>
@@ -465,23 +517,34 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
         {activeTab === 'users' && (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-              User Management
+              User Management (CRM)
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-700">
-                    <th className="text-left p-3">Name</th>
-                    <th className="text-left p-3">Email</th>
+                    <th className="text-left p-3">Student</th>
                     <th className="text-left p-3">Plan</th>
+                    <th className="text-left p-3">Streak & XP</th>
+                    <th className="text-left p-3">Last Active</th>
+                    <th className="text-left p-3">Phone (WhatsApp)</th>
                     <th className="text-left p-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => (
-                    <tr key={user.uid} className="border-b border-slate-100 dark:border-slate-800">
-                      <td className="p-3">{user.displayName}</td>
-                      <td className="p-3">{user.email}</td>
+                    <tr key={user.uid} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="p-3">
+                        <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                          {user.displayName}
+                          {isInactive(user) && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 animate-pulse">
+                              ⚠️ Inativo
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{user.email}</div>
+                      </td>
                       <td className="p-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           user.plan === 'elite' ? 'bg-orange-100 text-orange-800' :
@@ -492,25 +555,63 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
                         </span>
                       </td>
                       <td className="p-3">
+                        <div className="text-xs font-semibold">{user.streakDays || 0} 🔥</div>
+                        <div className="text-xs text-slate-500">{user.xp || 0} XP</div>
+                      </td>
+                      <td className="p-3 text-xs">
+                        {user.lastActiveDate ? (
+                          new Date(user.lastActiveDate.toDate ? user.lastActiveDate.toDate() : user.lastActiveDate).toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        ) : (
+                          <span className="text-slate-400">Nunca ativo</span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <input
+                          type="text"
+                          defaultValue={user.phone || ''}
+                          onBlur={(e) => handlePhoneSave(user.uid, e.target.value)}
+                          placeholder="(21) 99999-9999"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-1 px-2 text-xs w-36 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-slate-900 dark:text-white"
+                        />
+                      </td>
+                      <td className="p-3">
                         <div className="flex gap-2">
                           <button
                             onClick={() => upgradeUserPlan(user.uid, 'pro')}
-                            className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                            className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors"
                           >
                             Pro
                           </button>
                           <button
                             onClick={() => upgradeUserPlan(user.uid, 'elite')}
-                            className="px-2 py-1 bg-orange-500 text-white text-xs rounded hover:bg-orange-600"
+                            className="px-2 py-1 bg-orange-500 text-white text-xs rounded hover:bg-orange-600 transition-colors"
                           >
                             Elite
                           </button>
-                          <button
-                            onClick={() => openWhatsApp('5511999999999', `Hi ${user.displayName}, this is Matt from Elo!`)}
-                            className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
-                          >
-                            WhatsApp
-                          </button>
+                          {user.phone ? (
+                            <a
+                              href={getWhatsAppLink(user)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors inline-flex items-center gap-1"
+                            >
+                              WhatsApp
+                            </a>
+                          ) : (
+                            <button
+                              disabled
+                              title="Telefone não cadastrado"
+                              className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 text-xs rounded cursor-not-allowed"
+                            >
+                              WhatsApp
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -646,6 +747,16 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
           </button>
         </div>
       </div>
+
+      {selectedBookingForFeedback && (
+        <BookingFeedbackModal
+          booking={selectedBookingForFeedback}
+          onClose={() => {
+            setSelectedBookingForFeedback(null);
+            loadWeekBookings(); // Refresh bookings
+          }}
+        />
+      )}
     </div>
   );
 };

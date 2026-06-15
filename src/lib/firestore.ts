@@ -40,6 +40,7 @@ export interface UserProfile {
   bio?: string;
   targetGoal?: string;
   tutorNotes?: string;
+  phone?: string;
 }
 
 export interface Enrollment {

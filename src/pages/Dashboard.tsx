@@ -23,6 +23,7 @@ import Admin from './Admin';
 import { FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
 import { DictionaryWidget } from '../components/dashboard/DictionaryWidget';
 import { TriviaWidget } from '../components/dashboard/TriviaWidget';
+import { TutorNotesWidget } from '../components/TutorNotesWidget';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
@@ -177,6 +178,7 @@ const DashboardWorking: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
+                <TutorNotesWidget bookings={bookings || []} />
                 <div className="tour-step-courses">
                   <CoursesGrid
                     courses={courses}

@@ -1,5 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Toast } from '../components/Toast';
+
+// Shared list of toast state setters for global state synchronization
+let listeners: Array<(toasts: Toast[]) => void> = [];
+let memoryToasts: Toast[] = [];
 
 interface UseToastReturn {
   toasts: Toast[];
@@ -8,17 +12,28 @@ interface UseToastReturn {
 }
 
 export const useToast = (): UseToastReturn => {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>(memoryToasts);
+
+  useEffect(() => {
+    listeners.push(setToasts);
+    // Sync initial state
+    setToasts(memoryToasts);
+    return () => {
+      listeners = listeners.filter(l => l !== setToasts);
+    };
+  }, []);
 
   const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = { ...toast, id };
     
-    setToasts(prev => [...prev, newToast]);
+    memoryToasts = [...memoryToasts, newToast];
+    listeners.forEach(l => l(memoryToasts));
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    memoryToasts = memoryToasts.filter(t => t.id !== id);
+    listeners.forEach(l => l(memoryToasts));
   }, []);
 
   return {
