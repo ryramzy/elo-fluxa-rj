@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { onSnapshot, doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
+import { auth } from '../lib/firebase';
 import { User } from 'firebase/auth';
 
 export function useUserProfile(uid: string) {
@@ -38,32 +39,61 @@ export function useUserProfile(uid: string) {
 
     const unsubscribe = onSnapshot(
       doc(db, 'users', uid),
-      (docSnapshot) => {
+      async (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           const xp = data?.xp || 0;
           const levelInfo = calculateLevel(xp);
           
-            setProfile({
-              displayName: data?.displayName || '',
-              email: data?.email || '',
-              photoURL: data?.photoURL || '',
-              xp,
-              level: levelInfo.level,
-              levelName: levelInfo.name,
-              streakDays: data?.streakDays || 0,
-              lastActiveDate: data?.lastActiveDate || null,
-              badgesEarned: data?.badgesEarned || [],
-              createdAt: data?.createdAt || null,
-              hasSeenOnboarding: !!data?.hasSeenOnboarding,
-              role: data?.role || 'student',
-              bio: data?.bio || '',
-              targetGoal: data?.targetGoal || '',
-            });
+          setProfile({
+            displayName: data?.displayName || '',
+            email: data?.email || '',
+            photoURL: data?.photoURL || '',
+            xp,
+            level: levelInfo.level,
+            levelName: levelInfo.name,
+            streakDays: data?.streakDays || 0,
+            lastActiveDate: data?.lastActiveDate || null,
+            badgesEarned: data?.badgesEarned || [],
+            createdAt: data?.createdAt || null,
+            hasSeenOnboarding: !!data?.hasSeenOnboarding,
+            role: data?.role || 'student',
+            bio: data?.bio || '',
+            targetGoal: data?.targetGoal || '',
+          });
+          setLoading(false);
         } else {
-          setError('User profile not found');
+          // Auto-create user profile if it doesn't exist in Firestore
+          try {
+            const currentUser = auth.currentUser;
+            if (currentUser && currentUser.uid === uid) {
+              const userRef = doc(db, 'users', uid);
+              await setDoc(userRef, {
+                displayName: currentUser.displayName || 'Estudante',
+                email: currentUser.email || '',
+                photoURL: currentUser.photoURL || '',
+                xp: 0,
+                level: 1,
+                streakDays: 0,
+                lastActiveDate: new Date(),
+                badgesEarned: [],
+                createdAt: new Date(),
+                role: 'student',
+                hasSeenOnboarding: false,
+                bio: '',
+                targetGoal: '',
+              });
+              // The onSnapshot listener will be automatically triggered again with the new document.
+            } else {
+              setError('User profile not found');
+              setLoading(false);
+            }
+          } catch (createErr: any) {
+            console.error('Error auto-creating user profile:', createErr);
+            setError('User profile not found');
+            setLoading(false);
+          }
         }
-        setLoading(false);
       },
       (err) => {
         console.error('Error fetching user profile:', err);

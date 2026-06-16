@@ -46,7 +46,11 @@ export function useEnrollments(uid: string) {
       rootData.forEach(d => combinedMap.set(d.courseId, d)); // overwrites legacy if exists
 
       const combined = Array.from(combinedMap.values())
-        .sort((a, b) => b.enrolledAt?.toMillis?.() - a.enrolledAt?.toMillis?.());
+        .sort((a, b) => {
+          const timeA = a.enrolledAt?.toMillis?.() || (a.enrolledAt instanceof Date ? a.enrolledAt.getTime() : 0);
+          const timeB = b.enrolledAt?.toMillis?.() || (b.enrolledAt instanceof Date ? b.enrolledAt.getTime() : 0);
+          return timeB - timeA;
+        });
 
       const enrollmentsWithCourses = combined.map(enrollment => {
         const course = courses.find(c => c.id === enrollment.courseId);

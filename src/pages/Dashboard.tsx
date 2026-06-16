@@ -35,6 +35,20 @@ const DashboardWorking: React.FC = () => {
   const { showToast } = useToast();
   
   const [activeTab, setActiveTab] = useState<'overview' | 'booking'>('overview');
+  const [isAdminView, setIsAdminView] = useState(true);
+
+  useEffect(() => {
+    const savedView = sessionStorage.getItem('elo_admin_view');
+    if (savedView !== null) {
+      setIsAdminView(savedView === 'true');
+    }
+  }, []);
+
+  const toggleViewMode = () => {
+    const newView = !isAdminView;
+    setIsAdminView(newView);
+    sessionStorage.setItem('elo_admin_view', String(newView));
+  };
   
   const loading = profileLoading || enrollmentsLoading || bookingsLoading;
   
@@ -80,24 +94,9 @@ const DashboardWorking: React.FC = () => {
     );
   }
 
-  const [isAdminView, setIsAdminView] = useState(true);
-
-  useEffect(() => {
-    const savedView = sessionStorage.getItem('elo_admin_view');
-    if (savedView !== null) {
-      setIsAdminView(savedView === 'true');
-    }
-  }, []);
-
-  const toggleViewMode = () => {
-    const newView = !isAdminView;
-    setIsAdminView(newView);
-    sessionStorage.setItem('elo_admin_view', String(newView));
-  };
-
   // Unified Ecosystem: Render Tutor Dashboard if user has tutor or admin role
   const adminUid = import.meta.env.VITE_ADMIN_UID;
-  const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || user.uid.trim() === adminUid?.trim();
+  const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
   
   if (isTutorOrAdmin && isAdminView) {
     return <Admin onSwitchToStudentView={toggleViewMode} />;
