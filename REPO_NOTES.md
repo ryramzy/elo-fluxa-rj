@@ -41,6 +41,29 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 15, 2026] — React Hooks Order, Profile Auto-Creation, CRM & Guest Mode Revamp
+**Status:** ✅ COMPLETED
+
+### What changed
+- **React Hooks Order Fix in Dashboard**: Moved `isAdminView` (useState) and its `useEffect` hook to the top of `Dashboard.tsx`, ensuring they are executed before the conditional early returns (`profileLoading` and `!user`). This resolves the fatal React crash right after login.
+- **Missing Profile Auto-Creation**: Integrated automated default student profile generation in `useUserProfile.ts` for logged-in users who do not yet have a record in Firestore, resolving redirect/page blocks.
+- **Robustness in useEnrollments.ts**: Improved sorting to handle missing `enrolledAt` fields or Date objects instead of Firestore Timestamps.
+- **Guest Mode Revamp**: Added "Continue as Guest" flow with 10-minute session expiration, timer banner warnings, database protections, and in-memory guest course enrollments.
+- **Tutor CRM Panel**: Added Streaks, XP, Last Active warnings, inline phone editing, and WhatsApp nudges to the `/admin` dashboard.
+- **Class Feedback Loop**: Tutors can save speaking feedback (Pronunciation, Vocabulary, Homework) on bookings, which display dynamically in `<TutorNotesWidget />` on the student dashboard.
+- **Bell Notifications**: Added Navbar bell showing real-time notifications for bookings, trivia, courses, and lessons.
+- **AI Coach Speaking Input**: Added voice input to `AiCoachPage.tsx` next to the chat bar using browser SpeechRecognition.
+- **Meet Fallback & Reminders**: Hourly cron reminders send emails + in-app alerts (BRT time). Google calendar insert has a fallback to Jitsi Meet links if calendar insert fails.
+
+### Why
+- The React hooks ordering bug caused an immediate crash for users landing on `/dashboard` because hook execution count changed when profile loaded.
+- Newly logged-in users were blocked/redirected if their Firestore profile document didn't exist yet. Auto-creation prevents empty profile lockouts.
+- Guest mode and the CRM close the loops on student conversions and tutor feedback value, making the application fully monetizable.
+
+### Next steps
+- Add payment gateway integrations (Stripe/Pix) to support automated plans.
+
+---
 ## [May 23, 2026] — QA Bug Fixes: Routing, CSS Resets, & Missing Assets
 **Status:** ✅ COMPLETED
 
