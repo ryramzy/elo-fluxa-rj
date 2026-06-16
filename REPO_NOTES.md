@@ -41,6 +41,24 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 16, 2026] — Course Catalog Accordion Grouping, Interactive Elo Mascot & LMS Content Upgrade
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Course Catalog Accordion Grouping**: Reorganized `/courses` so that available courses are categorized into three main glassmorphic collapsible accordion panels: *Prática de Conversação (Conversation)*, *Cursos de Gramática & Níveis (Grammar)*, and *Especializações Profissionais & Culturais (Specialty)*. Each accordion features a custom icon, course counter pill, explanation, and a rotating chevron.
+- **Interactive SVG Elo Mascot**: Created a premium React component (`EloMascot.tsx`) containing custom vector shapes representing the AI tutor Elo. Based on the active slide's type (`INTRO`, `VOCAB`, `CONCEPT`, `CULTURE`, `DRILL`, `ROLEPLAY`, `REVIEW`), Elo updates her pose and accessories (e.g., holding alphabet blocks, a thinking lightbulb, a globe, a megaphone, or celebrating in a graduation cap).
+- **Responsive Slide Split Layout**: Overhauled `SlideViewer.tsx` to divide the screen into a 3:2 split layout on desktop (text/content on the left, animated Elo mascot inside a card on the right). Stacks vertically on mobile to keep layouts responsive.
+- **ESL Educator Content Upgrades**: Systematically parsed and upgraded lesson slide texts across all files (`beginner.ts`, `intermediate.ts`, `advanced-business.ts`, `advanced-conversation.ts`, and `specialty.ts`). Added phonetic guides, online educator pro-tips, and detailed cultural contexts to fill slide space with informative resources.
+
+### Why
+- Having 13 courses in a single massive list caused search friction. Grouping them by learning pillar makes the catalog scannable.
+- Slide layouts had excessive blank space at the bottom on larger screens. Introducing the animated Elo mascot fills this space beautifully, drives gamified engagement, and aligns with ELO's brand character.
+- Original slide contents were dry and textbook-like. Adding phonetic guides and pro-tips elevates the course content to feel like a premium, human-curated curriculum.
+
+### Next steps
+- Add payment integrations for specific specialty courses.
+
+---
 ## [June 16, 2026] — ELO AI Coach Upgrades, Mobile Viewport Locks & Professional Specialty Courses
 **Status:** ✅ COMPLETED
 

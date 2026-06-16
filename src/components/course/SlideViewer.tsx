@@ -6,6 +6,7 @@ import 'swiper/css';
 import { speakText } from '../../utils/tts';
 import { useToast } from '../../hooks/useToast';
 import { trackEvent } from '../../utils/analytics';
+import { EloMascot } from './EloMascot';
 
 interface Slide {
   id: string;
@@ -13,6 +14,7 @@ interface Slide {
   content: React.ReactNode;
   imageUrl?: string;
   spokenText?: string;
+  type?: string;
 }
 
 interface SlideViewerProps {
@@ -79,24 +81,21 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
     <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col font-sans text-white touch-none">
       <style>{`
         @keyframes siri-ripple {
-          0% { transform: scale(1); opacity: 0.7; }
-          100% { transform: scale(2); opacity: 0; }
-        }
-        @keyframes siri-orb-pulse {
-          0%, 100% { transform: scale(1.05); filter: brightness(1); }
-          50% { transform: scale(1.12); filter: brightness(1.25); }
+          0% { transform: scale(0.9); opacity: 0.7; }
+          50% { transform: scale(1.15); opacity: 0.35; }
+          100% { transform: scale(1.3); opacity: 0; }
         }
         @keyframes siri-wave {
-          0%, 100% { transform: scaleY(0.35); }
-          50% { transform: scaleY(1); }
+          0%, 100% { transform: scaleY(0.4); }
+          50% { transform: scaleY(1.2); }
         }
-        .siri-ripple-1 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); }
-        .siri-ripple-2 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); animation-delay: 0.6s; }
-        .siri-ripple-3 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); animation-delay: 1.2s; }
-        .siri-active-orb { animation: siri-orb-pulse 2.5s infinite ease-in-out; }
+        .siri-ripple-1 { animation: siri-ripple 2.2s infinite ease-out; }
+        .siri-ripple-2 { animation: siri-ripple 2.2s infinite ease-out 0.7s; }
+        .siri-ripple-3 { animation: siri-ripple 2.2s infinite ease-out 1.4s; }
+        
         .siri-bar {
-          width: 3px;
-          height: 16px;
+          width: 3.5px;
+          height: 100%;
           background-color: #ffffff;
           border-radius: 9999px;
           display: inline-block;
@@ -196,29 +195,42 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         resistanceRatio={0.65} // Makes it harder to over-swipe past the edges
       >
         {slides.map((slide, idx) => (
-          <SwiperSlide key={slide.id} className="relative w-full h-full flex flex-col justify-center px-8">
+          <SwiperSlide key={slide.id} className="relative w-full h-full flex flex-col justify-center px-8 md:px-16 overflow-y-auto">
             {slide.imageUrl && (
               <div 
-                className="absolute inset-0 bg-cover bg-center opacity-30 z-0" 
+                className="absolute inset-0 bg-cover bg-center opacity-20 z-0" 
                 style={{ backgroundImage: `url(${slide.imageUrl})` }} 
               />
             )}
             
+            {/* Split Screen Grid Layout - Mobile Stacked, Desktop Split */}
             <div 
-              className="relative z-10 max-w-lg mx-auto w-full h-full flex flex-col justify-center animate-fade-in-up"
+              className="relative z-10 max-w-5xl mx-auto w-full flex flex-col md:grid md:grid-cols-5 gap-8 items-center"
               style={{ 
-                paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
+                paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
                 paddingTop: 'calc(6rem + env(safe-area-inset-top))'
               }}
             >
-              {slide.title && (
-                <h2 className="text-3xl font-serif font-bold mb-6 text-blue-300 leading-tight">
-                  {slide.title}
-                </h2>
-              )}
-              <div className="text-xl md:text-2xl font-medium leading-snug flex-1 flex flex-col">
-                {slide.content}
+              {/* Left Column: Text and Content */}
+              <div className="flex flex-col w-full h-full justify-center md:col-span-3 text-left">
+                {slide.title && (
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 text-blue-300 leading-tight tracking-tight drop-shadow-sm">
+                    {slide.title}
+                  </h2>
+                )}
+                <div className="text-base md:text-lg leading-relaxed flex-1 flex flex-col justify-center">
+                  {slide.content}
+                </div>
               </div>
+
+              {/* Right Column: Elo Mascot Visual */}
+              {slide.type && (
+                <div className="w-full md:col-span-2 flex justify-center items-center mt-6 md:mt-0">
+                  <div className="bg-slate-800/35 border border-slate-700/40 rounded-3xl p-5 md:p-6 w-full max-w-[280px] md:max-w-full flex items-center justify-center backdrop-blur-md shadow-lg shadow-black/20">
+                    <EloMascot type={slide.type} />
+                  </div>
+                </div>
+              )}
             </div>
           </SwiperSlide>
         ))}
@@ -241,9 +253,9 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         {currentIndex === slides.length - 1 ? (
           <button 
             onClick={onComplete}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold shadow-lg shadow-blue-500/30 flex items-center gap-2"
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold shadow-lg shadow-blue-500/30 flex items-center gap-2 text-sm md:text-base"
           >
-            <span>Finish</span>
+            <span>Concluir Aula</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
@@ -251,7 +263,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         ) : (
           <button 
             onClick={handleNext}
-            className="p-3 rounded-full bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/30 transition-all"
+            className="p-3 rounded-full bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-all"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -172,6 +172,7 @@ const LessonPage: React.FC = () => {
           id: `slide-${idx}`,
           title: heading,
           spokenText: body, // Allows the SlideViewer to read the text
+          type: type,       // Pass slide type (INTRO, VOCAB, etc.) to slide viewer
           content: (
             <div className="flex flex-col h-full space-y-6">
               {typeLabel && (
