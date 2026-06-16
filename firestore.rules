@@ -11,24 +11,105 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
     
-    // Note: In a real app, you would check an 'admins' collection or custom claims.
-    // For this rewrite, we assume admins have a specific role or we just allow all authenticated for simplicity in demo.
-    // Assuming we want to strictly secure bookings as requested:
-    
-    match /bookings/{bookingId} {
-      // Anyone authenticated can read all bookings (to see what is taken)
-      allow read: if isAuthenticated();
-      
-      // Students can only create bookings for themselves
-      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
-      
-      // Students can only delete/update their own bookings
-      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    // Safely check if the user profile exists and has role 'admin'
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Allow read/write to other collections for existing app functionality
-    match /{document=**} {
-      allow read, write: if isAuthenticated();
+    // Safely check if the user profile exists and has role 'tutor' or 'admin'
+    function isTutor() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'tutor' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        );
+    }
+    
+    // Users collection rules
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isTutor());
+      
+      allow create: if isAuthenticated() && isOwner(userId);
+      
+      allow update: if isAuthenticated() && (
+        isAdmin() || (
+          isOwner(userId) && 
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'plan', 'bookingLimit'])
+        )
+      );
+      
+      allow delete: if isAdmin();
+      
+      // User enrollments sub-collection (legacy but still active)
+      match /courses/{courseId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
+      }
+      
+      // User notifications sub-collection
+      match /notifications/{notifId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
+      }
+      
+      // Flashcards sub-collection (Phase 3 readiness)
+      match /flashcards/{cardId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
+      }
+    }
+    
+    // Bookings collection rules
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated() && (
+        request.resource.data.userId == request.auth.uid ||
+        request.resource.data.uid == request.auth.uid
+      );
+      
+      allow update: if isAuthenticated() && (
+        isTutor() || (
+          (isOwner(resource.data.userId) || isOwner(resource.data.uid)) &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'uid'])
+        )
+      );
+      
+      allow delete: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isOwner(resource.data.uid) || 
+        isTutor()
+      );
+    }
+    
+    // Slots collection rules (available booking times)
+    match /slots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isTutor();
+    }
+    
+    // Legacy available slots collection rules
+    match /availableSlots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isTutor();
+    }
+    
+    // Enrollments collection rules (root enrollments)
+    match /enrollments/{enrollmentId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isOwner(resource.data.uid) || 
+        isTutor()
+      );
+      allow create: if isAuthenticated() && (
+        request.resource.data.userId == request.auth.uid ||
+        request.resource.data.uid == request.auth.uid
+      );
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isOwner(resource.data.uid) || 
+        isTutor()
+      );
+      allow delete: if isTutor();
     }
   }
 }

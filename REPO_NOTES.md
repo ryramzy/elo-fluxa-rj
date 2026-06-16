@@ -41,6 +41,31 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 16, 2026] — Cybersecurity Hardening & Database Access Control Rules
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Granular Firestore Security Rules**: Fully replaced the catch-all wildcard rule (`match /{document=**} { allow read, write: if isAuthenticated(); }`) with strict, collection-specific database access controls.
+- **Robust Role Authentication Helpers**: Implemented `isAdmin()` and `isTutor()` helpers that verify document existence at `/users/{auth.uid}` using `exists()` before performing the `role` property check. If the user document does not exist, the rules safely return `false` (fail-closed) rather than throwing a runtime rule evaluation error.
+- **Access Scope Enforcements**:
+  - **`users` profiles**: Students can only read/write their own user profiles. Modifications to critical user fields (`role`, `plan`, `bookingLimit`) are restricted to `admin` accounts only.
+  - **`bookings`**: Authenticated students can read all bookings (essential for displaying taken slots on the calendar). They can only create, update, or cancel bookings tied to their own identity (`userId` or `uid`), and they cannot edit their identity fields. Tutors and admins have full management permissions.
+  - **`slots` / `availableSlots`**: Available calendar booking slots are publicly readable by authenticated users but can only be managed (created, updated, deleted) by `tutor` or `admin` roles.
+  - **`enrollments`**: Enforced data isolation for course enrollments. Students can only read, create, and update enrollments for their own identity (`userId`/`uid`). Tutors and admins have full access, while deletes are restricted to tutors.
+  - **Sub-collections**: Structured isolated read/write controls for sub-collections including `/courses` (progress), `/notifications`, and `/flashcards` (Phase 3 readiness) under `users/{userId}` to prevent privilege escalation or data leakage.
+- **Client-Side Secret Exposure Audit**: Audited the entire `src/` directory for potential exposures of private keys, backend credentials, or service account details (specifically checking `RESEND_API_KEY`, `GOOGLE_SERVICE_ACCOUNT`, `private_key`, and `client_email`). The scan returned clean, confirming zero client-side credentials leakage.
+- **QA & Verification**: Confirmed that the application passes all TypeScript type checks (`npx tsc --noEmit`) and successfully builds the production bundles (`npm run build`).
+
+### Why
+- The permissive catch-all wildcard rule was a major security risk that would allow any authenticated student to elevate their user role to `admin` or `tutor`, view/modify other users' enrollments and private notifications, and tamper with bookings.
+- Pre-checking the document existence using `exists()` prevents race conditions where a newly registering user's database read throws errors during rule evaluation.
+- Scoping bookings and enrollments ensures user data isolation and protects administrative dashboards from unauthorized student access.
+- Restricting billing or plan-related fields is a critical requirement prior to implementing Stripe integrations in Phase 2.
+
+### Next steps
+- Proceed to Phase 2: Stripe Payment Integration.
+
+---
 ## [June 16, 2026] — Course Catalog Accordion Grouping, Interactive Elo Mascot & LMS Content Upgrade
 **Status:** ✅ COMPLETED
 
