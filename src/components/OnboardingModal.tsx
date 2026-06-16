@@ -19,12 +19,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
   const [loading, setLoading] = useState(false);
 
   const courseOptions = [
-    { id: 'business-english', emoji: '??', title: 'Trabalho e entrevistas' },
-    { id: 'sports-english', emoji: '??', title: 'Esportes americanos' },
-    { id: 'hiphop-culture', emoji: '??', title: 'Hip hop e cultura' },
-    { id: 'medical-english', emoji: '??', title: 'Inglês médico' },
-    { id: 'study-abroad', emoji: '??', title: 'Intercâmbio e exames' },
-    { id: 'law-enforcement', emoji: '??', title: 'Cultura policial americana' }
+    { id: 'business-english', emoji: '💼', title: 'Trabalho e entrevistas' },
+    { id: 'sports-english', emoji: '🏀', title: 'Esportes americanos' },
+    { id: 'hiphop-culture', emoji: '🎤', title: 'Hip hop e cultura' },
+    { id: 'medical-english', emoji: '🩺', title: 'Inglês Médico & Hospitalar' },
+    { id: 'study-abroad', emoji: '🎓', title: 'Intercâmbio e exames' },
+    { id: 'law-enforcement', emoji: '⚖️', title: 'Inglês Jurídico & Policial' }
   ];
 
   useEffect(() => {

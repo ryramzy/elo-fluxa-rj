@@ -430,5 +430,121 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "REVIEW|||Lowrider Connoisseur|||You learned: Cruising, hydraulics, Whittier Blvd, and Chicano car art.|||Elo: Incredible! You've completed the American Car Culture course. Drive with pride!"
       ]
     }
+  },
+  "medical-english": {
+    "med-01": {
+      id: "med-01",
+      title: "Medical Abbreviations & Terminology",
+      slides: [
+        "INTRO|||Clinical Notation|||Welcome to Medical English. As a healthcare professional, mastering clinical abbreviations and patient-facing terminology is crucial for clear and safe communication.|||Elo: Are you ready to dive into the hospital wards?",
+        "VOCAB|||Prescription Codes|||qd (once daily), bid (twice daily), tid (three times daily), PO (by mouth), PRN (as needed).|||Elo: These abbreviations come from Latin, but they are the standard in US medical records.",
+        "CONCEPT|||OTC vs. Prescription|||Medications are split into OTC (Over-The-Counter) which require no prescription (e.g. aspirin), and Rx (Prescription) drugs which require a doctor's order.|||Elo: 'Rx' is the standard abbreviation for prescription.",
+        "EXAMPLE|||Directives|||'Give 2 tablets PO tid PRN for pain.'|||Elo: This translates to: 'Give 2 tablets by mouth three times daily as needed for pain.'",
+        "CULTURE|||Patient-Centered Language|||In the US, doctors avoid dense medical jargon when speaking to patients. We use 'high blood pressure' instead of 'hypertension', and 'kidney failure' instead of 'renal insufficiency'.|||Elo: This is called 'health literacy' translation.",
+        "DRILL|||Translation|||Translate: 'Tome esta medicação duas vezes ao dia conforme necessário.'|||Elo: 'Take this medication twice daily as needed.' (Or: PO bid PRN).",
+        "ROLEPLAY|||The Patient Consultation|||A patient asks if they need a prescription for ibuprofen.|||Elo: Explain that ibuprofen is available 'over-the-counter' (OTC) in lower doses, so no prescription is needed.",
+        "REVIEW|||Medical Terminology|||You learned: Latin prescription codes (qd, bid, PRN), OTC vs Rx, and patient-centered language.|||Elo: Outstanding! Let's move to critical care."
+      ]
+    },
+    "med-02": {
+      id: "med-02",
+      title: "PICU & NICU Critical Care",
+      slides: [
+        "INTRO|||Pediatric & Neonatal Intensive Care|||Critical care units require high precision. PICU (Pediatric ICU) treats children, while NICU (Neonatal ICU) cares for newborns, especially premature babies.|||Elo: Have you ever worked in an intensive care setting?",
+        "VOCAB|||Intensive Care Terms|||Premature (preemie), Incubator, Ventilator, Intubation, Vitals, Line (IV).|||Elo: A 'preemie' is the casual word nurses and parents use for a premature baby.",
+        "CONCEPT|||Monitoring & Alarm Fatigue|||In PICU/NICU, continuous monitoring of vitals (heart rate, oxygen saturation) is constant. Staff must battle 'alarm fatigue' (becoming desensitized to frequent monitor alerts).|||Elo: Alarm fatigue is a serious safety concern in hospitals.",
+        "EXAMPLE|||Reporting Vitals|||'The neonate is stable on the ventilator, heart rate is 140, oxygen saturation is holding at 96%.'|||Elo: 'Holding at' means remaining constant.",
+        "CULTURE|||Family-Centered Care|||NICUs in the US emphasize family-centered care, encouraging 'kangaroo care' (skin-to-skin contact between parents and preemies) to promote healing.|||Elo: Skin-to-skin contact has proven clinical benefits.",
+        "DRILL|||Translation|||Translate: 'O bebê prematuro está respirando sozinho sem o ventilador.'|||Elo: 'The premature baby (or preemie) is breathing on their own without the ventilator.'",
+        "ROLEPLAY|||The Nurse Handover|||You are handing over a NICU patient to the next shift.|||Elo: Report that the baby is in the 'incubator' and their 'vitals are stable'.",
+        "REVIEW|||Critical Care|||You learned: PICU/NICU definitions, ventilator vocabulary, preemie care, and alarm fatigue.|||Elo: Excellent. Your clinical communication is top-tier."
+      ]
+    },
+    "med-03": {
+      id: "med-03",
+      title: "Clinical Nursing Practice",
+      slides: [
+        "INTRO|||Frontline Healthcare|||Nurses are the backbone of patient care. Effective nursing communication requires empathy, clear instructions, and precise coordination.|||Elo: Nursing requires a perfect blend of technical skill and bedside manner.",
+        "VOCAB|||Nursing Terms|||Bedside manner, Triage, Charting, Shift change, IV drip, Discharge.|||Elo: 'Bedside manner' is the way medical professionals interact with patients (compassion, tone).",
+        "CONCEPT|||The SBAR Protocol|||US nursing uses SBAR (Situation, Background, Assessment, Recommendation) to communicate patient status to doctors quickly and clearly.|||Elo: SBAR ensures crucial details are never missed during high-stress moments.",
+        "EXAMPLE|||Patient Assessment|||'The patient is complaining of acute abdominal pain. Vitals are stable, but pain is 8 out of 10.'|||Elo: Pain is always assessed on a scale from 1 to 10.",
+        "CULTURE|||The Nursing Shortage|||The US faces a severe nursing shortage, leading to high nurse-to-patient ratios and a large reliance on travel nurses (temporary contract nurses).|||Elo: Travel nurses earn high wages but move every few months.",
+        "DRILL|||Translation|||Translate: 'Eu preciso verificar seus sinais vitais e trocar seu soro (IV).'|||Elo: 'I need to check your vitals and change your IV.'",
+        "ROLEPLAY|||The Bedside Check|||Introduce yourself to a new patient and explain you are going to take their vitals.|||Elo: Say: 'Hi, I'm your nurse, and I'm going to take your vitals now.'",
+        "REVIEW|||Clinical Nursing|||You learned: Bedside manner, triage, charting, SBAR protocol, and discharge procedures.|||Elo: Great job! You speak like a seasoned nursing professional."
+      ]
+    },
+    "med-04": {
+      id: "med-04",
+      title: "Hospital Administration & Management",
+      slides: [
+        "INTRO|||Hospital Operations|||Managing a hospital involves balancing clinical quality, patient safety, financial budgets, and staff schedules. Let's learn administration English.|||Elo: Hospital managers coordinate complex organizations.",
+        "VOCAB|||Admin Lingo|||Understaffed, Bed capacity, Patient turnover, Compliance, Overhead, Staff burnout.|||Elo: 'Bed capacity' is the maximum number of patients a hospital can accommodate.",
+        "CONCEPT|||Throughput & Efficiency|||Hospital managers track 'patient throughput' - the flow of patients from admission to discharge. High throughput minimizes wait times in the ER.|||Elo: Efficient throughput is critical for emergency room safety.",
+        "EXAMPLE|||Meeting Discussion|||'We are currently understaffed in the ER, which is slowing down patient turnover and increasing wait times.'|||Elo: 'Patient turnover' is the rate at which beds are freed up.",
+        "CULTURE|||Joint Commission Accreditation|||Hospitals in the US must be accredited by 'The Joint Commission'. Their surprise inspections check compliance with strict quality standards.|||Elo: A Joint Commission audit causes immense stress for managers!",
+        "DRILL|||Translation|||Translate: 'A capacidade de leitos está cheia devido ao surto de gripe.'|||Elo: 'The bed capacity is full due to the flu outbreak.'",
+        "ROLEPLAY|||The Staffing Meeting|||Your hospital department is experiencing high staff burnout and is understaffed.|||Elo: Tell the board: 'We are understaffed, which is leading to severe staff burnout.'",
+        "REVIEW|||Healthcare Manager|||You learned: Bed capacity, patient throughput, compliance, and Joint Commission audits.|||Elo: You did the work. You've completed the Medical English course!"
+      ]
+    }
+  },
+  "law-enforcement": {
+    "law-01": {
+      id: "law-01",
+      title: "Miranda Rights & Police Encounters",
+      slides: [
+        "INTRO|||Rights in Conflict|||Welcome to Legal English. We begin with constitutional protections during police encounters, a key topic in both law enforcement and daily rights.|||Elo: Miranda rights are based on the Fifth and Sixth Amendments.",
+        "VOCAB|||Enforcement Terms|||Miranda rights, Probable cause, Right to remain silent, Self-incrimination, Search warrant.|||Elo: Police must have 'probable cause' to arrest someone or get a 'search warrant'.",
+        "CONCEPT|||The Miranda Warning|||'You have the right to remain silent. Anything you say can and will be used against you in a court of law...'|||Elo: This warning protects citizens from self-incrimination.",
+        "EXAMPLE|||Invoking Rights|||'I am invoking my right to remain silent and I want to speak to a lawyer.'|||Elo: You must state these desires clearly; silence alone does not invoke the right.",
+        "CULTURE|||The Bill of Rights|||The Fourth Amendment protects against unreasonable searches and seizures, which is a heavily litigated topic in American criminal defense.|||Elo: If police search without a warrant or consent, evidence may be excluded.",
+        "DRILL|||Translation|||Translate: 'Qualquer coisa que você disser pode ser usada contra você no tribunal.'|||Elo: 'Anything you say can be used against you in court.'",
+        "ROLEPLAY|||The Police Stop|||An officer asks to search your car trunk. You want to decline.|||Elo: Say politely: 'Officer, I do not consent to a search.'",
+        "REVIEW|||Rights Advocate|||You learned: Miranda warning, self-incrimination, probable cause, and search warrants.|||Elo: Excellent. You understand the foundations of police encounters."
+      ]
+    },
+    "law-02": {
+      id: "law-02",
+      title: "Civil Litigation & Case Prep",
+      slides: [
+        "INTRO|||Civil Disputes|||Civil litigation is the process of resolving private legal disputes through the court system, involving lawsuits, case prep, and negotiations.|||Elo: Most civil cases in the US settle before trial.",
+        "VOCAB|||Litigation Terms|||Plaintiff, Defendant, Lawsuit, Deposition, Discovery phase, Damages.|||Elo: 'Discovery' is the phase where both sides exchange evidence before trial.",
+        "CONCEPT|||Case Preparation & Deposition|||During case prep, lawyers conduct depositions (oral testimonies under oath outside court) to lock in witness statements.|||Elo: A witness cannot easily change their story at trial after a deposition.",
+        "EXAMPLE|||Discussing a Settlement|||'If the defendant offers reasonable damages during mediation, we can avoid a costly trial.'|||Elo: 'Damages' refers to monetary compensation.",
+        "CULTURE|||Class Action Lawsuits|||In the US, 'Class Action' lawsuits allow a large group of people harmed by the same product or company to sue together as a single group.|||Elo: These lawsuits can result in millions of dollars in damages.",
+        "DRILL|||Translation|||Translate: 'O autor (plaintiff) abriu um processo contra a empresa por perdas e danos.'|||Elo: 'The plaintiff filed a lawsuit against the company for damages.'",
+        "ROLEPLAY|||The Legal Consultation|||A client wants to sue their employer. Explain the first step.|||Elo: Tell them: 'First, we will file a lawsuit and begin the discovery phase.'",
+        "REVIEW|||Litigator|||You learned: Plaintiff, Defendant, depositions, discovery phase, and class actions.|||Elo: Great work. You are mastering case preparation language."
+      ]
+    },
+    "law-03": {
+      id: "law-03",
+      title: "The US Jury Trial System",
+      slides: [
+        "INTRO|||Trial by Jury|||The Sixth and Seventh Amendments guarantee the right to a trial by jury. A jury consists of ordinary citizens who decide the final verdict.|||Elo: Have you ever served on a jury?",
+        "VOCAB|||Jury Terms|||Jury selection (Voir dire), Juror, Verdict, Beyond a reasonable doubt, Unanimous.|||Elo: In criminal cases, the jury's verdict must usually be unanimous.",
+        "CONCEPT|||The Burden of Proof|||In criminal cases, the prosecution must prove guilt 'beyond a reasonable doubt'. In civil cases, it is a 'preponderance of the evidence' (more likely than not).|||Elo: 'Beyond a reasonable doubt' is a much higher standard of proof.",
+        "EXAMPLE|||Jury Selection|||'During voir dire, the defense attorney dismissed three potential jurors due to conflict of interest.'|||Elo: 'Voir dire' is pronounced 'vwahr deer'.",
+        "CULTURE|||Jury Duty|||U.S. citizens receive jury summonses in the mail. Serving is a legal obligation ('jury duty'). Many try to get excused, but it is a vital civic role.|||Elo: Employers must allow employees time off for jury duty.",
+        "DRILL|||Translation|||Translate: 'O júri chegou a um veredito unânime de inocente.'|||Elo: 'The jury reached a unanimous verdict of not guilty.'",
+        "ROLEPLAY|||The Trial Strategy|||You are advising a co-counsel on how to convince the jury.|||Elo: Tell them: 'We must prove our case beyond a reasonable doubt to convince the jury.'",
+        "REVIEW|||Trial Lawyer|||You learned: Voir dire, jury duty, verdicts, and burden of proof standards.|||Elo: Brilliant. You are ready to present in court."
+      ]
+    },
+    "law-04": {
+      id: "law-04",
+      title: "Courtroom Hearings & Advocacy",
+      slides: [
+        "INTRO|||Before the Bench|||Not all law is played out in front of a jury. Hearings before a judge decide motions, evidence admissibility, and sentencing.|||Elo: Courtroom hearings require formal, persuasive advocacy.",
+        "VOCAB|||Hearing Terms|||Your Honor, Objection, Overruled, Sustained, Motion, Admissible evidence.|||Elo: Address the judge as 'Your Honor' in the courtroom.",
+        "CONCEPT|||Objects & Rulings|||When an opposing lawyer asks an improper question, you say 'Objection!'. The judge rules 'Sustained' (witness cannot answer) or 'Overruled' (witness must answer).|||Elo: Speed is critical when objecting in hearings.",
+        "EXAMPLE|||Making a Motion|||'Your Honor, I file a motion to dismiss the case based on inadmissible evidence.'|||Elo: A 'motion' is a formal request to the judge to make a ruling.",
+        "CULTURE|||Contempt of Court|||Behaving disrespectfully or disobeying a judge's orders can lead to being cited for 'Contempt of Court', which can result in immediate fines or jail time.|||Elo: Courtrooms maintain a very strict decorum.",
+        "DRILL|||Translation|||Translate: 'Objeção, Meritíssimo! A prova não é admissível.'|||Elo: 'Objection, Your Honor! The evidence is not admissible.'",
+        "ROLEPLAY|||The Motion Hearing|||Present a request to the judge to exclude certain evidence.|||Elo: Say: 'Your Honor, I file a motion to exclude this evidence because it was obtained illegally.'",
+        "REVIEW|||Courtroom Advocate|||You learned: Objections, sustained/overruled rulings, motions, and addressing the judge.|||Elo: You did the work. You've completed the Legal English course!"
+      ]
+    }
   }
 };

@@ -380,5 +380,39 @@ export const courses: Course[] = [
       { id: 'usc-03', title: 'Route 66 & Classic Road Trips', lessonIndex: 2, xpReward: 40 },
       { id: 'usc-04', title: 'Lowriders & Cultural Expression', lessonIndex: 3, xpReward: 50 },
     ]
+  },
+  {
+    id: 'medical-english',
+    title: 'Medical English & Healthcare',
+    description: 'Master specialized vocabulary for clinical settings, NICU/PICU care, nursing, and hospital management.',
+    descriptionPt: 'Domine o vocabulário especializado para ambientes clínicos, cuidados de UTIP/UTIN, enfermagem e gestão hospitalar.',
+    level: 'Specialty',
+    tag: 'Healthcare',
+    emoji: '🩺',
+    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'med-01', title: 'Medical Abbreviations & Terminology', lessonIndex: 0, xpReward: 40 },
+      { id: 'med-02', title: 'PICU & NICU Critical Care', lessonIndex: 1, xpReward: 40 },
+      { id: 'med-03', title: 'Clinical Nursing Practice', lessonIndex: 2, xpReward: 40 },
+      { id: 'med-04', title: 'Hospital Administration & Management', lessonIndex: 3, xpReward: 50 },
+    ]
+  },
+  {
+    id: 'law-enforcement',
+    title: 'Legal English & Courtroom Culture',
+    description: 'Master communication for litigation, jury trials, courtroom hearings, and police encounter rights.',
+    descriptionPt: 'Domine a comunicação para litígios, julgamentos por júri, audiências judiciais e direitos em encontros policiais.',
+    level: 'Specialty',
+    tag: 'Legal',
+    emoji: '⚖️',
+    imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'law-01', title: 'Miranda Rights & Police Encounters', lessonIndex: 0, xpReward: 40 },
+      { id: 'law-02', title: 'Civil Litigation & Case Prep', lessonIndex: 1, xpReward: 40 },
+      { id: 'law-03', title: 'The US Jury Trial System', lessonIndex: 2, xpReward: 40 },
+      { id: 'law-04', title: 'Courtroom Hearings & Advocacy', lessonIndex: 3, xpReward: 50 },
+    ]
   }
 ];

@@ -70,6 +70,8 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id
 - **Firestore Write Debouncing**: Progress tracking during lessons is debounced by 2.5 seconds, saving only the final slide index (or flushing on unmount) to minimize database write frequencies and reduce cloud hosting costs by up to 85%.
 - **Dopamine Gamification**: Completions trigger confetti bursts and award XP levels.
 - **Procedural Sound Engine**: Synthesizes clean sound chimes (for enrollment/lessons) using the browser's Web Audio API, avoiding heavy external MP3 loading.
+- **Mobile Viewport & Gesture Locks**: Viewport configuration and strict CSS rules (`overscroll-behavior: none`, `touch-action: pan-x pan-y`) completely lock the UI on mobile browsers, preventing scaling and background rubber-banding to emulate a native app feel.
+- **Advanced Professional Catalog**: Tailored curriculum tracks for specialized fields, including *Medical English & Healthcare* (covering NICU/PICU, nursing, hospital management) and *Legal English & Courtroom Culture* (covering Miranda warning encounters, civil litigation, the US jury system, and hearings).
 
 ### 2. 1-on-1 Class Scheduling
 - **Default-Available Schedule**: Eliminated heavy pre-created slot documents. The calendar assumes availability from Mon-Fri (8AM-9PM) automatically.

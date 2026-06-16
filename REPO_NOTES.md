@@ -41,7 +41,7 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
-## [June 16, 2026] — ELO AI Coach Upgrades, Siri Speech Orb & Slide Viewer Debounce Optimization
+## [June 16, 2026] — ELO AI Coach Upgrades, Mobile Viewport Locks & Professional Specialty Courses
 **Status:** ✅ COMPLETED
 
 ### What changed
@@ -51,14 +51,22 @@ VITE_FIREBASE_APP_ID=
 - **Firestore Write Debouncing**: Added a 2.5-second debounce buffer for slide progress tracking in `LessonPage.tsx`. Rapid slide transitions are buffered, saving only the final index (or flushing immediately on exit/unmount), saving up to 85% on database write costs.
 - **TypeScript QA Fixes**: Resolved a type error in `GuestBanner.tsx` where an unsupported `'warning'` toast type was used, replacing it with `'info'` to restore flawless compilation.
 - **Analytics & State Sync**: Ensured speech stops, speech listens, and course enrollments are tracked cleanly with full callbacks for sound synthesis states.
+- **Mobile Viewport & Gesture Locks**: Configured viewport meta tag in `index.html` to lock scale gestures (`maximum-scale=1.0, user-scalable=no, viewport-fit=cover`) and appended `touch-action: pan-x pan-y` and `overscroll-behavior: none` to HTML/body CSS styling. This prevents page pinch-zooming and background drag rubber-banding, locking the mobile view to feel like a native application.
+- **Professional Specialty Courses**: Added full 8-slide, 4-lesson content schemas for:
+  - **Medical English & Healthcare** (`medical-english`): Covers abbreviations/terminology, PICU & NICU critical care, clinical nursing practice, and hospital administration/management.
+  - **Legal English & Courtroom Culture** (`law-enforcement`): Covers Miranda rights/police encounters, civil litigation/case prep, the US jury trial system, and courtroom hearings/advocacy.
+- **Onboarding Modal Sync**: Updated onboarding option cards in `OnboardingModal.tsx` with premium emojis and correct course titles to reflect the new catalog additions.
 
 ### Why
 - The old "Ouça" button lacked premium design aesthetics. The Siri orb offers a highly visual, tactile, and responsive user experience.
 - Local SpeechSynthesis can sound robotic; filtering for online/natural voice engines ensures ELO sounds soothing and natural.
 - Rapid slide clicks previously spammed Firestore with multiple document updates per second, which increases hosting bills unnecessarily.
+- Mobile users saving the app to their home screens were able to pinch-zoom and drag the page around, revealing ugly white background bands. Disabling scaling and rubber-banding guarantees a native app feel.
+- Professionals (doctors, nurses, lawyers, and executives) make up a core segment of ELO/Cambly students; high-fidelity, situation-specific courses for these sectors increase conversion rates and engagement.
 
 ### Next steps
-- Review user engagement stats on the new Car Culture specialty course.
+- Monitor student engagement with the new specialty courses.
+- Gather feedback on the mobile gesture lock behavior.
 
 ---
 ## [June 15, 2026] — React Hooks Order, Profile Auto-Creation, CRM & Guest Mode Revamp
