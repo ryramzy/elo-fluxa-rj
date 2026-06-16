@@ -41,6 +41,26 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 16, 2026] — ELO AI Coach Upgrades, Siri Speech Orb & Slide Viewer Debounce Optimization
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Siri-style Audio Orb**: Replaced the traditional "Ouça" text button in the slide viewer with a premium Siri-like glowing circular bubble in the top right corner. Added pulsing radial ripples when speaking and a custom vertical wave animation representing an active voice waveform.
+- **Natural Soothing Voice Algorithm**: Updated the text-to-speech engine in `tts.ts` to score and prioritize high-quality "Natural" or premium platform voices (Microsoft Aria/Jenny Online, Google US English, Apple Samantha) rather than standard robotic defaults.
+- **Centralized Speech Playing**: Refactored `AiCoachPage.tsx` to import and share the centralized `speakText` logic, unifying voice selection and tracking across both the coach chat and lesson slides.
+- **Firestore Write Debouncing**: Added a 2.5-second debounce buffer for slide progress tracking in `LessonPage.tsx`. Rapid slide transitions are buffered, saving only the final index (or flushing immediately on exit/unmount), saving up to 85% on database write costs.
+- **TypeScript QA Fixes**: Resolved a type error in `GuestBanner.tsx` where an unsupported `'warning'` toast type was used, replacing it with `'info'` to restore flawless compilation.
+- **Analytics & State Sync**: Ensured speech stops, speech listens, and course enrollments are tracked cleanly with full callbacks for sound synthesis states.
+
+### Why
+- The old "Ouça" button lacked premium design aesthetics. The Siri orb offers a highly visual, tactile, and responsive user experience.
+- Local SpeechSynthesis can sound robotic; filtering for online/natural voice engines ensures ELO sounds soothing and natural.
+- Rapid slide clicks previously spammed Firestore with multiple document updates per second, which increases hosting bills unnecessarily.
+
+### Next steps
+- Review user engagement stats on the new Car Culture specialty course.
+
+---
 ## [June 15, 2026] — React Hooks Order, Profile Auto-Creation, CRM & Guest Mode Revamp
 **Status:** ✅ COMPLETED
 

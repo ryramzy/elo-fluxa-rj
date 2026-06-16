@@ -8,6 +8,7 @@ import { checkCourseAccess, enrollUserInCourse } from '../lib/firestore';
 import { XP_REWARDS, awardXP } from '../lib/xpSystem';
 import SubscriptionModal from '../components/SubscriptionModal';
 import { sounds } from '../utils/sounds';
+import { trackEvent } from '../utils/analytics';
 
 const CoursePage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -72,6 +73,7 @@ const CoursePage: React.FC = () => {
     
     try {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
+      trackEvent('course_enroll', { courseId: course.id });
       // Fire XP and email asynchronously so they don't block navigation
       awardXP(user.uid, 50, 'course enrolled').catch(xpError => {
         console.error('Failed to award XP:', xpError);

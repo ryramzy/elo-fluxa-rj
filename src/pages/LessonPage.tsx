@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useEnrollments } from '../hooks/useEnrollments';
@@ -21,8 +21,6 @@ const LessonPage: React.FC = () => {
   const { user } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
   
-  const [isCompleted, setIsCompleted] = useState(false);
-
   const course = courses.find(c => c.id === courseId);
   const lessonIndex = course?.lessons.findIndex(l => l.id === lessonId);
   const lesson = lessonIndex !== undefined ? course?.lessons[lessonIndex] : undefined;
@@ -30,6 +28,10 @@ const LessonPage: React.FC = () => {
 
   const enrollment = enrollments.find(e => e.courseId === courseId);
   const initialSlide = enrollment?.activeLessonId === lessonId ? (enrollment?.activeSlideIndex || 0) : 0;
+
+  const [isCompleted, setIsCompleted] = useState(false);
+  const saveProgressTimeoutRef = useRef<any>(null);
+  const latestIndexRef = useRef(initialSlide);
 
   useEffect(() => {
     if (courseId && lessonId) {
@@ -53,15 +55,45 @@ const LessonPage: React.FC = () => {
     );
   }
 
-  const handleSlideChange = async (index: number) => {
+  // Keep track of initial slide and update ref
+  useEffect(() => {
+    latestIndexRef.current = initialSlide;
+  }, [initialSlide]);
+
+  const handleSlideChange = (index: number) => {
     if (!user?.uid || !courseId || !lessonId) return;
-    try {
-      trackEvent('slide_view', { courseId, lessonId, slideIndex: index });
-      await updateLessonProgress(user.uid, courseId, lessonId, index, false);
-    } catch (error) {
-      console.error('Error saving slide progress:', error);
+    
+    latestIndexRef.current = index;
+    trackEvent('slide_view', { courseId, lessonId, slideIndex: index });
+
+    if (saveProgressTimeoutRef.current) {
+      clearTimeout(saveProgressTimeoutRef.current);
     }
+
+    // Debounce slide progress update by 2.5 seconds to minimize Firestore write costs
+    saveProgressTimeoutRef.current = setTimeout(async () => {
+      try {
+        await updateLessonProgress(user.uid, courseId, lessonId, latestIndexRef.current, false);
+        saveProgressTimeoutRef.current = null;
+      } catch (error) {
+        console.error('Error saving slide progress:', error);
+      }
+    }, 2500);
   };
+
+  // On unmount, flush any pending progress save immediately to avoid losing state
+  useEffect(() => {
+    return () => {
+      if (saveProgressTimeoutRef.current) {
+        clearTimeout(saveProgressTimeoutRef.current);
+        const finalIndex = latestIndexRef.current;
+        if (user?.uid && courseId && lessonId && user.uid !== 'guest_user') {
+          updateLessonProgress(user.uid, courseId, lessonId, finalIndex, false)
+            .catch(err => console.error('Error flushing slide progress on unmount:', err));
+        }
+      }
+    };
+  }, [user?.uid, courseId, lessonId]);
 
   const handleCompleteLesson = async () => {
     if (!user?.uid || !courseId || !lessonId) return;

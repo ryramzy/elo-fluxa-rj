@@ -2,7 +2,7 @@
  * Service to interact with the Google Gemini API safely in browser
  */
 
-const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || process.env.API_KEY || '').trim();
+const GEMINI_API_KEY = (import.meta.env.VITE_GEMINI_API_KEY || '').trim();
 
 export interface ChatMessage {
   role: 'user' | 'model';
@@ -20,11 +20,10 @@ export async function sendChatMessage(
 ): Promise<string> {
   // Fallback to mock mode if API key is not present
   if (!GEMINI_API_KEY) {
-    console.warn('GEMINI_API_KEY not found. Operating in MOCK mode.');
+    console.warn('VITE_GEMINI_API_KEY not found. Operating in MOCK mode.');
     return new Promise((resolve) => {
       setTimeout(() => {
-        const lastMsg = chatHistory[chatHistory.length - 1]?.parts[0]?.text || '';
-        resolve(`[MOCK RESPONSE - API Key missing] That's interesting! You said: "${lastMsg}". Please add a VITE_GEMINI_API_KEY to your environment variables to enable real AI conversation.`);
+        resolve(`[Modo de teste: VITE_GEMINI_API_KEY não configurada]`);
       }, 1000);
     });
   }

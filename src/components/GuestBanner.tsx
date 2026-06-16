@@ -47,7 +47,7 @@ export const GuestBanner: React.FC = () => {
   const handleExpiry = async () => {
     try {
       await signOut();
-      showToast({ type: 'warning', message: 'Sua sessão de visitante de 10 minutos expirou! Crie uma conta para continuar de onde parou.' });
+      showToast({ type: 'info', message: 'Sua sessão de visitante de 10 minutos expirou! Crie uma conta para continuar de onde parou.' });
       navigate('/login');
     } catch (err) {
       console.error('Failed to sign out guest user:', err);

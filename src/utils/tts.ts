@@ -5,9 +5,6 @@
  * Currently uses Web Speech API, but can be swapped out for OpenAI TTS, Kokoro, etc.
  */
 
-// Preferred voice fallback order
-const PREFERRED_VOICES = ['Samantha', 'Google US English', 'en-US'];
-
 let cachedVoices: SpeechSynthesisVoice[] = [];
 
 // Initialize voices as soon as possible, since getVoices() is asynchronous on some browsers
@@ -18,35 +15,75 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   };
 }
 
-export const speakText = (text: string) => {
+export const speakText = (
+  text: string,
+  onStart?: () => void,
+  onEnd?: () => void,
+  onError?: (err: any) => void
+) => {
   if (!('speechSynthesis' in window)) {
     console.warn('SpeechSynthesis API not supported in this browser.');
+    onError?.('SpeechSynthesis API not supported');
     return;
   }
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   
+  // Set callbacks
+  if (onStart) utterance.onstart = () => onStart();
+  if (onEnd) utterance.onend = () => onEnd();
+  
+  utterance.onerror = (e) => {
+    console.error('[TTS] Error event:', e);
+    onError?.(e);
+  };
+
   // Refresh voices in case it wasn't caught by the event listener
   if (cachedVoices.length === 0) {
     cachedVoices = window.speechSynthesis.getVoices();
   }
 
-  // Find the best voice based on the priority array
-  let selectedVoice: SpeechSynthesisVoice | undefined;
+  // Find all English voices
+  const englishVoices = cachedVoices.filter(v => v.lang.startsWith('en') || v.lang.includes('en'));
   
-  for (const preferred of PREFERRED_VOICES) {
-    selectedVoice = cachedVoices.find(v => v.name.includes(preferred) || (preferred === 'en-US' && v.lang === 'en-US'));
-    if (selectedVoice) break;
+  // Score them based on how natural and soothing they are
+  let bestVoice: SpeechSynthesisVoice | undefined;
+  let highestScore = -1;
+
+  for (const voice of englishVoices) {
+    let score = 0;
+    const nameLower = voice.name.toLowerCase();
+    
+    // Microsoft/Edge natural voices are incredibly realistic and soothing
+    if (nameLower.includes('natural')) score += 100;
+    // Premium Siri/Apple voices
+    if (nameLower.includes('samantha')) score += 80;
+    if (nameLower.includes('daniel')) score += 70;
+    // Google voices
+    if (nameLower.includes('google')) score += 60;
+    // Online high-quality voices
+    if (nameLower.includes('online')) score += 50;
+    
+    // US English preferred, then UK, then others
+    if (voice.lang.startsWith('en-US') || voice.lang.includes('en_US')) {
+      score += 10;
+    } else if (voice.lang.startsWith('en-GB') || voice.lang.includes('en_GB')) {
+      score += 5;
+    }
+
+    if (score > highestScore) {
+      highestScore = score;
+      bestVoice = voice;
+    }
   }
 
-  if (selectedVoice) {
-    utterance.voice = selectedVoice;
+  if (bestVoice) {
+    utterance.voice = bestVoice;
     if (import.meta.env.DEV) {
-      console.log(`[TTS] Selected voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+      console.log(`[TTS] Selected voice: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
     }
   } else {
-    // Fallback if no specific voice is matched
     utterance.lang = 'en-US';
     if (import.meta.env.DEV) {
       console.log('[TTS] Using default system voice');

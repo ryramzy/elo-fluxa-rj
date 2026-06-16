@@ -363,5 +363,22 @@ export const courses: Course[] = [
       { id: 'trv-04', title: 'Emergencies & asking for help', lessonIndex: 3, xpReward: 30 },
       { id: 'trv-05', title: 'Cultural etiquette & social cues', lessonIndex: 4, xpReward: 40 },
     ]
+  },
+  {
+    id: 'usa-car-culture',
+    title: 'American Car Culture & History',
+    description: 'Explore the rich history of muscle cars, hot rods, legendary road trips, and cultural lowriders in the USA.',
+    descriptionPt: 'Explore a rica história dos muscle cars, hot rods, viagens lendárias e lowriders culturais nos EUA.',
+    level: 'Specialty',
+    tag: 'Culture',
+    emoji: '🇺🇸',
+    imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'usc-01', title: 'The Rise of Muscle Cars', lessonIndex: 0, xpReward: 40 },
+      { id: 'usc-02', title: 'Hot Rods & Custom Car Styles', lessonIndex: 1, xpReward: 40 },
+      { id: 'usc-03', title: 'Route 66 & Classic Road Trips', lessonIndex: 2, xpReward: 40 },
+      { id: 'usc-04', title: 'Lowriders & Cultural Expression', lessonIndex: 3, xpReward: 50 },
+    ]
   }
 ];

@@ -372,5 +372,63 @@ export const specialtyContent: Record<string, Record<string, { id: string; title
         "REVIEW|||World Traveler|||You learned: Line etiquette, the apology reflex, and declining politely.|||Elo: You did the work. You've completed the Travel module, and the entire curriculum."
       ]
     }
+  },
+  "usa-car-culture": {
+    "usc-01": {
+      id: "usc-01",
+      title: "The Rise of Muscle Cars",
+      slides: [
+        "INTRO|||Horsepower Era|||Welcome to the golden age of American horsepower! From 1964 to 1973, Detroit auto manufacturers went wild building loud, powerful, and affordable cars.|||Elo: Do you have a favorite classic muscle car?",
+        "VOCAB|||Under the Hood|||V8 Engine, Horsepower, Supercharger, Burnout, Quarter-mile, Coupe.|||Elo: A V8 has eight cylinders arranged in a V shape, producing a deep rumble.",
+        "CONCEPT|||Mustang vs. Camaro|||In 1964, Ford launched the Mustang, starting the 'Pony Car' craze. Chevrolet responded with the Camaro in 1967. This legendary rivalry continues today.|||Elo: 'Pony cars' are compact, sporty muscle cars.",
+        "EXAMPLE|||Slang & Cruise Night|||'We spent Saturday night cruising Woodward Ave and doing burnouts at the traffic light.'|||Elo: A 'burnout' is spinning your tires to create white smoke. Fun, but expensive for your tires!",
+        "CULTURE|||The 1973 Oil Crisis|||The muscle car era ended abruptly in 1973 due to the OPEC oil embargo, which caused gas prices to skyrocket and forced manufacturers to focus on fuel economy.|||Elo: Gas went from cheap and plentiful to strictly rationed.",
+        "DRILL|||Translation|||Translate: 'Este Ford Mustang clássico tem um motor V8 muito barulhento.'|||Elo: 'This classic Ford Mustang has a very loud V8 engine.'",
+        "ROLEPLAY|||The Classic Car Show|||A fellow car enthusiast at a car meet asks: 'What is under the hood of your Dodge Charger?'|||Elo: Tell them it has a 'supercharged V8 engine' producing 'eight hundred horsepower'.",
+        "REVIEW|||Muscle Car Expert|||You learned: V8 engine, burnouts, pony cars, and the Mustang vs Camaro rivalry.|||Elo: Great job! You are ready to rev your engine for the next lesson."
+      ]
+    },
+    "usc-02": {
+      id: "usc-02",
+      title: "Hot Rods & Custom Car Styles",
+      slides: [
+        "INTRO|||Built, Not Bought|||Before muscle cars, young Americans in the 1930s and 40s bought cheap old cars and modified them for maximum speed. This was the birth of hot rodding.|||Elo: Have you ever customized a car, or do you prefer stock?",
+        "VOCAB|||Customization Terms|||Hot rod, Souping up, Sleeper, Chopped top, Flames, Bonneville Salt Flats.|||Elo: To 'soup up' an engine means to modify it to increase horsepower.",
+        "CONCEPT|||The Sleeper Car|||A 'sleeper' is a car that looks slow, stock, or boring on the outside, but has a high-performance engine underneath. It hides its speed.|||Elo: Don't judge a book by its cover, or a car by its rust!",
+        "EXAMPLE|||The Salt Flats|||'Every year, hot rodders gather at the Bonneville Salt Flats in Utah to break land speed records.'|||Elo: The Salt Flats are a perfectly flat, dried-up salt lake bed, ideal for high-speed runs.",
+        "CULTURE|||T-Buckets & Lead Sleds|||Different custom styles emerged. 'T-Buckets' are stripped-down Ford Model Ts, while 'Lead Sleds' are heavy 1950s cruisers with lowered, smooth bodies.|||Elo: 'Lead sled' got its name from body fillers made of lead.",
+        "DRILL|||Translation|||Translate: 'Ele envenenou (modified/souped up) o motor para torná-lo mais rápido.'|||Elo: 'He souped up the engine to make it faster.'",
+        "ROLEPLAY|||The Garage Talk|||Your friend shows you a rusty old station wagon but says it's extremely fast.|||Elo: Tell them: 'Wow, this station wagon is a real sleeper!'",
+        "REVIEW|||Custom Builder|||You learned: Hot rods, souping up, sleepers, and the Bonneville Salt Flats.|||Elo: Excellent! Your knowledge of custom car culture is running smoothly."
+      ]
+    },
+    "usc-03": {
+      id: "usc-03",
+      title: "Route 66 & Classic Road Trips",
+      slides: [
+        "INTRO|||The Mother Road|||Route 66 is the ultimate American highway. Established in 1926, it stretches 2,448 miles from Chicago, Illinois, to Santa Monica, California.|||Elo: Have you ever been on a road trip?",
+        "VOCAB|||Road Trip Lingo|||To hit the road, Pit stop, Diner, Roadside attraction, Kitsch, Interstate.|||Elo: To 'hit the road' means to begin a journey or leave.",
+        "CONCEPT|||Diners & Neon Lights|||Route 66 bypassed big cities, giving rise to unique local diners, neon-lit motels, and quirky attractions like the Cadillac Ranch.|||Elo: A 'diner' is a casual restaurant serving comfort food.",
+        "EXAMPLE|||The Pit Stop|||'Let's make a quick pit stop at the next gas station to fill up the tank and stretch our legs.'|||Elo: A 'pit stop' is a short pause in a journey for food, gas, or rest.",
+        "CULTURE|||The Interstate System|||In 1956, the Interstate Highway System was created. These faster, wider highways bypassed Route 66, leaving many historic towns abandoned.|||Elo: Today, Route 66 is a nostalgic tourist route.",
+        "DRILL|||Translation|||Translate: 'Nós precisamos pegar a estrada antes do amanhecer.'|||Elo: 'We need to hit the road before dawn.'",
+        "ROLEPLAY|||The Road Trip Planner|||Your friend wants to drive non-stop for 10 hours.|||Elo: Tell them you need to make a 'pit stop' at a 'classic diner' along Route 66.",
+        "REVIEW|||Highway Cruiser|||You learned: Route 66 history, hitting the road, diners, pit stops, and interstate highways.|||Elo: Perfect. You've navigated the Mother Road successfully."
+      ]
+    },
+    "usc-04": {
+      id: "usc-04",
+      title: "Lowriders & Cultural Expression",
+      slides: [
+        "INTRO|||Low & Slow|||In East Los Angeles during the 1940s, Mexican-American (Chicano) car culture created a unique style: lowriders. Instead of speed, they focused on elegance.|||Elo: Have you ever seen a car bounce using hydraulics?",
+        "VOCAB|||Lowrider Terms|||Lowrider, Cruising, Hydraulics, Custom paint, Whittier Blvd, Chicano pride.|||Elo: 'Cruising' is driving slowly down a street to show off your car and socialize.",
+        "CONCEPT|||Hydraulic Suspension|||Lowrider owners installed aircraft hydraulic pumps to raise and lower their cars, bypassing California laws against extremely lowered cars.|||Elo: This turned cars into interactive art that can dance!",
+        "EXAMPLE|||Whittier Boulevard|||'Whittier Boulevard in East LA is the historic heart of Sunday night lowrider cruising.'|||Elo: Cruising Whittier Boulevard was a major community gathering event.",
+        "CULTURE|||Chicano Art on Wheels|||Lowriders are famous for multi-layered candy paint, hand-painted pinstripes, wire wheels, and plush velvet interiors, representing Chicano identity.|||Elo: They are rolling canvases of community pride.",
+        "DRILL|||Translation|||Translate: 'O lowrider azul usou o sistema hidráulico para pular.'|||Elo: 'The blue lowrider used the hydraulics to bounce (or jump).'",
+        "ROLEPLAY|||The Lowrider Meet|||A lowrider builder shows you their intricate custom paint job.|||Elo: Express your admiration: 'This custom paint job is stunning, it really shows your Chicano pride.'",
+        "REVIEW|||Lowrider Connoisseur|||You learned: Cruising, hydraulics, Whittier Blvd, and Chicano car art.|||Elo: Incredible! You've completed the American Car Culture course. Drive with pride!"
+      ]
+    }
   }
 };

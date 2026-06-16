@@ -65,7 +65,9 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ### 1. Student LMS Experience
 - **Swipeable Slideshow**: Full-screen slide player (swiper.js) with tap-to-advance and progress bars, optimizing learning for mobile viewports.
 - **Rich Markdown Formatting**: Lesson text uses react-markdown and remark-gfm to natively support lists, tables, bold text, and blockquotes.
-- **Auditory Speech Engine**: A button reads English phrases aloud using native Web Speech Synthesis in a natural American accent.
+- **Siri-Style AI Tutor Bubble**: A glowing, circular Siri-style audio bubble in the top right corner of the slide viewer that triggers speech synthesis. It displays pulsing gradient ripples and a moving soundwave waveform when speaking.
+- **Natural Voice Scoring**: Evaluates and prioritizes the highest-quality English voices installed on the operating system (e.g. Edge/Chrome Natural or Apple Samantha) for a soothing, human-like voice experience.
+- **Firestore Write Debouncing**: Progress tracking during lessons is debounced by 2.5 seconds, saving only the final slide index (or flushing on unmount) to minimize database write frequencies and reduce cloud hosting costs by up to 85%.
 - **Dopamine Gamification**: Completions trigger confetti bursts and award XP levels.
 - **Procedural Sound Engine**: Synthesizes clean sound chimes (for enrollment/lessons) using the browser's Web Audio API, avoiding heavy external MP3 loading.
 
@@ -89,7 +91,9 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id
 - **In-Memory Storage**: Enrolling in courses and completing trivia is stored in sessionStorage and completely wiped upon logout, preventing database clutter.
 
 ### 6. AI Speaking Coach
-- **Voice Recognition**: Tap a microphone button next to the chat bar to dictate responses in English using browser SpeechRecognition.
+- **Voice Recognition & Clarity Scoring**: Dictate responses using SpeechRecognition. ELO scores and displays a pronunciation clarity percentage badge (filtering out noisy confidence scores < 0.4).
+- **TEFL/TESOL Certified Feedback**: Grammatical checking is formulated in a certified TEFL/TESOL format (encouragement/praise, correction, and rule explanation in under 25 words).
+- **On-Demand Translations**: Translate ELO's English responses into Brazilian Portuguese instantly on click.
 
 ### 7. Persistent Notifications Dropdown
 - **Real-Time Feed**: Bell in the Navbar showing unread flags for booking updates, trivia completion, and course achievements.

@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 import { speakText } from '../../utils/tts';
+import { useToast } from '../../hooks/useToast';
+import { trackEvent } from '../../utils/analytics';
 
 interface Slide {
   id: string;
@@ -23,7 +25,9 @@ interface SlideViewerProps {
 
 export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide = 0, onSlideChange, onComplete, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialSlide);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const swiperRef = useRef<SwiperType | undefined>(undefined);
+  const { showToast } = useToast();
 
   const handleNext = () => {
     swiperRef.current?.slideNext();
@@ -34,11 +38,76 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
   };
 
   const handleSpeakText = (text: string) => {
-    speakText(text);
+    if (isSpeaking) {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setIsSpeaking(false);
+      trackEvent('ai_coach_speech_stop', { slideIndex: currentIndex });
+    } else {
+      trackEvent('ai_coach_speech_listen', { textLength: text.length, slideIndex: currentIndex });
+      speakText(
+        text,
+        () => setIsSpeaking(true),
+        () => setIsSpeaking(false),
+        (err) => {
+          console.error('[SlideViewer] TTS error:', err);
+          setIsSpeaking(false);
+          showToast({ type: 'error', message: 'Falha ao reproduzir áudio da aula.' });
+        }
+      );
+    }
   };
+
+  useEffect(() => {
+    // Cancel speaking when slide changes
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, [currentIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col font-sans text-white touch-none">
+      <style>{`
+        @keyframes siri-ripple {
+          0% { transform: scale(1); opacity: 0.7; }
+          100% { transform: scale(2); opacity: 0; }
+        }
+        @keyframes siri-orb-pulse {
+          0%, 100% { transform: scale(1.05); filter: brightness(1); }
+          50% { transform: scale(1.12); filter: brightness(1.25); }
+        }
+        @keyframes siri-wave {
+          0%, 100% { transform: scaleY(0.35); }
+          50% { transform: scaleY(1); }
+        }
+        .siri-ripple-1 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); }
+        .siri-ripple-2 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); animation-delay: 0.6s; }
+        .siri-ripple-3 { animation: siri-ripple 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); animation-delay: 1.2s; }
+        .siri-active-orb { animation: siri-orb-pulse 2.5s infinite ease-in-out; }
+        .siri-bar {
+          width: 3px;
+          height: 16px;
+          background-color: #ffffff;
+          border-radius: 9999px;
+          display: inline-block;
+          margin: 0 1.5px;
+          transform-origin: center;
+        }
+        .siri-bar-1 { animation: siri-wave 1.1s infinite ease-in-out; }
+        .siri-bar-2 { animation: siri-wave 1.3s infinite ease-in-out; animation-delay: 0.2s; }
+        .siri-bar-3 { animation: siri-wave 1.0s infinite ease-in-out; animation-delay: 0.4s; }
+        .siri-bar-4 { animation: siri-wave 1.2s infinite ease-in-out; animation-delay: 0.6s; }
+      `}</style>
       
       {/* Top Bar Navigation */}
       <div 
@@ -57,15 +126,44 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
           </button>
           
           {slides[currentIndex]?.spokenText && (
-            <button
-              onClick={() => handleSpeakText(slides[currentIndex].spokenText!)}
-              className="flex items-center gap-2 px-3 py-2 text-blue-100 hover:text-white bg-blue-600/50 hover:bg-blue-500/80 rounded-lg backdrop-blur-md transition-colors border border-blue-400/30 shadow-[0_0_15px_rgba(37,99,235,0.3)] animate-pulse"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l4 4V4L9 8H7a2 2 0 00-2 2z" />
-              </svg>
-              <span className="font-medium text-sm">Ouça</span>
-            </button>
+            <div className="relative flex items-center justify-center">
+              {/* Pulsing glow ripples behind when speaking */}
+              {isSpeaking && (
+                <>
+                  <div className="absolute w-14 h-14 rounded-full bg-blue-500/35 siri-ripple-1 pointer-events-none" />
+                  <div className="absolute w-14 h-14 rounded-full bg-indigo-500/25 siri-ripple-2 pointer-events-none" />
+                  <div className="absolute w-14 h-14 rounded-full bg-cyan-500/15 siri-ripple-3 pointer-events-none" />
+                </>
+              )}
+              
+              <button
+                onClick={() => handleSpeakText(slides[currentIndex].spokenText!)}
+                className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 relative cursor-pointer overflow-hidden group shadow-lg ${
+                  isSpeaking
+                    ? 'bg-gradient-to-tr from-blue-600 via-purple-600 to-cyan-400 border-blue-400/40 shadow-[0_0_25px_rgba(139,92,246,0.6)] siri-active-orb scale-105'
+                    : 'bg-gradient-to-tr from-blue-700 via-indigo-650 to-cyan-500 border-blue-500/30 hover:border-blue-400/50 shadow-[0_0_20px_rgba(37,99,235,0.45)] hover:scale-105'
+                }`}
+                title={isSpeaking ? 'Parar de ouvir Elo' : 'Ouvir Elo falar'}
+              >
+                {/* Inner glass overlay for premium glossy look */}
+                <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-white/20 to-transparent opacity-80 pointer-events-none" />
+                
+                {isSpeaking ? (
+                  /* Moving voice wave lines */
+                  <div className="flex items-center justify-center h-5">
+                    <span className="siri-bar siri-bar-1" />
+                    <span className="siri-bar siri-bar-2" />
+                    <span className="siri-bar siri-bar-3" />
+                    <span className="siri-bar siri-bar-4" />
+                  </div>
+                ) : (
+                  /* Idle microphone icon */
+                  <svg className="w-5 h-5 text-white/95 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                )}
+              </button>
+            </div>
           )}
         </div>
         
