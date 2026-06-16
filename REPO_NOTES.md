@@ -46,7 +46,7 @@ VITE_FIREBASE_APP_ID=
 
 ### What changed
 - **Siri-style Audio Orb**: Replaced the traditional "Ouça" text button in the slide viewer with a premium Siri-like glowing circular bubble in the top right corner. Added pulsing radial ripples when speaking and a custom vertical wave animation representing an active voice waveform.
-- **Natural Soothing Voice Algorithm**: Updated the text-to-speech engine in `tts.ts` to score and prioritize high-quality "Natural" or premium platform voices (Microsoft Aria/Jenny Online, Google US English, Apple Samantha) rather than standard robotic defaults.
+- **Natural Soothing Voice Algorithm**: Upgraded the text-to-speech engine in `tts.ts` to score and prioritize premium voices, explicitly favoring Apple Siri (+150), Microsoft Natural (+100, plus extra points for Jenny or Aria), Google Online (+80), and Samantha (+70), with preference for female-profile voices (+15) for a warmer tone. Set pitch to `1.12` (bright, joyous) and rate to `0.98` (natural conversational tempo) to eliminate robotic monotony. Also added automated cleaning to replace slide prompt separators (`|||`) with natural pauses.
 - **Centralized Speech Playing**: Refactored `AiCoachPage.tsx` to import and share the centralized `speakText` logic, unifying voice selection and tracking across both the coach chat and lesson slides.
 - **Firestore Write Debouncing**: Added a 2.5-second debounce buffer for slide progress tracking in `LessonPage.tsx`. Rapid slide transitions are buffered, saving only the final index (or flushing immediately on exit/unmount), saving up to 85% on database write costs.
 - **TypeScript QA Fixes**: Resolved a type error in `GuestBanner.tsx` where an unsupported `'warning'` toast type was used, replacing it with `'info'` to restore flawless compilation.
@@ -59,7 +59,7 @@ VITE_FIREBASE_APP_ID=
 
 ### Why
 - The old "Ouça" button lacked premium design aesthetics. The Siri orb offers a highly visual, tactile, and responsive user experience.
-- Local SpeechSynthesis can sound robotic; filtering for online/natural voice engines ensures ELO sounds soothing and natural.
+- Local SpeechSynthesis can sound robotic; filtering for online/natural voices, preferring warm female profiles, elevating pitch to 1.12, and clean pausing on separators ensures ELO sounds joyous, conversational, and Siri-like.
 - Rapid slide clicks previously spammed Firestore with multiple document updates per second, which increases hosting bills unnecessarily.
 - Mobile users saving the app to their home screens were able to pinch-zoom and drag the page around, revealing ugly white background bands. Disabling scaling and rubber-banding guarantees a native app feel.
 - Professionals (doctors, nurses, lawyers, and executives) make up a core segment of ELO/Cambly students; high-fidelity, situation-specific courses for these sectors increase conversion rates and engagement.

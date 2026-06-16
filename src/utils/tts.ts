@@ -2,7 +2,7 @@
  * TTS Abstraction Layer
  * 
  * Centralizes text-to-speech functionality.
- * Currently uses Web Speech API, but can be swapped out for OpenAI TTS, Kokoro, etc.
+ * Optimized for natural, joyous, Siri-like voice synthesis.
  */
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
@@ -12,6 +12,7 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   cachedVoices = window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => {
     cachedVoices = window.speechSynthesis.getVoices();
+    console.log(`[TTS] Voices loaded. ${cachedVoices.length} voices detected.`);
   };
 }
 
@@ -28,7 +29,15 @@ export const speakText = (
   }
 
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
+  
+  // Clean text from Markdown tags or custom prompt separators
+  const cleanText = text
+    .replace(/\|\|\|/g, '. ') // Replace slide separators with natural pauses
+    .replace(/\[NEW\]/gi, '')
+    .replace(/\[DELETE\]/gi, '')
+    .trim();
+
+  const utterance = new SpeechSynthesisUtterance(cleanText);
   
   // Set callbacks
   if (onStart) utterance.onstart = () => onStart();
@@ -47,7 +56,7 @@ export const speakText = (
   // Find all English voices
   const englishVoices = cachedVoices.filter(v => v.lang.startsWith('en') || v.lang.includes('en'));
   
-  // Score them based on how natural and soothing they are
+  // Score them based on how natural, soothing, and joyous they are
   let bestVoice: SpeechSynthesisVoice | undefined;
   let highestScore = -1;
 
@@ -55,16 +64,37 @@ export const speakText = (
     let score = 0;
     const nameLower = voice.name.toLowerCase();
     
-    // Microsoft/Edge natural voices are incredibly realistic and soothing
-    if (nameLower.includes('natural')) score += 100;
-    // Premium Siri/Apple voices
-    if (nameLower.includes('samantha')) score += 80;
-    if (nameLower.includes('daniel')) score += 70;
-    // Google voices
-    if (nameLower.includes('google')) score += 60;
-    // Online high-quality voices
-    if (nameLower.includes('online')) score += 50;
-    
+    // Apple Siri voices are premium and very natural
+    if (nameLower.includes('siri')) {
+      score += 150;
+    }
+    // Microsoft Natural online voices (Jenny/Aria are exceptionally friendly and clear)
+    else if (nameLower.includes('natural')) {
+      score += 100;
+      if (nameLower.includes('jenny')) score += 30; // Jenny is warm & joyous
+      if (nameLower.includes('aria')) score += 20;  // Aria is bright and soothing
+    }
+    // Google online voices
+    else if (nameLower.includes('google')) {
+      score += 80;
+    }
+    // Other specific premium local/online voices
+    else if (nameLower.includes('samantha')) {
+      score += 70; // Samantha is classic iOS voice
+    }
+    else if (nameLower.includes('daniel')) {
+      score += 50; // Daniel is premium UK English
+    }
+    else if (nameLower.includes('online')) {
+      score += 60;
+    }
+
+    // Prefer female voices for a soothing, Siri-like default tone
+    const femaleKeywords = ['female', 'jenny', 'aria', 'samantha', 'zira', 'hazel', 'susan', 'karen', 'siri'];
+    if (femaleKeywords.some(keyword => nameLower.includes(keyword))) {
+      score += 15;
+    }
+
     // US English preferred, then UK, then others
     if (voice.lang.startsWith('en-US') || voice.lang.includes('en_US')) {
       score += 10;
@@ -78,18 +108,20 @@ export const speakText = (
     }
   }
 
+  // Print debugging info in the browser console
+  console.log('[TTS] Available English voices:', englishVoices.map(v => `${v.name} (${v.lang})`).slice(0, 5));
+
   if (bestVoice) {
     utterance.voice = bestVoice;
-    if (import.meta.env.DEV) {
-      console.log(`[TTS] Selected voice: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
-    }
+    console.log(`[TTS] Selected voice: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
   } else {
     utterance.lang = 'en-US';
-    if (import.meta.env.DEV) {
-      console.log('[TTS] Using default system voice');
-    }
+    console.log('[TTS] Using default system voice');
   }
 
-  utterance.rate = 0.85; // Slightly slower for clarity
+  // Adjust parameters for a joyous, Siri-like tone
+  utterance.rate = 0.98;  // Natural conversational speed
+  utterance.pitch = 1.12; // Elevated pitch for a bright, joyous, friendly tone (default is 1.0)
+  
   window.speechSynthesis.speak(utterance);
 };
