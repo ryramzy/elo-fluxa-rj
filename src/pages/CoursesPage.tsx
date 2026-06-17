@@ -28,8 +28,20 @@ const Courses: React.FC = () => {
     setOpenCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
   };
 
+  const getCourseAudience = (course: any) => {
+    if (course.audience) return course.audience;
+    const profTags = ['Business', 'Tech', 'Healthcare', 'Legal', 'Engineering', 'Startup', 'Marketing', 'Management', 'Automotive'];
+    if (profTags.includes(course.tag)) {
+      return 'Profissionais';
+    }
+    if (course.id === 'study-abroad-prep' || course.tag === 'Academic') {
+      return 'Estudantes';
+    }
+    return 'Amantes de cultura';
+  };
+
   const filteredCourses = courses.filter(course => {
-    const audience = course.audience || (course.tag === 'Business' ? 'Profissionais' : 'Amantes de cultura');
+    const audience = getCourseAudience(course);
     if (selectedFilter === 'Todos') return true;
     if (selectedFilter === 'Profissional') return audience === 'Profissionais';
     if (selectedFilter === 'Cultura') return audience === 'Amantes de cultura';
@@ -42,15 +54,13 @@ const Courses: React.FC = () => {
 
   // Course Categorization Logic
   const conversationCourses = availableCourses.filter(
-    c => c.title.toLowerCase().includes('conversation') || c.id === 'basic-english-daily-life'
+    c => c.tag === 'Conversation' || c.tag === 'Essentials' || c.title.toLowerCase().includes('conversation') || c.id === 'basic-english-daily-life'
   );
   const grammarCourses = availableCourses.filter(
-    c => c.title.toLowerCase().includes('grammar')
+    c => c.tag === 'Grammar' || c.title.toLowerCase().includes('grammar')
   );
   const specialtyCourses = availableCourses.filter(
-    c => c.level === 'Specialty' && 
-         !c.title.toLowerCase().includes('grammar') && 
-         !c.title.toLowerCase().includes('conversation')
+    c => !conversationCourses.some(x => x.id === c.id) && !grammarCourses.some(x => x.id === c.id)
   );
 
   const handleEnrollClick = (courseId: string) => {

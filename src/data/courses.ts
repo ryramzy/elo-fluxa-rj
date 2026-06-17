@@ -414,5 +414,106 @@ export const courses: Course[] = [
       { id: 'law-03', title: 'The US Jury Trial System', lessonIndex: 2, xpReward: 40 },
       { id: 'law-04', title: 'Courtroom Hearings & Advocacy', lessonIndex: 3, xpReward: 50 },
     ]
+  },
+  {
+    id: 'describe-it',
+    title: 'Describe It! English Imagery & Adjectives',
+    description: 'Master the art of describing objects, places, people, and feelings with vivid vocabulary.',
+    descriptionPt: 'Domine a arte de descrever objetos, lugares, pessoas e sentimentos com um vocabulário vívido.',
+    level: 'Intermediate',
+    tag: 'Conversation',
+    emoji: '🎨',
+    imageUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'desc-01', title: 'Describing Places & Atmosphere', lessonIndex: 0, xpReward: 30 },
+      { id: 'desc-02', title: 'Describing People & Personalities', lessonIndex: 1, xpReward: 30 },
+      { id: 'desc-03', title: 'Describing Food, Tastes & Textures', lessonIndex: 2, xpReward: 30 },
+      { id: 'desc-04', title: 'Describing Emotions & Abstract Feelings', lessonIndex: 3, xpReward: 40 },
+    ]
+  },
+  {
+    id: 'friendship-social',
+    title: 'Friendship & Social Connections',
+    description: 'Navigate informal gatherings, make new friends, and share stories about relationships.',
+    descriptionPt: 'Navegue por encontros informais, faça novos amigos e compartilhe histórias sobre relacionamentos.',
+    level: 'Intermediate',
+    tag: 'Conversation',
+    emoji: '🤝',
+    imageUrl: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'frnd-01', title: 'Making Small Talk & Breaking the Ice', lessonIndex: 0, xpReward: 30 },
+      { id: 'frnd-02', title: 'Hosting Friends & Dinner Etiquette', lessonIndex: 1, xpReward: 30 },
+      { id: 'frnd-03', title: 'Deep Conversations & Sharing Personal Stories', lessonIndex: 2, xpReward: 30 },
+      { id: 'frnd-04', title: 'Handling Conflicts & Giving Advice to Friends', lessonIndex: 3, xpReward: 40 },
+    ]
+  },
+  {
+    id: 'getting-outside',
+    title: 'Getting Outside: Outdoor Activities & Nature',
+    description: 'Vocabulary for hiking, camping, beach days, and discussing environmental topics.',
+    descriptionPt: 'Vocabulário para caminhadas, acampamentos, dias de praia e discussões sobre temas ambientais.',
+    level: 'Intermediate',
+    tag: 'Conversation',
+    emoji: '⛺',
+    imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'out-01', title: 'Hiking, Camping & Wilderness Safety', lessonIndex: 0, xpReward: 30 },
+      { id: 'out-02', title: 'Beach Days, Surfing & Coastal English', lessonIndex: 1, xpReward: 30 },
+      { id: 'out-03', title: 'Explaining Nature, Weather & Seasons', lessonIndex: 2, xpReward: 30 },
+      { id: 'out-04', title: 'Discussing the Environment & Sustainability', lessonIndex: 3, xpReward: 40 },
+    ]
+  },
+  {
+    id: 'idioms-mastery',
+    title: 'Idioms Mastery: Weather, Sports & Everyday Life',
+    description: 'Speak like a native using idiomatic expressions from sports, weather, and daily routines.',
+    descriptionPt: 'Fale como um nativo usando expressões idiomáticas de esportes, clima e rotinas diárias.',
+    level: 'Intermediate',
+    tag: 'Conversation',
+    emoji: '🗣️',
+    imageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
+    totalLessons: 3,
+    lessons: [
+      { id: 'idm-01', title: 'Weather Idioms', lessonIndex: 0, xpReward: 30 },
+      { id: 'idm-02', title: 'Sports Idioms', lessonIndex: 1, xpReward: 30 },
+      { id: 'idm-03', title: 'Everyday Idioms', lessonIndex: 2, xpReward: 40 },
+    ]
+  },
+  {
+    id: 'movies-tv-culture',
+    title: 'Movies & Television: From Netflix to Amazon Prime',
+    description: 'Discuss your favorite series, analyze plots, debate character tropes, and talk about pop culture.',
+    descriptionPt: 'Discuta suas séries favoritas, analise enredos, debata clichês de personagens e fale sobre cultura pop.',
+    level: 'Advanced',
+    tag: 'Culture',
+    emoji: '🍿',
+    imageUrl: 'https://images.unsplash.com/photo-1524749292158-7540c2494485?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'mov-01', title: 'Streaming Culture & Binge-Watching', lessonIndex: 0, xpReward: 40 },
+      { id: 'mov-02', title: 'Movie Genres, Plots & Story Tropes', lessonIndex: 1, xpReward: 40 },
+      { id: 'mov-03', title: 'Writing Reviews & Critical Vocabulary', lessonIndex: 2, xpReward: 40 },
+      { id: 'mov-04', title: 'The Business of Hollywood & Streaming Wars', lessonIndex: 3, xpReward: 50 },
+    ]
+  },
+  {
+    id: 'music-lyrics-culture',
+    title: 'Music & Song Lyrics: Rhyme and Rhythm',
+    description: 'Understand idioms in song lyrics, discuss musical genres, and explore the history of American music.',
+    descriptionPt: 'Entenda expressões idiomáticas em letras de música, discuta gêneros musicais e explore a história da música americana.',
+    level: 'Advanced',
+    tag: 'Culture',
+    emoji: '🎵',
+    imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'mus-01', title: 'Talking Genres, Tempos & Musical Taste', lessonIndex: 0, xpReward: 40 },
+      { id: 'mus-02', title: 'Analyzing Idioms in Song Lyrics', lessonIndex: 1, xpReward: 40 },
+      { id: 'mus-03', title: 'Concerts, Festivals & Live Events', lessonIndex: 2, xpReward: 40 },
+      { id: 'mus-04', title: 'Music Production, Streaming & Global Influence', lessonIndex: 3, xpReward: 50 },
+    ]
   }
 ];

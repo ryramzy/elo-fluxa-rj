@@ -41,6 +41,25 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 17, 2026] — Course Catalog Filtering Fix & Content Expansion
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Course Catalog Filtering & Grouping Fix**: Corrected a bug where tech, medical, legal, and engineering courses were completely excluded from the course list when the user toggled the "Profissional" filter. Created `getCourseAudience` to map all professional tags (`Business`, `Tech`, `Healthcare`, `Legal`, `Engineering`, `Startup`, `Marketing`, `Management`, `Automotive`) to the `'Profissionais'` audience.
+- **Accurate Category Grouping**: Restructured course grouping categories inside `CoursesPage.tsx` to prevent exclusion. Grammar and Conversation categories are matched by tag and title, and the Specialty panel serves as a robust catch-all.
+- **Content Expansion (6 New Courses)**: Added six new fully featured courses inside `courses.ts` and their interactive slides under a new content file `new-topics.ts`, integrated via `lessonContent.ts`:
+  - **Describe It! English Imagery & Adjectives** (`describe-it`): Master descriptive adjectives, sensory descriptions, personality nuances, and food/emotion profiles.
+  - **Friendship & Social Connections** (`friendship-social`): Practice small talk, hosting, deep connection storytelling, and direct conflict resolution.
+  - **Getting Outside: Outdoor Activities & Nature** (`getting-outside`): Hike/camp safety, surfing/coastal vocabulary, rain degrees/weather, and carbon footprint sustainability.
+  - **Idioms Mastery: Weather, Sports & Everyday Life** (`idioms-mastery`): Master weather idioms (e.g. cloud nine), sports idioms (e.g. touch base), and everyday classics (e.g. bite the bullet).
+  - **Movies & Television: From Netflix to Amazon Prime** (`movies-tv-culture`): Discuss streaming culture, movie tropes, plot twists, writing reviews, and Hollywood business.
+  - **Music & Song Lyrics: Rhyme and Rhythm** (`music-lyrics-culture`): Acoustic/upbeat sounds, analyzing metaphors in song lyrics, concerts/lineups, and streaming royalties.
+
+### Why
+- The previous catalog filtering fallback only checked `course.tag === 'Business'`. As a result, other specialty and tech courses were misclassified under "Cultura", showing empty categories when "Profissional" was selected.
+- Expanding course tracks for descriptive adjectives, friendship, outdoors, idioms, movies/TV, and music satisfies core user scenarios and provides comprehensive professional and lifestyle English lessons.
+
+---
 ## [June 16, 2026] — Cybersecurity Hardening & Database Access Control Rules
 **Status:** ✅ COMPLETED
 
