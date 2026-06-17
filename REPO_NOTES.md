@@ -57,6 +57,10 @@ VITE_FIREBASE_APP_ID=
 - Moving to UTC timestamps prevents scheduling mismatches, while keeping local string fallbacks ensures backward compatibility.
 - Providing an Admin dashboard utility allows running database migrations directly inside Matt's authenticated browser session, bypassing security rules and network connection constraints.
 
+### Next steps
+- Run the timezone database migration live via the Admin Dashboard's **Timezone Sync** panel (run simulation and download the comprehensive backup first).
+- Keep Phase 2.2 (Stripe Billing Integration) on the back burner until product catalog, prices, and webhook secrets are configured.
+
 ---
 ## [June 17, 2026] — Course Catalog Filtering Fix & Content Expansion
 **Status:** ✅ COMPLETED
