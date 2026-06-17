@@ -13,6 +13,7 @@ export interface TimeSlot {
   status: 'available' | 'booked' | 'cancelled' | 'completed';
   createdAt: Date;
   updatedAt: Date;
+  datetime?: Timestamp;   // UTC Timestamp for timezone sync
 }
 
 export interface Booking {
@@ -35,4 +36,5 @@ export interface Booking {
     homework: string;
     submittedAt: Timestamp;
   };
+  datetime?: Timestamp;   // UTC Timestamp for timezone sync
 }

@@ -39,16 +39,25 @@ const LessonPage: React.FC = () => {
     }
   }, [courseId, lessonId]);
 
-  if (!course || !lesson) {
+  const content = lessonContent[courseId!]?.[lessonId!];
+
+  if (!course || !lesson || !content || !content.slides || content.slides.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <h1 className="text-2xl font-bold mb-4">Lesson not found</h1>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center font-sans p-4">
+        <div className="max-w-md w-full bg-slate-800/80 border border-red-500/30 rounded-3xl p-8 text-center backdrop-blur-xl shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-red-500 to-orange-500" />
+          <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 shadow-inner">
+            ⚠️
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-3 tracking-tight">Conteúdo não disponível</h1>
+          <p className="text-slate-300 text-sm mb-6 leading-relaxed">
+            Desculpe! O conteúdo para esta lição ("{lesson?.title || 'Aula'}") ainda não foi configurado ou não pôde ser carregado.
+          </p>
           <button 
             onClick={() => navigate(`/courses/${courseId}`)}
-            className="text-blue-400 hover:text-blue-300 underline"
+            className="w-full py-3 bg-red-600/20 hover:bg-red-600/35 border border-red-500/50 hover:border-red-400/80 text-red-200 rounded-xl transition-all duration-300 font-medium active:scale-98 shadow-lg shadow-red-950/40"
           >
-            Back to course
+            Voltar para o Curso
           </button>
         </div>
       </div>

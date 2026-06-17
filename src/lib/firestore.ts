@@ -308,6 +308,14 @@ export async function updateStreak(uid: string): Promise<void> {
     if (userDoc.exists()) {
       const userData = userDoc.data() as UserProfile;
       const lastActive = userData.lastActiveDate?.toDate() || new Date(0);
+      
+      // Idempotency check: Skip if streak was already updated today
+      const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+      const lastActiveStr = lastActive.toLocaleDateString('en-CA');
+      if (todayStr === lastActiveStr && (userData.streakDays || 0) > 0) {
+        return;
+      }
+      
       const today = new Date();
       const oneDay = 24 * 60 * 60 * 1000;
       
@@ -315,7 +323,7 @@ export async function updateStreak(uid: string): Promise<void> {
       let newStreak = userData.streakDays || 1;
       
       if (daysDiff === 1) {
-        newStreak = userData.streakDays + 1;
+        newStreak = (userData.streakDays || 0) + 1;
       } else if (daysDiff > 1) {
         newStreak = 1;
       }
@@ -720,6 +728,11 @@ export async function bookSlot(
   const notifId = `booking_notif_${Date.now()}`;
   const notifRef = doc(db, 'users', userId, 'notifications', notifId);
 
+  // Compute UTC datetime Timestamp based on America/Sao_Paulo (UTC-3 stable)
+  const localIsoString = `${date}T${time}:00-03:00`;
+  const utcDate = new Date(localIsoString);
+  const datetimeTimestamp = Timestamp.fromDate(utcDate);
+
   await runTransaction(db, async (transaction) => {
     const bookingDoc = await transaction.get(bookingRef);
     if (bookingDoc.exists()) {
@@ -738,6 +751,7 @@ export async function bookSlot(
       meetLink: null,
       notes: notes || '',
       createdAt: serverTimestamp(),
+      datetime: datetimeTimestamp
     });
 
     transaction.set(notifRef, {

@@ -192,6 +192,7 @@ const DashboardWorking: React.FC = () => {
                         navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
                       } catch (err) {
                         console.error('Failed to enroll:', err);
+                        showToast({ type: 'error', message: 'Não foi possível se matricular no curso. Verifique sua conexão e tente novamente.' });
                         navigate(`/courses/${courseId}`);
                       }
                     }}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useAdminGuard } from '../hooks/useAdminGuard';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 import { useToast } from '../hooks/useToast';
 import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
@@ -41,6 +41,206 @@ interface AdminProps {
   onSwitchToStudentView?: () => void;
 }
 
+const TimezoneSyncPanel: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [dryRun, setDryRun] = useState(true);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [bookingsToMigrate, setBookingsToMigrate] = useState<any[]>([]);
+  const [backupData, setBackupData] = useState<any[] | null>(null);
+  const [status, setStatus] = useState<string>('');
+
+  const loadBookings = async () => {
+    setLoading(true);
+    setLogs([]);
+    try {
+      const snap = await getDocs(collection(db, 'bookings'));
+      const list: any[] = [];
+      snap.forEach(d => {
+        list.push({ id: d.id, ...d.data() });
+      });
+      setBookingsToMigrate(list);
+      setBackupData(list);
+      setStatus(`Loaded ${list.length} bookings.`);
+    } catch (error: any) {
+      setStatus(`Error loading bookings: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  const downloadBackup = async () => {
+    setLoading(true);
+    setStatus('Iniciando backup completo (bookings, slots, availableSlots)...');
+    try {
+      const [bookingsSnap, slotsSnap, availableSlotsSnap] = await Promise.all([
+        getDocs(collection(db, 'bookings')),
+        getDocs(collection(db, 'slots')),
+        getDocs(collection(db, 'availableSlots'))
+      ]);
+
+      const bookingsList: any[] = [];
+      bookingsSnap.forEach(d => bookingsList.push({ id: d.id, ...d.data() }));
+
+      const slotsList: any[] = [];
+      slotsSnap.forEach(d => slotsList.push({ id: d.id, ...d.data() }));
+
+      const availableSlotsList: any[] = [];
+      availableSlotsSnap.forEach(d => availableSlotsList.push({ id: d.id, ...d.data() }));
+
+      const fullBackup = {
+        bookings: bookingsList,
+        slots: slotsList,
+        availableSlots: availableSlotsList,
+        exportedAt: new Date().toISOString()
+      };
+
+      const blob = new Blob([JSON.stringify(fullBackup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `elo_full_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus(`Backup completo baixado com sucesso! (${bookingsList.length} reservas, ${slotsList.length} slots, ${availableSlotsList.length} slots disponíveis)`);
+    } catch (error: any) {
+      setStatus(`Erro ao gerar backup: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMigrate = async () => {
+    setLoading(true);
+    const runLogs: string[] = [];
+    const isDry = dryRun;
+    
+    runLogs.push(`Starting timezone migration. Mode: ${isDry ? 'DRY RUN' : 'WRITE MODE'}`);
+    setLogs([...runLogs]);
+
+    let updatedCount = 0;
+    let skippedCount = 0;
+    let errorCount = 0;
+
+    for (const booking of bookingsToMigrate) {
+      const { id, date, time } = booking;
+      if (!date || !time) {
+        runLogs.push(`⚠️ Warning: Booking ${id} is missing date or time. Skipped.`);
+        skippedCount++;
+        setLogs([...runLogs]);
+        continue;
+      }
+
+      try {
+        const [year, month, day] = date.split('-').map(Number);
+        const [hour, minute] = time.split(':').map(Number);
+        const utcDate = new Date(Date.UTC(year, month - 1, day, hour + 3, minute));
+        const datetimeTimestamp = Timestamp.fromDate(utcDate);
+
+        runLogs.push(`[${id}]: ${date} ${time} (Rio) -> ${utcDate.toISOString()} (UTC)`);
+        setLogs([...runLogs]);
+
+        if (!isDry) {
+          await updateDoc(doc(db, 'bookings', id), {
+            datetime: datetimeTimestamp
+          });
+        }
+        updatedCount++;
+      } catch (err: any) {
+        runLogs.push(`❌ Error migrating booking ${id}: ${err.message}`);
+        errorCount++;
+        setLogs([...runLogs]);
+      }
+    }
+
+    runLogs.push(`\n--- Summary ---`);
+    runLogs.push(`Mode: ${isDry ? 'DRY RUN' : 'WRITE MODE'}`);
+    runLogs.push(`Success: ${updatedCount}`);
+    runLogs.push(`Skipped: ${skippedCount}`);
+    runLogs.push(`Errors: ${errorCount}`);
+    setLogs([...runLogs]);
+    setLoading(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-6">
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+        Timezone Synchronization Tool
+      </h2>
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+        This tool migrates legacy booking documents in Firestore to include an absolute UTC timestamp (<code className="bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded text-red-500 font-mono">datetime</code>).
+        All conversions are based on Matt's timezone (<code className="bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded text-blue-500 font-mono">America/Sao_Paulo</code> / UTC-3).
+      </p>
+
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <button
+          onClick={loadBookings}
+          disabled={loading}
+          className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+        >
+          Refresh Data
+        </button>
+
+        {backupData && backupData.length > 0 && (
+          <button
+            onClick={downloadBackup}
+            className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors"
+          >
+            Download Local Backup (.json)
+          </button>
+        )}
+
+        <div className="flex items-center gap-2 border border-slate-200 dark:border-slate-700 p-2 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={dryRun}
+              onChange={(e) => setDryRun(e.target.checked)}
+              disabled={loading}
+              className="rounded text-blue-500"
+            />
+            Dry Run Mode (Simulate)
+          </label>
+        </div>
+
+        <button
+          onClick={handleMigrate}
+          disabled={loading || bookingsToMigrate.length === 0}
+          className={`px-6 py-2 rounded-lg font-medium text-white transition-all ${
+            dryRun
+              ? 'bg-blue-500 hover:bg-blue-600'
+              : 'bg-red-500 hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.4)]'
+          } disabled:opacity-50`}
+        >
+          {dryRun ? 'Simulate Migration' : 'Run Live Migration'}
+        </button>
+      </div>
+
+      <div className="mb-4 text-sm font-semibold text-slate-800 dark:text-slate-200">
+        Status: {status || (loading ? 'Loading...' : 'Ready')}
+      </div>
+
+      <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+        <div className="px-4 py-2 bg-slate-200 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Migration Logs
+        </div>
+        <div className="p-4 h-72 overflow-y-auto font-mono text-xs text-slate-800 dark:text-slate-200 space-y-1">
+          {logs.length === 0 ? (
+            <div className="text-slate-400 italic">No logs generated. Click 'Simulate' or 'Run Live' to start.</div>
+          ) : (
+            logs.map((log, index) => (
+              <div key={index} className="whitespace-pre-wrap">{log}</div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminGuard();
@@ -53,9 +253,35 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'utilities'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
+
+  // Helper to format a timestamp/date to Rio strings
+  const getMattStringsFromTimestamp = (timestamp: any) => {
+    if (!timestamp) return null;
+    const dateObj = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(dateObj);
+    
+    const partMap: Record<string, string> = {};
+    parts.forEach(p => {
+      partMap[p.type] = p.value;
+    });
+    
+    return {
+      date: `${partMap.year}-${partMap.month}-${partMap.day}`,
+      time: `${partMap.hour}:${partMap.minute}`
+    };
+  };
 
   // Get week dates based on offset
   const getWeekDates = (offset: number) => {
@@ -69,7 +295,20 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
     for (let i = 0; i < 5; i++) {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
-      weekDates.push(date.toISOString().split('T')[0]);
+      
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(date);
+      
+      const partMap: Record<string, string> = {};
+      parts.forEach(p => {
+        partMap[p.type] = p.value;
+      });
+      
+      weekDates.push(`${partMap.year}-${partMap.month}-${partMap.day}`);
     }
     return weekDates;
   };
@@ -90,10 +329,24 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
       );
       
       const snapshot = await getDocs(bookingsQuery);
-      const bookingsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Booking));
+      const bookingsData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        let date = data.date;
+        let time = data.time;
+        if (data.datetime) {
+          const mattStrings = getMattStringsFromTimestamp(data.datetime);
+          if (mattStrings) {
+            date = mattStrings.date;
+            time = mattStrings.time;
+          }
+        }
+        return {
+          id: doc.id,
+          ...data,
+          date,
+          time
+        } as Booking;
+      });
       
       console.log(`📊 Found ${bookingsData.length} bookings for admin view`);
       setBookings(bookingsData);
@@ -361,6 +614,16 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
             >
               Enrollments ({enrollments.length})
             </button>
+            <button
+              onClick={() => setActiveTab('utilities')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'utilities'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              Timezone Sync
+            </button>
           </div>
         </div>
 
@@ -439,7 +702,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
                     </div>
                     {weekDates.map((date) => {
                       const booking = bookings.find(b => b.date === date && b.time === time);
-                      const isPast = new Date(date + ' ' + time) < new Date();
+                      const isPast = new Date(`${date}T${time}:00-03:00`) < new Date();
                       
                       return (
                         <div key={`${date}-${time}`} className="p-1">
@@ -735,6 +998,10 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               </table>
             </div>
           </div>
+        )}
+
+        {activeTab === 'utilities' && (
+          <TimezoneSyncPanel />
         )}
 
         {/* Back to Dashboard */}

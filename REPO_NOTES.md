@@ -41,6 +41,23 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [June 17, 2026] — Timezone Synchronization & Slot Data Migration (Phase 2.1)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Timezone-Aware Database Schema**: Added `datetime: Timestamp` to `Booking` and `TimeSlot` interfaces.
+- **Dynamic Timezone-Aware Student Calendar**: Modified `VisualSlotPicker.tsx` to dynamically render calendar rows based on the student's browser timezone relative to Matt's fixed working hours (08:00–21:00 America/Sao_Paulo). Used `toLocaleDateString('en-CA')` for local browser date operations and implemented absolute timestamp cell matching.
+- **Timezone-Locked Admin Dashboard**: Modified `Admin.tsx` to lock the display to Matt's local timezone (`America/Sao_Paulo`), automatically converting loaded UTC timestamps back to Rio time strings for grid rendering.
+- **Interactive Timezone Migration Panel**: Created an interactive "Timezone Sync" panel inside the Admin page, equipped with data loading, local backup JSON download, dry-run simulation, and live update capabilities.
+- **Idempotent Streak Calculations**: Refactored `updateStreak` in `src/lib/firestore.ts` to check if `lastActiveDate` matches today's date string (`toLocaleDateString('en-CA')`), preventing double streak counts on multiple XP gains.
+- **Node.js Migration Script**: Created `scripts/migrate-timezone.ts` to convert legacy bookings to UTC-3 Timestamps.
+
+### Why
+- The previous slot-booking system stored slots as raw time strings (e.g. "08:00"), causing incorrect booking displays when viewed by students outside the Brazil timezone (UTC-3).
+- Moving to UTC timestamps prevents scheduling mismatches, while keeping local string fallbacks ensures backward compatibility.
+- Providing an Admin dashboard utility allows running database migrations directly inside Matt's authenticated browser session, bypassing security rules and network connection constraints.
+
+---
 ## [June 17, 2026] — Course Catalog Filtering Fix & Content Expansion
 **Status:** ✅ COMPLETED
 

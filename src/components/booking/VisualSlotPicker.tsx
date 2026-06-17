@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '../../lib/firestore';
 import { getErrorMessage, logError } from '../../utils/errorHandling';
 import { useAuth } from '../../hooks/useAuth';
@@ -10,6 +10,7 @@ interface Booking {
   time: string;
   userId: string;
   userName: string;
+  datetime?: any; // UTC Timestamp for timezone sync
 }
 
 interface VisualSlotPickerProps {
@@ -35,12 +36,75 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Fixed time slots from 8:00 to 21:00
-  const timeSlots = [
-    '08:00', '09:00', '10:00', '11:00', '12:00',
-    '13:00', '14:00', '15:00', '16:00', '17:00',
-    '18:00', '19:00', '20:00', '21:00'
-  ];
+  // Helpers for timezone conversions
+  const getMattLocalStrings = (localDateStr: string, localTimeStr: string) => {
+    const localDateObj = new Date(`${localDateStr}T${localTimeStr}:00`);
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(localDateObj);
+
+    const partMap: Record<string, string> = {};
+    parts.forEach(p => {
+      partMap[p.type] = p.value;
+    });
+
+    return {
+      date: `${partMap.year}-${partMap.month}-${partMap.day}`,
+      time: `${partMap.hour}:${partMap.minute}`
+    };
+  };
+
+  const isMattWorking = (localDateStr: string, localTimeStr: string): boolean => {
+    const localDateObj = new Date(`${localDateStr}T${localTimeStr}:00`);
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Sao_Paulo',
+      weekday: 'short',
+      hour: 'numeric',
+      hourCycle: 'h23'
+    }).formatToParts(localDateObj);
+    
+    let weekday = '';
+    let hour = -1;
+    
+    parts.forEach(p => {
+      if (p.type === 'weekday') weekday = p.value;
+      if (p.type === 'hour') hour = parseInt(p.value, 10);
+    });
+    
+    const isWeekday = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(weekday);
+    const isWorkingHour = hour >= 8 && hour <= 21;
+    
+    return isWeekday && isWorkingHour;
+  };
+
+  const getLocalTimeSlots = (referenceDate: Date): string[] => {
+    const referenceDateStr = referenceDate.toLocaleDateString('en-CA');
+    const mattHours = [
+      '08:00', '09:00', '10:00', '11:00', '12:00',
+      '13:00', '14:00', '15:00', '16:00', '17:00',
+      '18:00', '19:00', '20:00', '21:00'
+    ];
+
+    const localTimesSet = new Set<string>();
+
+    mattHours.forEach(hour => {
+      const dateObj = new Date(`${referenceDateStr}T${hour}:00-03:00`);
+      const localTime = dateObj.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+      });
+      localTimesSet.add(localTime);
+    });
+
+    return Array.from(localTimesSet).sort();
+  };
 
   // Get Monday to Friday dates
   const getWeekDates = (offset: number) => {
@@ -60,19 +124,23 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   const weekDates = getWeekDates(selectedWeek);
+  const timeSlots = weekDates.length > 0 ? getLocalTimeSlots(weekDates[0]) : [];
 
   const loadWeekBookings = async () => {
     setLoading(true);
     setToast(null);
     
     try {
-      const weekStart = weekDates[0].toISOString().split('T')[0];
-      const weekEnd = weekDates[4].toISOString().split('T')[0];
+      const localStartStr = weekDates[0].toLocaleDateString('en-CA');
+      const localEndStr = weekDates[4].toLocaleDateString('en-CA');
+      
+      const startUtc = new Date(`${localStartStr}T00:00:00`);
+      const endUtc = new Date(`${localEndStr}T23:59:59`);
       
       const bookingsQuery = query(
         collection(db, 'bookings'),
-        where('date', '>=', weekStart),
-        where('date', '<=', weekEnd)
+        where('datetime', '>=', Timestamp.fromDate(startUtc)),
+        where('datetime', '<=', Timestamp.fromDate(endUtc))
       );
       
       const snapshot = await getDocs(bookingsQuery);
@@ -102,7 +170,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
       const studentEmail = user?.email || 'estudante@elo.com';
       
-      await firestoreBookSlot(date, time, currentUserId, studentName, studentEmail);
+      // Convert student's local slot back to Matt's Rio date and time strings
+      const { date: mattDate, time: mattTime } = getMattLocalStrings(date, time);
+      
+      await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail);
       
       await loadWeekBookings();
       showToast('Slot booked successfully!', 'success');
@@ -139,8 +210,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     loadWeekBookings();
   }, [selectedWeek]);
 
-  const getBooking = (dateStr: string, time: string) => {
-    return bookings.find(b => b.date === dateStr && b.time === time);
+  const getBooking = (dateStr: string, timeStr: string) => {
+    const cellMs = new Date(`${dateStr}T${timeStr}:00`).getTime();
+    return bookings.find(b => {
+      if (b.datetime) {
+        // Compare absolute time in milliseconds
+        const bookingMs = b.datetime.seconds * 1000;
+        return Math.abs(bookingMs - cellMs) < 60000;
+      }
+      return b.date === dateStr && b.time === timeStr;
+    });
   };
 
   const isPast = (dateStr: string, time: string) => {
@@ -231,7 +310,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 Time
               </div>
               {weekDates.map((date, i) => {
-                const isToday = date.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+                const dateStr = date.toLocaleDateString('en-CA');
+                const isToday = dateStr === new Date().toLocaleDateString('en-CA');
                 return (
                   <div key={i} className={`flex flex-col items-center p-3 rounded-2xl transition-all ${isToday ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-transparent'}`}>
                     <span className={`text-sm font-semibold mb-1 ${isToday ? 'text-blue-400' : 'text-slate-300'}`}>
@@ -256,9 +336,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   
                   {/* Slots for each day */}
                   {weekDates.map((date) => {
-                    const dateStr = date.toISOString().split('T')[0];
+                    const dateStr = date.toLocaleDateString('en-CA');
                     const existingBooking = getBooking(dateStr, time);
                     const past = isPast(dateStr, time);
+                    const working = isMattWorking(dateStr, time);
+                    const showAsUnavailable = past || !working;
                     
                     let slotState = 'available';
                     if (existingBooking) {
@@ -268,8 +350,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
                     return (
                       <div key={`${dateStr}-${time}`} className="relative h-14">
-                        {past ? (
-                          // Past slot
+                        {showAsUnavailable ? (
+                          // Unavailable slot
                           <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
                             <span className="text-xs text-slate-600 font-medium">—</span>
                           </div>
