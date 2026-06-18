@@ -99,39 +99,39 @@ const Sobre: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
+              <div className="text-3xl mb-3">💼</div>
               <h3 className="font-semibold text-slate-900 mb-2">Business English</h3>
               <p className="text-sm text-slate-600">Para profissionais que precisam dominar o inglês corporativo americano.</p>
             </div>
             
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
-              <h3 className="font-semibold text-slate-900 mb-2">Sports English</h3>
-              <p className="text-sm text-slate-600">Para fãs que querem entender basquete, futebol americano e a cultura esportiva.</p>
+              <div className="text-3xl mb-3">🍿</div>
+              <h3 className="font-semibold text-slate-900 mb-2">Cinema & TV</h3>
+              <p className="text-sm text-slate-600">Para quem quer debater tramas, clichês e falar sobre séries da Netflix à Amazon Prime.</p>
             </div>
             
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
-              <h3 className="font-semibold text-slate-900 mb-2">Hip Hop Culture</h3>
-              <p className="text-sm text-slate-600">Para entusiastas da cultura americana e música que querem entender as raízes do inglês moderno.</p>
+              <div className="text-3xl mb-3">🎵</div>
+              <h3 className="font-semibold text-slate-900 mb-2">Música & Cultura</h3>
+              <p className="text-sm text-slate-600">Para entender gírias em letras de música, debater gêneros e entender o inglês das ruas.</p>
             </div>
             
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
+              <div className="text-3xl mb-3">🩺</div>
               <h3 className="font-semibold text-slate-900 mb-2">Medical English</h3>
-              <p className="text-sm text-slate-600">Para profissionais de saúde que precisam comunicar-se em inglês médico.</p>
+              <p className="text-sm text-slate-600">Para profissionais de saúde que precisam comunicar-se em ambientes clínicos e UTIP/UTIN.</p>
             </div>
             
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
-              <h3 className="font-semibold text-slate-900 mb-2">Study Abroad</h3>
-              <p className="text-sm text-slate-600">Para estudantes que vão fazer intercâmbio ou precisam passar em exames de proficiência.</p>
+              <div className="text-3xl mb-3">✈️</div>
+              <h3 className="font-semibold text-slate-900 mb-2">Viagem & Intercâmbio</h3>
+              <p className="text-sm text-slate-600">Para quem vai fazer intercâmbio, viajar ou precisa lidar com situações no exterior.</p>
             </div>
             
             <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
-              <div className="text-3xl mb-3">??</div>
-              <h3 className="font-semibold text-slate-900 mb-2">Law Enforcement</h3>
-              <p className="text-sm text-slate-600">Para profissionais da área de segurança que trabalham com sistemas americanos.</p>
+              <div className="text-3xl mb-3">⚖️</div>
+              <h3 className="font-semibold text-slate-900 mb-2">Legal English</h3>
+              <p className="text-sm text-slate-600">Para compreender litígios, tribunais americanos e direitos em encontros policiais.</p>
             </div>
           </div>
           
