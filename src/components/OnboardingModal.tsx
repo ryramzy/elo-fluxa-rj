@@ -20,10 +20,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
 
   const courseOptions = [
     { id: 'business-english', emoji: '💼', title: 'Trabalho e entrevistas' },
-    { id: 'sports-english', emoji: '🏀', title: 'Esportes americanos' },
-    { id: 'hiphop-culture', emoji: '🎤', title: 'Hip hop e cultura' },
+    { id: 'music-lyrics-culture', emoji: '🎵', title: 'Música, Hip Hop e Cultura' },
+    { id: 'movies-tv-culture', emoji: '🍿', title: 'Cinema, Séries e TV' },
     { id: 'medical-english', emoji: '🩺', title: 'Inglês Médico & Hospitalar' },
-    { id: 'study-abroad', emoji: '🎓', title: 'Intercâmbio e exames' },
+    { id: 'english-for-traveling', emoji: '✈️', title: 'Viagem e Intercâmbio' },
     { id: 'law-enforcement', emoji: '⚖️', title: 'Inglês Jurídico & Policial' }
   ];
 
