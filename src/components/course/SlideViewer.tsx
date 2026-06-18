@@ -6,7 +6,7 @@ import 'swiper/css';
 import { speakText } from '../../utils/tts';
 import { useToast } from '../../hooks/useToast';
 import { trackEvent } from '../../utils/analytics';
-import { EloMascot } from './EloMascot';
+
 
 interface Slide {
   id: string;
@@ -203,34 +203,22 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
               />
             )}
             
-            {/* Split Screen Grid Layout - Mobile Stacked, Desktop Split */}
+            {/* Centered Layout */}
             <div 
-              className="relative z-10 max-w-5xl mx-auto w-full flex flex-col md:grid md:grid-cols-5 gap-8 items-center"
+              className="relative z-10 max-w-3xl mx-auto w-full flex flex-col justify-center text-left"
               style={{ 
                 paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
                 paddingTop: 'calc(6rem + env(safe-area-inset-top))'
               }}
             >
-              {/* Left Column: Text and Content */}
-              <div className="flex flex-col w-full h-full justify-center md:col-span-3 text-left">
-                {slide.title && (
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 text-blue-300 leading-tight tracking-tight drop-shadow-sm">
-                    {slide.title}
-                  </h2>
-                )}
-                <div className="text-base md:text-lg leading-relaxed flex-1 flex flex-col justify-center">
-                  {slide.content}
-                </div>
-              </div>
-
-              {/* Right Column: Elo Mascot Visual */}
-              {slide.type && (
-                <div className="w-full md:col-span-2 flex justify-center items-center mt-6 md:mt-0">
-                  <div className="bg-slate-800/35 border border-slate-700/40 rounded-3xl p-5 md:p-6 w-full max-w-[280px] md:max-w-full flex items-center justify-center backdrop-blur-md shadow-lg shadow-black/20">
-                    <EloMascot type={slide.type} />
-                  </div>
-                </div>
+              {slide.title && (
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-6 text-blue-300 leading-tight tracking-tight drop-shadow-sm">
+                  {slide.title}
+                </h2>
               )}
+              <div className="text-base md:text-lg leading-relaxed flex-1 flex flex-col justify-center">
+                {slide.content}
+              </div>
             </div>
           </SwiperSlide>
         ))}
