@@ -29,24 +29,26 @@ const Courses: React.FC = () => {
   };
 
   const getCourseAudience = (course: any) => {
-    if (course.audience) return course.audience;
+    if (course.tag === 'Grammar') {
+      return 'Gramática';
+    }
+    if (['Conversation', 'Essentials', 'Travel'].includes(course.tag)) {
+      return 'Conversação';
+    }
     const profTags = ['Business', 'Tech', 'Healthcare', 'Legal', 'Engineering', 'Startup', 'Marketing', 'Management', 'Automotive'];
     if (profTags.includes(course.tag)) {
-      return 'Profissionais';
+      return 'Profissional';
     }
-    if (course.id === 'study-abroad-prep' || course.tag === 'Academic') {
-      return 'Estudantes';
+    if (course.tag === 'Culture') {
+      return 'Cultura';
     }
-    return 'Amantes de cultura';
+    return 'Conversação'; // fallback
   };
 
   const filteredCourses = courses.filter(course => {
     const audience = getCourseAudience(course);
     if (selectedFilter === 'Todos') return true;
-    if (selectedFilter === 'Profissional') return audience === 'Profissionais';
-    if (selectedFilter === 'Cultura') return audience === 'Amantes de cultura';
-    if (selectedFilter === 'Acadêmico') return audience === 'Estudantes';
-    return true;
+    return audience === selectedFilter;
   });
 
   const enrolledCourses = filteredCourses.filter(course => enrollments.some(e => e.courseId === course.id));
@@ -54,13 +56,13 @@ const Courses: React.FC = () => {
 
   // Course Categorization Logic
   const conversationCourses = availableCourses.filter(
-    c => c.tag === 'Conversation' || c.tag === 'Essentials' || c.title.toLowerCase().includes('conversation') || c.id === 'basic-english-daily-life'
+    c => getCourseAudience(c) === 'Conversação'
   );
   const grammarCourses = availableCourses.filter(
-    c => c.tag === 'Grammar' || c.title.toLowerCase().includes('grammar')
+    c => getCourseAudience(c) === 'Gramática'
   );
   const specialtyCourses = availableCourses.filter(
-    c => !conversationCourses.some(x => x.id === c.id) && !grammarCourses.some(x => x.id === c.id)
+    c => getCourseAudience(c) === 'Profissional' || getCourseAudience(c) === 'Cultura'
   );
 
   const handleEnrollClick = (courseId: string) => {
@@ -185,7 +187,7 @@ const Courses: React.FC = () => {
           
           {/* Filter Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {['Todos', 'Profissional', 'Cultura', 'Acadêmico'].map((filter) => (
+            {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Cultura'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
@@ -301,160 +303,148 @@ const Courses: React.FC = () => {
           </h2>
 
           {/* 1. Category: Conversation & Topics */}
-          <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-            <div 
-              onClick={() => toggleCategory('conversation')}
-              className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-2xl text-2xl shadow-inner">
-                  💬
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    Prática de Conversação
-                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-full border border-blue-200/35 dark:border-blue-900/35 font-mono">
-                      {conversationCourses.length} {conversationCourses.length === 1 ? 'curso' : 'cursos'}
-                    </span>
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                    Tópicos do cotidiano, diálogos práticos e debates para destravar a sua fluência de forma divertida.
-                  </p>
-                </div>
-              </div>
-              <motion.svg 
-                animate={{ rotate: openCategories.conversation ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+          {conversationCourses.length > 0 && (
+            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
+              <div 
+                onClick={() => toggleCategory('conversation')}
+                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </div>
-
-            <motion.div
-              initial={false}
-              animate={{ height: openCategories.conversation ? 'auto' : 0, opacity: openCategories.conversation ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              {conversationCourses.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-sm">
-                  Nenhum curso disponível nesta categoria para os filtros selecionados.
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-2xl text-2xl shadow-inner">
+                    💬
+                  </div>
+                  <div>
+                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                      Prática de Conversação
+                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-full border border-blue-200/35 dark:border-blue-900/35 font-mono">
+                        {conversationCourses.length} {conversationCourses.length === 1 ? 'curso' : 'cursos'}
+                      </span>
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
+                      Tópicos do cotidiano, diálogos práticos e debates para destravar a sua fluência de forma divertida.
+                    </p>
+                  </div>
                 </div>
-              ) : (
+                <motion.svg 
+                  animate={{ rotate: openCategories.conversation ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </div>
+
+              <motion.div
+                initial={false}
+                animate={{ height: openCategories.conversation ? 'auto' : 0, opacity: openCategories.conversation ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                   {conversationCourses.map((course, index) => renderCourseCard(course, index))}
                 </div>
-              )}
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
+          )}
 
           {/* 2. Category: Grammar & Levels */}
-          <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-            <div 
-              onClick={() => toggleCategory('grammar')}
-              className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 flex items-center justify-center bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-2xl text-2xl shadow-inner">
-                  📚
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    Cursos de Gramática & Níveis
-                    <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded-full border border-amber-200/35 dark:border-amber-900/35 font-mono">
-                      {grammarCourses.length} {grammarCourses.length === 1 ? 'curso' : 'cursos'}
-                    </span>
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                    Aprenda a estruturar frases corretamente, do básico ao avançado, aplicando a gramática de forma prática.
-                  </p>
-                </div>
-              </div>
-              <motion.svg 
-                animate={{ rotate: openCategories.grammar ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+          {grammarCourses.length > 0 && (
+            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
+              <div 
+                onClick={() => toggleCategory('grammar')}
+                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </div>
-
-            <motion.div
-              initial={false}
-              animate={{ height: openCategories.grammar ? 'auto' : 0, opacity: openCategories.grammar ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              {grammarCourses.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-sm">
-                  Nenhum curso disponível nesta categoria para os filtros selecionados.
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-2xl text-2xl shadow-inner">
+                    📚
+                  </div>
+                  <div>
+                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                      Cursos de Gramática & Níveis
+                      <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded-full border border-amber-200/35 dark:border-amber-900/35 font-mono">
+                        {grammarCourses.length} {grammarCourses.length === 1 ? 'curso' : 'cursos'}
+                      </span>
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
+                      Aprenda a estruturar frases corretamente, do básico ao avançado, aplicando a gramática de forma prática.
+                    </p>
+                  </div>
                 </div>
-              ) : (
+                <motion.svg 
+                  animate={{ rotate: openCategories.grammar ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </div>
+
+              <motion.div
+                initial={false}
+                animate={{ height: openCategories.grammar ? 'auto' : 0, opacity: openCategories.grammar ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                   {grammarCourses.map((course, index) => renderCourseCard(course, index))}
                 </div>
-              )}
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
+          )}
 
           {/* 3. Category: Specialty / Professional */}
-          <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-            <div 
-              onClick={() => toggleCategory('specialty')}
-              className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl text-2xl shadow-inner">
-                  💼
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    Especializações Profissionais & Culturais
-                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200/35 dark:border-emerald-900/35 font-mono">
-                      {specialtyCourses.length} {specialtyCourses.length === 1 ? 'curso' : 'cursos'}
-                    </span>
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                    Inglês focado para carreiras de destaque (Médico, Jurídico) ou imersões na cultura americana (Carros, Hip Hop, etc).
-                  </p>
-                </div>
-              </div>
-              <motion.svg 
-                animate={{ rotate: openCategories.specialty ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+          {specialtyCourses.length > 0 && (
+            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
+              <div 
+                onClick={() => toggleCategory('specialty')}
+                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </div>
-
-            <motion.div
-              initial={false}
-              animate={{ height: openCategories.specialty ? 'auto' : 0, opacity: openCategories.specialty ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              {specialtyCourses.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-sm">
-                  Nenhum curso disponível nesta categoria para os filtros selecionados.
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl text-2xl shadow-inner">
+                    💼
+                  </div>
+                  <div>
+                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                      Especializações Profissionais & Culturais
+                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200/35 dark:border-emerald-900/35 font-mono">
+                        {specialtyCourses.length} {specialtyCourses.length === 1 ? 'curso' : 'cursos'}
+                      </span>
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
+                      Inglês focado para carreiras de destaque (Médico, Jurídico) ou imersões na cultura americana (Carros, Hip Hop, etc).
+                    </p>
+                  </div>
                 </div>
-              ) : (
+                <motion.svg 
+                  animate={{ rotate: openCategories.specialty ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </div>
+
+              <motion.div
+                initial={false}
+                animate={{ height: openCategories.specialty ? 'auto' : 0, opacity: openCategories.specialty ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                   {specialtyCourses.map((course, index) => renderCourseCard(course, index))}
                 </div>
-              )}
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
+          )}
 
         </div>
       </div>
