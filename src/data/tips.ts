@@ -28,7 +28,7 @@ export const tips: Tip[] = [
     preview: 'Understand the slang terms that make NBA broadcasts sound like a different language.',
     fullContent: 'When Americans watch NBA games, they use slang that sounds confusing. "He\'s cooking" means a player is playing exceptionally well. "Bucket" means a successful shot. "Drip" refers to stylish clothing or accessories. "Clutch" means performing well under pressure. "Trash talk" is friendly competitive banter between players. Learning these terms will help you understand American sports conversations and participate in them naturally. Next time you watch a game, listen for these phrases and try using them yourself.',
     readTime: '4 min',
-    courseId: 'sports-english'
+    courseId: 'idioms-mastery'
   },
   {
     id: 'tip-3',
@@ -38,7 +38,7 @@ export const tips: Tip[] = [
     preview: 'Why hip hop English is a complete linguistic system, not just "slang".',
     fullContent: 'Hip hop English (AAVE) follows consistent grammatical rules that differ from standard English. The deletion of "is" in sentences like "He working" follows a pattern. The use of "ain\'t" as a negative auxiliary is systematic. This isn\'t "broken English" - it\'s a different English with its own history and rules. When you learn hip hop English, you\'re learning a dialect that has influenced global culture. Respect it as a legitimate form of English, not as "slang" to be used casually.',
     readTime: '5 min',
-    courseId: 'hiphop-culture'
+    courseId: 'music-lyrics-culture'
   },
   {
     id: 'tip-4',
@@ -58,7 +58,7 @@ export const tips: Tip[] = [
     preview: 'The 5-paragraph essay structure that American universities expect.',
     fullContent: 'American academic writing follows a strict formula: introduction with thesis statement, three body paragraphs each with a topic sentence and supporting evidence, and conclusion that restates the thesis. The thesis statement must be the last sentence of your introduction. Each body paragraph should start with a transition word (First, Second, Finally). This structure might feel rigid, but it\'s what American professors expect. Practice this formula and your TOEFL writing score will improve dramatically.',
     readTime: '6 min',
-    courseId: 'study-abroad'
+    courseId: 'advanced-english-topics'
   },
   {
     id: 'tip-6',
