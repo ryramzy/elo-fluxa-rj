@@ -15,6 +15,113 @@ import { sounds } from '../utils/sounds';
 import { VoicePractice } from '../components/course/VoicePractice';
 import { trackEvent } from '../utils/analytics';
 
+// Interactive Multiple Choice Quiz Component
+interface QuizSlideContentProps {
+  slideId: string;
+  questionText: string;
+  options: string[];
+  correctAnswerIndex: number;
+}
+
+const QuizSlideContent: React.FC<QuizSlideContentProps> = ({
+  slideId,
+  questionText,
+  options,
+  correctAnswerIndex
+}) => {
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  // Reset quiz state when slide ID changes
+  useEffect(() => {
+    setSelectedIdx(null);
+    setSubmitted(false);
+  }, [slideId]);
+
+  const handleSelectOption = (idx: number) => {
+    if (submitted) return;
+    setSelectedIdx(idx);
+  };
+
+  const handleSubmit = () => {
+    if (selectedIdx === null || submitted) return;
+    setSubmitted(true);
+    if (selectedIdx === correctAnswerIndex) {
+      sounds.playSuccess();
+    } else {
+      sounds.playError();
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-5 w-full">
+      <p className="text-slate-100 text-base md:text-lg font-bold leading-relaxed">
+        {questionText}
+      </p>
+      
+      <div className="grid grid-cols-1 gap-3">
+        {options.map((option, idx) => {
+          let buttonStyle = "bg-slate-950/45 border-white/5 hover:border-white/15 hover:bg-slate-900/60 text-slate-200";
+          
+          if (selectedIdx === idx) {
+            buttonStyle = "bg-blue-600/15 border-blue-500 text-blue-200 shadow-[0_0_15px_rgba(37,99,235,0.15)]";
+          }
+          
+          if (submitted) {
+            if (idx === correctAnswerIndex) {
+              buttonStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
+            } else if (selectedIdx === idx) {
+              buttonStyle = "bg-rose-500/20 border-rose-500 text-rose-350 shadow-[0_0_15px_rgba(244,63,94,0.2)]";
+            } else {
+              buttonStyle = "bg-slate-950/20 border-white/5 text-slate-500 opacity-50 pointer-events-none";
+            }
+          }
+          
+          return (
+            <button
+              key={idx}
+              disabled={submitted}
+              onClick={() => handleSelectOption(idx)}
+              className={`w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-center justify-between text-xs md:text-sm font-semibold active:scale-[0.99] ${buttonStyle}`}
+            >
+              <span>{option}</span>
+              {submitted && idx === correctAnswerIndex && (
+                <span className="text-emerald-450 text-sm">✅</span>
+              )}
+              {submitted && selectedIdx === idx && idx !== correctAnswerIndex && (
+                <span className="text-rose-400 text-sm">❌</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      
+      {selectedIdx !== null && !submitted && (
+        <button
+          onClick={handleSubmit}
+          className="mt-4 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-98 text-xs md:text-sm uppercase tracking-wider"
+        >
+          Confirmar Resposta
+        </button>
+      )}
+      
+      {submitted && (
+        <div className={`p-4 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 text-xs font-semibold flex items-center gap-2 ${
+          selectedIdx === correctAnswerIndex 
+            ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400' 
+            : 'bg-rose-500/10 border-rose-500/25 text-rose-350'
+        }`}>
+          <span>
+            {selectedIdx === correctAnswerIndex 
+              ? '✨ Excelente! Resposta certa. +10 XP obtido!' 
+              : '❌ Ops, opção incorreta! Leia a dica do tutor e prossiga para revisar.'}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const LessonPage: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
@@ -169,43 +276,98 @@ const LessonPage: React.FC = () => {
         const eloPrompt = parts[3] || '';
 
         let typeLabel = '';
-        if (type === 'VOCAB') typeLabel = 'Vocabulary';
-        else if (type === 'CONCEPT') typeLabel = 'Concept';
-        else if (type === 'EXAMPLE') typeLabel = 'Example';
-        else if (type === 'CULTURE') typeLabel = 'Culture Note';
-        else if (type === 'DRILL') typeLabel = 'Practice Drill';
-        else if (type === 'ROLEPLAY') typeLabel = 'Roleplay Scenario';
-        else if (type === 'REVIEW') typeLabel = 'Review';
+        if (type === 'VOCAB') typeLabel = 'Vocabulário Útil 🏷️';
+        else if (type === 'CONCEPT') typeLabel = 'Conceito Gramatical 💡';
+        else if (type === 'EXAMPLE') typeLabel = 'Exemplo de Conversa 💬';
+        else if (type === 'CULTURE') typeLabel = 'Nota de Cultura Americana 🇺🇸';
+        else if (type === 'DRILL') typeLabel = 'Treino de Fala 🗣️';
+        else if (type === 'ROLEPLAY') typeLabel = 'Cenário de Roleplay 🎭';
+        else if (type === 'REVIEW') typeLabel = 'Revisão da Aula ✅';
+        else if (type === 'QUIZ') typeLabel = 'Quiz Interativo ⚡';
+
+        // Set up premium styled border glow wrappers
+        let borderGlowClass = "border-white/10 bg-slate-900/40";
+        if (type === 'VOCAB') {
+          borderGlowClass = "border-amber-500/25 bg-gradient-to-br from-amber-950/10 via-slate-900/40 to-slate-900/50 shadow-[0_0_20px_rgba(245,158,11,0.03)]";
+        } else if (type === 'CONCEPT') {
+          borderGlowClass = "border-blue-500/25 bg-gradient-to-br from-blue-950/10 via-slate-900/40 to-slate-900/50 shadow-[0_0_20px_rgba(59,130,246,0.03)]";
+        } else if (type === 'CULTURE') {
+          borderGlowClass = "border-purple-500/25 bg-gradient-to-br from-purple-950/10 via-slate-900/40 to-slate-900/50 shadow-[0_0_20px_rgba(168,85,247,0.03)]";
+        } else if (type === 'DRILL' || type === 'ROLEPLAY') {
+          borderGlowClass = "border-pink-500/25 bg-gradient-to-br from-pink-950/10 via-slate-900/40 to-slate-900/50 shadow-[0_0_20px_rgba(236,72,153,0.03)]";
+        } else if (type === 'QUIZ') {
+          borderGlowClass = "border-indigo-500/25 bg-gradient-to-br from-indigo-950/10 via-slate-900/40 to-slate-900/50 shadow-[0_0_20px_rgba(99,102,241,0.03)]";
+        }
+
+        const isQuiz = type === 'QUIZ';
+        let slideBody = null;
+
+        if (isQuiz) {
+          const quizParts = body.split('[OPTIONS]');
+          const questionText = quizParts[0].trim();
+          let quizOptions: string[] = [];
+          let correctAnswerIndex = -1;
+          
+          if (quizParts[1]) {
+            const optionsAndCorrect = quizParts[1].split('[CORRECT]');
+            quizOptions = optionsAndCorrect[0]
+              .split('\n')
+              .map(o => o.trim())
+              .filter(o => o !== '');
+            if (optionsAndCorrect[1]) {
+              correctAnswerIndex = parseInt(optionsAndCorrect[1].trim(), 10) - 1;
+            }
+          }
+
+          slideBody = (
+            <QuizSlideContent
+              slideId={`slide-${idx}`}
+              questionText={questionText}
+              options={quizOptions}
+              correctAnswerIndex={correctAnswerIndex}
+            />
+          );
+        } else {
+          slideBody = body && (
+            <div className="text-slate-100 text-sm md:text-base leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto prose prose-invert max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {body}
+              </ReactMarkdown>
+            </div>
+          );
+        }
 
         slides.push({
           id: `slide-${idx}`,
           title: heading,
-          spokenText: body, // Allows the SlideViewer to read the text
-          type: type,       // Pass slide type (INTRO, VOCAB, etc.) to slide viewer
+          spokenText: isQuiz ? '' : body,
+          type: type,
           content: (
-            <div className="flex flex-col h-full space-y-6">
+            <div className={`p-6 md:p-8 rounded-3xl border backdrop-blur-md transition-all ${borderGlowClass} flex flex-col h-full space-y-4`}>
               {typeLabel && (
-                <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">
+                <span className={`text-[10px] font-extrabold tracking-widest uppercase ${
+                  type === 'VOCAB' ? 'text-amber-400' :
+                  type === 'CONCEPT' ? 'text-blue-400' :
+                  type === 'CULTURE' ? 'text-purple-400' :
+                  type === 'DRILL' || type === 'ROLEPLAY' ? 'text-pink-400' :
+                  'text-indigo-400'
+                }`}>
                   {typeLabel}
                 </span>
               )}
-              {body && (
-                <div className="text-slate-100 text-lg md:text-xl leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto prose prose-invert max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {body}
-                  </ReactMarkdown>
-                </div>
-              )}
+              
+              {slideBody}
+              
               {eloPrompt && (type === 'DRILL' || type === 'ROLEPLAY') ? (
                 <div className="mt-4">
                   <VoicePractice eloPrompt={eloPrompt} />
                 </div>
               ) : eloPrompt ? (
-                <div className="mt-8 bg-blue-900/40 border border-blue-500/30 rounded-2xl p-5 relative">
-                  <div className="absolute -top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-blue-900/50">
-                    <span className="text-base">✨</span> Elo
+                <div className="mt-6 bg-blue-950/40 border border-blue-500/20 rounded-2xl p-4 relative shadow-[0_4px_12px_rgba(59,130,246,0.05)]">
+                  <div className="absolute -top-3 left-4 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span>✨</span> Elo
                   </div>
-                  <p className="text-blue-100 italic text-base md:text-lg pt-2">
+                  <p className="text-blue-100 italic text-sm md:text-base pt-1">
                     "{eloPrompt}"
                   </p>
                 </div>
@@ -215,7 +377,6 @@ const LessonPage: React.FC = () => {
         });
       });
     } else {
-      // Fallback
       slides.push({
         id: 'intro',
         title: lesson.title,

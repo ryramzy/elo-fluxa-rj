@@ -163,6 +163,11 @@ function AppShell() {
                   <AiCoachPage />
                 </ProtectedRoute>
               } />
+              <Route path="/video-call/:roomId" element={
+                <ProtectedRoute>
+                  <VideoCallPage />
+                </ProtectedRoute>
+              } />
 
               {/* Admin-only routes */}
               <Route path="/admin" element={

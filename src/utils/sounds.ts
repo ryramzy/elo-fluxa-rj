@@ -62,6 +62,21 @@ class SoundEngine {
     }
   }
 
+  public playError() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+
+      const t = this.ctx.currentTime;
+      
+      // A low, flat warning double beep (C3, B2)
+      this.playNote(130.81, t, 0.15);       // C3
+      this.playNote(123.47, t + 0.1, 0.3);   // B2
+    } catch (err) {
+      console.warn('Audio playback failed', err);
+    }
+  }
+
   private playNote(frequency: number, startTime: number, duration: number) {
     if (!this.ctx) return;
 
