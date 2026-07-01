@@ -34,6 +34,7 @@ import Dicas from './src/pages/Dicas';
 import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
 import AiCoachPage from './src/pages/AiCoachPage';
+import VideoCallPage from './src/pages/VideoCallPage';
 import { GuestBanner } from './src/components/GuestBanner';
 
 
