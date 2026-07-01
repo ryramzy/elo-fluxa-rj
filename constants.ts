@@ -17,7 +17,8 @@ export const WHATSAPP_MESSAGES = {
   subscription: "Oi%20Matt!%20Quero%20assinar%20o%20plano%20Pro",
   booking: "Oi%20Matt!%20Quero%20agendar%20uma%20aula",
   onboarding: "Oi%20Matt!%20Acabei%20de%20criar%20minha%20conta%20no%20Elo%21",
-  general: "Oi%20Matt!%20Preciso%20de%20ajuda"
+  general: "Oi%20Matt!%20Preciso%20de%20ajuda",
+  corporate: "Oi%20Matt!%20Quero%20saber%20mais%20sobre%20os%20planos%20corporativos%20da%20Elo%20para%20minha%20empresa"
 };
 
 export const getWhatsAppLink = (context: keyof typeof WHATSAPP_MESSAGES) => {

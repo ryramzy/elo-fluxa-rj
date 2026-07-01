@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaWhatsapp } from 'react-icons/fa';
-import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
+import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE, getWhatsAppLink } from '../constants.ts';
 import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
 import { NotificationDropdown } from '../src/components/navigation/NotificationDropdown';
@@ -124,45 +124,87 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             <span className={logoColorClass}>{BRAND_NAME}</span>
           </a>
           
-          {user && (
-            <div className={`hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${textColorClass}`}>
-              <a
-                href="/dashboard"
-                onClick={(e) => handleLinkClick(e, 'dashboard')}
-                className={getLinkClasses('dashboard')}
-              >
-                Dashboard
-              </a>
-              <a
-                href="/courses"
-                onClick={(e) => handleLinkClick(e, 'courses')}
-                className={getLinkClasses('courses')}
-              >
-                Cursos
-              </a>
-              <a
-                href="/ai-coach"
-                onClick={(e) => handleLinkClick(e, 'ai-coach')}
-                className={getLinkClasses('ai-coach')}
-              >
-                Tutor IA
-              </a>
-              <a
-                href="/dashboard"
-                onClick={(e) => handleLinkClick(e, 'agenda')}
-                className={getLinkClasses('agenda')}
-              >
-                Agenda
-              </a>
-              <a
-                href="/profile"
-                onClick={(e) => handleLinkClick(e, 'profile')}
-                className={getLinkClasses('profile')}
-              >
-                Perfil
-              </a>
-            </div>
-          )}
+          <div className={`hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${textColorClass}`}>
+            {user ? (
+              <>
+                <a
+                  href="/dashboard"
+                  onClick={(e) => handleLinkClick(e, 'dashboard')}
+                  className={getLinkClasses('dashboard')}
+                >
+                  Dashboard
+                </a>
+                <a
+                  href="/courses"
+                  onClick={(e) => handleLinkClick(e, 'courses')}
+                  className={getLinkClasses('courses')}
+                >
+                  Cursos
+                </a>
+                <a
+                  href="/ai-coach"
+                  onClick={(e) => handleLinkClick(e, 'ai-coach')}
+                  className={getLinkClasses('ai-coach')}
+                >
+                  Tutor IA
+                </a>
+                <a
+                  href="/dashboard"
+                  onClick={(e) => handleLinkClick(e, 'agenda')}
+                  className={getLinkClasses('agenda')}
+                >
+                  Agenda
+                </a>
+                <a
+                  href={getWhatsAppLink('corporate')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={getLinkClasses('corporate')}
+                >
+                  Para Empresas 💼
+                </a>
+                <a
+                  href="/profile"
+                  onClick={(e) => handleLinkClick(e, 'profile')}
+                  className={getLinkClasses('profile')}
+                >
+                  Perfil
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/sobre"
+                  onClick={(e) => { e.preventDefault(); navigate('/sobre'); }}
+                  className={getLinkClasses('sobre')}
+                >
+                  Sobre
+                </a>
+                <a
+                  href="/courses"
+                  onClick={(e) => { e.preventDefault(); navigate('/courses'); }}
+                  className={getLinkClasses('courses')}
+                >
+                  Cursos
+                </a>
+                <a
+                  href={getWhatsAppLink('corporate')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={getLinkClasses('corporate')}
+                >
+                  Para Empresas 💼
+                </a>
+                <a
+                  href="/dicas"
+                  onClick={(e) => { e.preventDefault(); navigate('/dicas'); }}
+                  className={getLinkClasses('dicas')}
+                >
+                  Dicas
+                </a>
+              </>
+            )}
+          </div>
 
           <div className={`flex items-center gap-4 z-50 relative transition-colors duration-500 ${textColorClass}`}>
             {/* WhatsApp Icon Button */}
@@ -261,7 +303,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
           mobileMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
           <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-white">
-            {user && (
+            {user ? (
               <>
                 <a
                   href="/dashboard"
@@ -292,11 +334,51 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   Agenda
                 </a>
                 <a
+                  href={getWhatsAppLink('corporate')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-400 transition-colors font-medium text-emerald-400"
+                >
+                  Para Empresas 💼
+                </a>
+                <a
                   href="/profile"
                   onClick={(e) => handleLinkClick(e, 'profile')}
                   className={activeSection === 'profile' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
                 >
                   Perfil
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/sobre"
+                  onClick={(e) => { setMobileMenuOpen(false); navigate('/sobre'); }}
+                  className="hover:text-blue-400 transition-colors font-medium"
+                >
+                  Sobre
+                </a>
+                <a
+                  href="/courses"
+                  onClick={(e) => { setMobileMenuOpen(false); navigate('/courses'); }}
+                  className="hover:text-blue-400 transition-colors font-medium"
+                >
+                  Cursos
+                </a>
+                <a
+                  href={getWhatsAppLink('corporate')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-400 transition-colors font-medium text-emerald-400"
+                >
+                  Para Empresas 💼
+                </a>
+                <a
+                  href="/dicas"
+                  onClick={(e) => { setMobileMenuOpen(false); navigate('/dicas'); }}
+                  className="hover:text-blue-400 transition-colors font-medium"
+                >
+                  Dicas
                 </a>
               </>
             )}
