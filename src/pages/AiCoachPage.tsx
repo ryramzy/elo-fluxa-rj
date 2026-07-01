@@ -1076,7 +1076,7 @@ const AiCoachPage: React.FC = () => {
                     className="flex-1 bg-gradient-to-r from-blue-900/40 to-indigo-900/30 border border-blue-500/20 hover:border-blue-500/40 text-blue-200 p-3 rounded-2xl text-xs font-bold text-left transition-all active:scale-97 flex flex-col gap-0.5"
                   >
                     <span className="text-[10px] text-blue-450 uppercase tracking-widest font-extrabold">Option A (High Risk / Expressive)</span>
-                    <span className="truncate">"{selectedScenario.phrases[0].english}"</span>
+                    <span className="whitespace-normal break-words">"{selectedScenario.phrases[0].english}"</span>
                   </button>
                   <button
                     type="button"
@@ -1087,7 +1087,7 @@ const AiCoachPage: React.FC = () => {
                     className="flex-1 bg-gradient-to-r from-slate-900/40 to-slate-800/30 border border-white/10 hover:border-white/20 text-slate-350 p-3 rounded-2xl text-xs font-bold text-left transition-all active:scale-97 flex flex-col gap-0.5"
                   >
                     <span className="text-[10px] text-slate-500 uppercase tracking-widest font-extrabold">Option B (Safe / Standard)</span>
-                    <span className="truncate">"{selectedScenario.phrases[1].english}"</span>
+                    <span className="whitespace-normal break-words">"{selectedScenario.phrases[1].english}"</span>
                   </button>
                 </div>
               )}

@@ -404,12 +404,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-slate-700/80" />
             <span className="text-xs font-medium text-slate-400">Booked by Others</span>
-          </div>
-        </div>
       </div>
 
       {/* Calendar Grid Container */}
-      <div className="relative p-6 md:p-8 bg-[#0f172a]/40 min-h-[500px]">
+      <div className="relative p-0 md:p-8 bg-[#0f172a]/40 min-h-[500px]">
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f172a]/50 backdrop-blur-sm z-10">
             <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
@@ -417,7 +415,97 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         ) : null}
 
-        <div className="overflow-x-auto pb-4">
+        {/* 1. Mobile Day Selector (Tabs) - Visible only on mobile */}
+        <div className="md:hidden flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-6 pt-6">
+          {weekDates.map((date, idx) => {
+            const dateStr = date.toLocaleDateString('en-CA');
+            const isToday = dateStr === new Date().toLocaleDateString('en-CA');
+            const isActive = activeMobileDay === idx;
+            
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveMobileDay(idx)}
+                className={`flex-1 min-w-[70px] flex flex-col items-center py-2.5 px-3 rounded-2xl border transition-all duration-300 ${
+                  isActive
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                    : isToday
+                    ? 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                    : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                }`}
+              >
+                <span className="text-[10px] font-bold uppercase tracking-wider mb-0.5">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </span>
+                <span className="text-lg font-black">
+                  {date.getDate()}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 2. Mobile Slots List - Visible only on mobile */}
+        <div className="md:hidden space-y-3 px-6 pb-6">
+          {timeSlots.map((time) => {
+            const date = weekDates[activeMobileDay];
+            const dateStr = date.toLocaleDateString('en-CA');
+            const existingBooking = getBooking(dateStr, time);
+            const past = isPast(dateStr, time);
+            const working = isMattWorking(dateStr, time);
+            const showAsUnavailable = past || !working;
+            
+            let slotState = 'available';
+            if (existingBooking) {
+              if (existingBooking.userId === currentUserId) slotState = 'mine';
+              else slotState = 'booked';
+            }
+
+            const slotKey = `${dateStr}_${time}`;
+            const currentSlotLoading = slotLoadingMap[slotKey];
+
+            return (
+              <div key={time} className="flex items-center justify-between bg-slate-900/20 border border-slate-850 p-3.5 rounded-2xl gap-4">
+                <span className="text-slate-200 text-sm font-extrabold shrink-0">{time}</span>
+                <div className="flex-1 max-w-[200px] h-12 relative">
+                  {showAsUnavailable ? (
+                    <div className="absolute inset-0 rounded-xl bg-slate-950/20 border border-slate-850 flex items-center justify-center">
+                      <span className="text-xs text-slate-600 font-medium">— Indisponível</span>
+                    </div>
+                  ) : slotState === 'available' ? (
+                    <button
+                      onClick={() => handleBookSlot(dateStr, time)}
+                      disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
+                      className={`absolute inset-0 w-full h-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'pointer-events-none opacity-40' : ''}`}
+                    >
+                      {currentSlotLoading === 'booking' ? (
+                        <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+                      ) : (
+                        'Reservar'
+                      )}
+                    </button>
+                  ) : slotState === 'mine' ? (
+                    <button
+                      onClick={() => handleCancelBooking(existingBooking!.id)}
+                      disabled={isAnySlotBooking || cancelling}
+                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancelar
+                    </button>
+                  ) : (
+                    <div className="absolute inset-0 rounded-xl bg-slate-850/20 border border-slate-850/40 text-slate-500 text-xs font-semibold flex items-center justify-center cursor-not-allowed">
+                      Reservado
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 3. Desktop Calendar Grid - Visible only on Desktop/Tablet */}
+        <div className="hidden md:block overflow-x-auto pb-4">
           <div className="min-w-[800px]">
             {/* Days Header */}
             <div className="grid grid-cols-6 gap-4 mb-4">
@@ -471,7 +559,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                         {showAsUnavailable ? (
                           // Unavailable slot
                           <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-                            <span className="text-xs text-slate-600 font-medium">—</span>
+                            <span className="text-xs text-slate-650 font-medium">—</span>
                           </div>
                         ) : slotState === 'available' ? (
                           // Available slot
