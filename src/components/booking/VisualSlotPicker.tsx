@@ -404,6 +404,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-slate-700/80" />
             <span className="text-xs font-medium text-slate-400">Booked by Others</span>
+          </div>
+        </div>
       </div>
 
       {/* Calendar Grid Container */}
