@@ -1,455 +1,383 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { courses } from '../data/courses';
-import { useAuth } from '../hooks/useAuth';
-import { useEnrollments } from '../hooks/useEnrollments';
+import { 
+  LuBookOpen, 
+  LuTerminal, 
+  LuGlobe, 
+  LuSparkles, 
+  LuFlame, 
+  LuTrophy, 
+  LuLock, 
+  LuUnlock, 
+  LuPlay, 
+  LuCheckCircle2, 
+  LuChevronRight,
+  LuBriefcase
+} from 'react-icons/lu';
 
-const Courses: React.FC = () => {
+// --- TYPE DEFINITIONS ---
+export interface RPGScenario {
+  id: string;
+  title: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  backgroundImage: string;
+  initialCharacter: {
+    name: string;
+    avatarBase: string;
+    initialEmotion: 'idle' | 'happy' | 'impatient' | 'annoyed';
+  };
+  requiredGoals: string[];
+}
+
+export interface GamifiedCourse {
+  id: string;
+  title: string;
+  description: string;
+  category: 'Technical' | 'Conversational' | 'Professional' | 'Cultural';
+  targetIndustry?: 'tech' | 'finance' | 'legal' | 'general';
+  xpReward: number;
+  totalLessons: number;
+  lessonsCompleted: number;
+  isLocked: boolean;
+  themeColor: 'cyber-blue' | 'amber' | 'purple' | 'pink';
+  lessons: {
+    id: string;
+    title: string;
+    type: 'quiz_deck' | 'visual_novel_rpg';
+    scenarios?: RPGScenario[];
+  }[];
+}
+
+// --- MOCK DATABASE DATA (src/data/courses.ts equivalent) ---
+const GAMIFIED_COURSES: GamifiedCourse[] = [
+  {
+    id: "tech_eng_01",
+    title: "English for Software Developers",
+    description: "Navigate production outages, code reviews, and architecture debates with American teams.",
+    category: "Technical",
+    targetIndustry: "tech",
+    xpReward: 1200,
+    totalLessons: 4,
+    lessonsCompleted: 2,
+    isLocked: false,
+    themeColor: "cyber-blue",
+    lessons: [
+      {
+        id: "dev_lesson_1",
+        title: "Handling the Live Production Crash",
+        type: "visual_novel_rpg",
+        scenarios: [
+          {
+            id: "scen_prod_crash",
+            title: "The Broken Deploy with Chloe",
+            difficulty: "Advanced",
+            backgroundImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
+            initialCharacter: {
+              name: "Chloe (SF Product Manager)",
+              avatarBase: "chloe",
+              initialEmotion: "annoyed"
+            },
+            requiredGoals: [
+              "Isolate the deployment root cause flawlessly",
+              "Explain the fix without deep infrastructure jargon",
+              "Negotiate an acceptable service restoration timeline"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "biz_talk_02",
+    title: "The Silicon Valley Pitch Deck",
+    description: "Defend your application's metrics, scalability, and AI integrations to venture capitalists.",
+    category: "Professional",
+    targetIndustry: "tech",
+    xpReward: 1500,
+    totalLessons: 3,
+    lessonsCompleted: 0,
+    isLocked: false,
+    themeColor: "pink",
+    lessons: [
+      {
+        id: "biz_lesson_1",
+        title: "The Seed Round Q&A",
+        type: "visual_novel_rpg",
+        scenarios: [
+          {
+            id: "scen_vc_pitch",
+            title: "Pitching Bobby at Austin Ventures",
+            difficulty: "Advanced",
+            backgroundImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+            initialCharacter: {
+              name: "Bobby (Texas VC Lead)",
+              avatarBase: "bobby",
+              initialEmotion: "idle"
+            },
+            requiredGoals: [
+              "Present application acquisition hooks clearly",
+              "Defend cloud infrastructure spend projections",
+              "Handle aggressive pushback on market competitors"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "conv_travel_03",
+    title: "Immersive Survival English",
+    description: "High-pressure real-world simulations for airport customs, diner ordering, and transit emergencies.",
+    category: "Conversational",
+    xpReward: 800,
+    totalLessons: 5,
+    lessonsCompleted: 5,
+    isLocked: false,
+    themeColor: "amber",
+    lessons: [
+      {
+        id: "conv_lesson_1",
+        title: "JFK Border Controls",
+        type: "visual_novel_rpg",
+        scenarios: [
+          {
+            id: "scen_jfk_customs",
+            title: "Passing Officer Davis at Border Security",
+            difficulty: "Intermediate",
+            backgroundImage: "https://images.unsplash.com/photo-1544016768-982d1554f0b9",
+            initialCharacter: {
+              name: "Officer Davis (JFK Security)",
+              avatarBase: "davis",
+              initialEmotion: "impatient"
+            },
+            requiredGoals: [
+              "State your professional consulting duration accurately",
+              "Declare visa status parameters cleanly",
+              "Maintain calm delivery under active timer pressure"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "corp_legal_04",
+    title: "Enterprise Trust & Legal Frameworks",
+    description: "B2B specific scenarios reviewing client compliance data, protocols, and national SEO strategies.",
+    category: "Professional",
+    targetIndustry: "legal",
+    xpReward: 2000,
+    totalLessons: 6,
+    lessonsCompleted: 0,
+    isLocked: true, // Premium/Corporate Gated
+    themeColor: "purple",
+    lessons: []
+  }
+];
+
+export default function CoursesPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { enrollments } = useEnrollments(user?.uid || '');
-  const [selectedFilter, setSelectedFilter] = useState('Todos');
-  const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
-
-  // Collapsible Accordion States
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
-    conversation: true,
-    grammar: true,
-    specialty: true,
-  });
-
-  const toggleCategory = (cat: string) => {
-    setOpenCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+  const [selectedCourse, setSelectedCourse] = useState<GamifiedCourse | null>(null);
+  
+  // Simulated user global details
+  const userProfile = {
+    xp: 3450,
+    streak: 12,
+    level: 4,
+    organizationId: "mercor_corp_2026" // Simulating active corporate tenant link
   };
 
-  const getCourseAudience = (course: any) => {
-    if (course.tag === 'Grammar') {
-      return 'Gramática';
+  // Explicit dynamic Tailwind color theme mapping matrix
+  const themeMatrix = {
+    'cyber-blue': {
+      bgGlow: 'hover:shadow-[0_0_25px_rgba(56,189,248,0.25)]',
+      border: 'border-sky-500/30 hover:border-sky-400',
+      text: 'text-sky-400',
+      badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+      progress: 'bg-sky-500'
+    },
+    'amber': {
+      bgGlow: 'hover:shadow-[0_0_25px_rgba(251,191,36,0.25)]',
+      border: 'border-amber-500/30 hover:border-amber-400',
+      text: 'text-amber-400',
+      badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      progress: 'bg-amber-500'
+    },
+    'purple': {
+      bgGlow: 'hover:shadow-[0_0_25px_rgba(168,85,247,0.25)]',
+      border: 'border-purple-500/30 hover:border-purple-400',
+      text: 'text-purple-400',
+      badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+      progress: 'bg-purple-500'
+    },
+    'pink': {
+      bgGlow: 'hover:shadow-[0_0_25px_rgba(244,63,94,0.25)]',
+      border: 'border-pink-500/30 hover:border-pink-400',
+      text: 'text-pink-400',
+      badge: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+      progress: 'bg-pink-500'
     }
-    if (['Conversation', 'Essentials', 'Travel'].includes(course.tag)) {
-      return 'Conversação';
-    }
-    const profTags = ['Business', 'Tech', 'Healthcare', 'Legal', 'Engineering', 'Startup', 'Marketing', 'Management', 'Automotive'];
-    if (profTags.includes(course.tag)) {
-      return 'Profissional';
-    }
-    if (course.tag === 'Culture') {
-      return 'Cultura';
-    }
-    return 'Conversação'; // fallback
-  };
-
-  const filteredCourses = courses.filter(course => {
-    const audience = getCourseAudience(course);
-    if (selectedFilter === 'Todos') return true;
-    return audience === selectedFilter;
-  });
-
-  const enrolledCourses = filteredCourses.filter(course => enrollments.some(e => e.courseId === course.id));
-  const availableCourses = filteredCourses.filter(course => !enrollments.some(e => e.courseId === course.id));
-
-  // Course Categorization Logic
-  const conversationCourses = availableCourses.filter(
-    c => getCourseAudience(c) === 'Conversação'
-  );
-  const grammarCourses = availableCourses.filter(
-    c => getCourseAudience(c) === 'Gramática'
-  );
-  const specialtyCourses = availableCourses.filter(
-    c => getCourseAudience(c) === 'Profissional' || getCourseAudience(c) === 'Cultura'
-  );
-
-  const handleEnrollClick = (courseId: string) => {
-    const enrollment = enrollments.find(e => e.courseId === courseId);
-    
-    if (enrollment) {
-      let nextLessonId = enrollment.activeLessonId;
-      if (!nextLessonId) {
-        const course = courses.find(c => c.id === courseId);
-        const completed = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
-        const firstUncompleted = course?.lessons.find(l => !completed.includes(l.id));
-        nextLessonId = firstUncompleted?.id || course?.lessons?.[0]?.id;
-      }
-      
-      if (nextLessonId) {
-        navigate(`/courses/${courseId}/lessons/${nextLessonId}`);
-        return;
-      }
-    }
-    
-    navigate(`/courses/${courseId}`);
-  };
-
-  const getProgressPercentage = (courseId: string) => {
-    const enrollment = enrollments.find(e => e.courseId === courseId);
-    if (!enrollment) return 0;
-    return typeof enrollment.progress === 'number' ? enrollment.progress : 0;
-  };
-
-  const getButtonText = (courseId: string) => {
-    const enrollment = enrollments.find(e => e.courseId === courseId);
-    const progress = getProgressPercentage(courseId);
-    
-    if (!enrollment) return 'Ver curso';
-    if (progress === 100) return 'Revisar';
-    return 'Continuar';
-  };
-
-  // Helper Course Card Renderer
-  const renderCourseCard = (course: typeof courses[0], index: number) => {
-    const isHovered = hoveredCourse === course.id;
-    return (
-      <motion.div
-        key={course.id}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: index * 0.05 }}
-        whileHover={{ y: -6, scale: 1.015 }}
-        className={`bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border transition-all cursor-pointer shadow-md flex flex-col h-full ${
-          isHovered 
-            ? 'shadow-xl border-blue-400 dark:border-blue-500/50 shadow-blue-500/5' 
-            : 'border-slate-200/80 dark:border-slate-700/80'
-        }`}
-        onMouseEnter={() => setHoveredCourse(course.id)}
-        onMouseLeave={() => setHoveredCourse(null)}
-        onClick={() => handleEnrollClick(course.id)}
-      >
-        <div className="relative h-44 overflow-hidden">
-          <img
-            src={course.imageUrl}
-            alt={course.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
-          <div className="absolute inset-0" style={{ backgroundColor: (course.accentColor || '#3B82F6') + '20' }} />
-          <div className="absolute bottom-3 left-4 text-3xl drop-shadow-md">{course.emoji}</div>
-          <div className="absolute top-4 right-4">
-            <span className="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm" style={{ backgroundColor: course.accentColor || '#3B82F6' }}>
-              {course.tag}
-            </span>
-          </div>
-        </div>
-
-        <div className="p-5 flex flex-col flex-1">
-          <h4 className="font-extrabold text-slate-900 dark:text-slate-100 mb-1.5 text-base md:text-lg hover:text-blue-500 transition-colors line-clamp-1">
-            {course.title}
-          </h4>
-          <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 flex-1 leading-relaxed">
-            {course.description}
-          </p>
-          
-          <div className="flex items-center justify-between mb-4 border-t border-slate-100 dark:border-slate-700/50 pt-3">
-            <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full font-medium">
-              {course.audience || 'Todos os níveis'}
-            </span>
-            <span className="text-sm font-semibold" style={{ color: course.accentColor || '#3B82F6' }}>
-              +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
-            </span>
-          </div>
-
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5 font-medium">
-            <span>📚 {course.lessons.length} aulas</span>
-            <span>·</span>
-            <span>🗣️ Professor nativo</span>
-          </div>
-
-          <button
-            className="w-full py-2.5 rounded-xl font-bold transition-all text-white shadow-sm text-sm"
-            style={{ backgroundColor: course.accentColor || '#3B82F6' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = (course.accentColor || '#3B82F6') + 'DD'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = course.accentColor || '#3B82F6'}
-          >
-            {getButtonText(course.id)}
-          </button>
-        </div>
-      </motion.div>
-    );
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100 pt-24 pb-20 px-6 md:px-12 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Page Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4 tracking-tight">
-            Todos os Cursos
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Escolha seu caminho de aprendizado e comece a falar inglês americano de verdade com a Elo
-          </p>
-          
-          {/* Filter Pills */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Cultura'].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setSelectedFilter(filter)}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all shadow-sm ${
-                  selectedFilter === filter
-                    ? 'bg-blue-600 text-white shadow-blue-500/20'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700/60'
-                }`}
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 font-sans selection:bg-sky-500/30 pt-24">
+      
+      {/* 🏛️ HEADER & GLOBAL TRACK METRICS BANNER */}
+      <header className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-slate-900/40 border border-slate-800/60 p-6 rounded-2xl backdrop-blur-md">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-100 via-slate-200 to-sky-400 bg-clip-text text-transparent">
+              Trilhas de Aprendizado
+            </h1>
+            {userProfile.organizationId && (
+              <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.05)]">
+                <LuBriefcase size={12} /> Tech Track Verified
+              </span>
+            )}
+          </div>
+          <p className="text-slate-400 text-sm">Escolha seu cenário e domine a conversação em tempo real.</p>
+        </div>
+
+        <div className="flex items-center gap-6 self-stretch md:self-auto justify-around bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+          <div className="flex items-center gap-2">
+            <LuTrophy className="text-amber-400" size={20} />
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Nível {userProfile.level}</p>
+              <p className="text-sm font-extrabold text-slate-200">{userProfile.xp} XP</p>
+            </div>
+          </div>
+          <div className="h-8 w-px bg-slate-800"></div>
+          <div className="flex items-center gap-2">
+            <LuFlame className="text-orange-500 animate-pulse" size={20} />
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Ofensiva</p>
+              <p className="text-sm font-extrabold text-slate-200">{userProfile.streak} Dias</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 🗺️ THE GAME CARD SELECTION GRID MAP */}
+      <main className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {GAMIFIED_COURSES.map((course) => {
+          const colors = themeMatrix[course.themeColor];
+          const progressPercent = Math.round((course.lessonsCompleted / course.totalLessons) * 100) || 0;
+
+          return (
+            <motion.div
+              key={course.id}
+              onClick={() => !course.isLocked && setSelectedCourse(course)}
+              whileHover={!course.isLocked ? { y: -4 } : {}}
+              className={`group relative bg-slate-900/40 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer backdrop-blur-sm select-none ${colors.bgGlow} ${course.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {/* Top Row Status Flags */}
+              <div className="flex justify-between items-center mb-4">
+                <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
+                  {course.category}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-400">+{course.xpReward} XP</span>
+                  {course.isLocked ? <LuLock size={14} className="text-slate-500" /> : <LuUnlock size={14} className="text-slate-400 opacity-40" />}
+                </div>
+              </div>
+
+              {/* Course Identity Details */}
+              <h3 className="text-xl font-bold mb-2 group-hover:text-slate-50 text-slate-100 transition-colors">
+                {course.title}
+              </h3>
+              <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-3">
+                {course.description}
+              </p>
+
+              {/* Progress System Elements */}
+              <div className="mt-auto">
+                <div className="flex justify-between items-center text-xs mb-1.5 font-medium text-slate-400">
+                  <span>Progresso</span>
+                  <span>{course.lessonsCompleted}/{course.totalLessons} Lições</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
+                  <div 
+                    className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </main>
+
+      {/* 🎭 SLIDE-DOWN TARGET CONTENT DRAWER */}
+      {selectedCourse && (
+        <section className="max-w-7xl mx-auto bg-gradient-to-b from-slate-900/80 to-slate-950 border border-slate-800 p-8 rounded-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-100">
+                <LuBookOpen className={themeMatrix[selectedCourse.themeColor].text} size={24} />
+                {selectedCourse.title}
+              </h2>
+              <p className="text-slate-400 text-sm mt-1">Selecione uma lição prática abaixo para carregar o simulador de RPG.</p>
+            </div>
+            <button 
+              onClick={() => setSelectedCourse(null)}
+              className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-350 rounded-md border border-slate-750 transition-colors"
+            >
+              Fechar Painel
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {selectedCourse.lessons.map((lesson) => (
+              <div 
+                key={lesson.id}
+                className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-slate-700 transition-all"
               >
-                {filter}
-              </button>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded">
+                      {lesson.type === 'visual_novel_rpg' ? 'RPG Imersivo' : 'Quiz Deck'}
+                    </span>
+                    <h4 className="text-md font-bold text-slate-200">{lesson.title}</h4>
+                  </div>
+
+                  {/* Render Character Preview chips and goal list strings natively */}
+                  {lesson.scenarios?.map((scen) => (
+                    <div key={scen.id} className="mt-3 bg-slate-950/40 p-3 rounded-lg border border-slate-900">
+                      <div className="flex items-center gap-3 mb-2.5">
+                        <div className="w-5 h-5 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
+                          {scen.initialCharacter.avatarBase[0]}
+                        </div>
+                        <span className="text-xs text-slate-300 font-medium">Interação: <strong className="text-slate-100">{scen.initialCharacter.name}</strong></span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full">
+                          {scen.difficulty}
+                        </span>
+                      </div>
+
+                      <ul className="space-y-1.5">
+                        {scen.requiredGoals.map((goal, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-xs text-slate-400">
+                            <LuCheckCircle2 size={13} className="text-slate-600 shrink-0" />
+                            <span>{goal}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => navigate(`/ai-coach?lesson=${lesson.id}`)}
+                  className="w-full md:w-auto shrink-0 flex items-center justify-center gap-2 px-5 py-3 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-slate-950 text-sm font-bold rounded-xl shadow-[0_4px_14px_rgba(14,165,233,0.3)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.4)] transition-all"
+                >
+                  <LuPlay size={16} fill="currentColor" /> Iniciar Simulação
+                </button>
+              </div>
             ))}
           </div>
-        </div>
+        </section>
+      )}
 
-        {/* Enrolled Courses Section */}
-        {enrolledCourses.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2.5">
-              <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-              </svg>
-              Meus Cursos em Andamento
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {enrolledCourses.map((course, index) => {
-                const progress = getProgressPercentage(course.id);
-                const isHovered = hoveredCourse === course.id;
-                
-                return (
-                  <motion.div
-                    key={course.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: index * 0.05 }}
-                    whileHover={{ y: -6, scale: 1.015 }}
-                    className={`bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border transition-all cursor-pointer shadow-md flex flex-col h-full ${
-                      isHovered 
-                        ? 'shadow-xl border-blue-400 dark:border-blue-500/50 shadow-blue-500/5' 
-                        : 'border-slate-200/80 dark:border-slate-700/80'
-                    }`}
-                    onMouseEnter={() => setHoveredCourse(course.id)}
-                    onMouseLeave={() => setHoveredCourse(null)}
-                    onClick={() => handleEnrollClick(course.id)}
-                  >
-                    <div className="relative h-44 overflow-hidden">
-                      <img
-                        src={course.imageUrl}
-                        alt={course.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
-                      <div className="absolute inset-0" style={{ backgroundColor: (course.accentColor || '#3B82F6') + '20' }} />
-                      <div className="absolute bottom-3 left-4 text-3xl drop-shadow-md">{course.emoji}</div>
-                      <div className="absolute top-4 right-4">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm" style={{ backgroundColor: course.accentColor || '#3B82F6' }}>
-                          {course.tag}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-5 flex flex-col flex-1">
-                      <h3 className="font-extrabold text-slate-900 dark:text-slate-100 mb-1.5 text-base md:text-lg hover:text-blue-500 transition-colors line-clamp-1">
-                        {course.title}
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 flex-1 leading-relaxed">
-                        {course.description}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mb-4 border-t border-slate-100 dark:border-slate-700/50 pt-3">
-                        <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full font-medium">
-                          {course.audience || 'Todos os níveis'}
-                        </span>
-                        <span className="text-sm font-semibold" style={{ color: course.accentColor || '#3B82F6' }}>
-                          +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
-                        </span>
-                      </div>
-
-                      <div className="mb-4">
-                        <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300 mb-1.5 font-medium">
-                          <span>Progresso</span>
-                          <span>{progress}%</span>
-                        </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-750 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full rounded-full transition-all duration-500" 
-                            style={{ width: `${progress}%`, backgroundColor: course.accentColor || '#3B82F6' }} 
-                          />
-                        </div>
-                      </div>
-
-                      <button
-                        className="w-full py-2.5 rounded-xl font-bold transition-all text-white shadow-sm text-sm"
-                        style={{ backgroundColor: course.accentColor || '#3B82F6' }}
-                      >
-                        {getButtonText(course.id)}
-                      </button>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Available Categorized Courses Section */}
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2.5">
-            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            Catálogo de Cursos (Cards por Categoria)
-          </h2>
-
-          {/* 1. Category: Conversation & Topics */}
-          {conversationCourses.length > 0 && (
-            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-              <div 
-                onClick={() => toggleCategory('conversation')}
-                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-2xl text-2xl shadow-inner">
-                    💬
-                  </div>
-                  <div>
-                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                      Prática de Conversação
-                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-full border border-blue-200/35 dark:border-blue-900/35 font-mono">
-                        {conversationCourses.length} {conversationCourses.length === 1 ? 'curso' : 'cursos'}
-                      </span>
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                      Tópicos do cotidiano, diálogos práticos e debates para destravar a sua fluência de forma divertida.
-                    </p>
-                  </div>
-                </div>
-                <motion.svg 
-                  animate={{ rotate: openCategories.conversation ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                </motion.svg>
-              </div>
-
-              <motion.div
-                initial={false}
-                animate={{ height: openCategories.conversation ? 'auto' : 0, opacity: openCategories.conversation ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                  {conversationCourses.map((course, index) => renderCourseCard(course, index))}
-                </div>
-              </motion.div>
-            </div>
-          )}
-
-          {/* 2. Category: Grammar & Levels */}
-          {grammarCourses.length > 0 && (
-            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-              <div 
-                onClick={() => toggleCategory('grammar')}
-                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-2xl text-2xl shadow-inner">
-                    📚
-                  </div>
-                  <div>
-                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                      Cursos de Gramática & Níveis
-                      <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded-full border border-amber-200/35 dark:border-amber-900/35 font-mono">
-                        {grammarCourses.length} {grammarCourses.length === 1 ? 'curso' : 'cursos'}
-                      </span>
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                      Aprenda a estruturar frases corretamente, do básico ao avançado, aplicando a gramática de forma prática.
-                    </p>
-                  </div>
-                </div>
-                <motion.svg 
-                  animate={{ rotate: openCategories.grammar ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                </motion.svg>
-              </div>
-
-              <motion.div
-                initial={false}
-                animate={{ height: openCategories.grammar ? 'auto' : 0, opacity: openCategories.grammar ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                  {grammarCourses.map((course, index) => renderCourseCard(course, index))}
-                </div>
-              </motion.div>
-            </div>
-          )}
-
-          {/* 3. Category: Specialty / Professional */}
-          {specialtyCourses.length > 0 && (
-            <div className="mb-8 bg-white dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm backdrop-blur-md transition-all">
-              <div 
-                onClick={() => toggleCategory('specialty')}
-                className="flex items-center justify-between cursor-pointer select-none pb-4 border-b border-slate-100 dark:border-slate-800/80 mb-5"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl text-2xl shadow-inner">
-                    💼
-                  </div>
-                  <div>
-                    <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                      Especializações Profissionais & Culturais
-                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200/35 dark:border-emerald-900/35 font-mono">
-                        {specialtyCourses.length} {specialtyCourses.length === 1 ? 'curso' : 'cursos'}
-                      </span>
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-                      Inglês focado para carreiras de destaque (Médico, Jurídico) ou imersões na cultura americana (Carros, Hip Hop, etc).
-                    </p>
-                  </div>
-                </div>
-                <motion.svg 
-                  animate={{ rotate: openCategories.specialty ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-5 h-5 text-slate-450 dark:text-slate-500" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                </motion.svg>
-              </div>
-
-              <motion.div
-                initial={false}
-                animate={{ height: openCategories.specialty ? 'auto' : 0, opacity: openCategories.specialty ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                  {specialtyCourses.map((course, index) => renderCourseCard(course, index))}
-                </div>
-              </motion.div>
-            </div>
-          )}
-
-        </div>
-      </div>
     </div>
   );
-};
-
-export default Courses;
+}
