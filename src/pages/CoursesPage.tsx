@@ -8,13 +8,12 @@ import {
   LuSparkles, 
   LuFlame, 
   LuTrophy, 
-  LuLock, 
-  LuUnlock, 
   LuPlay, 
   LuCheckCircle2, 
   LuChevronRight,
   LuBriefcase
 } from 'react-icons/lu';
+import { FaLock, FaUnlock } from 'react-icons/fa';
 
 // --- TYPE DEFINITIONS ---
 export interface RPGScenario {
@@ -278,7 +277,7 @@ export default function CoursesPage() {
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-400">+{course.xpReward} XP</span>
-                  {course.isLocked ? <LuLock size={14} className="text-slate-500" /> : <LuUnlock size={14} className="text-slate-400 opacity-40" />}
+                  {course.isLocked ? <FaLock size={14} className="text-slate-500" /> : <FaUnlock size={14} className="text-slate-400 opacity-40" />}
                 </div>
               </div>
 
