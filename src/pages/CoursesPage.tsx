@@ -9,11 +9,10 @@ import {
   LuFlame, 
   LuTrophy, 
   LuPlay, 
-  LuCheckCircle2, 
   LuChevronRight,
   LuBriefcase
 } from 'react-icons/lu';
-import { FaLock, FaUnlock } from 'react-icons/fa';
+import { FaLock, FaUnlock, FaCheckCircle } from 'react-icons/fa';
 
 // --- TYPE DEFINITIONS ---
 export interface RPGScenario {
@@ -356,7 +355,7 @@ export default function CoursesPage() {
                       <ul className="space-y-1.5">
                         {scen.requiredGoals.map((goal, idx) => (
                           <li key={idx} className="flex items-center gap-2 text-xs text-slate-400">
-                            <LuCheckCircle2 size={13} className="text-slate-600 shrink-0" />
+                            <FaCheckCircle size={13} className="text-slate-600 shrink-0" />
                             <span>{goal}</span>
                           </li>
                         ))}

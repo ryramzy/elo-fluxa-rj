@@ -51,12 +51,12 @@ VITE_FIREBASE_APP_ID=
 - **LMS Overview Overhaul**: Rebuilt `CoursesPage.tsx` into a premium gamified dashboard with category selection boards, B2B company-verified badges ("Tech Track Verified"), and an interactive sliding detailed drawer highlighting scenario previews and goal checklists.
 - **Global Safari Date Parser**: Isolated Safari-safe split parsing logic inside `src/utils/dateParser.ts`.
 - **B2B User Schema Validation**: Added defensive B2B properties (`organizationId` and `corporateCredits`) to the profile schema in `firestore.ts` to prepare for corporate tenant rules.
-- **Build Failure Mitigation (react-icons/lu)**: Resolved a critical deployment build crash caused by importing `LuUnlock` from `react-icons/lu` (which does not exist). Corrected the import to pull standard `FaLock` and `FaUnlock` from `react-icons/fa` to prevent future regressions.
+- **Build Failure Mitigation (react-icons/lu)**: Resolved critical deployment build crashes caused by importing `LuUnlock` and `LuCheckCircle2` from `react-icons/lu` (which are not exported in this local package version). Corrected the imports to pull standard `FaLock`, `FaUnlock`, and `FaCheckCircle` from `react-icons/fa` to prevent future regressions.
 
 ### Why
 - The previous slot booking confirm locked the page without indicating background task progress, inducing user confusion.
 - The standard ChatGPT-style AI chatbox induced user fatigue; a visual novel layout with satisfaction gauges makes learning interactive.
-- In `react-icons/lu`, `LuUnlock` is not exported (it is `LuLockOpen` or absent in that build version). To prevent build breaks, standard FontAwesome icons (`react-icons/fa`) should be used for locking states.
+- In `react-icons/lu`, icons like `LuUnlock` and `LuCheckCircle2` are either named differently or absent in this package version (e.g. `LuLockOpen` or `LuCheckCircle`). To prevent build breaks, standard FontAwesome icons (`react-icons/fa`) were imported for lock/unlock states and validation checkmarks.
 - Moving parsing functions to `src/utils/dateParser.ts` prevents duplication and guards against cross-browser date arithmetic bugs.
 
 ---
