@@ -250,19 +250,19 @@ export async function getUpcomingBookings(uid: string): Promise<LegacyBooking[]>
       collection(db, 'bookings'),
       where('uid', '==', uid),
       where('datetime', '>=', Timestamp.fromDate(now)),
-      where('status', 'in', ['booked', 'completed']),
+      where('status', 'in', ['booked', 'confirmed', 'completed']),
       orderBy('datetime', 'asc'),
       limit(10)
     );
     const querySnapshot = await getDocs(bookingsQuery);
     
     return querySnapshot.docs.map(doc => ({
-      uid: doc.data().uid,
-      studentName: doc.data().studentName,
-      studentEmail: doc.data().studentEmail,
+      uid: doc.data().uid || doc.data().userId,
+      studentName: doc.data().studentName || doc.data().userName,
+      studentEmail: doc.data().studentEmail || doc.data().userEmail,
       datetime: doc.data().datetime,
       status: doc.data().status,
-      calendarEventId: doc.data().calendarEventId,
+      calendarEventId: doc.data().calendarEventId || doc.data().googleEventId,
       createdAt: doc.data().createdAt,
       id: doc.id
     } as LegacyBooking));
@@ -718,7 +718,9 @@ export async function bookSlot(
   userId: string,
   userName: string,
   userEmail: string,
-  notes?: string
+  notes?: string,
+  googleEventId?: string | null,
+  meetLink?: string | null
 ): Promise<string> {
   if (userId === 'guest_user') {
     throw new Error('Guests cannot book sessions.');
@@ -743,12 +745,15 @@ export async function bookSlot(
       userId,
       userName,
       userEmail,
+      uid: userId,             // Legacy compatibility
+      studentName: userName,   // Legacy compatibility
+      studentEmail: userEmail, // Legacy compatibility
       date,
       time,
       duration: 60,
       status: 'confirmed',
-      googleEventId: null,
-      meetLink: null,
+      googleEventId: googleEventId || null,
+      meetLink: meetLink || null,
       notes: notes || '',
       createdAt: serverTimestamp(),
       datetime: datetimeTimestamp

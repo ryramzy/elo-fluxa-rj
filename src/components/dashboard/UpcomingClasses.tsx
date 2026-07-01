@@ -24,14 +24,18 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Próximas Aulas</h3>
       <div className="space-y-3">
         {upcomingBookings.map((booking) => {
-          const bookingDate = new Date(booking.date);
+          const bookingDate = booking.datetime?.toDate 
+            ? booking.datetime.toDate() 
+            : new Date(`${booking.date}T${booking.time || '00:00'}:00`);
           
           return (
             <div key={booking.id} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-600 rounded-lg">
               <div>
                 <div className="font-medium text-slate-900 dark:text-white">
                   {bookingDate.toLocaleDateString('pt-BR', { 
-                    weekday: 'short', 
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'short',
                     hour: '2-digit', 
                     minute: '2-digit' 
                   })}

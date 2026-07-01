@@ -2,11 +2,24 @@
  * Service to interact with the Google Gemini API safely in browser
  */
 
-const GEMINI_API_KEY = (import.meta.env.VITE_GEMINI_API_KEY || '').trim();
-
 export interface ChatMessage {
   role: 'user' | 'model';
   parts: { text: string }[];
+}
+
+/**
+ * Retrieves the Gemini API key, prioritizing the environment variable
+ * and falling back to localStorage for local development/testing.
+ */
+export function getGeminiApiKey(): string {
+  const envKey = (import.meta.env.VITE_GEMINI_API_KEY || '').trim();
+  if (envKey) return envKey;
+  
+  if (typeof window !== 'undefined') {
+    return (localStorage.getItem('elo_gemini_api_key') || '').trim();
+  }
+  
+  return '';
 }
 
 /**
@@ -18,17 +31,19 @@ export async function sendChatMessage(
   chatHistory: ChatMessage[],
   systemInstruction: string
 ): Promise<string> {
+  const apiKey = getGeminiApiKey();
+
   // Fallback to mock mode if API key is not present
-  if (!GEMINI_API_KEY) {
-    console.warn('VITE_GEMINI_API_KEY not found. Operating in MOCK mode.');
+  if (!apiKey) {
+    console.warn('VITE_GEMINI_API_KEY not found in environment or localStorage. Operating in MOCK mode.');
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(`[Modo de teste: VITE_GEMINI_API_KEY não configurada]`);
-      }, 1000);
+        resolve(`MOCK_MODE_RESPONSE`);
+      }, 800);
     });
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(url, {

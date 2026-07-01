@@ -53,14 +53,17 @@ export const speakText = (
     cachedVoices = window.speechSynthesis.getVoices();
   }
 
-  // Find all English voices
-  const englishVoices = cachedVoices.filter(v => v.lang.startsWith('en') || v.lang.includes('en'));
+  // Find all US English voices primarily, fallback to any English voice ONLY if no US voice is found
+  let targetVoices = cachedVoices.filter(v => v.lang.toLowerCase() === 'en-us' || v.lang.toLowerCase() === 'en_us');
+  if (targetVoices.length === 0) {
+    targetVoices = cachedVoices.filter(v => v.lang.toLowerCase().startsWith('en') || v.lang.toLowerCase().includes('en'));
+  }
   
   // Score them based on how natural, soothing, and joyous they are
   let bestVoice: SpeechSynthesisVoice | undefined;
   let highestScore = -1;
 
-  for (const voice of englishVoices) {
+  for (const voice of targetVoices) {
     let score = 0;
     const nameLower = voice.name.toLowerCase();
     
@@ -82,9 +85,6 @@ export const speakText = (
     else if (nameLower.includes('samantha')) {
       score += 70; // Samantha is classic iOS voice
     }
-    else if (nameLower.includes('daniel')) {
-      score += 50; // Daniel is premium UK English
-    }
     else if (nameLower.includes('online')) {
       score += 60;
     }
@@ -95,11 +95,22 @@ export const speakText = (
       score += 15;
     }
 
-    // US English preferred, then UK, then others
+    // US English preferred
     if (voice.lang.startsWith('en-US') || voice.lang.includes('en_US')) {
       score += 10;
-    } else if (voice.lang.startsWith('en-GB') || voice.lang.includes('en_GB')) {
-      score += 5;
+    }
+
+    // Heavily penalize any British, UK, or non-US voice to ensure it is never chosen if a US option exists
+    const isBritish = voice.lang.toLowerCase().includes('gb') || 
+                      voice.lang.toLowerCase().includes('uk') || 
+                      nameLower.includes('daniel') || 
+                      nameLower.includes('karen') || // Karen is often en-AU or en-GB
+                      nameLower.includes('british') || 
+                      nameLower.includes('uk') ||
+                      nameLower.includes('gb');
+    
+    if (isBritish) {
+      score -= 300; // Extreme penalty
     }
 
     if (score > highestScore) {

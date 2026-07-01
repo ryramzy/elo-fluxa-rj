@@ -3,6 +3,7 @@ import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore
 import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '../../lib/firestore';
 import { getErrorMessage, logError } from '../../utils/errorHandling';
 import { useAuth } from '../../hooks/useAuth';
+import { createCalendarEvent } from '../../lib/googleCalendar';
 
 interface Booking {
   id: string;
@@ -134,8 +135,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       const localStartStr = weekDates[0].toLocaleDateString('en-CA');
       const localEndStr = weekDates[4].toLocaleDateString('en-CA');
       
+      // Expand the start and end dates by 2 days in each direction to account for timezone shifts
       const startUtc = new Date(`${localStartStr}T00:00:00`);
+      startUtc.setDate(startUtc.getDate() - 2);
+      
       const endUtc = new Date(`${localEndStr}T23:59:59`);
+      endUtc.setDate(endUtc.getDate() + 2);
       
       const bookingsQuery = query(
         collection(db, 'bookings'),
@@ -173,7 +178,57 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       // Convert student's local slot back to Matt's Rio date and time strings
       const { date: mattDate, time: mattTime } = getMattLocalStrings(date, time);
       
-      await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail);
+      // 1. Create Google Calendar event (or Jitsi fallback)
+      let eventId: string | null = null;
+      let meetLink: string | null = null;
+      
+      try {
+        const startIso = `${mattDate}T${mattTime}:00-03:00`;
+        const startDateObj = new Date(startIso);
+        const endDateObj = new Date(startDateObj.getTime() + 60 * 60 * 1000); // 1 hour duration
+        const startDateTime = startIso;
+        const endDateTime = endDateObj.toISOString().replace('Z', '-03:00'); // Convert to local Rio ISO
+        
+        const calRes = await createCalendarEvent({
+          summary: `Aula de Inglês com Matt: ${studentName}`,
+          description: `Sua aula particular de inglês americano com o Professor Matt.\nGoogle Meet: a ser acessado pelo link.`,
+          startDateTime,
+          endDateTime,
+          attendeeEmail: studentEmail,
+          attendeeName: studentName
+        });
+        eventId = calRes.eventId;
+        meetLink = calRes.meetLink;
+      } catch (calErr) {
+        console.error('Failed to create calendar event, continuing with booking:', calErr);
+        // Fallback to Jitsi meet link directly
+        const sanitizedName = studentName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        meetLink = `https://meet.jit.si/elo-class-${sanitizedName}-${Date.now().toString().slice(-4)}`;
+        eventId = `fallback_event_${Date.now()}`;
+      }
+      
+      await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail, '', eventId, meetLink);
+      
+      // 2. Trigger email confirmation API
+      try {
+        await fetch('/api/email/booking-confirmation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            attendeeName: studentName,
+            attendeeEmail: studentEmail,
+            date: mattDate,
+            time: mattTime,
+            durationMinutes: 60,
+            meetLink: meetLink,
+            notes: ''
+          })
+        });
+      } catch (emailErr) {
+        console.error('Failed to send email confirmation:', emailErr);
+      }
       
       await loadWeekBookings();
       showToast('Slot booked successfully!', 'success');
@@ -211,14 +266,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   }, [selectedWeek]);
 
   const getBooking = (dateStr: string, timeStr: string) => {
-    const cellMs = new Date(`${dateStr}T${timeStr}:00`).getTime();
+    const { date: mattDate, time: mattTime } = getMattLocalStrings(dateStr, timeStr);
     return bookings.find(b => {
+      if (b.date && b.time) {
+        return b.date === mattDate && b.time === mattTime;
+      }
       if (b.datetime) {
-        // Compare absolute time in milliseconds
+        const cellMs = new Date(`${dateStr}T${timeStr}:00`).getTime();
         const bookingMs = b.datetime.seconds * 1000;
         return Math.abs(bookingMs - cellMs) < 60000;
       }
-      return b.date === dateStr && b.time === timeStr;
+      return false;
     });
   };
 
