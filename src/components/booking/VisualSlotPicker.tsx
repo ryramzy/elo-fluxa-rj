@@ -3,6 +3,7 @@ import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore
 import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '@lib/firestore';
 import { getErrorMessage, logError } from '@utils/errorHandling';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { createCalendarEvent } from '@lib/googleCalendar';
 import { trackEvent } from '@utils/analytics';
 import { parseLocalDate } from '@utils/dateParser';
@@ -31,6 +32,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [selectedWeek, setSelectedWeek] = useState(0);
   const { user } = useAuth();
   const currentUserId = user?.uid || '';
+  const { profile } = useUserProfile(currentUserId);
+  const corporateCredits = profile?.corporateCredits ?? null;
+  const isCreditLocked = corporateCredits === 0;
 
   const isAnySlotBooking = Object.values(slotLoadingMap).some(status => status === 'booking');
   
@@ -341,12 +345,24 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       <div className="p-6 md:p-8 border-b border-white/5 bg-white/5">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-              Book Your Class
-            </h2>
-            <p className="text-slate-400 mt-1 text-sm md:text-base">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                Book Your Class
+              </h2>
+              {corporateCredits !== null && (
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-550/20' : 'text-slate-350'}`}>
+                  Créditos: {corporateCredits}
+                </span>
+              )}
+            </div>
+            <p className="text-slate-400 mt-1 text-sm md:text-base font-normal">
               Week of {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
             </p>
+            {corporateCredits === 0 && (
+              <p className="text-rose-450 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
+                Você consumiu todos os seus créditos corporativos do mês. Entre em contato com seu gestor de RH.
+              </p>
+            )}
           </div>
           
           <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded-xl border border-white/5">
@@ -461,8 +477,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                           // Available slot
                           <button
                             onClick={() => handleBookSlot(dateStr, time)}
-                            disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking'}
-                            className="absolute inset-0 w-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
+                            className={`absolute inset-0 w-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'pointer-events-none opacity-40' : ''}`}
                           >
                             {currentSlotLoading === 'booking' ? (
                               <div className="flex flex-col items-center justify-center">

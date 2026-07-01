@@ -31,7 +31,46 @@ export async function sendChatMessage(
   chatHistory: ChatMessage[],
   systemInstruction: string
 ): Promise<string> {
-  const apiKey = getGeminiApiKey();
+  const isProduction = import.meta.env.PROD;
+  const devApiKey = getGeminiApiKey();
+
+  // Route through Vercel server proxy in production or if no local dev key is present
+  if (isProduction || !devApiKey) {
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chatHistory,
+          systemInstruction
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error || `HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.text;
+    } catch (proxyError) {
+      console.error('Error in sendChatMessage via secure proxy:', proxyError);
+      
+      // If proxy fails and no dev key, drop to mock mode
+      if (!devApiKey) {
+        console.warn('Proxy failed and no local VITE_GEMINI_API_KEY found. Operating in MOCK mode.');
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(`MOCK_MODE_RESPONSE`);
+          }, 800);
+        });
+      }
+    }
+  }
+
+  const apiKey = devApiKey;
 
   // Fallback to mock mode if API key is not present
   if (!apiKey) {

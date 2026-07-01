@@ -250,8 +250,54 @@ export async function updateLessonProgress(
     }
   } catch (error) {
     console.error('Error updating lesson progress:', error);
+    if (typeof window !== 'undefined') {
+      try {
+        const queue: OfflineQueueItem[] = JSON.parse(localStorage.getItem('offline_progress_queue') || '[]');
+        queue.push({ uid, courseId, lessonId, slideIndex, isCompleted });
+        localStorage.setItem('offline_progress_queue', JSON.stringify(queue));
+        console.log('[Offline Queue] Queued progress update:', { courseId, lessonId, slideIndex });
+      } catch (storageError) {
+        console.error('Failed to write to localStorage offline queue:', storageError);
+      }
+    }
     throw error;
   }
+}
+
+interface OfflineQueueItem {
+  uid: string;
+  courseId: string;
+  lessonId: string;
+  slideIndex: number;
+  isCompleted: boolean;
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', async () => {
+    try {
+      const queueRaw = localStorage.getItem('offline_progress_queue');
+      if (!queueRaw) return;
+      const queue: OfflineQueueItem[] = JSON.parse(queueRaw);
+      if (queue.length === 0) return;
+      
+      console.log(`[Offline Queue] Reconnection detected. Syncing ${queue.length} pending updates...`);
+      localStorage.setItem('offline_progress_queue', '[]');
+      
+      for (const item of queue) {
+        try {
+          await updateLessonProgress(item.uid, item.courseId, item.lessonId, item.slideIndex, item.isCompleted);
+          console.log(`[Offline Queue] Sync success for course: ${item.courseId}`);
+        } catch (syncError) {
+          console.error(`[Offline Queue] Sync failed for course: ${item.courseId}. Re-queuing.`, syncError);
+          const currentQueue: OfflineQueueItem[] = JSON.parse(localStorage.getItem('offline_progress_queue') || '[]');
+          currentQueue.push(item);
+          localStorage.setItem('offline_progress_queue', JSON.stringify(currentQueue));
+        }
+      }
+    } catch (err) {
+      console.error('[Offline Queue] Error processing queue sync:', err);
+    }
+  });
 }
 
 export async function getUpcomingBookings(uid: string): Promise<LegacyBooking[]> {
