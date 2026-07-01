@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
-import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '../../lib/firestore';
-import { getErrorMessage, logError } from '../../utils/errorHandling';
-import { useAuth } from '../../hooks/useAuth';
-import { createCalendarEvent } from '../../lib/googleCalendar';
-import { trackEvent } from '../../utils/analytics';
+import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBooking } from '@lib/firestore';
+import { getErrorMessage, logError } from '@utils/errorHandling';
+import { useAuth } from '@/hooks/useAuth';
+import { createCalendarEvent } from '@lib/googleCalendar';
+import { trackEvent } from '@utils/analytics';
+import { parseLocalDate } from '@utils/dateParser';
 
 interface Booking {
   id: string;
@@ -38,13 +39,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const showToast = (message: string, type: 'error' | 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
-  };
-
-  // Helper to parse dates robustly across all browsers (including Safari and iOS)
-  const parseLocalDate = (dateStr: string, timeStr: string): Date => {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const [hour, minute] = timeStr.split(':').map(Number);
-    return new Date(year, month - 1, day, hour, minute, 0);
   };
 
   // Helpers for timezone conversions

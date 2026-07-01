@@ -41,6 +41,8 @@ export interface UserProfile {
   targetGoal?: string;
   tutorNotes?: string;
   phone?: string;
+  organizationId?: string;
+  corporateCredits?: number;
 }
 
 export interface Enrollment {
@@ -74,6 +76,15 @@ export interface AvailableSlot {
 // Helper functions
 export async function updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
   if (uid === 'guest_user') return;
+  
+  // Defensive type checking for B2B tenancy attributes
+  if (updates.organizationId !== undefined && typeof updates.organizationId !== 'string') {
+    throw new Error('Invalid organizationId format: Must be a string');
+  }
+  if (updates.corporateCredits !== undefined && typeof updates.corporateCredits !== 'number') {
+    throw new Error('Invalid corporateCredits format: Must be a number');
+  }
+
   try {
     const userRef = doc(collection(db, 'users'), uid);
     await updateDoc(userRef, updates as any);
