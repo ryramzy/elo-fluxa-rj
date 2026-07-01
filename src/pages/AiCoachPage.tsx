@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { sendChatMessage, ChatMessage, getGeminiApiKey } from '../services/geminiService';
+import { updateUserXP } from '../lib/firestore';
+import { sounds } from '../utils/sounds';
 import { 
   FaArrowLeft, 
   FaPaperPlane, 
@@ -188,6 +190,10 @@ const AiCoachPage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(15);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // RPG & Sentiment Mechanics states
+  const [tutorSatisfaction, setTutorSatisfaction] = useState(80); // 0 to 100
+  const [characterEmotion, setCharacterEmotion] = useState<'idle' | 'happy' | 'impatient' | 'annoyed' | 'surprised'>('idle');
+
   // API Key management
   const [showApiKeySettings, setShowApiKeySettings] = useState(false);
   const [localApiKey, setLocalApiKey] = useState('');
@@ -236,7 +242,7 @@ const AiCoachPage: React.FC = () => {
   const triggerTimeOutReply = async () => {
     if (!selectedScenario) return;
     setLoading(true);
-    showToast({ type: 'error', message: 'Tempo esgotado! Responda rápido!' });
+    showToast({ type: 'error', message: 'Tempo esgotado! Penalidade de -5 XP aplicada!' });
 
     try {
       let promptText = '';
@@ -249,6 +255,14 @@ const AiCoachPage: React.FC = () => {
       } else {
         promptText = "Hello? Are you still there? The bridge is that way!";
       }
+
+      // RPG QTE Action Penalties
+      if (user?.uid) {
+        updateUserXP(user.uid, -5).catch(console.error);
+      }
+      sounds.playError();
+      setTutorSatisfaction(prev => Math.max(prev - 10, 0));
+      setCharacterEmotion('impatient');
 
       setMessages(prev => [...prev, { role: 'model', text: promptText }]);
       handleSpeak(promptText);
@@ -341,51 +355,51 @@ const AiCoachPage: React.FC = () => {
     
     if (scenarioId === 'nyc_diner') {
       if (turnIndex === 1) {
-        return "You got it, hon! A fresh plate of sunny-side up eggs and bacon is coming right up. Do you want wheat or white toast with that?";
+        return JSON.stringify({ emotion: "happy", text: "You got it, hon! A fresh plate of sunny-side up eggs and bacon is coming right up. Do you want wheat or white toast with that?" });
       }
       if (turnIndex === 3) {
-        return "Wheat toast it is! And I'll keep the coffee pot right here for you. So, what brings you to Manhattan? Here on vacation or sightseeing?";
+        return JSON.stringify({ emotion: "happy", text: "Wheat toast it is! And I'll keep the coffee pot right here for you. So, what brings you to Manhattan? Here on vacation or sightseeing?" });
       }
       if (textLower.includes('check') || textLower.includes('bill') || textLower.includes('pay')) {
-        return "Sure thing, hon! Here's the check. Take your time, pay at the counter whenever you're ready. Have a fantastic day in the city!";
+        return JSON.stringify({ emotion: "happy", text: "Sure thing, hon! Here's the check. Take your time, pay at the counter whenever you're ready. Have a fantastic day in the city!" });
       }
-      return "Ah, that's wonderful! NYC is a great place to explore. Here is your hot grub, straight from the grill. Let me know if you need anything else, alright?";
+      return JSON.stringify({ emotion: "idle", text: "Ah, that's wonderful! NYC is a great place to explore. Here is your hot grub, straight from the grill. Let me know if you need anything else, alright?" });
     }
     
     if (scenarioId === 'jfk_airport') {
       if (turnIndex === 1) {
-        return "I see. And how long do you plan to stay in the United States on this trip?";
+        return JSON.stringify({ emotion: "idle", text: "I see. And how long do you plan to stay in the United States on this trip?" });
       }
       if (turnIndex === 3) {
-        return "Alright, and what address will you be staying at during your visit?";
+        return JSON.stringify({ emotion: "idle", text: "Alright, and what address will you be staying at during your visit?" });
       }
       if (textLower.includes('hotel') || textLower.includes('staying') || textLower.includes('street')) {
-        return "Understood. Everything looks in order. I'm stamping your passport. Welcome to the United States. Enjoy your stay.";
+        return JSON.stringify({ emotion: "surprised", text: "Understood. Everything looks in order. I'm stamping your passport. Welcome to the United States. Enjoy your stay." });
       }
-      return "Thank you. Everything is approved. Have a safe journey and enjoy your time here.";
+      return JSON.stringify({ emotion: "idle", text: "Thank you. Everything is approved. Have a safe journey and enjoy your time here." });
     }
     
     if (scenarioId === 'texas_bbq') {
       if (turnIndex === 1) {
-        return "Well howdy! Brisket is almost ready, y'all are gonna love it. Tell me, buddy, have you ever tried Texas-style barbecue before?";
+        return JSON.stringify({ emotion: "happy", text: "Well howdy! Brisket is almost ready, y'all are gonna love it. Tell me, buddy, have you ever tried Texas-style barbecue before?" });
       }
       if (turnIndex === 3) {
-        return "Well, you're fixin' to have the best brisket in Austin! Bobby's special recipe. Here's a plate. What do you think of this Texas heat? Pretty wild, huh?";
+        return JSON.stringify({ emotion: "happy", text: "Well, you're fixin' to have the best brisket in Austin! Bobby's special recipe. Here's a plate. What do you think of this Texas heat? Pretty wild, huh?" });
       }
-      return "Haha, yeah, it gets hot, but that's what makes the sweet tea taste so good! Eat up, buddy, and make yourself at home!";
+      return JSON.stringify({ emotion: "happy", text: "Haha, yeah, it gets hot, but that's what makes the sweet tea taste so good! Eat up, buddy, and make yourself at home!" });
     }
     
     if (scenarioId === 'sf_directions') {
       if (turnIndex === 1) {
-        return "The Golden Gate Bridge? Honestly, it's super close! You can take the historical cable car just two blocks down, or hike up Lombard Street. Are you planning to walk across it today?";
+        return JSON.stringify({ emotion: "happy", text: "The Golden Gate Bridge? Honestly, it's super close! You can take the historical cable car just two blocks down, or hike up Lombard Street. Are you planning to walk across it today?" });
       }
       if (turnIndex === 3) {
-        return "Oh, you definitely should! The view is stunning, super breezy but totally worth it. After that, you should check out Fisherman's Wharf for lunch. Do you have a map app open?";
+        return JSON.stringify({ emotion: "surprised", text: "Oh, you definitely should! The view is stunning, super breezy but totally worth it. After that, you should check out Fisherman's Wharf for lunch. Do you have a map app open?" });
       }
-      return "No problem at all! You're gonna have an amazing time. SF is honestly so cool. Have a great day!";
+      return JSON.stringify({ emotion: "happy", text: "No problem at all! You're gonna have an amazing time. SF is honestly so cool. Have a great day!" });
     }
 
-    return "That sounds awesome! Tell me more about that, I'm all ears.";
+    return JSON.stringify({ emotion: "idle", text: "That sounds awesome! Tell me more about that, I'm all ears." });
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -423,24 +437,58 @@ const AiCoachPage: React.FC = () => {
           parts: [{ text: m.text }]
         }));
 
+        // Enforce sentiment JSON structure
+        const systemInstructionModifier = `${selectedScenario.systemInstruction}\nIMPORTANT: Your response must be in JSON format matching the schema: { "emotion": "happy" | "impatient" | "annoyed" | "surprised" | "idle", "text": "your verbal response as the character" }. Do not output anything else but valid JSON.`;
+
         responseText = await sendChatMessage(
           geminiHistory,
-          selectedScenario.systemInstruction
+          systemInstructionModifier
         );
       }
 
-      setMessages(prev => [...prev, { role: 'model', text: responseText }]);
+      // Parse structured JSON response
+      let cleanText = responseText;
+      let detectedEmotion: 'idle' | 'happy' | 'impatient' | 'annoyed' | 'surprised' = 'idle';
+
+      try {
+        const trimmed = responseText.trim();
+        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+          const parsed = JSON.parse(trimmed);
+          cleanText = parsed.text || responseText;
+          const parsedEmotion = parsed.emotion?.toLowerCase();
+          if (['idle', 'happy', 'impatient', 'annoyed', 'surprised'].includes(parsedEmotion)) {
+            detectedEmotion = parsedEmotion;
+          }
+        }
+      } catch (e) {
+        // Fallback if raw text
+      }
+
+      setMessages(prev => [...prev, { role: 'model', text: cleanText }]);
+      setCharacterEmotion(detectedEmotion);
+      
+      // Perform TEFL grammar analysis
       analyzeGrammar(userText, updatedMessages.length - 1);
 
       if (usedVoice) {
-        handleSpeak(responseText);
+        handleSpeak(cleanText);
         setUsedVoice(false);
       }
     } catch (err: any) {
       console.error(err);
       showToast({ type: 'error', message: 'Falha ao conectar com o Tutor IA. Rodando modo offline.' });
       const fallbackMsg = generateMockReply(selectedScenario.id, userText, updatedMessages.length);
-      setMessages(prev => [...prev, { role: 'model', text: fallbackMsg }]);
+      
+      let cleanFallback = fallbackMsg;
+      let fallbackEmotion: 'idle' | 'happy' | 'impatient' | 'annoyed' | 'surprised' = 'idle';
+      try {
+        const parsed = JSON.parse(fallbackMsg);
+        cleanFallback = parsed.text || fallbackMsg;
+        fallbackEmotion = parsed.emotion || 'idle';
+      } catch (e) {}
+
+      setMessages(prev => [...prev, { role: 'model', text: cleanFallback }]);
+      setCharacterEmotion(fallbackEmotion);
     } finally {
       setLoading(false);
     }
@@ -455,6 +503,7 @@ const AiCoachPage: React.FC = () => {
         if (text[0] !== text[0].toUpperCase()) {
           correction = "Good start! Don't forget to capitalize the first letter of your sentences. E.g., \"" + text[0].toUpperCase() + text.slice(1) + "\"";
         }
+        
         setMessages(prev => {
           const copy = [...prev];
           if (copy[msgIndex]) {
@@ -462,6 +511,20 @@ const AiCoachPage: React.FC = () => {
           }
           return copy;
         });
+
+        // Trigger RPG mechanics based on spelling/capitalization
+        if (correction) {
+          setTutorSatisfaction(prev => Math.max(prev - 15, 0));
+          setCharacterEmotion('annoyed');
+          sounds.playError();
+        } else {
+          setTutorSatisfaction(prev => Math.min(prev + 10, 100));
+          setCharacterEmotion('happy');
+          if (user?.uid) {
+            updateUserXP(user.uid, 15).catch(console.error);
+          }
+          showToast({ type: 'success', message: 'Gramática excelente! +15 XP' });
+        }
         return;
       }
 
@@ -474,6 +537,22 @@ const AiCoachPage: React.FC = () => {
         "You are a certified TEFL/TESOL tutor. First praise the student's effort in one sentence. Then state the correction clearly. Then explain the grammar rule in under 25 words. Be warm and encouraging."
       );
       
+      const hasError = response !== 'CORRECT';
+      
+      // Update local state and trigger RPG audio and stats response
+      if (hasError) {
+        setTutorSatisfaction(prev => Math.max(prev - 15, 0));
+        setCharacterEmotion('annoyed');
+        sounds.playError();
+      } else {
+        setTutorSatisfaction(prev => Math.min(prev + 10, 100));
+        setCharacterEmotion('happy');
+        if (user?.uid) {
+          updateUserXP(user.uid, 15).catch(console.error);
+        }
+        showToast({ type: 'success', message: 'Pronúncia / Gramática excelente! +15 XP' });
+      }
+
       setMessages(prev => {
         const copy = [...prev];
         if (copy[msgIndex]) {
@@ -804,6 +883,64 @@ const AiCoachPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Tutor Satisfaction RPG Damage Bar */}
+              <div className="bg-slate-900/60 p-3 px-6 border-b border-white/5 flex items-center justify-between gap-4 text-xs font-semibold">
+                <div className="flex items-center gap-2 text-slate-350">
+                  <span>😊 Tutor Satisfaction:</span>
+                  <span className={`font-extrabold ${tutorSatisfaction >= 70 ? 'text-emerald-400' : tutorSatisfaction >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                    {tutorSatisfaction}%
+                  </span>
+                </div>
+                <div className="flex-1 max-w-md h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                  <div 
+                    className={`h-full transition-all duration-500 ${
+                      tutorSatisfaction >= 70 ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 
+                      tutorSatisfaction >= 40 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]' : 
+                      'bg-gradient-to-r from-red-650 to-rose-500 animate-pulse'
+                    }`}
+                    style={{ width: `${tutorSatisfaction}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Visual Novel RPG Stage */}
+              <div 
+                className="w-full h-56 relative bg-cover bg-center border-b border-white/10 flex items-end justify-center overflow-hidden"
+                style={{ 
+                  backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${
+                    selectedScenario.id === 'nyc_diner' ? 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=85' :
+                    selectedScenario.id === 'jfk_airport' ? 'https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=85' :
+                    selectedScenario.id === 'texas_bbq' ? 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=800&q=85' :
+                    'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=800&q=85'
+                  })` 
+                }}
+              >
+                {/* Character Avatar Rendering with Dynamic Emotion CSS Styles */}
+                <div className="relative z-10 flex flex-col items-center mb-4 transition-all duration-500">
+                  <img 
+                    src={selectedScenario.imageUrl} 
+                    alt={selectedScenario.title} 
+                    className={`w-24 h-24 rounded-full border-4 object-cover shadow-2xl transition-all duration-300 transform ${
+                      characterEmotion === 'happy' ? 'border-emerald-500 scale-105 shadow-[0_0_15px_rgba(16,185,129,0.35)] saturate-125' :
+                      characterEmotion === 'impatient' ? 'border-amber-500 animate-pulse animate-bounce' :
+                      characterEmotion === 'annoyed' ? 'border-rose-600 animate-bounce hue-rotate-[340deg] shadow-[0_0_15px_rgba(225,29,72,0.45)]' :
+                      characterEmotion === 'surprised' ? 'border-cyan-500 scale-110 shadow-[0_0_15px_rgba(6,182,212,0.35)] animate-bounce' :
+                      'border-white/10'
+                    }`} 
+                  />
+                  <div className="mt-2 px-3 py-1 rounded-full bg-slate-950/90 border border-white/10 backdrop-blur-md shadow-lg flex items-center gap-1.5 animate-pulse">
+                    <span className="text-[10px] font-extrabold text-white uppercase tracking-wider">{selectedScenario.title.split(' ')[0]}</span>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      characterEmotion === 'happy' ? 'bg-emerald-400' :
+                      characterEmotion === 'annoyed' ? 'bg-red-500 animate-ping' :
+                      characterEmotion === 'impatient' ? 'bg-amber-400' :
+                      characterEmotion === 'surprised' ? 'bg-cyan-400' :
+                      'bg-indigo-400'
+                    }`}></span>
+                  </div>
+                </div>
+              </div>
+
               {/* Messages list */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-950/10">
                 {messages.map((msg, index) => {
@@ -926,6 +1063,34 @@ const AiCoachPage: React.FC = () => {
                 )}
                 <div ref={messagesEndRef} />
               </div>
+
+              {/* Branching RPG Options */}
+              {selectedScenario.phrases.length >= 2 && !loading && (
+                <div className="p-4 bg-slate-950/90 border-t border-white/5 flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInput(selectedScenario.phrases[0].english);
+                      trackEvent('ai_coach_branching_option_selected', { option: 'A', scenarioId: selectedScenario.id });
+                    }}
+                    className="flex-1 bg-gradient-to-r from-blue-900/40 to-indigo-900/30 border border-blue-500/20 hover:border-blue-500/40 text-blue-200 p-3 rounded-2xl text-xs font-bold text-left transition-all active:scale-97 flex flex-col gap-0.5"
+                  >
+                    <span className="text-[10px] text-blue-450 uppercase tracking-widest font-extrabold">Option A (High Risk / Expressive)</span>
+                    <span className="truncate">"{selectedScenario.phrases[0].english}"</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInput(selectedScenario.phrases[1].english);
+                      trackEvent('ai_coach_branching_option_selected', { option: 'B', scenarioId: selectedScenario.id });
+                    }}
+                    className="flex-1 bg-gradient-to-r from-slate-900/40 to-slate-800/30 border border-white/10 hover:border-white/20 text-slate-350 p-3 rounded-2xl text-xs font-bold text-left transition-all active:scale-97 flex flex-col gap-0.5"
+                  >
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-extrabold">Option B (Safe / Standard)</span>
+                    <span className="truncate">"{selectedScenario.phrases[1].english}"</span>
+                  </button>
+                </div>
+              )}
 
               {/* Form input */}
               <form onSubmit={handleSend} className="p-4 bg-slate-950 border-t border-white/10 flex gap-3 z-10">
