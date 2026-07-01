@@ -24,11 +24,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
-  const [booking, setBooking] = useState(false);
+  const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
   const [cancelling, setCancelling] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(0);
   const { user } = useAuth();
   const currentUserId = user?.uid || '';
+
+  const isAnySlotBooking = Object.values(slotLoadingMap).some(status => status === 'booking');
   
   const [toast, setToast] = useState<{message: string, type: 'error'|'success'} | null>(null);
 
@@ -176,14 +178,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       return;
     }
 
+    const slotKey = `${date}_${time}`;
+    if (slotLoadingMap[slotKey] === 'booking' || cancelling) return;
+
     // Interactive confirmation to give the user immediate feedback that their click was registered
     const confirmMessage = `Deseja agendar a sua aula para o dia ${date.split('-').reverse().join('/')} às ${time}?`;
     if (!window.confirm(confirmMessage)) {
       return;
     }
 
-    if (booking || cancelling) return;
-    setBooking(true);
+    // Instantly transition the target slot to a booking visual state
+    setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
     
     try {
       const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
@@ -226,29 +231,39 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       
       await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail, '', eventId, meetLink);
       
-      // 2. Trigger email confirmation API
-      try {
-        await fetch('/api/email/booking-confirmation', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            attendeeName: studentName,
-            attendeeEmail: studentEmail,
-            date: mattDate,
-            time: mattTime,
-            durationMinutes: 60,
-            meetLink: meetLink,
-            notes: ''
-          })
-        });
-      } catch (emailErr) {
-        console.error('Failed to send email confirmation:', emailErr);
-      }
+      // Create local booking object to merge optimistically
+      const newBooking: Booking = {
+        id: `${mattDate}_${mattTime.replace(':', '')}`,
+        date: mattDate,
+        time: mattTime,
+        userId: currentUserId,
+        userName: studentName
+      };
+
+      // Optimistically merge into local state array to trigger immediate re-render
+      setBookings(prev => [...prev, newBooking]);
+      setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
+
+      // 2. Trigger email confirmation in the background (fire-and-forget to avoid blocking UI thread)
+      fetch('/api/email/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attendeeName: studentName,
+          attendeeEmail: studentEmail,
+          date: mattDate,
+          time: mattTime,
+          durationMinutes: 60,
+          meetLink: meetLink,
+          notes: ''
+        })
+      }).catch(emailErr => {
+        console.error('Failed to send email confirmation in background:', emailErr);
+      });
       
-      await loadWeekBookings();
-      showToast('Slot booked successfully!', 'success');
+      showToast('Aula agendada com sucesso!', 'success');
       
       if (onSlotSelect) {
         onSlotSelect(date, time);
@@ -256,19 +271,20 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     } catch (err: any) {
       logError(err, { action: 'bookSlot', date, time });
       showToast(err.message || 'Failed to book slot.', 'error');
-    } finally {
-      setBooking(false);
+      // Rollback target slot loading status
+      setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));
     }
   };
 
   const handleCancelBooking = async (bookingId: string) => {
-    if (booking || cancelling) return;
+    if (isAnySlotBooking || cancelling) return;
     setCancelling(true);
     
     try {
       await firestoreCancelBooking(bookingId);
       
-      await loadWeekBookings();
+      // Optimistically remove from state
+      setBookings(prev => prev.filter(b => b.id !== bookingId));
       showToast('Booking cancelled successfully!', 'success');
     } catch (err: any) {
       logError(err, { action: 'cancelBooking', bookingId });
@@ -423,6 +439,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                       else slotState = 'booked';
                     }
 
+                    const slotKey = `${dateStr}_${time}`;
+                    const currentSlotLoading = slotLoadingMap[slotKey];
+
                     return (
                       <div key={`${dateStr}-${time}`} className="relative h-14">
                         {showAsUnavailable ? (
@@ -434,17 +453,26 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                           // Available slot
                           <button
                             onClick={() => handleBookSlot(dateStr, time)}
-                            disabled={booking || cancelling}
+                            disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking'}
                             className="absolute inset-0 w-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <span className="text-sm font-bold tracking-wide">Available</span>
-                            <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
+                            {currentSlotLoading === 'booking' ? (
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+                                <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Booking...</span>
+                              </div>
+                            ) : (
+                              <>
+                                <span className="text-sm font-bold tracking-wide">Available</span>
+                                <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
+                              </>
+                            )}
                           </button>
                         ) : slotState === 'mine' ? (
                           // User's booking
                           <button
                             onClick={() => handleCancelBooking(existingBooking!.id)}
-                            disabled={booking || cancelling}
+                            disabled={isAnySlotBooking || cancelling}
                             className="absolute inset-0 w-full rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <span className="text-sm font-bold tracking-wide group-hover/btn:hidden">Your Class</span>
