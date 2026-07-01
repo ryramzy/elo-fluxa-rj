@@ -197,7 +197,7 @@ function AppShell() {
           </AnimatePresence>
         </main>
 
-      <Footer />
+      {!user && <Footer />}
       
       <BottomNav />
 

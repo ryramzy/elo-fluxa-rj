@@ -4,6 +4,7 @@
 */
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
 import { trackEvent } from '../services/trackingService.ts';
 
@@ -52,20 +53,21 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
         </div>
 
         <div className="md:col-span-2">
-          <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Especialidades</h4>
+          <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Trilhas LMS</h4>
           <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
-            <li><a href="#products" onClick={(e) => onLinkClick(e, 'products')} className="hover:text-blue-400 transition-colors">Oil & Gas / Tech</a></li>
-            <li><a href="#products" onClick={(e) => onLinkClick(e, 'products')} className="hover:text-blue-400 transition-colors">Visto Americano</a></li>
-            <li><a href="#products" onClick={(e) => onLinkClick(e, 'products')} className="hover:text-blue-400 transition-colors">Carioca Survival</a></li>
+            <li><Link to="/courses" className="hover:text-blue-400 transition-colors">Developers 💻</Link></li>
+            <li><Link to="/courses" className="hover:text-blue-400 transition-colors">Vaga / Visto 🇺🇸</Link></li>
+            <li><Link to="/courses" className="hover:text-blue-400 transition-colors">Survival English 🎒</Link></li>
           </ul>
         </div>
         
         <div className="md:col-span-2">
-          <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Matthew</h4>
+          <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Plataforma</h4>
           <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
-            <li><a href="#about" onClick={(e) => onLinkClick(e, 'about')} className="hover:text-blue-400 transition-colors">Minha História</a></li>
-            <li><a href="#about" onClick={(e) => onLinkClick(e, 'about')} className="hover:text-blue-400 transition-colors">O Método</a></li>
-                      </ul>
+            <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Painel Geral 📊</Link></li>
+            <li><Link to="/ai-coach" className="hover:text-blue-400 transition-colors">Tutor de IA 🤖</Link></li>
+            <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós Sobre</Link></li>
+          </ul>
         </div>
 
         <div className="md:col-span-4">
