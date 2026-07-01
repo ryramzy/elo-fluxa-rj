@@ -41,6 +41,25 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [July 1, 2026] — React 19 Optimistic UI, RPG Coach, and Path Aliasing Refactoring
+**Status:** ✅ COMPLETED
+
+### What changed
+- **React 19 Optimistic UI & Slot Booking**: Refactored `VisualSlotPicker.tsx` to handle slot-specific loading spinners (`slotLoadingMap`), functional optimistic merges (`setBookings(prev => [...prev, newBooking])`), and background Resend email confirmations, providing immediate, zero-latency scheduling responses.
+- **Visual Novel & RPG Coach Redesign**: Redesigned `AiCoachPage.tsx` into a gamified Visual Novel interface. Features dynamic Unsplash scene backdrops, sentiment-driven character avatars (Sal, Davis, Bobby, Chloe) reacting with glowing CSS styles to parsed Gemini/Mock JSON responses, an interactive satisfaction rating health bar, countdown Quick-Time Events (QTE) with XP penalties, and branching quick-choice buttons.
+- **Absolute Path Aliasing**: Configured Vite path aliases inside `tsconfig.json` and `vite.config.ts` mapping `@/*`, `@components/*`, `@lib/*`, and `@utils/*` to enforce clean, absolute imports and eliminate fragile relative paths.
+- **LMS Overview Overhaul**: Rebuilt `CoursesPage.tsx` into a premium gamified dashboard with category selection boards, B2B company-verified badges ("Tech Track Verified"), and an interactive sliding detailed drawer highlighting scenario previews and goal checklists.
+- **Global Safari Date Parser**: Isolated Safari-safe split parsing logic inside `src/utils/dateParser.ts`.
+- **B2B User Schema Validation**: Added defensive B2B properties (`organizationId` and `corporateCredits`) to the profile schema in `firestore.ts` to prepare for corporate tenant rules.
+- **Build Failure Mitigation (react-icons/lu)**: Resolved a critical deployment build crash caused by importing `LuUnlock` from `react-icons/lu` (which does not exist). Corrected the import to pull standard `FaLock` and `FaUnlock` from `react-icons/fa` to prevent future regressions.
+
+### Why
+- The previous slot booking confirm locked the page without indicating background task progress, inducing user confusion.
+- The standard ChatGPT-style AI chatbox induced user fatigue; a visual novel layout with satisfaction gauges makes learning interactive.
+- In `react-icons/lu`, `LuUnlock` is not exported (it is `LuLockOpen` or absent in that build version). To prevent build breaks, standard FontAwesome icons (`react-icons/fa`) should be used for locking states.
+- Moving parsing functions to `src/utils/dateParser.ts` prevents duplication and guards against cross-browser date arithmetic bugs.
+
+---
 ## [June 17, 2026] — Timezone Synchronization & Slot Data Migration (Phase 2.1)
 **Status:** ✅ COMPLETED
 
