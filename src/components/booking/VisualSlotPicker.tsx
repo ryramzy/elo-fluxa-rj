@@ -4,6 +4,7 @@ import { db, bookSlot as firestoreBookSlot, cancelBooking as firestoreCancelBook
 import { getErrorMessage, logError } from '../../utils/errorHandling';
 import { useAuth } from '../../hooks/useAuth';
 import { createCalendarEvent } from '../../lib/googleCalendar';
+import { trackEvent } from '../../utils/analytics';
 
 interface Booking {
   id: string;
@@ -178,6 +179,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       return;
     }
 
+    // Telemetry 1: Slot Clicked
+    trackEvent('booking_slot_clicked', { date, time, userId: currentUserId });
+
     const slotKey = `${date}_${time}`;
     if (slotLoadingMap[slotKey] === 'booking' || cancelling) return;
 
@@ -186,6 +190,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     if (!window.confirm(confirmMessage)) {
       return;
     }
+
+    // Telemetry 2: Confirm Accepted
+    trackEvent('booking_confirm_accepted', { date, time, userId: currentUserId });
 
     // Instantly transition the target slot to a booking visual state
     setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
@@ -244,6 +251,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       setBookings(prev => [...prev, newBooking]);
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
 
+      // Telemetry 3: Booking Success
+      trackEvent('booking_api_success', { date, time, mattDate, mattTime, userId: currentUserId, eventId });
+
       // 2. Trigger email confirmation in the background (fire-and-forget to avoid blocking UI thread)
       fetch('/api/email/booking-confirmation', {
         method: 'POST',
@@ -270,6 +280,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       }
     } catch (err: any) {
       logError(err, { action: 'bookSlot', date, time });
+      
+      // Telemetry 4: Booking Error
+      trackEvent('booking_api_error', { date, time, error: err.message || err, userId: currentUserId });
+
       showToast(err.message || 'Failed to book slot.', 'error');
       // Rollback target slot loading status
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));

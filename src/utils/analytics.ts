@@ -29,6 +29,14 @@ export const trackEvent = (eventName: string, params?: Record<string, any>) => {
     if (analyticsInstance) {
       logEvent(analyticsInstance, eventName, params);
     }
+
+    // Forward to third-party analytics stubs if loaded in the window
+    if ((window as any).mixpanel) {
+      (window as any).mixpanel.track(eventName, params);
+    }
+    if ((window as any).posthog) {
+      (window as any).posthog.capture(eventName, params);
+    }
     
     // Always print to console in development mode
     if (import.meta.env.DEV) {

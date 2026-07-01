@@ -90,10 +90,16 @@ export function logError(error: any, context?: Record<string, any>) {
   
   console.error('App Error:', errorInfo);
   
+  // Forward to observability layers if loaded
+  if ((window as any).Sentry) {
+    (window as any).Sentry.captureException(error, { extra: context });
+  }
+  if ((window as any).LogRocket) {
+    (window as any).LogRocket.captureException(error, { extra: context });
+  }
+  
   // In production, send to error logging service
   if (import.meta.env.PROD) {
-    // Add your error logging service here (e.g., Sentry, LogRocket, etc.)
-    // For now, just log to console
     console.error('Production Error:', errorInfo);
   }
 }
