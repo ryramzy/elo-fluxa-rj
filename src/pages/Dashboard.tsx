@@ -5,7 +5,7 @@ import { useEnrollments } from '../hooks/useEnrollments';
 import { useBookings } from '../hooks/useBookings';
 import { useStreak } from '../hooks/useStreak';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '../hooks/useToast';
 import { trackEvent } from '../utils/analytics';
 
@@ -33,10 +33,20 @@ const DashboardWorking: React.FC = () => {
   const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { streak } = useStreak(user?.uid || '');
   const navigate = useNavigate();
+  const location = useLocation();
   const { showToast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<'overview' | 'booking'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'booking'>(
+    (location.state as any)?.tab === 'booking' ? 'booking' : 'overview'
+  );
   const [isAdminView, setIsAdminView] = useState(true);
+
+  useEffect(() => {
+    const stateTab = (location.state as any)?.tab;
+    if (stateTab === 'booking' || stateTab === 'overview') {
+      setActiveTab(stateTab);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const savedView = sessionStorage.getItem('elo_admin_view');
