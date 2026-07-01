@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { error } = await resend.emails.send({
       from: 'Elo! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
-      to: attendeeEmail,
+      to: [attendeeEmail, 'mramsao@gmail.com'],
       subject: `Sua aula está confirmada - ${formattedDate}`,
       html: `
         <div style="font-family:sans-serif;max-width:520px;
