@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/useToast';
-import { LuCheckCircle, LuCopy, LuAlertTriangle, LuQrCode, LuCreditCard } from 'react-icons/lu';
+import { LuCheck, LuCopy, LuAlertTriangle, LuQrCode, LuCreditCard } from 'react-icons/lu';
 
 interface CheckoutFormProps {
   plan: 'starter' | 'pro' | 'elite';
@@ -114,7 +114,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     return (
       <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center max-w-md mx-auto backdrop-blur-md">
         <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-          <LuCheckCircle size={32} />
+          <LuCheck size={32} />
         </div>
         <h3 className="text-xl font-bold text-white mb-2">Assinatura Ativada!</h3>
         <p className="text-slate-400 text-sm mb-6 leading-relaxed">
