@@ -1,14 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { useUserProfile } from '../hooks/useUserProfile';
-import { useEnrollments } from '../hooks/useEnrollments';
-import { courses, Course, LessonMetadata } from '../data/courses';
-import { checkCourseAccess, enrollUserInCourse } from '../lib/firestore';
-import { XP_REWARDS, awardXP } from '../lib/xpSystem';
-import SubscriptionModal from '../components/SubscriptionModal';
-import { sounds } from '../utils/sounds';
-import { trackEvent } from '../utils/analytics';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useEnrollments } from '@/hooks/useEnrollments';
+import { courses, Course, LessonMetadata } from '@/data/courses';
+import { checkCourseAccess, enrollUserInCourse } from '@lib/firestore';
+import { awardXP } from '@lib/xpSystem';
+import SubscriptionModal from '@components/SubscriptionModal';
+import { sounds } from '@utils/sounds';
+import { trackEvent } from '@utils/analytics';
+import { 
+  LuBookOpen, 
+  LuClock, 
+  LuTrophy, 
+  LuPlay, 
+  LuArrowLeft, 
+  LuBriefcase, 
+  LuFlame 
+} from 'react-icons/lu';
+import { 
+  FaLock, 
+  FaUnlock, 
+  FaCheckCircle, 
+  FaWhatsapp, 
+  FaInfoCircle, 
+  FaShareAlt 
+} from 'react-icons/fa';
+
+// --- THEME COLOR MATRIX FOR DYNAMIC GRADIENTS & ACCENTS ---
+const themeMatrix = {
+  'cyber-blue': {
+    glowColor: 'bg-sky-500/10',
+    border: 'border-sky-500/20 hover:border-sky-400/40',
+    text: 'text-sky-400',
+    badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+    progress: 'bg-sky-500 shadow-[0_0_10px_rgba(56,189,248,0.5)]',
+    button: 'bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-[0_4px_14px_rgba(14,165,233,0.3)]',
+    pulseGlow: 'shadow-[0_0_15px_rgba(14,165,233,0.15)] border-sky-500/40'
+  },
+  'amber': {
+    glowColor: 'bg-amber-500/10',
+    border: 'border-amber-500/20 hover:border-amber-400/40',
+    text: 'text-amber-400',
+    badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    progress: 'bg-amber-500 shadow-[0_0_10px_rgba(251,191,36,0.5)]',
+    button: 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-[0_4px_14px_rgba(251,191,36,0.3)]',
+    pulseGlow: 'shadow-[0_0_15px_rgba(251,191,36,0.15)] border-amber-500/40'
+  },
+  'purple': {
+    glowColor: 'bg-purple-500/10',
+    border: 'border-purple-500/20 hover:border-purple-400/40',
+    text: 'text-purple-400',
+    badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    progress: 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]',
+    button: 'bg-purple-500 hover:bg-purple-400 text-slate-950 shadow-[0_4px_14px_rgba(168,85,247,0.3)]',
+    pulseGlow: 'shadow-[0_0_15px_rgba(168,85,247,0.15)] border-purple-500/40'
+  },
+  'pink': {
+    glowColor: 'bg-pink-500/10',
+    border: 'border-pink-500/20 hover:border-pink-400/40',
+    text: 'text-pink-400',
+    badge: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+    progress: 'bg-pink-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]',
+    button: 'bg-pink-500 hover:bg-pink-400 text-slate-950 shadow-[0_4px_14px_rgba(244,63,94,0.3)]',
+    pulseGlow: 'shadow-[0_0_15px_rgba(244,63,94,0.15)] border-pink-500/40'
+  }
+};
+
+const getCourseTheme = (course: Course) => {
+  if (course.tag === 'Grammar') {
+    return 'purple';
+  }
+  if (['Conversation', 'Essentials', 'Travel'].includes(course.tag)) {
+    return 'amber';
+  }
+  const technicalTags = ['Tech', 'Engineering', 'Software Developers'];
+  if (technicalTags.includes(course.tag) || course.id.includes('tech') || course.id.includes('dev')) {
+    return 'cyber-blue';
+  }
+  return 'pink';
+};
 
 const CoursePage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -31,19 +102,22 @@ const CoursePage: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">Course not found</h1>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center font-sans text-slate-100 p-4">
+        <div className="text-center bg-slate-900/40 border border-slate-800 p-8 rounded-3xl backdrop-blur-xl">
+          <h1 className="text-2xl font-extrabold mb-4 text-slate-200">Curso não encontrado</h1>
           <button 
             onClick={() => navigate('/dashboard')}
-            className="text-blue-600 hover:text-blue-700 underline"
+            className="text-sky-400 hover:text-sky-300 font-semibold underline flex items-center justify-center gap-1.5 mx-auto transition-colors"
           >
-            Back to dashboard
+            <LuArrowLeft size={16} /> Voltar ao Painel
           </button>
         </div>
       </div>
     );
   }
+
+  const courseThemeKey = getCourseTheme(course);
+  const theme = themeMatrix[courseThemeKey];
 
   const handleEnrollClick = async () => {
     if (!user?.uid) return;
@@ -58,7 +132,6 @@ const CoursePage: React.FC = () => {
         return;
       }
       
-      // Enroll directly if user has access
       await enrollInCourse();
     } catch (error: any) {
       console.error('Error checking course access:', error);
@@ -74,12 +147,10 @@ const CoursePage: React.FC = () => {
     try {
       await enrollUserInCourse(user.uid, course.id, course.lessons.length);
       trackEvent('course_enroll', { courseId: course.id });
-      // Fire XP and email asynchronously so they don't block navigation
       awardXP(user.uid, 50, 'course enrolled').catch(xpError => {
         console.error('Failed to award XP:', xpError);
       });
       
-      // Send confirmation email in background
       fetch('/api/email/enrollment-confirmation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,7 +165,6 @@ const CoursePage: React.FC = () => {
       setSubscriptionModalOpen(false);
       setSelectedCourseForEnroll(null);
       
-      // Play sound, show success state, and delay navigation slightly for UX
       sounds.playEnrollSuccess();
       setEnrollSuccess(true);
       setIsEnrolling(false);
@@ -114,7 +184,6 @@ const CoursePage: React.FC = () => {
     
     try {
       if (plan === 'starter') {
-        // Enroll immediately
         await enrollInCourse();
       } else {
         console.log(`User selected ${plan} plan - redirecting to WhatsApp for payment`);
@@ -147,160 +216,196 @@ const CoursePage: React.FC = () => {
 
   const getLessonTypeColor = (type: string) => {
     switch (type) {
-      case 'video': return 'bg-blue-100 text-blue-700';
-      case 'reading': return 'bg-amber-100 text-amber-700';
-      case 'quiz': return 'bg-purple-100 text-purple-700';
-      case 'conversation': return 'bg-teal-100 text-teal-700';
-      default: return 'bg-slate-100 text-slate-700';
+      case 'video': return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
+      case 'reading': return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      case 'quiz': return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
+      case 'conversation': return 'bg-teal-500/10 text-teal-400 border border-teal-500/20';
+      default: return 'bg-slate-800 text-slate-300 border border-slate-700/50';
     }
   };
 
   const estimatedTotalTime = course.lessons.reduce((total, lesson) => {
-    // If lesson.duration doesn't exist, assume 30 minutes per lesson
     const minutes = parseInt(String((lesson as any).duration || '30'));
     return total + (isNaN(minutes) ? 30 : minutes);
   }, 0);
 
   const totalLessonXP = course.lessons.reduce((total, lesson) => total + lesson.xpReward, 0);
+  const progressPercent = enrollment?.progress || 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Course Hero Banner */}
-      <div 
-        className="relative h-64 flex items-center justify-center animate-fade-in"
-        style={{ backgroundColor: course.accentColor || '#3B82F6' }}
-      >
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="absolute top-4 left-4 text-slate-700 hover:text-slate-900 transition-colors"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/30 pt-24 pb-20 relative overflow-hidden">
+      
+      {/* 🔮 DYNAMIC BACKGROUND MESH GLOW */}
+      <div className={`absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.12] z-0 pointer-events-none ${theme.glowColor}`} />
+      
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         
-        <div className="text-center">
-          <div className="text-6xl mb-4">{course.emoji}</div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">{course.title}</h1>
-          <div className="flex items-center justify-center gap-4 text-sm text-slate-600">
-            <span className="bg-slate-100 px-3 py-1 rounded-full">{course.audience || 'Todos os níveis'}</span>
-            <span>{course.lessons.length} lessons</span>
-            <span>+{course.totalXpReward || totalLessonXP} XP</span>
+        {/* 🔙 BACK LINK */}
+        <Link 
+          to="/courses" 
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors mb-6 text-sm font-semibold group"
+        >
+          <LuArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
+          Voltar para Cursos
+        </Link>
+
+        {/* 🎭 COURSE HERO BRIEFING PANEL */}
+        <div className={`relative overflow-hidden bg-slate-900/40 border border-slate-800 rounded-3xl p-8 md:p-10 mb-8 backdrop-blur-md`}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-4xl filter drop-shadow-md">{course.emoji}</span>
+                <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${theme.badge}`}>
+                  {course.tag}
+                </span>
+                <span className="text-xs font-semibold px-2.5 py-1 bg-slate-800 text-slate-300 border border-slate-700/50 rounded-md">
+                  {course.level}
+                </span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+                {course.title}
+              </h1>
+              <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
+                {course.descriptionPt || course.description}
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-start md:items-end justify-center self-stretch md:self-auto bg-slate-950/40 border border-slate-850 p-5 rounded-2xl min-w-[180px]">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Recompensa Total</span>
+              <span className={`text-2xl font-extrabold flex items-center gap-1.5 ${theme.text}`}>
+                <LuTrophy size={20} /> +{course.totalXpReward || totalLessonXP} XP
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Progress Bar (if enrolled) */}
-      {isEnrolled && (
-        <div className="bg-white border-b border-slate-200 px-6 py-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-700">Course Progress</span>
-              <span className="text-sm text-slate-600">{enrollment?.progress || 0}% complete</span>
+        {/* 📊 PROGRESS DRAWER (If enrolled) */}
+        {isEnrolled && (
+          <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-md mb-8">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-xs uppercase font-extrabold tracking-widest text-slate-400">Progresso do Treinamento</span>
+              <span className="text-sm font-extrabold text-slate-200">{progressPercent}% completo</span>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2">
+            <div className="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800/40 overflow-hidden">
               <div 
-                className="h-2 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${enrollment?.progress || 0}%`,
-                  backgroundColor: course.accentColor || '#3B82F6' 
-                }}
+                className={`h-full ${theme.progress} rounded-full transition-all duration-500`}
+                style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* 🗺️ SPRINT COLUMNS LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Course Overview (65% width) */}
-          <div className="lg:col-span-2">
-            {/* Tabs */}
-            <div className="bg-white rounded-lg border border-slate-200 mb-6">
-              <div className="flex border-b border-slate-200">
+          
+          {/* 🌲 LEFT QUEST MAP PANEL */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-md">
+              
+              {/* TABS HEADERS */}
+              <div className="flex border-b border-slate-800/80 bg-slate-950/20">
                 <button
                   onClick={() => setActiveTab('lessons')}
-                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                  className={`flex-1 py-4 px-6 text-sm font-bold tracking-wide transition-all ${
                     activeTab === 'lessons'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? `${theme.text} border-b-2 ${courseThemeKey === 'cyber-blue' ? 'border-sky-500' : courseThemeKey === 'amber' ? 'border-amber-500' : courseThemeKey === 'purple' ? 'border-purple-500' : 'border-pink-500'} bg-slate-900/20`
+                      : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Lessons
+                  Missões Práticas
                 </button>
                 <button
                   onClick={() => setActiveTab('about')}
-                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                  className={`flex-1 py-4 px-6 text-sm font-bold tracking-wide transition-all ${
                     activeTab === 'about'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? `${theme.text} border-b-2 ${courseThemeKey === 'cyber-blue' ? 'border-sky-500' : courseThemeKey === 'amber' ? 'border-amber-500' : courseThemeKey === 'purple' ? 'border-purple-500' : 'border-pink-500'} bg-slate-900/20`
+                      : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  About
+                  Sobre o Curso
                 </button>
               </div>
 
-              {/* Lessons Tab */}
+              {/* TABS VIEWS */}
               {activeTab === 'lessons' && (
                 <div className="p-6">
-                  <div className="space-y-3">
+                  
+                  {/* VERTICAL QUEST MAP LIST */}
+                  <div className="space-y-4">
                     {course.lessons.map((lesson, index) => {
-                      const isCompleted = Array.isArray(enrollment?.completedLessons) ? enrollment.completedLessons.includes(lesson.id) : false;
+                      const isLessonCompleted = Array.isArray(enrollment?.completedLessons) 
+                        ? enrollment.completedLessons.includes(lesson.id) 
+                        : false;
                       const isCurrent = enrollment?.activeLessonId === lesson.id || (!enrollment?.activeLessonId && index === 0);
                       const canAccess = lesson.lessonIndex === 0 || isEnrolled;
                       
+                      // Node Status styling variables
+                      let nodeStyle = '';
+                      let numberBadge = '';
+
+                      if (isLessonCompleted) {
+                        nodeStyle = 'border-emerald-500/20 bg-emerald-500/5 hover:border-emerald-500/40';
+                        numberBadge = 'bg-emerald-500/20 border-emerald-500 text-emerald-400';
+                      } else if (isCurrent) {
+                        nodeStyle = `${theme.pulseGlow} bg-slate-900/60`;
+                        numberBadge = `${courseThemeKey === 'cyber-blue' ? 'bg-sky-500/20 border-sky-500 text-sky-400' : courseThemeKey === 'amber' ? 'bg-amber-500/20 border-amber-500 text-amber-400' : courseThemeKey === 'purple' ? 'bg-purple-500/20 border-purple-500 text-purple-400' : 'bg-pink-500/20 border-pink-500 text-pink-400'}`;
+                      } else if (canAccess) {
+                        nodeStyle = 'border-slate-800 hover:border-slate-700 bg-slate-900/20';
+                        numberBadge = 'bg-slate-800 border-slate-700 text-slate-400';
+                      } else {
+                        nodeStyle = 'border-slate-800/40 bg-slate-900/10 opacity-40 cursor-not-allowed';
+                        numberBadge = 'bg-slate-900 border-slate-850 text-slate-600';
+                      }
+
                       return (
                         <div
                           key={lesson.id}
-                          onClick={() => handleLessonClick(lesson)}
-                          className={`flex items-center p-4 rounded-lg border transition-all cursor-pointer ${
-                            isCurrent
-                              ? 'border-blue-500 bg-blue-50'
-                              : canAccess
-                              ? 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                              : 'border-slate-200 bg-slate-50 opacity-60'
-                          }`}
+                          onClick={() => canAccess && handleLessonClick(lesson)}
+                          className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${nodeStyle} ${canAccess ? 'cursor-pointer' : ''}`}
                         >
-                          <div className="flex items-center flex-1">
-                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-medium text-slate-600 mr-4">
-                              {isCompleted ? '✓' : index + 1}
+                          <div className="flex items-start gap-4">
+                            <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${numberBadge}`}>
+                              {isLessonCompleted ? <FaCheckCircle size={14} /> : index + 1}
                             </div>
-                            <div className="flex-1">
-                              <h3 className="font-medium text-slate-900">{lesson.title}</h3>
-                              <div className="flex items-center gap-3 mt-1">
-                                <span className="text-sm text-slate-600">30 min</span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${getLessonTypeColor('conversation')}`}>
-                                  Conversação
+                            
+                            <div>
+                              <h3 className="font-bold text-slate-100 text-sm sm:text-base leading-tight">
+                                {lesson.title}
+                              </h3>
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                                  <LuClock size={11} /> 30 min
+                                </span>
+                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${getLessonTypeColor(
+                                  lesson.title.toLowerCase().includes('quiz') ? 'quiz' : 'conversation'
+                                )}`}>
+                                  {lesson.title.toLowerCase().includes('quiz') ? 'Quiz' : 'Conversação'}
                                 </span>
                                 {lesson.lessonIndex === 0 && (
-                                  <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                                  <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full font-bold uppercase">
                                     Grátis
-                                  </span>
-                                )}
-                                {!canAccess && (
-                                  <span className="text-xs text-slate-500">
-                                    <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
                                   </span>
                                 )}
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-600">+{lesson.xpReward} XP</span>
-                            {isCurrent && (
+
+                          <div className="flex items-center gap-4 mt-4 sm:mt-0 self-end sm:self-auto shrink-0">
+                            <span className="text-xs font-bold text-slate-400">+{lesson.xpReward} XP</span>
+                            
+                            {!canAccess ? (
+                              <FaLock size={12} className="text-slate-500 mr-2" />
+                            ) : isCurrent ? (
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleLessonClick(lesson);
                                 }}
-                                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${theme.button}`}
                               >
-                                Continue
+                                <LuPlay size={11} fill="currentColor" /> Iniciar
                               </button>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       );
@@ -309,45 +414,41 @@ const CoursePage: React.FC = () => {
                 </div>
               )}
 
-              {/* About Tab */}
+              {/* ABOUT TAB VIEW */}
               {activeTab === 'about' && (
                 <div className="p-6 space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">About this course</h3>
-                    <p className="text-slate-700 leading-relaxed">{course.aboutText || course.description}</p>
+                    <h3 className="text-base font-bold text-slate-100 mb-2">Sobre este curso</h3>
+                    <p className="text-slate-450 text-xs sm:text-sm leading-relaxed">{course.aboutText || course.description}</p>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Who this is for</h3>
-                    <p className="text-slate-700 leading-relaxed">{course.whoThisIsFor || 'Estudantes buscando destravar a conversação.'}</p>
+                    <h3 className="text-base font-bold text-slate-100 mb-2">Quem deve fazer</h3>
+                    <p className="text-slate-450 text-xs sm:text-sm leading-relaxed">{course.whoThisIsFor || 'Estudantes e profissionais buscando acelerar sua conversação e destravar o inglês real.'}</p>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">What you will learn</h3>
-                    <ul className="space-y-2">
-                      {(course.whatYouWillLearn || ['Vocabulário prático', 'Expressões do dia a dia', 'Confiança para falar']).map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          <span className="text-slate-700">{item}</span>
+                    <h3 className="text-base font-bold text-slate-100 mb-2">O que você aprenderá</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {(course.whatYouWillLearn || ['Vocabulário prático', 'Expressões idiomáticas do dia a dia', 'Confiança sob pressão', 'Padrões de diálogo real']).map((item, index) => (
+                        <li key={index} className="flex items-start gap-2 text-xs sm:text-sm text-slate-350">
+                          <FaCheckCircle className={`shrink-0 mt-0.5 ${theme.text}`} size={12} />
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Meet your teacher</h3>
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                  <div className="pt-4 border-t border-slate-800">
+                    <h3 className="text-base font-bold text-slate-100 mb-3">Seu Instrutor Nativo</h3>
+                    <div className="flex items-center gap-4 bg-slate-950/40 p-4 rounded-xl border border-slate-900">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-slate-950 text-lg ${theme.button}`}>
                         M
                       </div>
                       <div>
-                        <h4 className="font-medium text-slate-900">Matt</h4>
-                        <p className="text-slate-700 text-sm leading-relaxed">
-                          Matt is a native English speaker from the United States living in Rio de Janeiro. 
-                          With years of experience teaching professionals, students, and culture enthusiasts, 
-                          he brings real American English - not textbook English - to every lesson.
+                        <h4 className="font-bold text-slate-200 text-sm">Matt</h4>
+                        <p className="text-slate-400 text-xs mt-0.5">
+                          Native speaker de Nova York. Especialista em destravar a fala de profissionais brasileiros.
                         </p>
                       </div>
                     </div>
@@ -357,60 +458,72 @@ const CoursePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column - Sidebar (35% width) */}
+          {/* 🗺️ RIGHT SIDEBAR DETAILS PANEL */}
           <div className="space-y-6">
-            {/* Course Stats */}
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <h3 className="font-semibold text-slate-900 mb-4">Course Stats</h3>
+            
+            {/* STATS BOARD */}
+            <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
+              <h3 className="font-extrabold text-sm uppercase tracking-widest text-slate-350 mb-4 border-b border-slate-800/80 pb-2">
+                Painel do Curso
+              </h3>
+              
               <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Total XP</span>
-                  <span className="font-medium text-slate-900">+{course.totalXpReward || totalLessonXP} XP</span>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-slate-400">Total XP Disponível</span>
+                  <span className="font-bold text-slate-200">+{course.totalXpReward || totalLessonXP} XP</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Total Time</span>
-                  <span className="font-medium text-slate-900">
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-slate-400">Tempo de Carga</span>
+                  <span className="font-bold text-slate-200">
                     {isNaN(estimatedTotalTime) || estimatedTotalTime === 0 ? '—' : `~${Math.floor(estimatedTotalTime / 60)}h ${estimatedTotalTime % 60}min`}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Lessons</span>
-                  <span className="font-medium text-slate-900">{course.lessons.length}</span>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-slate-400">Aulas Totais</span>
+                  <span className="font-bold text-slate-200">{course.lessons.length} Missões</span>
                 </div>
               </div>
             </div>
 
-            {/* Student Stats (if enrolled) */}
+            {/* ENROLLMENT PROGRESS STATS */}
             {isEnrolled && (
-              <div className="bg-white rounded-lg border border-slate-200 p-6">
-                <h3 className="font-semibold text-slate-900 mb-4">Your Progress</h3>
+              <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
+                <h3 className="font-extrabold text-sm uppercase tracking-widest text-slate-350 mb-4 border-b border-slate-800/80 pb-2">
+                  Seu Desempenho
+                </h3>
+                
                 <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Lessons Completed</span>
-                    <span className="font-medium text-slate-900">
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-slate-400">Missões Concluídas</span>
+                    <span className="font-bold text-slate-200">
                       {enrollment?.lessonsCompleted || 0} / {course.lessons.length}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">XP Earned</span>
-                    <span className="font-medium text-slate-900">{enrollment?.xpEarned || 0} XP</span>
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-slate-400">XP Conquistado</span>
+                    <span className="font-bold text-slate-200">{enrollment?.xpEarned || 0} XP</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Current Streak</span>
-                    <span className="font-medium text-slate-900">{profile?.streakDays || 0} days</span>
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-slate-400">Streak de Estudos</span>
+                    <span className="font-bold text-slate-200 flex items-center gap-1">
+                      <LuFlame className="text-orange-500" size={13} /> {profile?.streakDays || 0} dias
+                    </span>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Actions */}
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <h3 className="font-semibold text-slate-900 mb-4">Actions</h3>
+            {/* ACTION PANELS */}
+            <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
+              <h3 className="font-extrabold text-sm uppercase tracking-widest text-slate-350 mb-4 border-b border-slate-800/80 pb-2">
+                Ações
+              </h3>
+              
               <div className="space-y-3">
                 {isEnrolled ? (
                   isCompleted ? (
-                    <button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded transition-colors">
-                      Course Completed! ???
+                    <button className="w-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider">
+                      Curso Concluído! 🎉
                     </button>
                   ) : (
                     <Link 
@@ -423,88 +536,77 @@ const CoursePage: React.FC = () => {
                         }
                         return nextLessonId;
                       })()}`}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors text-center block"
+                      className={`w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-center block transition-all ${theme.button}`}
                     >
-                      Continue Learning
+                      Continuar Prática
                     </Link>
                   )
                 ) : (
                   <button 
                     onClick={handleEnrollClick}
                     disabled={isEnrolling || enrollSuccess}
-                    className={`w-full font-medium py-2 rounded transition-all duration-300 flex items-center justify-center gap-2 ${
+                    className={`w-full font-bold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-xs uppercase tracking-wider ${
                       enrollSuccess 
-                        ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' 
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        ? 'bg-emerald-500/20 border border-emerald-500 text-emerald-350 shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
+                        : theme.button
                     } ${isEnrolling ? 'opacity-80 cursor-wait' : ''}`}
                   >
                     {isEnrolling ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Processando...
                       </>
                     ) : enrollSuccess ? (
-                      <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Matriculado! 🎉
-                      </>
+                      'Matriculado! 🎉'
                     ) : (
-                      'Enroll in Course'
+                      'Matricular-se no Curso'
                     )}
                   </button>
                 )}
                 
                 <button 
                   onClick={handleShareClick}
-                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded transition-colors"
+                  className="w-full bg-slate-950/40 hover:bg-slate-950/80 text-slate-300 border border-slate-800 hover:border-slate-700 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                 >
-                  {linkCopied ? 'Link copied!' : 'Share Course'}
+                  <FaShareAlt size={12} /> {linkCopied ? 'Link Copiado!' : 'Compartilhar Curso'}
                 </button>
               </div>
             </div>
 
-            {/* Error Banner */}
+            {/* ERROR POPUP PANEL */}
             {enrollError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-3">
-                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <div className="flex-1 text-sm font-medium">
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-start gap-3 relative animate-in fade-in slide-in-from-top-2">
+                <FaInfoCircle className="shrink-0 mt-0.5" size={14} />
+                <div className="flex-1 text-xs font-semibold leading-relaxed">
                   {enrollError}
                 </div>
-                <button onClick={() => setEnrollError(null)} className="text-red-500 hover:text-red-700">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+                <button onClick={() => setEnrollError(null)} className="text-red-400 hover:text-red-200 transition-colors text-xs font-bold">
+                  ✕
                 </button>
               </div>
             )}
 
-            {/* Help */}
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <h3 className="font-semibold text-slate-900 mb-4">Need help?</h3>
+            {/* HELP CARD */}
+            <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
+              <h3 className="font-extrabold text-sm uppercase tracking-widest text-slate-350 mb-3">
+                Dúvidas?
+              </h3>
               <a
-                href="https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20curso%20{course.title}"
+                href={`https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20curso%20${encodeURIComponent(course.title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium"
+                className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors text-xs font-bold uppercase tracking-wider"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.028 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
-                </svg>
-                Message Matt on WhatsApp
+                <FaWhatsapp size={16} /> Suporte no WhatsApp
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Subscription Modal */}
       <SubscriptionModal
         isOpen={subscriptionModalOpen}
         onClose={() => {

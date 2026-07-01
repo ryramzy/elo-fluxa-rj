@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
-import { speakText } from '../../utils/tts';
-import { useToast } from '../../hooks/useToast';
-import { trackEvent } from '../../utils/analytics';
+import { speakText } from '@utils/tts';
+import { useToast } from '@/hooks/useToast';
+import { trackEvent } from '@utils/analytics';
 
 
 interface Slide {
@@ -69,8 +69,37 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
     setIsSpeaking(false);
   }, [currentIndex]);
 
+  // Typing-safe keyboard navigation handler
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      if (activeEl) {
+        const tagName = activeEl.tagName.toLowerCase();
+        const isContentEditable = activeEl.getAttribute('contenteditable') === 'true';
+        if (
+          tagName === 'input' || 
+          tagName === 'textarea' || 
+          isContentEditable
+        ) {
+          return; // Skip page transition when typing
+        }
+      }
+
+      if (!swiperRef.current) return;
+      const swiper = swiperRef.current;
+
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        swiper.slideNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        swiper.slidePrev();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
+      window.removeEventListener('keydown', handleKeyDown);
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -78,7 +107,11 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col font-sans text-white touch-none">
+    <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col font-sans text-white touch-none relative overflow-hidden">
+      {/* 🔮 SLATE GLOW ACCENT DECK SHIELDS */}
+      <div className="absolute inset-0 bg-slate-950 z-0 pointer-events-none" />
+      <div className="absolute -top-1/4 -right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
       <style>{`
         @keyframes siri-ripple {
           0% { transform: scale(0.9); opacity: 0.7; }
