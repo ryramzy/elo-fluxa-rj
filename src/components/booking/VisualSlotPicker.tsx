@@ -37,9 +37,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     setTimeout(() => setToast(null), 3000);
   };
 
+  // Helper to parse dates robustly across all browsers (including Safari and iOS)
+  const parseLocalDate = (dateStr: string, timeStr: string): Date => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const [hour, minute] = timeStr.split(':').map(Number);
+    return new Date(year, month - 1, day, hour, minute, 0);
+  };
+
   // Helpers for timezone conversions
   const getMattLocalStrings = (localDateStr: string, localTimeStr: string) => {
-    const localDateObj = new Date(`${localDateStr}T${localTimeStr}:00`);
+    const localDateObj = parseLocalDate(localDateStr, localTimeStr);
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Sao_Paulo',
       year: 'numeric',
@@ -62,7 +69,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   const isMattWorking = (localDateStr: string, localTimeStr: string): boolean => {
-    const localDateObj = new Date(`${localDateStr}T${localTimeStr}:00`);
+    const localDateObj = parseLocalDate(localDateStr, localTimeStr);
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Sao_Paulo',
       weekday: 'short',
@@ -168,6 +175,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       showToast('Crie uma conta para agendar uma aula!', 'error');
       return;
     }
+
+    // Interactive confirmation to give the user immediate feedback that their click was registered
+    const confirmMessage = `Deseja agendar a sua aula para o dia ${date.split('-').reverse().join('/')} às ${time}?`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
     if (booking || cancelling) return;
     setBooking(true);
     
@@ -183,10 +197,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       let meetLink: string | null = null;
       
       try {
-        const startIso = `${mattDate}T${mattTime}:00-03:00`;
-        const startDateObj = new Date(startIso);
+        const [mYear, mMonth, mDay] = mattDate.split('-').map(Number);
+        const [mHour, mMinute] = mattTime.split(':').map(Number);
+        // America/Sao_Paulo (UTC-3). To convert local Rio time to UTC, add 3 hours.
+        const startDateObj = new Date(Date.UTC(mYear, mMonth - 1, mDay, mHour + 3, mMinute, 0));
         const endDateObj = new Date(startDateObj.getTime() + 60 * 60 * 1000); // 1 hour duration
-        const startDateTime = startIso;
+        
+        const startDateTime = `${mattDate}T${mattTime}:00-03:00`;
         const endDateTime = endDateObj.toISOString().replace('Z', '-03:00'); // Convert to local Rio ISO
         
         const calRes = await createCalendarEvent({
@@ -272,7 +289,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         return b.date === mattDate && b.time === mattTime;
       }
       if (b.datetime) {
-        const cellMs = new Date(`${dateStr}T${timeStr}:00`).getTime();
+        const cellMs = parseLocalDate(dateStr, timeStr).getTime();
         const bookingMs = b.datetime.seconds * 1000;
         return Math.abs(bookingMs - cellMs) < 60000;
       }
@@ -281,7 +298,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   const isPast = (dateStr: string, time: string) => {
-    return new Date(`${dateStr}T${time}:00`) < new Date();
+    return parseLocalDate(dateStr, time).getTime() < Date.now();
   };
 
   return (
