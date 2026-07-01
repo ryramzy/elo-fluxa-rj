@@ -894,3 +894,28 @@ The Agenda page already exceeded requirements with:
 - Add email notifications via Resend API
 - Optimize UI for Vita app (React Native elements)
 - Consider Google Calendar re-integration as optional enhancement
+
+---
+
+## [July 1, 2026] — Immersive AI Coach Redesign, US Accents, Gamification, and Live Call Systems
+**Status:** ✅ COMPLETED
+
+### Problems Diagnosed & Solved
+- **Blank Page Startup Crash**: Adding Jitsi routes caused a global `ReferenceError: VideoCallPage is not defined` because the import declaration was missing at the top of `App.tsx`. Fixed by adding the correct import.
+- **Vercel Google Key Formatting**: Vercel escapes newlines in environment JSON private keys (`\\n`). This threw cryptographical errors during Google Auth handshake. Fixed by replacing `\\n` with real newlines (`\n`) dynamically inside the API routes.
+- **Accent Crossover**: Text-to-speech engine was picking up British accents (like Daniel/en-GB) instead of restricting to native American voice profiles. Excluded UK/GB accents from voice synthesis search.
+- **AI Coach Design**: The AI coach selection layout was basic and lacked visuals. Added premium character card visuals (Sal, Davis, Bobby, Chloe), goal checklists, and an on-the-fly API key configuration panel.
+- **Passive Slide Content**: Slide decks were static reading pages. Added a gamified `QuizSlideContent` multiple-choice renderer, themed visual cards, and procedural audio synthesis checks.
+- **Cambly-style Live Call**: Created a dashboard panel enabling instant connection to native tutors via Jitsi iframe calls.
+
+### Key Files Modified/Created
+- `App.tsx` - Imported and declared route for `VideoCallPage`
+- `src/pages/AiCoachPage.tsx` - Redesigned coach selector, added Pressure Mode timer, goal checklists, and character design overlays
+- `src/pages/LessonPage.tsx` - Added `QuizSlideContent` helper component and parsed `QUIZ` slides
+- `src/pages/Dashboard.tsx` - Integrated the live call widget in the layout
+- `src/components/dashboard/LiveTutorsWidget.tsx` - [NEW] Renders online native tutors on-call panel
+- `src/utils/sounds.ts` - Added procedural `playError` sound beep
+- `api/calendar/create-event.ts`, `cancel-event.ts`, `get-events.ts` - Added multiline Vercel Google key format sanitizers
+- `api/email/booking-confirmation.ts`, `api/confirm-booking.ts` - Included admin `mramsao@gmail.com` as email recipient
+- `scripts/run-test-booking-e2e.js` - [NEW] Copy-paste browser console simulation test script
+

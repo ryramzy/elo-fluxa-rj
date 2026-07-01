@@ -42,6 +42,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Initialize Google Calendar API with service account
     const credentials = JSON.parse(serviceAccountJson);
+    if (credentials.private_key) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+    }
     const auth = new google.auth.GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
