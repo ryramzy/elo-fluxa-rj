@@ -13,7 +13,9 @@ import {
   FaLock, 
   FaKey,
   FaBookOpen,
-  FaCheck
+  FaCheck,
+  FaHourglassHalf,
+  FaTrophy
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent } from '../utils/analytics';
@@ -26,14 +28,15 @@ interface Scenario {
   description: string;
   descriptionPt: string;
   emoji: string;
-  systemInstruction: string;
-  starterMessage: string;
+  imageUrl: string;
+  accentGradient: string;
+  textAccent: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   focus: string;
   goals: string[];
   phrases: { english: string; portuguese: string }[];
-  accentGradient: string;
-  textAccent: string;
+  systemInstruction: string;
+  starterMessage: string;
 }
 
 interface Message {
@@ -51,8 +54,9 @@ const SCENARIOS: Scenario[] = [
     description: 'Order breakfast and chat with a classic, fast-talking New York waiter.',
     descriptionPt: 'Peça o café da manhã e converse com um garçom típico de Nova York, rápido no falar.',
     emoji: '🥞',
+    imageUrl: '/sal.jpg',
     accentGradient: 'from-amber-600/20 to-orange-500/10 border-amber-500/30',
-    textAccent: 'text-amber-400',
+    textAccent: 'text-amber-450',
     difficulty: 'Intermediate',
     focus: 'Diner Slang & Food Orders',
     goals: [
@@ -80,8 +84,9 @@ const SCENARIOS: Scenario[] = [
     description: 'Navigate US Customs and explain the purpose of your visit to a border officer.',
     descriptionPt: 'Passe pela Alfândega dos EUA e explique o motivo da sua visita a um oficial de fronteira.',
     emoji: '✈️',
+    imageUrl: '/davis.jpg',
     accentGradient: 'from-violet-600/20 to-indigo-500/10 border-violet-500/30',
-    textAccent: 'text-violet-450',
+    textAccent: 'text-violet-400',
     difficulty: 'Advanced',
     focus: 'Immigration & Clear Explanations',
     goals: [
@@ -107,6 +112,7 @@ const SCENARIOS: Scenario[] = [
     description: 'Practice small talk and learn about barbecue customs at a local Austin cookout.',
     descriptionPt: 'Pratique conversação informal e aprenda sobre churrasco no Texas.',
     emoji: '🍖',
+    imageUrl: '/bobby.jpg',
     accentGradient: 'from-rose-600/20 to-orange-500/10 border-rose-500/30',
     textAccent: 'text-rose-450',
     difficulty: 'Beginner',
@@ -134,6 +140,7 @@ const SCENARIOS: Scenario[] = [
     description: 'Ask a local for directions to the Golden Gate Bridge and chat about sights.',
     descriptionPt: 'Peça informações de direção até a Golden Gate Bridge e converse sobre turismo.',
     emoji: '🌉',
+    imageUrl: '/chloe.jpg',
     accentGradient: 'from-teal-600/20 to-cyan-500/10 border-teal-500/30',
     textAccent: 'text-teal-400',
     difficulty: 'Intermediate',
@@ -176,6 +183,11 @@ const AiCoachPage: React.FC = () => {
   const [translatingIndex, setTranslatingIndex] = useState<number | null>(null);
   const [showTranslationIndex, setShowTranslationIndex] = useState<Record<number, boolean>>({});
 
+  // Pressure Mode Game Mechanics
+  const [pressureMode, setPressureMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   // API Key management
   const [showApiKeySettings, setShowApiKeySettings] = useState(false);
   const [localApiKey, setLocalApiKey] = useState('');
@@ -189,6 +201,63 @@ const AiCoachPage: React.FC = () => {
       setLocalApiKey(localStorage.getItem('elo_gemini_api_key') || '');
     }
   }, []);
+
+  // Pressure Mode Countdown Timer effect
+  useEffect(() => {
+    if (!selectedScenario || !pressureMode || loading) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+    // Only countdown if it's the user's turn (last message is from model)
+    const isUserTurn = messages.length > 0 && messages[messages.length - 1].role === 'model';
+    if (!isUserTurn) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+    setTimeLeft(15);
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          triggerTimeOutReply();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [messages, pressureMode, loading, selectedScenario]);
+
+  const triggerTimeOutReply = async () => {
+    if (!selectedScenario) return;
+    setLoading(true);
+    showToast({ type: 'error', message: 'Tempo esgotado! Responda rápido!' });
+
+    try {
+      let promptText = '';
+      if (selectedScenario.id === 'nyc_diner') {
+        promptText = "Hey hon, I don't have all day! What can I get you?";
+      } else if (selectedScenario.id === 'jfk_airport') {
+        promptText = "Please answer the question. I need to know the details of your stay.";
+      } else if (selectedScenario.id === 'texas_bbq') {
+        promptText = "You alright there, buddy? Don't let the sweet tea get warm now!";
+      } else {
+        promptText = "Hello? Are you still there? The bridge is that way!";
+      }
+
+      setMessages(prev => [...prev, { role: 'model', text: promptText }]);
+      handleSpeak(promptText);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSaveApiKey = (e: React.FormEvent) => {
     e.preventDefault();
@@ -346,7 +415,6 @@ const AiCoachPage: React.FC = () => {
       let responseText = '';
 
       if (!hasApiKey) {
-        // Run in high-quality Mock Mode
         responseText = generateMockReply(selectedScenario.id, userText, updatedMessages.length);
         await new Promise(resolve => setTimeout(resolve, 1000));
       } else {
@@ -382,7 +450,6 @@ const AiCoachPage: React.FC = () => {
     setAnalyzingIndex(msgIndex);
     try {
       if (!hasApiKey) {
-        // Simple client-side check for basic capitalization & punctuation as mock
         await new Promise(resolve => setTimeout(resolve, 600));
         let correction = null;
         if (text[0] !== text[0].toUpperCase()) {
@@ -430,7 +497,6 @@ const AiCoachPage: React.FC = () => {
     setTranslatingIndex(index);
     try {
       if (!hasApiKey) {
-        // Find matching phrase translation if available or local stub
         await new Promise(resolve => setTimeout(resolve, 400));
         const matched = selectedScenario?.phrases.find(p => p.english.toLowerCase().includes(text.toLowerCase()) || text.toLowerCase().includes(p.english.toLowerCase()));
         
@@ -484,26 +550,21 @@ const AiCoachPage: React.FC = () => {
     setInput(prev => prev + (prev ? ' ' : '') + phrase);
   };
 
-  // Verify which goals are satisfied in the text of the conversation
   const isGoalCompleted = (goal: string): boolean => {
     const textLog = messages.map(m => m.text.toLowerCase()).join(' ');
     
-    // NY Diner
     if (goal.includes('eggs and bacon')) return textLog.includes('egg') || textLog.includes('bacon');
     if (goal.includes('wheat toast')) return textLog.includes('wheat') || textLog.includes('toast');
     if (goal.includes('coffee refills')) return textLog.includes('coffee') || textLog.includes('refill') || textLog.includes('cup of joe');
     
-    // JFK Airport
     if (goal.includes('tourism')) return textLog.includes('tourism') || textLog.includes('vacation') || textLog.includes('visit');
     if (goal.includes('stay')) return textLog.includes('day') || textLog.includes('week') || textLog.includes('stay');
     if (goal.includes('address')) return textLog.includes('hotel') || textLog.includes('street') || textLog.includes('manhattan');
 
-    // Texas BBQ
     if (goal.includes('Bobby')) return textLog.includes('howdy') || textLog.includes('bobby') || textLog.includes('thanks') || textLog.includes('inviting');
     if (goal.includes('brisket')) return textLog.includes('brisket') || textLog.includes('tea') || textLog.includes('love');
     if (goal.includes('Brazil')) return textLog.includes('brazil') || textLog.includes('rio');
 
-    // SF directions
     if (goal.includes('Golden Gate Bridge')) return textLog.includes('golden gate') || textLog.includes('bridge') || textLog.includes('get to');
     if (goal.includes('cable cars')) return textLog.includes('cable car') || textLog.includes('bondinho');
     if (goal.includes('scenic viewpoint')) return textLog.includes('view') || textLog.includes('viewpoint') || textLog.includes('spot') || textLog.includes('recommend');
@@ -536,18 +597,20 @@ const AiCoachPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Toggle Settings */}
-          <button
-            onClick={() => setShowApiKeySettings(!showApiKeySettings)}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl border transition-all ${
-              hasApiKey 
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                : 'bg-slate-900 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <FaLock size={12} />
-            {hasApiKey ? 'AI Ativo (Gemini)' : 'Configurar Chave API'}
-          </button>
+          {/* Settings Actions */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowApiKeySettings(!showApiKeySettings)}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl border transition-all ${
+                hasApiKey 
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 animate-pulse' 
+                  : 'bg-slate-900 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <FaLock size={11} />
+              {hasApiKey ? 'AI Ativo (Gemini)' : 'Configurar Chave API'}
+            </button>
+          </div>
         </div>
 
         {/* API Key Modal/Settings Banner */}
@@ -612,16 +675,19 @@ const AiCoachPage: React.FC = () => {
                 <button
                   key={sc.id}
                   onClick={() => selectScenario(sc)}
-                  className={`bg-slate-900/40 border backdrop-blur-md rounded-3xl p-6 text-left shadow-lg hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-350 group relative overflow-hidden flex flex-col justify-between min-h-[220px] ${sc.accentGradient}`}
+                  className={`bg-slate-950/70 border backdrop-blur-md rounded-3xl p-6 text-left shadow-lg hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-350 group relative overflow-hidden flex flex-col justify-between min-h-[260px] ${sc.accentGradient}`}
                 >
-                  {/* Decorative background glow */}
-                  <div className="absolute top-0 right-0 -mt-8 -mr-8 w-24 h-24 bg-white/5 rounded-full group-hover:scale-150 group-hover:bg-white/10 transition-all duration-500 blur-xl"></div>
+                  {/* Avatar graphic as card design */}
+                  <div 
+                    className="absolute right-0 bottom-0 w-36 h-36 bg-cover bg-center rounded-tl-3xl opacity-20 group-hover:opacity-30 group-hover:scale-105 transition-all duration-500 border-l border-t border-white/5"
+                    style={{ backgroundImage: `url(${sc.imageUrl})` }}
+                  ></div>
                   
                   <div>
                     {/* Header: Title and Difficulty */}
-                    <div className="flex justify-between items-start gap-4 mb-4">
+                    <div className="flex justify-between items-start gap-4 mb-4 relative z-10">
                       <div className="flex items-center gap-3">
-                        <span className="text-4xl p-2 bg-slate-950/80 rounded-2xl shadow-inner border border-white/5">
+                        <span className="text-4xl p-2 bg-slate-900/90 rounded-2xl shadow-inner border border-white/5">
                           {sc.emoji}
                         </span>
                         <div>
@@ -639,22 +705,22 @@ const AiCoachPage: React.FC = () => {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-950/50 px-2 py-1 rounded-md border border-white/5">
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-900/60 px-2 py-1 rounded-md border border-white/5">
                         {sc.focus}
                       </span>
                     </div>
 
                     {/* Descriptions */}
-                    <p className="text-xs text-slate-300 leading-relaxed font-normal mb-2">
+                    <p className="text-xs text-slate-300 leading-relaxed font-normal mb-2 max-w-[80%] relative z-10">
                       {sc.description}
                     </p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed italic font-light">
+                    <p className="text-[11px] text-slate-500 leading-relaxed italic font-light max-w-[80%] relative z-10">
                       {sc.descriptionPt}
                     </p>
                   </div>
 
                   {/* Footer call to action */}
-                  <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between relative z-10">
                     <span className="text-[10px] text-slate-400 flex items-center gap-1.5 font-medium">
                       <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                       {sc.goals.length} Metas de Prática
@@ -673,118 +739,176 @@ const AiCoachPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
             {/* Left Chat Area (Col 3) */}
-            <div className="lg:col-span-3 bg-slate-900/30 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[70vh] backdrop-blur-xl relative">
+            <div className="lg:col-span-3 bg-slate-950/70 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[75vh] backdrop-blur-xl relative">
               
               {/* Active scenario header */}
               <div className="bg-slate-950 p-4 px-6 flex items-center justify-between border-b border-white/10 z-10">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl p-1 bg-slate-900 border border-white/5 rounded-xl">{selectedScenario.emoji}</span>
+                  {/* Immersive Avatar in Chat Header */}
+                  <div 
+                    className="w-12 h-12 rounded-2xl bg-cover bg-center border border-white/10 shadow-inner"
+                    style={{ backgroundImage: `url(${selectedScenario.imageUrl})` }}
+                  ></div>
                   <div>
                     <h3 className="font-bold text-sm text-white">{selectedScenario.title}</h3>
                     <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      {hasApiKey ? 'Real AI Mode Active' : 'Offline Demo Mode Active'}
+                      {hasApiKey ? 'Conectado via Gemini API' : 'Modo Demonstração Ativo'}
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedScenario(null)}
-                  className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-white/5 px-4 py-2 rounded-xl transition-all"
-                >
-                  Mudar Cenário
-                </button>
+
+                {/* Pressure Mode Game Switch */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPressureMode(!pressureMode)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                        pressureMode 
+                          ? 'bg-rose-500/20 border-rose-500/40 text-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.15)]'
+                          : 'bg-slate-900 border-white/5 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <FaHourglassHalf className={pressureMode ? 'animate-spin' : ''} />
+                      {pressureMode ? 'Pressure Mode ON' : 'Pressure Mode OFF'}
+                    </button>
+                    {pressureMode && (
+                      <span className={`text-sm font-extrabold px-2.5 py-1 rounded-md border ${
+                        timeLeft <= 5 
+                          ? 'bg-red-500/20 border-red-500/50 text-red-400 animate-pulse' 
+                          : 'bg-rose-500/10 border-rose-500/20 text-rose-350'
+                      }`}>
+                        {timeLeft}s
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setSelectedScenario(null)}
+                    className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-white/5 px-4 py-2 rounded-xl transition-all"
+                  >
+                    Sair
+                  </button>
+                </div>
               </div>
 
+              {/* Countdown Pressure Progress Bar */}
+              {pressureMode && !loading && (
+                <div className="w-full h-1.5 bg-slate-900/60 relative overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-1000 ease-linear ${
+                      timeLeft <= 5 ? 'bg-red-500' : 'bg-rose-500'
+                    }`}
+                    style={{ width: `${(timeLeft / 15) * 100}%` }}
+                  ></div>
+                </div>
+              )}
+
               {/* Messages list */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-950/20">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-950/10">
                 {messages.map((msg, index) => {
                   const displayScore = msg.speechScore !== undefined && msg.speechScore !== null ? Math.round(msg.speechScore * 100) : null;
+                  const isModel = msg.role === 'model';
                   
                   return (
-                    <div key={index} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                      <div className="flex items-end gap-2 max-w-[85%]">
-                        {msg.role === 'model' && (
-                          <div className="flex flex-col gap-1.5 self-end mb-1">
-                            <button
-                              onClick={() => handleSpeak(msg.text)}
-                              className="p-2 bg-slate-900 border border-white/10 hover:border-white/20 text-slate-350 hover:text-white rounded-xl shadow-md transition-all active:scale-95"
-                              title="Ouvir pronúncia"
-                            >
-                              <FaVolumeUp size={12} />
-                            </button>
-                            <button
-                              onClick={() => handleTranslate(index, msg.text)}
-                              disabled={translatingIndex === index}
-                              className="p-2 bg-slate-900 border border-white/10 hover:border-white/20 text-slate-350 hover:text-white rounded-xl shadow-md transition-all active:scale-95 text-[9px] font-extrabold h-8 w-8 flex items-center justify-center"
-                              title="Traduzir para português"
-                            >
-                              {translatingIndex === index ? (
-                                <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-indigo-500"></div>
-                              ) : (
-                                "PT"
-                              )}
-                            </button>
+                    <div key={index} className={`flex items-start gap-3.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                      
+                      {/* Avatar next to Model responses */}
+                      {isModel && (
+                        <div 
+                          className="w-9 h-9 rounded-xl bg-cover bg-center border border-white/5 flex-shrink-0 mt-1 shadow-md"
+                          style={{ backgroundImage: `url(${selectedScenario.imageUrl})` }}
+                        ></div>
+                      )}
+
+                      <div className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[78%]`}>
+                        <div className="flex items-end gap-2">
+                          
+                          {/* Left quick actions for model messages */}
+                          {isModel && (
+                            <div className="flex flex-col gap-1.5 self-end mb-1">
+                              <button
+                                onClick={() => handleSpeak(msg.text)}
+                                className="p-2 bg-slate-900/80 border border-white/10 hover:border-white/20 text-slate-350 hover:text-white rounded-xl shadow-md transition-all active:scale-95"
+                                title="Ouvir pronúncia"
+                              >
+                                <FaVolumeUp size={12} />
+                              </button>
+                              <button
+                                onClick={() => handleTranslate(index, msg.text)}
+                                disabled={translatingIndex === index}
+                                className="p-2 bg-slate-900/80 border border-white/10 hover:border-white/20 text-slate-350 hover:text-white rounded-xl shadow-md transition-all active:scale-95 text-[9px] font-extrabold h-8 w-8 flex items-center justify-center"
+                                title="Traduzir para português"
+                              >
+                                {translatingIndex === index ? (
+                                  <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-indigo-500"></div>
+                                ) : (
+                                  "PT"
+                                )}
+                              </button>
+                            </div>
+                          )}
+                          
+                          {/* Chat Bubble Content */}
+                          <div
+                            className={`rounded-2xl p-4 shadow-md text-sm leading-relaxed ${
+                              msg.role === 'user'
+                                ? 'bg-gradient-to-br from-blue-600 to-indigo-650 text-white rounded-br-none border border-blue-500/20'
+                                : 'bg-slate-900/80 border border-white/10 text-slate-100 rounded-bl-none'
+                            }`}
+                          >
+                            {msg.text}
+                          </div>
+                        </div>
+
+                        {/* On-demand translation display */}
+                        {isModel && msg.translation && showTranslationIndex[index] && (
+                          <div className="mt-2 text-xs text-slate-400 bg-slate-950/80 p-3 rounded-xl border border-white/5 italic leading-relaxed animate-in fade-in duration-200">
+                            🇧🇷 {msg.translation}
                           </div>
                         )}
-                        
-                        <div
-                          className={`rounded-2xl p-4 shadow-md text-sm leading-relaxed ${
-                            msg.role === 'user'
-                              ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-br-none border border-blue-500/20'
-                              : 'bg-slate-900 border border-white/10 text-slate-100 rounded-bl-none'
-                          }`}
-                        >
-                          {msg.text}
-                        </div>
-                      </div>
 
-                      {/* On-demand translation display */}
-                      {msg.role === 'model' && msg.translation && showTranslationIndex[index] && (
-                        <div className="mt-2 text-xs text-slate-400 bg-slate-950/80 p-3 rounded-xl border border-white/5 italic leading-relaxed max-w-[85%] self-start ml-10 animate-in fade-in duration-200">
-                          🇧🇷 {msg.translation}
-                        </div>
-                      )}
-
-                      {/* Grammar correction & pronunciation score display for user messages */}
-                      {msg.role === 'user' && (
-                        <div className="mt-2 max-w-[80%] flex flex-col gap-1.5 items-end">
-                          {/* Pronunciation score */}
-                          {displayScore !== null && (
-                            <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-md border ${
-                              displayScore >= 85 
-                                ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                                : displayScore >= 65
-                                  ? 'text-blue-400 bg-blue-500/10 border-blue-500/20'
-                                  : 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-                            }`}>
-                              🗣️ Pronúncia: {displayScore}% {
+                        {/* Grammar correction & pronunciation score display for user messages */}
+                        {!isModel && (
+                          <div className="mt-2 max-w-[90%] flex flex-col gap-1.5 items-end">
+                            {/* Pronunciation score */}
+                            {displayScore !== null && (
+                              <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-md border ${
                                 displayScore >= 85 
-                                  ? '(Excelente!)' 
-                                  : displayScore >= 65 
-                                    ? '(Bom!)' 
-                                    : '(Continue praticando!)'
-                              }
-                            </span>
-                          )}
+                                  ? 'text-emerald-450 bg-emerald-500/10 border-emerald-500/20'
+                                  : displayScore >= 65
+                                    ? 'text-blue-450 bg-blue-500/10 border-blue-500/20'
+                                    : 'text-amber-455 bg-amber-500/10 border-amber-500/20'
+                              }`}>
+                                🗣️ Pronúncia: {displayScore}% {
+                                  displayScore >= 85 
+                                    ? '(Excelente!)' 
+                                    : displayScore >= 65 
+                                      ? '(Bom!)' 
+                                      : '(Continue praticando!)'
+                                }
+                              </span>
+                            )}
 
-                          {/* Grammar check */}
-                          {analyzingIndex === index ? (
-                            <span className="flex items-center gap-1.5 animate-pulse text-[10px] text-indigo-400 font-semibold">
-                              <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping"></span>
-                              Analisando gramática...
-                            </span>
-                          ) : msg.correction ? (
-                            <div className="flex items-start gap-2 bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-[11px] text-left text-amber-300">
-                              <FaExclamationCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-400" />
-                              <span>{msg.correction}</span>
-                            </div>
-                          ) : msg.correction === null ? (
-                            <span className="flex items-center gap-1 text-emerald-400 text-[10px] font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
-                              <FaCheckCircle className="w-3 h-3 text-emerald-400" /> Gramática perfeita!
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                            {/* Grammar check */}
+                            {analyzingIndex === index ? (
+                              <span className="flex items-center gap-1.5 animate-pulse text-[10px] text-indigo-400 font-semibold">
+                                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping"></span>
+                                Analisando gramática...
+                              </span>
+                            ) : msg.correction ? (
+                              <div className="flex items-start gap-2 bg-amber-500/15 p-3 rounded-xl border border-amber-500/25 text-[11px] text-left text-amber-300">
+                                <FaExclamationCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-400" />
+                                <span>{msg.correction}</span>
+                              </div>
+                            ) : msg.correction === null ? (
+                              <span className="flex items-center gap-1 text-emerald-400 text-[10px] font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                <FaCheckCircle className="w-3.5 h-3.5 text-emerald-450" /> Gramática perfeita!
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -811,7 +935,7 @@ const AiCoachPage: React.FC = () => {
                   onChange={(e) => setInput(e.target.value)}
                   disabled={loading}
                   placeholder={isListening ? "Ouvindo... fale em inglês" : "Digite sua resposta em inglês americano..."}
-                  className="flex-1 bg-slate-900 border border-white/10 rounded-xl py-3.5 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all text-sm"
+                  className="flex-1 bg-slate-900 border border-white/10 rounded-xl py-3.5 px-4 text-white placeholder-slate-550 focus:outline-none focus:border-indigo-500 transition-all text-sm"
                 />
                 <button
                   type="button"
@@ -820,7 +944,7 @@ const AiCoachPage: React.FC = () => {
                   className={`p-4 rounded-xl shadow-md transition-all flex items-center justify-center active:scale-95 ${
                     isListening 
                       ? 'bg-red-500 text-white animate-pulse' 
-                      : 'bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-300'
+                      : 'bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-350'
                   }`}
                   title={isListening ? 'Parar de escutar' : 'Falar (Microfone)'}
                 >
@@ -840,9 +964,9 @@ const AiCoachPage: React.FC = () => {
             <div className="space-y-6">
               
               {/* Goal Checklist Box */}
-              <div className="bg-slate-900/40 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                  <FaCheckCircle className="text-indigo-400" /> Metas de Conversa
+              <div className="bg-slate-950/70 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2 border-b border-white/5 pb-2.5">
+                  <FaTrophy className="text-indigo-400" /> Metas do Cenário
                 </h3>
                 <div className="space-y-3.5">
                   {selectedScenario.goals.map((goal, idx) => {
@@ -852,12 +976,12 @@ const AiCoachPage: React.FC = () => {
                         <div className={`p-1 rounded-md border flex-shrink-0 mt-0.5 transition-all ${
                           completed 
                             ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' 
-                            : 'bg-slate-950 border-white/10 text-transparent'
+                            : 'bg-slate-900 border-white/10 text-transparent'
                         }`}>
                           <FaCheck size={10} />
                         </div>
-                        <span className={`text-xs leading-relaxed font-medium transition-all ${
-                          completed ? 'text-slate-400 line-through' : 'text-slate-200'
+                        <span className={`text-xs leading-relaxed font-semibold transition-all ${
+                          completed ? 'text-slate-500 line-through' : 'text-slate-200'
                         }`}>
                           {goal}
                         </span>
@@ -868,24 +992,24 @@ const AiCoachPage: React.FC = () => {
               </div>
 
               {/* Clickable Phrases Box */}
-              <div className="bg-slate-900/40 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3.5 flex items-center gap-2">
+              <div className="bg-slate-950/70 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3.5 flex items-center gap-2 border-b border-white/5 pb-2.5">
                   <FaBookOpen className="text-indigo-400" /> Expressões Úteis
                 </h3>
-                <p className="text-[10px] text-slate-400 mb-4 font-medium">
-                  Clique em qualquer expressão abaixo para inseri-la diretamente no campo de texto:
+                <p className="text-[10px] text-slate-450 mb-4 font-semibold">
+                  Clique em qualquer expressão abaixo para adicioná-la à sua resposta:
                 </p>
-                <div className="space-y-3.5 max-h-[35vh] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-1">
                   {selectedScenario.phrases.map((phrase, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleInsertPhrase(phrase.english)}
-                      className="w-full bg-slate-950 hover:bg-slate-900 border border-white/5 rounded-2xl p-3 text-left transition-all hover:border-white/15 flex flex-col gap-1 active:scale-97 group"
+                      className="w-full bg-slate-900/60 hover:bg-slate-900 border border-white/5 rounded-2xl p-3 text-left transition-all hover:border-white/15 flex flex-col gap-1 active:scale-97 group"
                     >
                       <span className="text-xs font-bold text-indigo-400 group-hover:text-indigo-350 transition-colors">
                         {phrase.english}
                       </span>
-                      <span className="text-[10px] text-slate-550 italic leading-snug">
+                      <span className="text-[10px] text-slate-500 italic leading-snug">
                         {phrase.portuguese}
                       </span>
                     </button>
