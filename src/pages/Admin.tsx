@@ -35,6 +35,8 @@ interface User {
   streakDays?: number;
   phone?: string;
   xp?: number;
+  organizationId?: string;
+  corporateCredits?: number;
 }
 
 interface AdminProps {
@@ -253,9 +255,15 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'utilities'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
+
+  // B2B states
+  const [selectedUserUid, setSelectedUserUid] = useState('');
+  const [targetOrgId, setTargetOrgId] = useState('');
+  const [targetCredits, setTargetCredits] = useState('0');
+  const [savingB2b, setSavingB2b] = useState(false);
 
   // Helper to format a timestamp/date to Rio strings
   const getMattStringsFromTimestamp = (timestamp: any) => {
@@ -391,6 +399,32 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
       setUsers(usersData);
     } catch (error) {
       console.error('Error loading users:', error);
+    }
+  };
+
+  // Save B2B allocations
+  const handleSaveB2b = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUserUid) {
+      alert('Please select a student.');
+      return;
+    }
+    setSavingB2b(true);
+    try {
+      await updateDoc(doc(db, 'users', selectedUserUid), {
+        organizationId: targetOrgId.trim() || null,
+        corporateCredits: Number(targetCredits)
+      });
+      alert('B2B attributes updated successfully!');
+      setSelectedUserUid('');
+      setTargetOrgId('');
+      setTargetCredits('0');
+      // Reload users list
+      loadUsers();
+    } catch (error: any) {
+      alert(`Error updating B2B settings: ${error.message}`);
+    } finally {
+      setSavingB2b(false);
     }
   };
 
@@ -613,6 +647,16 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               }`}
             >
               Enrollments ({enrollments.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('b2b')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'b2b'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              B2B Partnerships
             </button>
             <button
               onClick={() => setActiveTab('utilities')}
@@ -996,6 +1040,185 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'b2b' && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">
+              B2B Partnerships & Corporate Allocations
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column: Organization Summary */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-850">
+                  <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
+                    Active B2B Tenants
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold">
+                          <th className="pb-3">Organization ID</th>
+                          <th className="pb-3 text-center">Employees</th>
+                          <th className="pb-3 text-center">Total Credits</th>
+                          <th className="pb-3 text-center">Total XP</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(() => {
+                          const orgSummary: Record<string, { count: number; credits: number; xp: number }> = {};
+                          users.forEach(u => {
+                            if (u.organizationId) {
+                              const org = u.organizationId.toLowerCase();
+                              if (!orgSummary[org]) {
+                                orgSummary[org] = { count: 0, credits: 0, xp: 0 };
+                              }
+                              orgSummary[org].count += 1;
+                              orgSummary[org].credits += (u.corporateCredits || 0);
+                              orgSummary[org].xp += (u.xp || 0);
+                            }
+                          });
+
+                          const summaries = Object.entries(orgSummary);
+                          if (summaries.length === 0) {
+                            return (
+                              <tr>
+                                <td colSpan={4} className="py-4 text-center text-slate-500 dark:text-slate-450">
+                                  No active B2B corporate profiles detected.
+                                </td>
+                              </tr>
+                            );
+                          }
+
+                          return summaries.map(([orgName, stats]) => (
+                            <tr key={orgName} className="border-b border-slate-105 dark:border-slate-800 text-slate-700 dark:text-slate-350">
+                              <td className="py-3 font-mono font-bold uppercase text-blue-500">{orgName}</td>
+                              <td className="py-3 text-center">{stats.count}</td>
+                              <td className="py-3 text-center">{stats.credits}</td>
+                              <td className="py-3 text-center">{stats.xp} XP</td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* List of Corporate Users */}
+                <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-850">
+                  <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
+                    Corporate Employees Directory
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold">
+                          <th className="pb-3">Name</th>
+                          <th className="pb-3">Organization</th>
+                          <th className="pb-3 text-center">Streak</th>
+                          <th className="pb-3 text-center">XP</th>
+                          <th className="pb-3 text-center">Credits</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.filter(u => u.organizationId).map(u => (
+                          <tr key={u.uid} className="border-b border-slate-105 dark:border-slate-800 text-slate-700 dark:text-slate-350">
+                            <td className="py-3 font-semibold">
+                              {u.displayName || u.email.split('@')[0]}
+                              <div className="text-[10px] text-slate-450 dark:text-slate-500 font-normal">{u.email}</div>
+                            </td>
+                            <td className="py-3 font-mono uppercase text-xs text-slate-500 dark:text-slate-400">{u.organizationId}</td>
+                            <td className="py-3 text-center">🔥 {u.streakDays || 0}d</td>
+                            <td className="py-3 text-center">{u.xp || 0}</td>
+                            <td className="py-3 text-center">{u.corporateCredits ?? 0}</td>
+                          </tr>
+                        ))}
+                        {users.filter(u => u.organizationId).length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="py-4 text-center text-slate-500 dark:text-slate-450">
+                              No corporate employees mapped yet.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Allocation Form */}
+              <div className="bg-slate-550 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-850 h-fit">
+                <h3 className="text-sm font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider mb-4">
+                  Modify Corporate Settings
+                </h3>
+                
+                <form onSubmit={handleSaveB2b} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      Select Student
+                    </label>
+                    <select
+                      value={selectedUserUid}
+                      onChange={(e) => {
+                        setSelectedUserUid(e.target.value);
+                        const match = users.find(u => u.uid === e.target.value);
+                        if (match) {
+                          setTargetOrgId(match.organizationId || '');
+                          setTargetCredits(String(match.corporateCredits || 0));
+                        } else {
+                          setTargetOrgId('');
+                          setTargetCredits('0');
+                        }
+                      }}
+                      className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 dark:text-white"
+                    >
+                      <option value="">-- Choose student --</option>
+                      {users.map(u => (
+                        <option key={u.uid} value={u.uid}>
+                          {u.displayName || u.email} ({u.organizationId ? `Org: ${u.organizationId.toUpperCase()}` : 'No Org'})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      Organization ID (Domain Filter)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. gas-corp, tech-hub"
+                      value={targetOrgId}
+                      onChange={(e) => setTargetOrgId(e.target.value)}
+                      className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      Prepaid Tutor Credits
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={targetCredits}
+                      onChange={(e) => setTargetCredits(e.target.value)}
+                      className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 dark:text-white"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={savingB2b || !selectedUserUid}
+                    className="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold text-sm transition-colors active:scale-97 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {savingB2b ? 'Updating...' : 'Save Settings'}
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         )}

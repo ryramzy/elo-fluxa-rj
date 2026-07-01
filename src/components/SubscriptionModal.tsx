@@ -1,6 +1,6 @@
-import React from 'react';
-import { LuCheck, LuX, LuSparkles, LuFlame } from 'react-icons/lu';
-import { FaWhatsapp } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode } from 'react-icons/lu';
+import CheckoutForm from './CheckoutForm';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -9,6 +9,8 @@ interface SubscriptionModalProps {
 }
 
 export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: SubscriptionModalProps) {
+  const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'pro' | 'elite' | null>(null);
+
   if (!isOpen) return null;
 
   const handlePlanClick = (plan: 'starter' | 'pro' | 'elite') => {
@@ -16,9 +18,47 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
       onPlanSelect(plan);
       onClose();
     } else {
-      onPlanSelect(plan);
+      setSelectedPlanForCheckout(plan);
     }
   };
+
+  const handleCheckoutSuccess = () => {
+    if (selectedPlanForCheckout) {
+      onPlanSelect(selectedPlanForCheckout);
+    }
+    setSelectedPlanForCheckout(null);
+    onClose();
+  };
+
+  // Render Checkout Form inside Modal if a plan is chosen
+  if (selectedPlanForCheckout) {
+    return (
+      <div 
+        className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-slate-900/95 border border-slate-800 rounded-3xl shadow-2xl shadow-blue-500/5 max-w-md w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setSelectedPlanForCheckout(null)}
+            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800/40 hover:bg-slate-800 border border-slate-800 rounded-xl transition-all z-10"
+            aria-label="Voltar para planos"
+          >
+            <LuX size={18} />
+          </button>
+          
+          <CheckoutForm 
+            plan={selectedPlanForCheckout} 
+            price={selectedPlanForCheckout === 'pro' ? 97 : 197} 
+            onSuccess={handleCheckoutSuccess}
+            onCancel={() => setSelectedPlanForCheckout(null)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -124,21 +164,18 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                     <span>4 aulas ao vivo de 30min com nativo/mês</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
-                    <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <LuCheck className="text-blue-450 mr-2 mt-0.5 shrink-0" size={14} />
                     <span>Suporte VIP e dicas via WhatsApp</span>
                   </li>
                 </ul>
               </div>
               
-              <a
-                href="https://wa.me/5522992322566?text=Oi%20Matt!%20Quero%20assinar%20o%20plano%20Pro"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
                 onClick={() => handlePlanClick('pro')}
-                className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] inline-flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] flex items-center justify-center gap-1.5 active:scale-97"
               >
-                <FaWhatsapp size={14} /> Assinar por WhatsApp
-              </a>
+                <LuQrCode size={14} /> Assinar com Pix
+              </button>
             </div>
 
             {/* Elite Plan */}
@@ -170,15 +207,12 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 </ul>
               </div>
               
-              <a
-                href="https://wa.me/5522992322566?text=Oi%20Matt!%20Quero%20o%20plano%20Imers%C3%A3o%20Total"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
                 onClick={() => handlePlanClick('elite')}
-                className="w-full py-2.5 bg-purple-650 hover:bg-purple-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-purple-600/30 inline-flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-purple-650 hover:bg-purple-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-purple-600/30 flex items-center justify-center gap-1.5 active:scale-97"
               >
-                <FaWhatsapp size={14} /> Falar com o Tutor
-              </a>
+                <LuQrCode size={14} /> Adquirir com Pix
+              </button>
             </div>
           </div>
 
