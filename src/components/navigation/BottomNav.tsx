@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { FaHome, FaCalendarPlus, FaGraduationCap, FaUser, FaRobot } from 'react-icons/fa';
 
 export const BottomNav: React.FC = () => {
