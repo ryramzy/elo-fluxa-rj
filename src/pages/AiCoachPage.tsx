@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { trackEvent } from '../utils/analytics';
 import { useToast } from '../hooks/useToast';
 import { speakText } from '../utils/tts';
+import { requestMicrophonePermission } from '../utils/mobilePermissions';
 
 interface Scenario {
   id: string;
@@ -301,7 +302,7 @@ const AiCoachPage: React.FC = () => {
     };
   }, []);
 
-  const toggleListening = () => {
+  const toggleListening = async () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       showToast({ type: 'error', message: 'Reconhecimento de voz não suportado neste navegador.' });
@@ -314,6 +315,12 @@ const AiCoachPage: React.FC = () => {
       }
       setIsListening(false);
     } else {
+      const hasPermission = await requestMicrophonePermission();
+      if (!hasPermission) {
+        showToast({ type: 'error', message: 'Permissão de microfone negada. Ative o acesso nas configurações do aparelho.' });
+        return;
+      }
+
       const rec = new SpeechRecognition();
       rec.lang = 'en-US';
       rec.continuous = false;

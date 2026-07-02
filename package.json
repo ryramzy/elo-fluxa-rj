@@ -6,9 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:build": "npm run build && npx cap sync",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
     "@google/genai": "^1.29.0",
     "@react-oauth/google": "^0.13.4",
     "@vercel/node": "^5.7.2",
@@ -29,6 +36,7 @@
     "swiper": "^12.1.4"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.14.0",
