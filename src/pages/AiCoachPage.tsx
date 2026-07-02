@@ -191,6 +191,7 @@ const AiCoachPage: React.FC = () => {
     diffs: WordDiff[];
     score: number;
   } | null>(null);
+  const [selectedAccent, setSelectedAccent] = useState<'us' | 'gb' | 'au'>('us');
 
   // Pressure Mode Game Mechanics
   const [pressureMode, setPressureMode] = useState(false);
@@ -472,8 +473,17 @@ const AiCoachPage: React.FC = () => {
           parts: [{ text: m.text }]
         }));
 
-        // Enforce sentiment JSON structure
-        const systemInstructionModifier = `${selectedScenario.systemInstruction}\nIMPORTANT: Your response must be in JSON format matching the schema: { "emotion": "happy" | "impatient" | "annoyed" | "surprised" | "idle", "text": "your verbal response as the character" }. Do not output anything else but valid JSON.`;
+        // Enforce sentiment JSON structure and accent guidelines
+        let accentPrompt = '';
+        if (selectedAccent === 'gb') {
+          accentPrompt = '\nIMPORTANT: You must speak in British English. Adopt British regional idioms, spelling (e.g. colour, flavour), and vocabulary (e.g. mate, chips, lift, loo) naturally inside your character personality.';
+        } else if (selectedAccent === 'au') {
+          accentPrompt = '\nIMPORTANT: You must speak in Australian English. Adopt Australian idioms, slang (e.g. mate, arvo, barbie, chook, outback), and speech characteristics naturally inside your character personality.';
+        } else {
+          accentPrompt = '\nIMPORTANT: You must speak in North American English. Adopt standard American spelling (e.g. color, flavor) and vocabulary naturally inside your character personality.';
+        }
+
+        const systemInstructionModifier = `${selectedScenario.systemInstruction}${accentPrompt}\nIMPORTANT: Your response must be in JSON format matching the schema: { "emotion": "happy" | "impatient" | "annoyed" | "surprised" | "idle", "text": "your verbal response as the character" }. Do not output anything else but valid JSON.`;
 
         responseText = await sendChatMessage(
           geminiHistory,
@@ -656,8 +666,8 @@ const AiCoachPage: React.FC = () => {
   };
 
   const handleSpeak = (text: string) => {
-    speakText(text);
-    trackEvent('ai_chat_speech_listen', { textLength: text.length });
+    speakText(text, undefined, undefined, undefined, selectedAccent);
+    trackEvent('ai_chat_speech_listen', { textLength: text.length, accent: selectedAccent });
   };
 
   const handleInsertPhrase = (phrase: string) => {
@@ -872,8 +882,30 @@ const AiCoachPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Pressure Mode Game Switch */}
-                <div className="flex items-center gap-4">
+                {/* Accent Selector & Pressure Mode Game Switch */}
+                <div className="flex flex-wrap items-center gap-4">
+                  {/* Accent Selector Button Group */}
+                  <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-white/5 shadow-inner">
+                    {(['us', 'gb', 'au'] as const).map((acc) => (
+                      <button
+                        key={acc}
+                        type="button"
+                        onClick={() => {
+                          setSelectedAccent(acc);
+                          trackEvent('ai_coach_accent_changed', { accent: acc });
+                          showToast({ type: 'success', message: `Sotaque alterado para: ${acc === 'us' ? 'Americano (US)' : acc === 'gb' ? 'Britânico (UK)' : 'Australiano (AU)'}` });
+                        }}
+                        className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-300 ${
+                          selectedAccent === acc
+                            ? 'bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.25)] border border-blue-500/20'
+                            : 'text-slate-500 hover:text-slate-350'
+                        }`}
+                      >
+                        {acc === 'us' ? '🇺🇸 US' : acc === 'gb' ? '🇬🇧 UK' : '🇦🇺 AU'}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
