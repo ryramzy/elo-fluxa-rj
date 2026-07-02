@@ -62,6 +62,11 @@ const AdminStudentProfile: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'free' | 'pro' | 'elite'>('free');
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
 
+  // B2B States
+  const [organizationId, setOrganizationId] = useState('');
+  const [corporateCredits, setCorporateCredits] = useState('0');
+  const [savingB2b, setSavingB2b] = useState(false);
+
   useEffect(() => {
     if (!uid || !adminUser) return;
     
@@ -79,6 +84,9 @@ const AdminStudentProfile: React.FC = () => {
       if (profile) {
         setStudent({ ...profile, uid });
         setAdminNotes(profile.tutorNotes || '');
+        setSelectedPlan(profile.plan || 'free');
+        setOrganizationId(profile.organizationId || '');
+        setCorporateCredits(String(profile.corporateCredits || 0));
       }
       
       // Load bookings
@@ -136,6 +144,24 @@ const AdminStudentProfile: React.FC = () => {
       await loadStudentData(); // Reload to show updated plan
     } catch (error) {
       console.error('Error updating plan:', error);
+    }
+  };
+
+  const handleSaveB2b = async () => {
+    if (!uid) return;
+    setSavingB2b(true);
+    try {
+      await updateUserProfile(uid, {
+        organizationId: organizationId.trim() || null,
+        corporateCredits: Number(corporateCredits)
+      });
+      alert('B2B attributes updated successfully!');
+      await loadStudentData();
+    } catch (error: any) {
+      console.error('Error saving B2B attributes:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setSavingB2b(false);
     }
   };
 
@@ -487,6 +513,43 @@ const AdminStudentProfile: React.FC = () => {
           </button>
         </div>
       </div> {/* grid */}
+
+      {/* B2B Settings */}
+      <div className="border-t border-slate-100 pt-6 mt-6">
+        <h4 className="text-sm font-semibold text-slate-800 mb-3">Corporate B2B Configuration</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs text-slate-550 mb-1">Organization ID</label>
+            <input
+              type="text"
+              value={organizationId}
+              onChange={(e) => setOrganizationId(e.target.value)}
+              placeholder="e.g. gas-corp, tech-hub"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-555 mb-1">Prepaid Tutor Credits</label>
+            <input
+              type="number"
+              min="0"
+              value={corporateCredits}
+              onChange={(e) => setCorporateCredits(e.target.value)}
+              placeholder="Credits"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleSaveB2b}
+              disabled={savingB2b}
+              className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg transition-colors disabled:opacity-50"
+            >
+              {savingB2b ? 'Saving...' : 'Save Corporate Settings'}
+            </button>
+          </div>
+        </div>
+      </div>
     </div> {/* Quick Actions container */}
   </div> {/* max-w-6xl mx-auto px-6 py-8 */}
   
