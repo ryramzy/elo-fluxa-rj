@@ -184,6 +184,12 @@ const AiCoachPage: React.FC = () => {
   const [currentSpeechScore, setCurrentSpeechScore] = useState<number | null>(null);
   const [translatingIndex, setTranslatingIndex] = useState<number | null>(null);
   const [showTranslationIndex, setShowTranslationIndex] = useState<Record<number, boolean>>({});
+  const [pronunciationResult, setPronunciationResult] = useState<{
+    expected: string;
+    spoken: string;
+    diffs: WordDiff[];
+    score: number;
+  } | null>(null);
 
   // Pressure Mode Game Mechanics
   const [pressureMode, setPressureMode] = useState(false);
@@ -323,8 +329,30 @@ const AiCoachPage: React.FC = () => {
         const score = confidence < 0.4 ? null : confidence;
         
         setCurrentSpeechScore(score);
-        setInput(prev => prev + (prev ? ' ' : '') + transcript);
         setUsedVoice(true);
+
+        const targetText = input.trim();
+        if (targetText) {
+          const result = calculatePronunciationDiff(targetText, transcript);
+          setPronunciationResult({
+            expected: targetText,
+            spoken: transcript,
+            diffs: result.diffs,
+            score: result.score
+          });
+
+          // Play dynamic game audio cues based on fluency performance
+          if (result.score >= 85) {
+            sounds.playSuccess();
+            if (user?.uid) {
+              updateUserXP(user.uid, 10).catch(console.error);
+            }
+          } else if (result.score < 60) {
+            sounds.playError();
+          }
+        } else {
+          setInput(prev => prev + (prev ? ' ' : '') + transcript);
+        }
       };
 
       rec.onerror = (event: any) => {
@@ -1092,6 +1120,130 @@ const AiCoachPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Pronunciation Feedback Dashboard */}
+              {pronunciationResult && (
+                <div className="p-5 bg-slate-900/95 border-t border-white/10 border-b border-white/5 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 relative z-20">
+                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
+                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-indigo-400 flex items-center gap-2">
+                      🗣️ Analisador de Pronúncia
+                    </h4>
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
+                      pronunciationResult.score >= 85
+                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                        : pronunciationResult.score >= 60
+                          ? 'text-blue-400 bg-blue-500/10 border-blue-500/20'
+                          : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                    }`}>
+                      Precisão: {pronunciationResult.score}%
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Expected vs Spoken mapping */}
+                    <div className="bg-slate-950/60 rounded-xl p-4 border border-white/5 space-y-3">
+                      <div className="text-xs">
+                        <span className="text-slate-500 font-bold uppercase tracking-wider block mb-1">Frase Alvo:</span>
+                        <div className="flex flex-wrap gap-1.5 text-slate-100 font-semibold leading-relaxed">
+                          {pronunciationResult.diffs.map((diff, i) => (
+                            <span
+                              key={i}
+                              className={`px-1 rounded-md ${
+                                diff.status === 'correct'
+                                  ? 'text-emerald-400 bg-emerald-500/5'
+                                  : diff.status === 'warning'
+                                    ? 'text-yellow-400 bg-yellow-500/5 underline decoration-wavy'
+                                    : 'text-rose-400 bg-rose-500/5 line-through'
+                              }`}
+                              title={
+                                diff.status === 'correct'
+                                  ? 'Perfeito!'
+                                  : diff.status === 'warning'
+                                    ? `Quase! Você falou: "${diff.spokenText}"`
+                                    : `Incorreto/Omitido. Você falou: "${diff.spokenText || 'nada'}"`
+                              }
+                            >
+                              {diff.text}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="text-xs pt-2.5 border-t border-white/5">
+                        <span className="text-slate-500 font-bold uppercase tracking-wider block mb-1">Você falou:</span>
+                        <p className="text-slate-350 italic font-medium">
+                          "{pronunciationResult.spoken}"
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Show dynamic tip if a mismatch word has a defined helper tip */}
+                    {(() => {
+                      const badDiff = pronunciationResult.diffs.find(d => d.status !== 'correct' && pronunciationTips[d.text.toLowerCase()]);
+                      if (badDiff) {
+                        const tipText = pronunciationTips[badDiff.text.toLowerCase()];
+                        return (
+                          <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3.5 text-xs text-indigo-300 flex items-start gap-2.5">
+                            <FaInfoCircle className="w-4 h-4 mt-0.5 text-indigo-400 flex-shrink-0" />
+                            <div>
+                              <strong className="text-indigo-200 block mb-0.5">Dica para "{badDiff.text}":</strong>
+                              <p className="leading-relaxed font-medium">{tipText}</p>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
+                      if (pronunciationResult.score >= 85) {
+                        return (
+                          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300 flex items-center gap-2">
+                            <FaCheckCircle className="text-emerald-450 flex-shrink-0" />
+                            <span className="font-semibold">Incrível! Sua pronúncia está muito próxima de um nativo! +10 XP</span>
+                          </div>
+                        );
+                      }
+                      
+                      return null;
+                    })()}
+
+                    {/* Quick action buttons */}
+                    <div className="flex gap-2.5 pt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInput(pronunciationResult.expected);
+                          setPronunciationResult(null);
+                          trackEvent('ai_coach_pronunciation_action', { action: 'use_perfect', score: pronunciationResult.score });
+                        }}
+                        className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-97"
+                      >
+                        Enviar 100% Correto
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInput(pronunciationResult.spoken);
+                          setPronunciationResult(null);
+                          trackEvent('ai_coach_pronunciation_action', { action: 'use_spoken', score: pronunciationResult.score });
+                        }}
+                        className="flex-1 py-2.5 bg-slate-900 border border-white/10 hover:border-white/20 text-slate-350 rounded-xl text-xs font-bold transition-all active:scale-97"
+                      >
+                        Usar meu áudio
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPronunciationResult(null);
+                          toggleListening();
+                          trackEvent('ai_coach_pronunciation_action', { action: 'retry', score: pronunciationResult.score });
+                        }}
+                        className="py-2.5 px-4 bg-slate-950 border border-white/10 hover:bg-slate-900 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all active:scale-97"
+                      >
+                        Tentar de novo 🔄
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Form input */}
               <form onSubmit={handleSend} className="p-4 bg-slate-950 border-t border-white/10 flex gap-3 z-10">
                 <input
@@ -1189,6 +1341,76 @@ const AiCoachPage: React.FC = () => {
       </div>
     </div>
   );
+};
+
+// Pronunciation accuracy grading utilities
+interface WordDiff {
+  text: string;
+  status: 'correct' | 'warning' | 'error';
+  spokenText?: string;
+}
+
+const pronunciationTips: Record<string, string> = {
+  'fries': "Curve a ponta da língua para trás para o som de 'r' americano (/fraɪz/), sem tocar o céu da boca, diferente de 'flies' (/flaɪz/).",
+  'passport': "A pronúncia correta de 'passport' usa o som aberto de 'a' (/ˈpæspɔːrt/). Não pronuncie como o 'o' de 'porta' em português.",
+  'officer': "O 'o' inicial soa como 'á' (/ˈɑːfɪsər/) e o 'c' tem som de 's'.",
+  'coffee': "Diga 'cá-fi' (/ˈkɔːfi/) em vez de 'cô-fi'.",
+  'water': "O 't' soa como um 'd' rápido (flap T) em inglês americano (/ˈwɔːtər/ -> 'uó-der').",
+  'schedule': "Pronuncia-se 'ské-djul' (/ˈskedʒuːl/) no inglês americano.",
+  'aws': "Diga cada letra separadamente: 'Ei-Dáblio-És' (/ˌeɪ.diː.tiː.ˈdʌb.l.juː.es/).",
+  'meeting': "O 'tt' soa como um 'd' suave e rápido (/ˈmiːdɪŋ/)."
+};
+
+const calculatePronunciationDiff = (expected: string, spoken: string) => {
+  const normExpected = expected.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(/\s+/).filter(Boolean);
+  const normSpoken = spoken.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(/\s+/).filter(Boolean);
+  
+  const diffs: WordDiff[] = [];
+  let correctCount = 0;
+  
+  normExpected.forEach((word, idx) => {
+    const spokenWord = normSpoken[idx];
+    if (!spokenWord) {
+      diffs.push({ text: word, status: 'error' });
+    } else if (word === spokenWord) {
+      diffs.push({ text: word, status: 'correct' });
+      correctCount++;
+    } else {
+      const distance = getLevenshteinDistance(word, spokenWord);
+      if (distance <= 2) {
+        diffs.push({ text: word, status: 'warning', spokenText: spokenWord });
+        correctCount += 0.5; // partial credit
+      } else {
+        diffs.push({ text: word, status: 'error', spokenText: spokenWord });
+      }
+    }
+  });
+
+  const rawScore = normExpected.length > 0 ? (correctCount / normExpected.length) * 100 : 0;
+  return {
+    diffs,
+    score: Math.round(rawScore)
+  };
+};
+
+const getLevenshteinDistance = (a: string, b: string): number => {
+  const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+  for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      if (a[i - 1] === b[j - 1]) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + 1
+        );
+      }
+    }
+  }
+  return matrix[a.length][b.length];
 };
 
 export default AiCoachPage;
