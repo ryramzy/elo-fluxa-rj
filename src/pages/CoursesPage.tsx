@@ -136,7 +136,7 @@ export default function CoursesPage() {
       </header>
 
       {/* 🎯 FILTER PILLS MATRIX */}
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-start gap-2.5 mb-8 relative z-10">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-start gap-2.5 mb-10 relative z-10">
         {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Cultura'].map((filter) => (
           <button
             key={filter}
@@ -152,69 +152,105 @@ export default function CoursesPage() {
         ))}
       </div>
 
-      {/* 🗺️ THE GAME CARD SELECTION GRID MAP */}
-      <main className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-        {filteredCourses.map((course) => {
-          const themeKey = getCourseTheme(course.tag, course.id);
-          const colors = themeMatrix[themeKey];
-          
-          const enrollment = enrollments.find(e => e.courseId === course.id);
-          const lessonsCompleted = enrollment?.lessonsCompleted || 0;
-          const totalLessons = course.lessons.length;
-          const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
+      <style dangerouslySetInnerHTML={{__html: `
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
 
-          // Free tier locks: allows Basic English / Beginner level classes, gates intermediate / specialty
-          const isLocked = userProfile.plan === 'free' && course.level !== 'Beginner' && course.id !== 'basic-english-daily-life';
+      {/* 🗺️ THE GAME CARD SELECTION CATEGORY MAP */}
+      <main className="max-w-7xl mx-auto space-y-12 relative z-10">
+        {[
+          { id: 'professional', name: '💼 Business, Tech & Engineering', desc: 'Domine o inglês corporativo para entrevistas, reuniões e atuação internacional.', tag: 'Profissional' },
+          { id: 'conversation', name: '🗣️ Conversação Prática', desc: 'Simulações reais do cotidiano e viagens para destravar sua comunicação.', tag: 'Conversação' },
+          { id: 'grammar', name: '📐 Gramática Estrutural', desc: 'Fundamentos essenciais para escrever e falar com precisão e confiança.', tag: 'Gramática' },
+          { id: 'culture', name: '🌍 Cultura & Áreas de Negócio', desc: 'Aprenda vocabulários de áreas especializadas e aspectos culturais.', tag: 'Cultura' }
+        ]
+          .filter(cat => selectedFilter === 'Todos' || cat.tag === selectedFilter)
+          .map((category) => {
+            const categoryCourses = baseCourses.filter(c => getCourseAudience(c) === category.tag);
+            if (categoryCourses.length === 0) return null;
 
-          return (
-            <motion.div
-              key={course.id}
-              onClick={() => navigate(`/courses/${course.id}`)}
-              whileHover={{ y: -4 }}
-              className={`group relative bg-slate-900/40 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer backdrop-blur-sm select-none ${colors.bgGlow}`}
-            >
-              {/* Top Row Status Flags */}
-              <div className="flex justify-between items-center mb-4">
-                <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
-                  {course.tag}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-slate-400">+{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP</span>
-                  {isLocked ? (
-                    <FaLock size={12} className="text-slate-500" />
-                  ) : (
-                    <FaUnlock size={12} className="text-slate-400 opacity-40" />
-                  )}
+            return (
+              <div key={category.id} className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 px-2">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                      {category.name}
+                    </h2>
+                    <p className="text-slate-400 text-xs mt-0.5">{category.desc}</p>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                    {categoryCourses.length} {categoryCourses.length === 1 ? 'Trilha' : 'Trilhas'}
+                  </span>
+                </div>
+
+                {/* Horizontal Scroll Row */}
+                <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory px-2">
+                  {categoryCourses.map((course) => {
+                    const themeKey = getCourseTheme(course.tag, course.id);
+                    const colors = themeMatrix[themeKey];
+                    
+                    const enrollment = enrollments.find(e => e.courseId === course.id);
+                    const lessonsCompleted = enrollment?.lessonsCompleted || 0;
+                    const totalLessons = course.lessons.length;
+                    const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
+
+                    // Free tier locks: allows Basic English / Beginner level classes, gates intermediate / specialty
+                    const isLocked = userProfile.plan === 'free' && course.level !== 'Beginner' && course.id !== 'basic-english-daily-life';
+
+                    return (
+                      <motion.div
+                        key={course.id}
+                        onClick={() => navigate(`/courses/${course.id}`)}
+                        whileHover={{ y: -4, scale: 1.01 }}
+                        className={`snap-start min-w-[290px] sm:min-w-[340px] max-w-[340px] bg-slate-900/80 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer select-none ${colors.bgGlow}`}
+                      >
+                        {/* Top Row Status Flags */}
+                        <div className="flex justify-between items-center mb-4">
+                          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
+                            {course.tag}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-slate-400">+{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP</span>
+                            {isLocked ? (
+                              <FaLock size={12} className="text-slate-500 animate-pulse" />
+                            ) : (
+                              <FaUnlock size={12} className="text-slate-400 opacity-40" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Course Identity Details */}
+                        <div className="flex items-start gap-2 mb-2">
+                          <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
+                          <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
+                            {course.title}
+                          </h3>
+                        </div>
+                        <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
+                          {course.descriptionPt || course.description}
+                        </p>
+
+                        {/* Progress System Elements */}
+                        <div className="mt-auto pt-2 border-t border-slate-800">
+                          <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
+                            <span>Progresso</span>
+                            <span>{lessonsCompleted}/{totalLessons} Lições</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
+                            <div 
+                              className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
-
-              {/* Course Identity Details */}
-              <div className="flex items-start gap-2 mb-2">
-                <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
-                <h3 className="text-lg font-bold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
-                  {course.title}
-                </h3>
-              </div>
-              <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
-                {course.descriptionPt || course.description}
-              </p>
-
-              {/* Progress System Elements */}
-              <div className="mt-auto pt-2 border-t border-slate-900">
-                <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
-                  <span>Progresso</span>
-                  <span>{lessonsCompleted}/{totalLessons} Lições</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
-                  <div 
-                    className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
+            );
+          })}
       </main>
 
     </div>

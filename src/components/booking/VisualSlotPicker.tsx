@@ -30,6 +30,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
   const [cancelling, setCancelling] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(0);
+  const [activeMobileDay, setActiveMobileDay] = useState<number>(0);
   const { user } = useAuth();
   const currentUserId = user?.uid || '';
   const { profile } = useUserProfile(currentUserId);

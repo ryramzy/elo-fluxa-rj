@@ -64,7 +64,7 @@ function AppShell() {
     e.preventDefault();
     
     if (targetId === 'agenda') {
-      navigate('/dashboard', { state: { tab: 'booking' } });
+      navigate('/agenda');
     } else if (targetId === 'dashboard') {
       navigate('/dashboard', { state: { tab: 'overview' } });
     } else {
