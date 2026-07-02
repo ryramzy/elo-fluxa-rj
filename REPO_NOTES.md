@@ -41,6 +41,24 @@ VITE_FIREBASE_APP_ID=
 ```
 
 ---
+## [July 2, 2026] — Mobile Agenda Runtime Hotfix, Direct Calendar Routing, and LMS Horizontal Swiper Overhaul
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Mobile Agenda State Runtime Fix (`VisualSlotPicker.tsx`)**: Re-declared the missing `activeMobileDay` state hook (`const [activeMobileDay, setActiveMobileDay] = useState<number>(0);`) inside the component, resolving a runtime ReferenceError that crashed the calendar widget on mobile viewports.
+- **Direct Router Navigation for Calendar (`App.tsx` & `BottomNav.tsx`)**: Rerouted the mobile bottom navigation tab and desktop navbar clicks directly to `/agenda`. Previously, the application routed clicks to `/dashboard` with a location state parameter (`tab: 'booking'`), causing administrators or tutors (who default to the Admin panel on load) to get stuck in the Admin view, unable to view or test the student calendar scheduling picker on mobile.
+- **LMS Course Cards Horizontal Swiper Overhaul (`CoursesPage.tsx`)**: Grouped the 25+ courses in the catalog into horizontal scroll categories (Business & Tech, Conversação Prática, Gramática Estrutural, Cultura). Used CSS properties (`scrollbar-none` scrollbar hiding) and browser scroll-snap (`snap-start`, `snap-x`) for high-performance touch scrolling. Replaced transparent card styling with solid dark-slate backs (`bg-slate-900/80`) and hover glow-rings to resolve low contrast and readability issues.
+- **Self-Serve Pix Checkout modal (`SubscriptionModal.tsx` & `CheckoutForm.tsx`)**: Replaced the static external WhatsApp redirects with our modular Pix payment simulator containing the base-11 modulus checksum algorithm for CPF validation.
+- **B2B Partnerships CRM Tab (`Admin.tsx`)**: Built a B2B Partnership management panel allowing admins to view active B2B tenants, employee directories, and manually allocate pre-paid tutor credits to individual user profiles.
+- **React Icons Build Hotfix (`CheckoutForm.tsx`)**: Replaced `LuCheckCircle` (which is not exported by this version of `react-icons/lu`) with `LuCheck` to resolve Rollup build compilation crashes in production.
+
+### Lessons Learned / Developer Safeguards
+- **State Integrity**: Always ensure that all local state hooks are completely declared when restoring files via git, especially if they are heavily referenced in viewport-conditional blocks (e.g. `md:hidden` sections).
+- **Direct Testing Access**: Key user modules (like the scheduling calendar) should be directly accessible via standard standalone pages (e.g. `/agenda`) to allow QA testing across all roles (admins, tutors, students) without routing roadblocks.
+- **Avoid Flat Lists for Large Catalogs**: When a catalog grows beyond 20+ items, flat vertical grids lead to cognitive overload and bad visual hierarchy. Prefer category-grouped horizontal rows with rich visual borders to make scanning cards easy.
+- **Check React Icons Version Exports**: Icon libraries like `react-icons/lu` differ in naming exports across package versions. Always prefer globally safe icons (e.g. `LuCheck`, or FontAwesome `FaCheckCircle` / `FaLock`) to prevent Rollup build failures.
+
+---
 ## [July 1, 2026] — React 19 Optimistic UI, RPG Coach, and Path Aliasing Refactoring
 **Status:** ✅ COMPLETED
 
