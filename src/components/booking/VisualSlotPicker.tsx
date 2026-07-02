@@ -22,6 +22,9 @@ interface VisualSlotPickerProps {
   selectedDate?: string;
 }
 
+// In-memory cache to make calendar navigation and remounts instantaneous
+const bookingsCache: Record<number, { data: Booking[]; timestamp: number }> = {};
+
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   onSlotSelect
 }) => {
@@ -136,7 +139,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const weekDates = getWeekDates(selectedWeek);
   const timeSlots = weekDates.length > 0 ? getLocalTimeSlots(weekDates[0]) : [];
 
-  const loadWeekBookings = async () => {
+  const loadWeekBookings = async (force = false) => {
+    // Check in-memory cache first to make it load instantly
+    const cached = bookingsCache[selectedWeek];
+    const now = Date.now();
+    
+    if (!force && cached && (now - cached.timestamp < 15000)) {
+      setBookings(cached.data);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setToast(null);
     
@@ -163,6 +176,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         ...doc.data()
       } as Booking));
       
+      // Save to cache
+      bookingsCache[selectedWeek] = { data: bookingsData, timestamp: Date.now() };
       setBookings(bookingsData);
     } catch (err) {
       logError(err, { action: 'loadWeekBookings', selectedWeek });
@@ -246,8 +261,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         userName: studentName
       };
 
-      // Optimistically merge into local state array to trigger immediate re-render
-      setBookings(prev => [...prev, newBooking]);
+      // Optimistically merge into local state array to trigger immediate re-render and update cache
+      setBookings(prev => {
+        const next = [...prev, newBooking];
+        bookingsCache[selectedWeek] = { data: next, timestamp: Date.now() };
+        return next;
+      });
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
 
       // Telemetry 3: Booking Success
@@ -296,8 +315,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     try {
       await firestoreCancelBooking(bookingId);
       
-      // Optimistically remove from state
-      setBookings(prev => prev.filter(b => b.id !== bookingId));
+      // Optimistically remove from state and update cache
+      setBookings(prev => {
+        const next = prev.filter(b => b.id !== bookingId);
+        bookingsCache[selectedWeek] = { data: next, timestamp: Date.now() };
+        return next;
+      });
       showToast('Booking cancelled successfully!', 'success');
     } catch (err: any) {
       logError(err, { action: 'cancelBooking', bookingId });

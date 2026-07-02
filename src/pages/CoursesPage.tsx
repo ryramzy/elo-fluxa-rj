@@ -63,7 +63,10 @@ const getCourseAudience = (course: Course) => {
   if (['Conversation', 'Essentials', 'Travel'].includes(course.tag)) {
     return 'Conversação';
   }
-  const profTags = ['Business', 'Tech', 'Healthcare', 'Legal', 'Engineering', 'Startup', 'Marketing', 'Management', 'Automotive'];
+  if (['Healthcare', 'Legal', 'Automotive'].includes(course.tag)) {
+    return 'Especialidades';
+  }
+  const profTags = ['Business', 'Tech', 'Engineering', 'Startup', 'Marketing', 'Management'];
   if (profTags.includes(course.tag) || course.id.includes('tech') || course.id.includes('dev')) {
     return 'Profissional';
   }
@@ -137,7 +140,7 @@ export default function CoursesPage() {
 
       {/* 🎯 FILTER PILLS MATRIX */}
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-start gap-2.5 mb-10 relative z-10">
-        {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Cultura'].map((filter) => (
+        {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Especialidades', 'Cultura'].map((filter) => (
           <button
             key={filter}
             onClick={() => setSelectedFilter(filter)}
@@ -160,10 +163,11 @@ export default function CoursesPage() {
       {/* 🗺️ THE GAME CARD SELECTION CATEGORY MAP */}
       <main className="max-w-7xl mx-auto space-y-12 relative z-10">
         {[
-          { id: 'professional', name: '💼 Business, Tech & Engineering', desc: 'Domine o inglês corporativo para entrevistas, reuniões e atuação internacional.', tag: 'Profissional' },
+          { id: 'professional', name: '💼 Carreiras, Tech & Devs', desc: 'Inglês corporativo de alta performance para entrevistas, reuniões e atuação global.', tag: 'Profissional' },
+          { id: 'specialty', name: '🩺 Saúde, Direito & Especialidades', desc: 'Trilhas técnicas direcionadas para médicos, enfermeiros, advogados e engenheiros de campo.', tag: 'Especialidades' },
           { id: 'conversation', name: '🗣️ Conversação Prática', desc: 'Simulações reais do cotidiano e viagens para destravar sua comunicação.', tag: 'Conversação' },
           { id: 'grammar', name: '📐 Gramática Estrutural', desc: 'Fundamentos essenciais para escrever e falar com precisão e confiança.', tag: 'Gramática' },
-          { id: 'culture', name: '🌍 Cultura & Áreas de Negócio', desc: 'Aprenda vocabulários de áreas especializadas e aspectos culturais.', tag: 'Cultura' }
+          { id: 'culture', name: '🌍 Cultura & Sociedade', desc: 'Cenários do dia a dia americano, expressões idiomáticas e gírias locais.', tag: 'Cultura' }
         ]
           .filter(cat => selectedFilter === 'Todos' || cat.tag === selectedFilter)
           .map((category) => {
