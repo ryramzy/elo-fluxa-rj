@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from 'firebase/firestore';
-import { db } from '../src/lib/firestore';
+import { db } from '../src/lib/firebase';
 
 export async function POST() {
   try {

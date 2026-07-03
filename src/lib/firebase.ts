@@ -9,10 +9,12 @@ const app = initializeApp(firebaseConfig);
 
 // Export initialized instances
 export const auth = getAuth(app);
-// Initialize Firestore with offline persistence
-export const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+// Initialize Firestore with offline persistence only in browser environments
+export const db = (typeof window !== 'undefined')
+  ? initializeFirestore(app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+    })
+  : getFirestore(app);
 export { app };
 
 // Debug logging for deployment verification
