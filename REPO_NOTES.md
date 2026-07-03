@@ -40,6 +40,27 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 2, 2026 - Sprint 2] — Serverless Vercel Node.js Compilation Safety & Speech Accents Deploy Hotfixes
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Serverless Node.js Firebase Compilation Safety (`src/lib/firebase.ts`)**: Resolved Vercel deployment failures caused by importing browser-only offline persistence modules (`persistentLocalCache` and `persistentMultipleTabManager`) in serverless environments. Removed the named exports and dynamically extracted them from `* as firestoreExports` inside a `typeof window !== 'undefined'` browser-check block, shielding the Node.js compiler scope from missing web exports.
+- **Vercel API Route Export Consolidation (`api/force-create-slots.ts`)**: Rewrote the Next.js/App Router style named verb endpoints (`export async function POST()` and `export async function GET()`) into a single unified default handler function (`export default async function handler(req, res)`). This conforms to Vercel's standard serverless Node.js architecture guidelines and eliminates function compilation check failures.
+- **Corrected Slots Importer Path (`api/force-create-slots.ts`)**: Corrected the import path on line 2 which incorrectly attempted to import `db` from `../src/lib/firestore` (which has no default or named `db` export) and aligned it to import from `../src/lib/firebase`.
+- **Speech Synthesis ReferenceError Declaration (`src/utils/tts.ts`)**: Formally declared `selectedVoice` at the top of the SpeechSynthesis engine to prevent runtime ReferenceErrors and strict type check blocks.
+- **Regional Speech Accent Engine (`AiCoachPage.tsx` & `tts.ts`)**: Integrated standard US, UK, and AU toggles dynamically updating both the Gemini AI prompts and browser text-to-speech engines.
+
+### Diagnostic Report: Analysis of 6 Build Failures
+1. **Failure 1-2 (B2B Webhooks & Resend Hooks)**: Caused by Vercel bundling backend endpoints that recursively imported the client-side `src/lib/firebase.ts`. Because `firebase.ts` executed browser-only API layers immediately, it threw typings compilation failures when built under headless Node.js.
+2. **Failure 3-4 (Slots Builder Routing)**: `api/force-create-slots.ts` exported named verbs `POST` and `GET`. Vercel's standard serverless builder failed to map these to route handlers, throwing routing compile flags.
+3. **Failure 5 (Broken Database Export Reference)**: The slots builder attempted to fetch `db` from `src/lib/firestore.ts` instead of `src/lib/firebase.ts`. Because `firestore.ts` did not export `db`, the build failed type checking.
+4. **Failure 6 (Undeclared Voice Cache Variables)**: Strict checks in Vercel's production type validation flagged the undeclared assignment to `selectedVoice` inside the speech engine as a syntax violation.
+
+### Developer Safeguards / Guidelines
+- **Zero Browser Imports in Shared Configs**: Never import browser-only variables, hooks, or persistence handlers (`localCache`, `tabManager`, `window` references) as named imports in config files (like `firebase.ts`) that are shared with serverless folders. Always query them dynamically using `typeof window !== 'undefined'` checks.
+- **Vercel API Endpoint Framework**: Standard Vercel serverless Node.js endpoints (in `/api/**/*.ts`) must export a single `export default async function handler(req: VercelRequest, res: VercelResponse)` entry point. Do not use Next.js-style named verb exports (`POST`, `GET`).
+- **Database Access Rules**: Always import the base Firestore client instance `db` from `@/lib/firebase` (never from `firestore.ts` or other wrapper files).
+
 ---
 ## [July 2, 2026] — Mobile Agenda Runtime Hotfix, Direct Calendar Routing, and LMS Horizontal Swiper Overhaul
 **Status:** ✅ COMPLETED
