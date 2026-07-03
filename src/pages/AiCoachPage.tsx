@@ -366,6 +366,15 @@ const AiCoachPage: React.FC = () => {
       rec.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
+        if (event.error === 'no-speech') {
+          showToast({ type: 'warning', message: 'Nenhum som detectado. Aproxime o microfone ou fale mais alto.' });
+        } else if (event.error === 'audio-capture') {
+          showToast({ type: 'error', message: 'Falha ao capturar áudio. Verifique se o microfone está conectado.' });
+        } else if (event.error === 'not-allowed') {
+          showToast({ type: 'error', message: 'Acesso ao microfone rejeitado. Verifique as permissões do seu navegador/aparelho.' });
+        } else {
+          showToast({ type: 'error', message: `Erro no reconhecimento de voz: ${event.error}` });
+        }
       };
 
       rec.onend = () => {
@@ -666,7 +675,16 @@ const AiCoachPage: React.FC = () => {
   };
 
   const handleSpeak = (text: string) => {
-    speakText(text, undefined, undefined, undefined, selectedAccent);
+    speakText(
+      text,
+      undefined,
+      undefined,
+      (err) => {
+        console.error('[AiCoach] Speech synthesis failed:', err);
+        showToast({ type: 'error', message: 'Falha ao reproduzir áudio. Verifique as configurações de som do seu dispositivo.' });
+      },
+      selectedAccent
+    );
     trackEvent('ai_chat_speech_listen', { textLength: text.length, accent: selectedAccent });
   };
 
