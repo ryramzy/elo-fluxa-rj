@@ -6,7 +6,6 @@
  */
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
-let selectedVoice: SpeechSynthesisVoice | null = null;
 
 // Initialize voices as soon as possible, since getVoices() is asynchronous on some browsers
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -21,8 +20,7 @@ export const speakText = (
   text: string,
   onStart?: () => void,
   onEnd?: () => void,
-  onError?: (err: any) => void,
-  accent?: 'us' | 'gb' | 'au'
+  onError?: (err: any) => void
 ) => {
   if (!('speechSynthesis' in window)) {
     console.warn('SpeechSynthesis API not supported in this browser.');
@@ -50,14 +48,8 @@ export const speakText = (
     onError?.(e);
   };
 
-  // Use cached voice if already determined for this specific accent
-  const langMatch = selectedVoice && (
-    (accent === 'gb' && (selectedVoice.lang.toLowerCase().includes('gb') || selectedVoice.lang.toLowerCase().includes('uk'))) ||
-    (accent === 'au' && selectedVoice.lang.toLowerCase().includes('au')) ||
-    ((!accent || accent === 'us') && (selectedVoice.lang.toLowerCase().includes('us') || selectedVoice.lang.toLowerCase() === 'en'))
-  );
-
-  if (selectedVoice && langMatch) {
+  // Use cached voice if already determined
+  if (selectedVoice) {
     utterance.voice = selectedVoice;
     console.log(`[TTS] Using cached voice: ${selectedVoice.name} (${selectedVoice.lang})`);
   } else {
@@ -66,20 +58,15 @@ export const speakText = (
       cachedVoices = window.speechSynthesis.getVoices();
     }
 
-    // Determine target language code
-    let targetLang = 'en-us';
-    if (accent === 'gb') targetLang = 'en-gb';
-    else if (accent === 'au') targetLang = 'en-au';
-
-    // Find matching language tags
-    let targetVoices = cachedVoices.filter(v => v.lang.toLowerCase() === targetLang || v.lang.toLowerCase().replace('_', '-') === targetLang);
+    // Find all US English voices primarily, fallback to any English voice ONLY if no US voice is found
+    let targetVoices = cachedVoices.filter(v => v.lang.toLowerCase() === 'en-us' || v.lang.toLowerCase() === 'en_us');
     if (targetVoices.length === 0) {
       targetVoices = cachedVoices.filter(v => v.lang.toLowerCase().startsWith('en') || v.lang.toLowerCase().includes('en'));
     }
 
     // Sequential fallback for popular voice names if default filter yields nothing
     if (targetVoices.length === 0 && cachedVoices.length > 0) {
-      const preferredFallbacks = ['google us english', 'samantha', 'david', 'jenny', 'aria', 'daniel', 'karen', 'oliver', 'fiona'];
+      const preferredFallbacks = ['google us english', 'samantha', 'david', 'jenny', 'aria'];
       for (const fallback of preferredFallbacks) {
         const found = cachedVoices.find(v => v.name.toLowerCase().includes(fallback));
         if (found) {
@@ -96,7 +83,6 @@ export const speakText = (
     for (const voice of targetVoices) {
       let score = 0;
       const nameLower = voice.name.toLowerCase();
-      const langLower = voice.lang.toLowerCase();
       
       // Apple Siri voices are premium and very natural
       if (nameLower.includes('siri')) {
@@ -121,33 +107,27 @@ export const speakText = (
       }
 
       // Prefer female voices for a soothing, Siri-like default tone
-      const femaleKeywords = ['female', 'jenny', 'aria', 'samantha', 'zira', 'hazel', 'susan', 'karen', 'siri', 'fiona'];
+      const femaleKeywords = ['female', 'jenny', 'aria', 'samantha', 'zira', 'hazel', 'susan', 'karen', 'siri'];
       if (femaleKeywords.some(keyword => nameLower.includes(keyword))) {
         score += 15;
       }
 
-      // Accent-specific scoring
-      if (accent === 'gb') {
-        const isBritish = langLower.includes('gb') || langLower.includes('uk') || nameLower.includes('daniel') || nameLower.includes('british') || nameLower.includes('uk') || nameLower.includes('gb') || nameLower.includes('oliver');
-        if (isBritish) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-British voices
-        }
-      } else if (accent === 'au') {
-        const isAustralian = langLower.includes('au') || nameLower.includes('karen') || nameLower.includes('australian') || nameLower.includes('au');
-        if (isAustralian) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-Australian voices
-        }
-      } else {
-        const isUS = langLower.includes('us') || nameLower.includes('google us') || nameLower.includes('samantha') || nameLower.includes('david');
-        if (isUS) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-US voices
-        }
+      // US English preferred
+      if (voice.lang.startsWith('en-US') || voice.lang.includes('en_US')) {
+        score += 10;
+      }
+
+      // Heavily penalize any British, UK, or non-US voice to ensure it is never chosen if a US option exists
+      const isBritish = voice.lang.toLowerCase().includes('gb') || 
+                        voice.lang.toLowerCase().includes('uk') || 
+                        nameLower.includes('daniel') || 
+                        nameLower.includes('karen') || // Karen is often en-AU or en-GB
+                        nameLower.includes('british') || 
+                        nameLower.includes('uk') ||
+                        nameLower.includes('gb');
+      
+      if (isBritish) {
+        score -= 300; // Extreme penalty
       }
 
       if (score > highestScore) {
@@ -161,8 +141,8 @@ export const speakText = (
       utterance.voice = bestVoice;
       console.log(`[TTS] Selected and cached voice: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
     } else {
-      utterance.lang = accent === 'gb' ? 'en-GB' : accent === 'au' ? 'en-AU' : 'en-US';
-      console.log(`[TTS] Using default system voice for lang: ${utterance.lang}`);
+      utterance.lang = 'en-US';
+      console.log('[TTS] Using default system voice (no matching preferred en-US found)');
     }
   }
 
