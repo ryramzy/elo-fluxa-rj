@@ -1,8 +1,31 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getDocs, query, collection, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../src/lib/firebase';
+import * as admin from 'firebase-admin';
 
+// Initialize Firebase Admin SDK if not already initialized
+if (!admin.apps.length) {
+  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (serviceAccountJson) {
+    try {
+      const serviceAccount = JSON.parse(serviceAccountJson);
+      if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      }
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log('✅ Firebase Admin SDK initialized successfully in lesson-reminder.');
+    } catch (parseErr) {
+      console.error('❌ Failed to parse Google Service Account key:', parseErr);
+      admin.initializeApp(); // Fallback
+    }
+  } else {
+    console.warn('⚠️ GOOGLE_SERVICE_ACCOUNT_KEY not found, falling back to default app credentials.');
+    admin.initializeApp();
+  }
+}
+
+const db = admin.firestore();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -14,17 +37,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Find all lessons scheduled in the next 24 hours
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const todayStr = now.toISOString().split('T')[0];
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-    const bookingsQuery = query(
-      collection(db, 'bookings'),
-      where('status', '==', 'confirmed'),
-      where('date', '>=', now.toISOString().split('T')[0]),
-      where('date', '<=', tomorrow.toISOString().split('T')[0]),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
+    const querySnapshot = await db.collection('bookings')
+      .where('status', '==', 'confirmed')
+      .where('date', '>=', todayStr)
+      .where('date', '<=', tomorrowStr)
+      .get();
 
-    const querySnapshot = await getDocs(bookingsQuery);
     const bookings = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     if (bookings.length === 0) {
@@ -123,12 +144,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           if (!error && userId) {
             try {
-              const notificationsRef = collection(db, 'users', userId, 'notifications');
-              await addDoc(notificationsRef, {
+              const notificationsRef = db.collection('users').doc(userId).collection('notifications');
+              await notificationsRef.add({
                 title: 'Lembrete de Aula! ⏰',
                 message: `Sua aula está agendada para amanhã (${formattedDate}) às ${time}.`,
                 read: false,
-                createdAt: serverTimestamp()
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
               });
             } catch (notifErr) {
               console.error('Error creating reminder notification:', notifErr);
@@ -142,9 +163,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     );
 
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
-    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && r.value.error)).length;
-    const skipped = results.filter(r => r.status === 'fulfilled' && r.value.skipped).length;
+    const successful = results.filter(r => r.status === 'fulfilled' && (r as any).value.success).length;
+    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && (r as any).value.error)).length;
+    const skipped = results.filter(r => r.status === 'fulfilled' && (r as any).value.skipped).length;
 
     res.status(200).json({ 
       message: 'Lesson reminders processed',

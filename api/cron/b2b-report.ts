@@ -1,8 +1,31 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getDocs, query, collection, where } from 'firebase/firestore';
-import { db } from '../../src/lib/firebase';
+import * as admin from 'firebase-admin';
 
+// Initialize Firebase Admin SDK if not already initialized
+if (!admin.apps.length) {
+  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (serviceAccountJson) {
+    try {
+      const serviceAccount = JSON.parse(serviceAccountJson);
+      if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      }
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log('✅ Firebase Admin SDK initialized successfully in B2B Cron.');
+    } catch (parseErr) {
+      console.error('❌ Failed to parse Google Service Account key:', parseErr);
+      admin.initializeApp(); // Fallback
+    }
+  } else {
+    console.warn('⚠️ GOOGLE_SERVICE_ACCOUNT_KEY not found, falling back to default app credentials.');
+    admin.initializeApp();
+  }
+}
+
+const db = admin.firestore();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -26,8 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('[B2B Cron] Running B2B aggregate audit report...');
     
     // Fetch all users to consolidate corporate logs
-    const usersQuery = query(collection(db, 'users'));
-    const snapshot = await getDocs(usersQuery);
+    const snapshot = await db.collection('users').get();
     
     const corporateUsers: any[] = [];
     snapshot.docs.forEach(doc => {
