@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 interface GoogleTokenResponse {
   access_token: string;
