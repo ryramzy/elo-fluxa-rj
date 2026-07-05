@@ -977,15 +977,20 @@ The Agenda page already exceeded requirements with:
 
 ---
 
-## [July 5, 2026] — Course TTS Markdown Sanitizer & Adaptive Courses Grid Toggle
+## [July 5, 2026] — Course TTS Markdown Sanitizer, Adaptive Courses Grid Toggle & Node Module Import Hotfixes
 **Status:** ✅ COMPLETED
 
 ### Problems Diagnosed & Solved
 - **Course Slides TTS Crash**: The text-to-speech option in course slides was not working or crashed on some viewports. Diagnosed that course slides pass raw Markdown strings containing tables, links, and styling brackets directly to browser speech synthesis. Browser engines (like mobile Safari WebKit) choked on formatting syntax like `|`, `:`, or link tokens. Fixed by integrating a robust regex parser in `src/utils/tts.ts` that strips all Markdown syntax and feeds raw conversational sentences.
 - **Queue Cancellation Errors**: Unconditional `window.speechSynthesis.cancel()` calls immediately preceding `speak()` calls on idle browsers caused queue conflicts, triggering `'interrupted'` error callbacks. Added an active-speaking check (`window.speechSynthesis.speaking`) to fire cancellation safely only when ongoing speech is active.
 - **Courses Mobile Navigation Overhaul**: Grouping courses in horizontal rows (Netflix carousel-style) works beautifully on desktop, but makes scanning all 25+ catalog items difficult on mobile screens where single cards take up full width. Fixed by adding a Segmented layout toggle (Carrossel vs Grade) in `src/pages/CoursesPage.tsx`, matching viewports on mount to default to Grid view on mobile screens (displaying all cards in a vertical grid scroll) while preserving row viewports on desktops.
+- **Serverless Node Module Import Crash**: The Vercel build failed on the backend compile phase because the Google service account signer imported `crypto` using default notation (`import crypto from 'crypto'`). Since Vercel Node's compiler target does not force `esModuleInterop` or `allowSyntheticDefaultImports` automatically, it threw a type-checking compilation error. Fixed by converting the import to a namespace wildcard (`import * as crypto from 'crypto'`).
+
+### Developer Guidelines for Backend Serverless Functions
+- **Import Node Core Modules as Namespaces**: When writing files in `/api/` (or helpers used by them), always import native Node modules (e.g. `crypto`, `fs`, `path`) using `import * as name from 'name'` syntax instead of default imports. This bypasses typescript compiler requirements for synthetic default configuration flags.
 
 ### Key Files Modified/Created
 - `src/utils/tts.ts` - Integrated `stripMarkdown` cleaning parameters and active speaking queue checks.
 - `src/pages/CoursesPage.tsx` - Created `layoutMode` viewport listeners, toggle segmented controls, and layout cards mapping hooks.
+- `api/utils/googleAuth.ts` - Converted the standard `crypto` import statement to a namespace import.
 

@@ -14,7 +14,7 @@ export async function getFirestoreAccessToken(): Promise<string> {
 
   const credentials = JSON.parse(credentialsJson);
   const clientEmail = credentials.client_email;
-  const privateKey = credentials.private_key;
+  const privateKey = credentials.private_key.replace(/\\n/g, '\n');
 
   const header = { alg: 'RS256', typ: 'JWT' };
   
