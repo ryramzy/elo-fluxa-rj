@@ -975,3 +975,17 @@ The Agenda page already exceeded requirements with:
 - `api/email/booking-confirmation.ts`, `api/confirm-booking.ts` - Included admin `mramsao@gmail.com` as email recipient
 - `scripts/run-test-booking-e2e.js` - [NEW] Copy-paste browser console simulation test script
 
+---
+
+## [July 5, 2026] — Course TTS Markdown Sanitizer & Adaptive Courses Grid Toggle
+**Status:** ✅ COMPLETED
+
+### Problems Diagnosed & Solved
+- **Course Slides TTS Crash**: The text-to-speech option in course slides was not working or crashed on some viewports. Diagnosed that course slides pass raw Markdown strings containing tables, links, and styling brackets directly to browser speech synthesis. Browser engines (like mobile Safari WebKit) choked on formatting syntax like `|`, `:`, or link tokens. Fixed by integrating a robust regex parser in `src/utils/tts.ts` that strips all Markdown syntax and feeds raw conversational sentences.
+- **Queue Cancellation Errors**: Unconditional `window.speechSynthesis.cancel()` calls immediately preceding `speak()` calls on idle browsers caused queue conflicts, triggering `'interrupted'` error callbacks. Added an active-speaking check (`window.speechSynthesis.speaking`) to fire cancellation safely only when ongoing speech is active.
+- **Courses Mobile Navigation Overhaul**: Grouping courses in horizontal rows (Netflix carousel-style) works beautifully on desktop, but makes scanning all 25+ catalog items difficult on mobile screens where single cards take up full width. Fixed by adding a Segmented layout toggle (Carrossel vs Grade) in `src/pages/CoursesPage.tsx`, matching viewports on mount to default to Grid view on mobile screens (displaying all cards in a vertical grid scroll) while preserving row viewports on desktops.
+
+### Key Files Modified/Created
+- `src/utils/tts.ts` - Integrated `stripMarkdown` cleaning parameters and active speaking queue checks.
+- `src/pages/CoursesPage.tsx` - Created `layoutMode` viewport listeners, toggle segmented controls, and layout cards mapping hooks.
+
