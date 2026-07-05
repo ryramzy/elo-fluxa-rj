@@ -985,12 +985,18 @@ The Agenda page already exceeded requirements with:
 - **Queue Cancellation Errors**: Unconditional `window.speechSynthesis.cancel()` calls immediately preceding `speak()` calls on idle browsers caused queue conflicts, triggering `'interrupted'` error callbacks. Added an active-speaking check (`window.speechSynthesis.speaking`) to fire cancellation safely only when ongoing speech is active.
 - **Courses Mobile Navigation Overhaul**: Grouping courses in horizontal rows (Netflix carousel-style) works beautifully on desktop, but makes scanning all 25+ catalog items difficult on mobile screens where single cards take up full width. Fixed by adding a Segmented layout toggle (Carrossel vs Grade) in `src/pages/CoursesPage.tsx`, matching viewports on mount to default to Grid view on mobile screens (displaying all cards in a vertical grid scroll) while preserving row viewports on desktops.
 - **Serverless Node Module Import Crash**: The Vercel build failed on the backend compile phase because the Google service account signer imported `crypto` using default notation (`import crypto from 'crypto'`). Since Vercel Node's compiler target does not force `esModuleInterop` or `allowSyntheticDefaultImports` automatically, it threw a type-checking compilation error. Fixed by converting the import to a namespace wildcard (`import * as crypto from 'crypto'`).
+- **Google Service Account Escaped Key Warn**: Vercel dashboard environment variables escape newlines (`\n`) to double-backslashes (`\\n`) dynamically inside JSON keys. If passed directly to OpenSSL private key signers, this triggers silent runtime signature exchange failures. Fixed by adding a regex sanitizer (`privateKey.replace(/\\n/g, '\n')`). Documented this in `.env.example`.
 
 ### Developer Guidelines for Backend Serverless Functions
 - **Import Node Core Modules as Namespaces**: When writing files in `/api/` (or helpers used by them), always import native Node modules (e.g. `crypto`, `fs`, `path`) using `import * as name from 'name'` syntax instead of default imports. This bypasses typescript compiler requirements for synthetic default configuration flags.
+- **Isolate Subdirectory Configs**: To decouple serverless backend node types from frontend web types, always place a local `tsconfig.json` (extending the parent configuration) inside the `/api` directory to resolve CommonJS/Node module queries.
+- **Verify Signer Health**: Use the `/api/health` checking path to verify that the Google REST auth gateway remains healthy.
 
 ### Key Files Modified/Created
 - `src/utils/tts.ts` - Integrated `stripMarkdown` cleaning parameters and active speaking queue checks.
 - `src/pages/CoursesPage.tsx` - Created `layoutMode` viewport listeners, toggle segmented controls, and layout cards mapping hooks.
-- `api/utils/googleAuth.ts` - Converted the standard `crypto` import statement to a namespace import.
+- `api/utils/googleAuth.ts` - Converted the standard `crypto` import statement to a namespace import and added private key newline replacement formatting.
+- `api/tsconfig.json` - [NEW] Local TS compiler config for serverless commonjs and node environments.
+- `api/health.ts` - [NEW] Health check endpoint to verify Google auth rest exchange validity.
+- `.env.example` - Added comments outlining GOOGLE_SERVICE_ACCOUNT_KEY formatting and newline-escaping behaviors in Vercel.
 
