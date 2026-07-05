@@ -24,19 +24,36 @@ export const speakText = (
   onError?: (err: any) => void,
   accent?: 'us' | 'gb' | 'au'
 ) => {
-  if (!('speechSynthesis' in window)) {
-    console.warn('SpeechSynthesis API not supported in this browser.');
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    console.warn('SpeechSynthesis API not supported in this environment.');
     onError?.('SpeechSynthesis API not supported');
     return;
   }
 
-  window.speechSynthesis.cancel();
+  // Safely cancel any active voice speech without disrupting browsers' internal queues
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
   
-  // Clean text from Markdown tags or custom prompt separators
-  const cleanText = text
+  // Clean text from Markdown tags, formatting, and tables to prevent TTS crashes
+  let cleanText = text
     .replace(/\|\|\|/g, '. ') // Replace slide separators with natural pauses
     .replace(/\[NEW\]/gi, '')
     .replace(/\[DELETE\]/gi, '')
+    .trim();
+
+  // Strip Markdown characters and formatting blocks
+  cleanText = cleanText
+    .replace(/\|/g, ' ')                  // Remove table pipes
+    .replace(/-{3,}/g, '')                // Remove table line dividers
+    .replace(/#{1,6}\s+/g, '')            // Remove markdown headers
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')   // Remove bold formatting
+    .replace(/(\*|_)(.*?)\1/g, '$2')      // Remove italics formatting
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')   // Remove links (keep link text)
+    .replace(/^\s*>\s+/gm, '')            // Remove blockquotes
+    .replace(/^\s*[\*\+-]\s+/gm, '')      // Remove bullet points
+    .replace(/^\s*\d+\.\s+/gm, '')        // Remove list numbers
+    .replace(/\s+/g, ' ')                 // Normalize spacing
     .trim();
 
   const utterance = new SpeechSynthesisUtterance(cleanText);

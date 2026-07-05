@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
@@ -79,6 +79,14 @@ export default function CoursesPage() {
   const { profile } = useUserProfile(user?.uid || '');
   const { enrollments } = useEnrollments(user?.uid || '');
   const [selectedFilter, setSelectedFilter] = useState('Todos');
+  const [layoutMode, setLayoutMode] = useState<'row' | 'grid'>('row');
+
+  // Auto-detect responsive viewport on mount to default to Grid view on mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setLayoutMode(window.innerWidth < 768 ? 'grid' : 'row');
+    }
+  }, []);
 
   // Real user details calculated dynamically from firestore syncs
   const userProfile = {
@@ -95,6 +103,75 @@ export default function CoursesPage() {
     if (selectedFilter === 'Todos') return true;
     return audience === selectedFilter;
   });
+
+  const renderCourseCard = (course: Course, isGridMode: boolean) => {
+    const themeKey = getCourseTheme(course.tag, course.id);
+    const colors = themeMatrix[themeKey];
+    
+    const enrollment = enrollments.find(e => e.courseId === course.id);
+    const lessonsCompleted = enrollment?.lessonsCompleted || 0;
+    const totalLessons = course.lessons.length;
+    const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
+    
+    const isLocked = userProfile.plan === 'free' && course.level !== 'Beginner' && course.id !== 'basic-english-daily-life';
+
+    return (
+      <motion.div
+        key={course.id}
+        onClick={() => navigate(`/courses/${course.id}`)}
+        whileHover={{ y: -4, scale: 1.01 }}
+        className={`${
+          isGridMode 
+            ? 'w-full' 
+            : 'snap-start min-w-[290px] sm:min-w-[340px] max-w-[340px]'
+        } bg-slate-900/80 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer select-none ${colors.bgGlow} flex flex-col justify-between`}
+      >
+        {/* Top Row Status Flags */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
+              {course.tag}
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-slate-400">
+                +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
+              </span>
+              {isLocked ? (
+                <FaLock size={12} className="text-slate-500 animate-pulse" />
+              ) : (
+                <FaUnlock size={12} className="text-slate-400 opacity-40" />
+              )}
+            </div>
+          </div>
+
+          {/* Course Identity Details */}
+          <div className="flex items-start gap-2 mb-2">
+            <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
+            <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
+              {course.title}
+            </h3>
+          </div>
+          <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
+            {course.descriptionPt || course.description}
+          </p>
+        </div>
+
+        {/* Progress System Elements */}
+        <div className="mt-auto pt-2 border-t border-slate-800">
+          <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
+            <span>Progresso</span>
+            <span>{lessonsCompleted}/{totalLessons} Lições</span>
+          </div>
+          <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
+            <div 
+              className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 font-sans selection:bg-sky-500/30 pt-24 pb-20 relative overflow-hidden">
@@ -138,21 +215,49 @@ export default function CoursesPage() {
         </div>
       </header>
 
-      {/* 🎯 FILTER PILLS MATRIX */}
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-start gap-2.5 mb-10 relative z-10">
-        {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Especialidades', 'Cultura'].map((filter) => (
+      {/* 🎯 FILTER PILLS & LAYOUT TOGGLE MATRIX */}
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 mb-10 relative z-10">
+        <div className="flex flex-wrap justify-center md:justify-start gap-2.5">
+          {['Todos', 'Conversação', 'Gramática', 'Profissional', 'Especialidades', 'Cultura'].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setSelectedFilter(filter)}
+              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                selectedFilter === filter
+                  ? 'bg-blue-600 border-blue-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                  : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* Layout Toggle Segmented Button */}
+        <div className="flex items-center bg-slate-900/80 border border-slate-850 p-1 rounded-xl shrink-0 shadow-lg backdrop-blur-md">
           <button
-            key={filter}
-            onClick={() => setSelectedFilter(filter)}
-            className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
-              selectedFilter === filter
-                ? 'bg-blue-600 border-blue-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
-                : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+            onClick={() => setLayoutMode('row')}
+            className={`px-4 py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+              layoutMode === 'row'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
+            title="Visualização em Carrossel"
           >
-            {filter}
+            <span>🗂️</span> Carrossel
           </button>
-        ))}
+          <button
+            onClick={() => setLayoutMode('grid')}
+            className={`px-4 py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+              layoutMode === 'grid'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+            title="Visualização em Grade"
+          >
+            <span>📱</span> Grade
+          </button>
+        </div>
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `
@@ -162,99 +267,47 @@ export default function CoursesPage() {
 
       {/* 🗺️ THE GAME CARD SELECTION CATEGORY MAP */}
       <main className="max-w-7xl mx-auto space-y-12 relative z-10">
-        {[
-          { id: 'professional', name: '💼 Carreiras, Tech & Devs', desc: 'Inglês corporativo de alta performance para entrevistas, reuniões e atuação global.', tag: 'Profissional' },
-          { id: 'specialty', name: '🩺 Saúde, Direito & Especialidades', desc: 'Trilhas técnicas direcionadas para médicos, enfermeiros, advogados e engenheiros de campo.', tag: 'Especialidades' },
-          { id: 'conversation', name: '🗣️ Conversação Prática', desc: 'Simulações reais do cotidiano e viagens para destravar sua comunicação.', tag: 'Conversação' },
-          { id: 'grammar', name: '📐 Gramática Estrutural', desc: 'Fundamentos essenciais para escrever e falar com precisão e confiança.', tag: 'Gramática' },
-          { id: 'culture', name: '🌍 Cultura & Sociedade', desc: 'Cenários do dia a dia americano, expressões idiomáticas e gírias locais.', tag: 'Cultura' }
-        ]
-          .filter(cat => selectedFilter === 'Todos' || cat.tag === selectedFilter)
-          .map((category) => {
-            const categoryCourses = baseCourses.filter(c => getCourseAudience(c) === category.tag);
-            if (categoryCourses.length === 0) return null;
+        {layoutMode === 'grid' ? (
+          /* Grid View displaying all filtered courses vertically */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
+            {filteredCourses.map((course) => renderCourseCard(course, true))}
+          </div>
+        ) : (
+          /* Categories rows with horizontal scrolls */
+          [
+            { id: 'professional', name: '💼 Carreiras, Tech & Devs', desc: 'Inglês corporativo de alta performance para entrevistas, reuniões e atuação global.', tag: 'Profissional' },
+            { id: 'specialty', name: '🩺 Saúde, Direito & Especialidades', desc: 'Trilhas técnicas direcionadas para médicos, enfermeiros, advogados e engenheiros de campo.', tag: 'Especialidades' },
+            { id: 'conversation', name: '🗣️ Conversação Prática', desc: 'Simulações reais do cotidiano e viagens para destravar sua comunicação.', tag: 'Conversação' },
+            { id: 'grammar', name: '📐 Gramática Estrutural', desc: 'Fundamentos essenciais para escrever e falar com precisão e confiança.', tag: 'Gramática' },
+            { id: 'culture', name: '🌍 Cultura & Sociedade', desc: 'Cenários do dia a dia americano, expressões idiomáticas e gírias locais.', tag: 'Cultura' }
+          ]
+            .filter(cat => selectedFilter === 'Todos' || cat.tag === selectedFilter)
+            .map((category) => {
+              const categoryCourses = baseCourses.filter(c => getCourseAudience(c) === category.tag);
+              if (categoryCourses.length === 0) return null;
 
-            return (
-              <div key={category.id} className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 px-2">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
-                      {category.name}
-                    </h2>
-                    <p className="text-slate-400 text-xs mt-0.5">{category.desc}</p>
+              return (
+                <div key={category.id} className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 px-2">
+                    <div>
+                      <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                        {category.name}
+                      </h2>
+                      <p className="text-slate-400 text-xs mt-0.5">{category.desc}</p>
+                    </div>
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                      {categoryCourses.length} {categoryCourses.length === 1 ? 'Trilha' : 'Trilhas'}
+                    </span>
                   </div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                    {categoryCourses.length} {categoryCourses.length === 1 ? 'Trilha' : 'Trilhas'}
-                  </span>
+
+                  {/* Horizontal Scroll Row */}
+                  <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory px-2">
+                    {categoryCourses.map((course) => renderCourseCard(course, false))}
+                  </div>
                 </div>
-
-                {/* Horizontal Scroll Row */}
-                <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory px-2">
-                  {categoryCourses.map((course) => {
-                    const themeKey = getCourseTheme(course.tag, course.id);
-                    const colors = themeMatrix[themeKey];
-                    
-                    const enrollment = enrollments.find(e => e.courseId === course.id);
-                    const lessonsCompleted = enrollment?.lessonsCompleted || 0;
-                    const totalLessons = course.lessons.length;
-                    const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
-
-                    // Free tier locks: allows Basic English / Beginner level classes, gates intermediate / specialty
-                    const isLocked = userProfile.plan === 'free' && course.level !== 'Beginner' && course.id !== 'basic-english-daily-life';
-
-                    return (
-                      <motion.div
-                        key={course.id}
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                        whileHover={{ y: -4, scale: 1.01 }}
-                        className={`snap-start min-w-[290px] sm:min-w-[340px] max-w-[340px] bg-slate-900/80 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer select-none ${colors.bgGlow}`}
-                      >
-                        {/* Top Row Status Flags */}
-                        <div className="flex justify-between items-center mb-4">
-                          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
-                            {course.tag}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-slate-400">+{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP</span>
-                            {isLocked ? (
-                              <FaLock size={12} className="text-slate-500 animate-pulse" />
-                            ) : (
-                              <FaUnlock size={12} className="text-slate-400 opacity-40" />
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Course Identity Details */}
-                        <div className="flex items-start gap-2 mb-2">
-                          <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
-                          <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
-                            {course.title}
-                          </h3>
-                        </div>
-                        <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
-                          {course.descriptionPt || course.description}
-                        </p>
-
-                        {/* Progress System Elements */}
-                        <div className="mt-auto pt-2 border-t border-slate-800">
-                          <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
-                            <span>Progresso</span>
-                            <span>{lessonsCompleted}/{totalLessons} Lições</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
-                            <div 
-                              className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
-                              style={{ width: `${progressPercent}%` }}
-                            />
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+        )}
       </main>
 
     </div>
