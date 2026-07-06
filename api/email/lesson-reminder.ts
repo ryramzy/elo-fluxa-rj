@@ -1,7 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getDocs, query, collection, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../src/lib/firebase';
+import { getFirestoreAccessToken } from '../utils/googleAuth';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,21 +10,76 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const token = await getFirestoreAccessToken();
+    const projectId = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!).project_id;
+    const baseRestUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+
     // Find all lessons scheduled in the next 24 hours
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const todayStr = now.toISOString().split('T')[0];
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-    const bookingsQuery = query(
-      collection(db, 'bookings'),
-      where('status', '==', 'confirmed'),
-      where('date', '>=', now.toISOString().split('T')[0]),
-      where('date', '<=', tomorrow.toISOString().split('T')[0]),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
+    const queryUrl = `${baseRestUrl}:runQuery`;
+    const queryBody = {
+      structuredQuery: {
+        from: [{ collectionId: 'bookings' }],
+        where: {
+          compositeFilter: {
+            op: 'AND',
+            filters: [
+              {
+                fieldFilter: {
+                  field: { fieldPath: 'status' },
+                  op: 'EQUAL',
+                  value: { stringValue: 'confirmed' }
+                }
+              },
+              {
+                fieldFilter: {
+                  field: { fieldPath: 'date' },
+                  op: 'GREATER_THAN_OR_EQUAL',
+                  value: { stringValue: todayStr }
+                }
+              },
+              {
+                fieldFilter: {
+                  field: { fieldPath: 'date' },
+                  op: 'LESS_THAN_OR_EQUAL',
+                  value: { stringValue: tomorrowStr }
+                }
+              }
+            ]
+          }
+        }
+      }
+    };
 
-    const querySnapshot = await getDocs(bookingsQuery);
-    const bookings = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const queryResponse = await fetch(queryUrl, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(queryBody)
+    });
+
+    const queryResults = await queryResponse.json();
+    const bookings = Array.isArray(queryResults)
+      ? queryResults
+          .filter((item: any) => item.document)
+          .map((item: any) => {
+            const fields = item.document.fields;
+            return {
+              id: item.document.name.split('/').pop(),
+              userId: fields.userId?.stringValue || fields.uid?.stringValue,
+              userName: fields.userName?.stringValue || fields.studentName?.stringValue || 'Estudante',
+              userEmail: fields.userEmail?.stringValue || fields.studentEmail?.stringValue,
+              date: fields.date?.stringValue,
+              time: fields.time?.stringValue,
+              duration: parseInt(fields.duration?.integerValue || '60', 10),
+              meetLink: fields.meetLink?.stringValue || null,
+              notes: fields.notes?.stringValue || null
+            };
+          })
+      : [];
 
     if (bookings.length === 0) {
       return res.status(200).json({ message: 'No lessons to remind' });
@@ -35,7 +89,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const results = await Promise.allSettled(
       bookings.map(async (booking: any) => {
         const { userId, userName, userEmail, date, time, duration, meetLink, notes } = booking;
-        
+        if (!userEmail) return { skipped: true, reason: 'No email address' };
+
         // Check if lesson is within 24 hours
         const lessonDateTime = new Date(`${date}T${time}:00-03:00`);
         const hoursUntilLesson = (lessonDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -123,12 +178,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           if (!error && userId) {
             try {
-              const notificationsRef = collection(db, 'users', userId, 'notifications');
-              await addDoc(notificationsRef, {
-                title: 'Lembrete de Aula! ⏰',
-                message: `Sua aula está agendada para amanhã (${formattedDate}) às ${time}.`,
-                read: false,
-                createdAt: serverTimestamp()
+              const notificationsUrl = `${baseRestUrl}/users/${userId}/notifications`;
+              const notificationBody = {
+                fields: {
+                  title: { stringValue: 'Lembrete de Aula! ⏰' },
+                  message: { stringValue: `Sua aula está agendada para amanhã (${formattedDate}) às ${time}.` },
+                  read: { booleanValue: false },
+                  createdAt: { timestampValue: new Date().toISOString() }
+                }
+              };
+              await fetch(notificationsUrl, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(notificationBody)
               });
             } catch (notifErr) {
               console.error('Error creating reminder notification:', notifErr);
@@ -142,9 +204,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     );
 
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
-    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && r.value.error)).length;
-    const skipped = results.filter(r => r.status === 'fulfilled' && r.value.skipped).length;
+    const successful = results.filter(r => r.status === 'fulfilled' && !(r.value as any).skipped && (r.value as any).success).length;
+    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !(r.value as any).skipped && (r.value as any).error)).length;
+    const skipped = results.filter(r => r.status === 'fulfilled' && (r.value as any).skipped).length;
 
     res.status(200).json({ 
       message: 'Lesson reminders processed',
@@ -154,8 +216,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       skipped
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Lesson reminder error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
