@@ -18,7 +18,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
 
   return (
     <div className="bg-slate-800 border-b border-slate-700">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white mb-2">

@@ -29,28 +29,40 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
             : new Date(`${booking.date}T${booking.time || '00:00'}:00`);
           
           return (
-            <div key={booking.id} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-600 rounded-lg">
-              <div>
-                <div className="font-medium text-slate-900 dark:text-white">
+            <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl gap-3 bg-slate-50/50 dark:bg-slate-900/30">
+              <div className="flex-1">
+                <div className="font-extrabold text-sm text-slate-900 dark:text-slate-100">
                   {bookingDate.toLocaleDateString('pt-BR', { 
                     weekday: 'long',
                     day: 'numeric',
-                    month: 'short',
+                    month: 'long',
                     hour: '2-digit', 
                     minute: '2-digit' 
                   })}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
-                  {booking.duration || 60} min
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Duração: {booking.duration || 60} minutos
                 </div>
+                {booking.meetLink && (
+                  <a
+                    href={booking.meetLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2 rounded-lg transition-all shadow-[0_2px_8px_rgba(16,185,129,0.2)] hover:shadow-lg"
+                  >
+                    🎥 Entrar na Aula
+                  </a>
+                )}
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                booking.status === 'confirmed' 
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-blue-100 text-blue-700'
-              }`}>
-                {booking.status === 'confirmed' ? 'Confirmada' : 'Agendada'}
-              </span>
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${
+                  booking.status === 'confirmed' 
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                }`}>
+                  {booking.status === 'confirmed' ? 'Confirmada' : 'Agendada'}
+                </span>
+              </div>
             </div>
           );
         })}

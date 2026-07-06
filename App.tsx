@@ -105,7 +105,7 @@ function AppShell() {
 
         <main
           id="content-area"
-          className="pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)]"
+          className="pt-20 pb-20 px-4 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)]"
         >
           {user?.isGuest && <GuestBanner />}
           <AnimatePresence mode="wait">
