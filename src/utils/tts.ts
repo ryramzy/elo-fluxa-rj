@@ -13,7 +13,9 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   cachedVoices = window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => {
     cachedVoices = window.speechSynthesis.getVoices();
-    console.log(`[TTS] Voices loaded. ${cachedVoices.length} voices detected.`);
+    if (import.meta.env.DEV) {
+      console.log(`[TTS] Voices loaded. ${cachedVoices.length} voices detected.`);
+    }
   };
 }
 
@@ -151,14 +153,18 @@ export const speakText = (
   if (cachedVoice && cachedVoices.length > 2) {
     const cachedScore = getVoiceQualityScore(cachedVoice, targetAccent);
     if (cachedScore < 50) {
-      console.log(`[TTS] Cached voice '${cachedVoice.name}' has low score (${cachedScore}). Re-scanning to upgrade to premium online voice.`);
+      if (import.meta.env.DEV) {
+        console.log(`[TTS] Cached voice '${cachedVoice.name}' has low score (${cachedScore}). Re-scanning to upgrade to premium online voice.`);
+      }
       cachedVoice = null; // discard to force search
     }
   }
 
   if (cachedVoice) {
     utterance.voice = cachedVoice;
-    console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang}) - Score: ${getVoiceQualityScore(cachedVoice, targetAccent)}`);
+    if (import.meta.env.DEV) {
+      console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang}) - Score: ${getVoiceQualityScore(cachedVoice, targetAccent)}`);
+    }
   } else {
     // Determine target language code
     let targetLang = 'en-us';
@@ -198,10 +204,14 @@ export const speakText = (
     if (bestVoice) {
       cachedVoicesByAccent[targetAccent] = bestVoice;
       utterance.voice = bestVoice;
-      console.log(`[TTS] Selected and cached voice for ${targetAccent}: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
+      if (import.meta.env.DEV) {
+        console.log(`[TTS] Selected and cached voice for ${targetAccent}: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
+      }
     } else {
       utterance.lang = accent === 'gb' ? 'en-GB' : accent === 'au' ? 'en-AU' : 'en-US';
-      console.warn(`[TTS] No suitable English voice found. Using default system voice fallback for lang: ${utterance.lang}`);
+      if (import.meta.env.DEV) {
+        console.warn(`[TTS] No suitable English voice found. Using default system voice fallback for lang: ${utterance.lang}`);
+      }
     }
   }
 

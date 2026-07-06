@@ -42,6 +42,7 @@ For every slide of type "DRILL" or "ROLEPLAY", you MUST provide the 5th pipe par
 ## 🛠️ Verification Checklist for Generated Content
 
 When importing generated content files, verify that:
-1. `slide.split('|||').length === 5` for all `DRILL` and `ROLEPLAY` slides.
-2. The target phrase matches standard English capitalization and spelling constraints.
-3. Legacy slides lacking a 5th parameter fall back to keyword-based matching safely.
+1. All 27 courses (23 standard courses + 4 grammar tracks) are accounted for in the content mapping.
+2. `slide.split('|||').length === 5` for all `DRILL` and `ROLEPLAY` slides.
+3. The target phrase matches standard English capitalization and spelling constraints.
+4. Legacy slides lacking a 5th parameter fall back to keyword-based matching safely.
