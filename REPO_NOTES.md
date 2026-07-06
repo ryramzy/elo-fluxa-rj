@@ -992,6 +992,9 @@ The Agenda page already exceeded requirements with:
 - **Isolate Subdirectory Configs**: To decouple serverless backend node types from frontend web types, always place a local `tsconfig.json` (extending the parent configuration) inside the `/api` directory to resolve CommonJS/Node module queries.
 - **Verify Signer Health**: Use the `/api/health` checking path to verify that the Google REST auth gateway remains healthy.
 - **Vercel Hobby Plan Limits**: Vercel Hobby accounts enforce a hard limit of maximum 12 Serverless Functions per deployment. Because every file/endpoint in `/api` normally compiles as a separate function, we consolidated 14 routes into 5 clean entry points using path-based dispatchers and `vercel.json` rewrites. Keep `/api` entry points consolidated to ≤ 5 entry point files.
+- **Scaling Backends Beyond Hobby**: If ELO!'s backend footprint outgrows the Hobby plan limits (e.g., more routes, cron frequencies, or functions exceeding the 10-second timeout limits):
+  1. *Option A (Vercel Pro Upgrade)*: Upgrading to Vercel Pro raises function ceilings to unlimited/50+ and allows function execution timeouts up to 300 seconds, enabling the team to revert to flat `/api/` files if desired.
+  2. *Option B (Dedicated API Service)*: Move complex server-side routes to a dedicated server environment (like Render, AWS App Runner, Fly.io, or Heroku) using Express/NestJS, or deploy to Google Cloud Functions to bypass Vercel serverless configurations completely.
 
 ### Key Files Modified/Created
 - `src/utils/tts.ts` - Integrated `stripMarkdown` cleaning parameters and active speaking queue checks.
