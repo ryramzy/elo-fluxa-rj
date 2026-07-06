@@ -262,9 +262,14 @@ const CoursePage: React.FC = () => {
                   {course.level}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-1">
                 {course.title}
               </h1>
+              {course.titlePt && (
+                <p className="text-slate-400 text-sm font-bold italic mb-3">
+                  {course.titlePt}
+                </p>
+              )}
               <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
                 {course.descriptionPt || course.description}
               </p>

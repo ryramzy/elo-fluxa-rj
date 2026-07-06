@@ -173,6 +173,17 @@ const AiCoachPage: React.FC = () => {
   useDocumentTitle('AI English Coach - Elo');
 
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+  const [focusMode, setFocusMode] = useState<boolean>(() => {
+    return localStorage.getItem('elo-ai-coach-focus-mode') === 'true';
+  });
+
+  const toggleFocusMode = () => {
+    setFocusMode(prev => {
+      const next = !prev;
+      localStorage.setItem('elo-ai-coach-focus-mode', String(next));
+      return next;
+    });
+  };
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -940,12 +951,24 @@ const AiCoachPage: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <button
-                    onClick={() => setSelectedScenario(null)}
-                    className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-white/5 px-4 py-2 rounded-xl transition-all"
-                  >
-                    Sair
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={toggleFocusMode}
+                      className={`text-xs font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all border ${
+                        focusMode 
+                          ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_12px_rgba(37,99,235,0.25)]' 
+                          : 'bg-slate-950/40 border-white/5 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {focusMode ? '🗣️ Exibir Visual' : '👁️ Modo Focado'}
+                    </button>
+                    <button
+                      onClick={() => setSelectedScenario(null)}
+                      className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-white/5 px-4 py-2 rounded-xl transition-all"
+                    >
+                      Sair
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -962,62 +985,66 @@ const AiCoachPage: React.FC = () => {
               )}
 
               {/* Tutor Satisfaction RPG Damage Bar */}
-              <div className="bg-slate-900/60 p-3 px-6 border-b border-white/5 flex items-center justify-between gap-4 text-xs font-semibold">
-                <div className="flex items-center gap-2 text-slate-350">
-                  <span>😊 Tutor Satisfaction:</span>
-                  <span className={`font-extrabold ${tutorSatisfaction >= 70 ? 'text-emerald-400' : tutorSatisfaction >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
-                    {tutorSatisfaction}%
-                  </span>
-                </div>
-                <div className="flex-1 max-w-md h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
-                  <div 
-                    className={`h-full transition-all duration-500 ${
-                      tutorSatisfaction >= 70 ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 
-                      tutorSatisfaction >= 40 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]' : 
-                      'bg-gradient-to-r from-red-650 to-rose-500 animate-pulse'
-                    }`}
-                    style={{ width: `${tutorSatisfaction}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Visual Novel RPG Stage */}
-              <div 
-                className="w-full h-56 short-viewport-shrink relative bg-cover bg-center border-b border-white/10 flex items-end justify-center overflow-hidden"
-                style={{ 
-                  backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${
-                    selectedScenario.id === 'nyc_diner' ? 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=85' :
-                    selectedScenario.id === 'jfk_airport' ? 'https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=85' :
-                    selectedScenario.id === 'texas_bbq' ? 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=800&q=85' :
-                    'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=800&q=85'
-                  })` 
-                }}
-              >
-                {/* Character Avatar Rendering with Dynamic Emotion CSS Styles */}
-                <div className="relative z-10 flex flex-col items-center mb-4 short-viewport-shrink transition-all duration-500">
-                  <img 
-                    src={selectedScenario.imageUrl} 
-                    alt={selectedScenario.title} 
-                    className={`w-24 h-24 short-portrait-avatar rounded-full border-4 object-cover shadow-2xl transition-all duration-300 transform ${
-                      characterEmotion === 'happy' ? 'border-emerald-500 scale-105 shadow-[0_0_15px_rgba(16,185,129,0.35)] saturate-125' :
-                      characterEmotion === 'impatient' ? 'border-amber-500 animate-pulse animate-bounce' :
-                      characterEmotion === 'annoyed' ? 'border-rose-600 animate-bounce hue-rotate-[340deg] shadow-[0_0_15px_rgba(225,29,72,0.45)]' :
-                      characterEmotion === 'surprised' ? 'border-cyan-500 scale-110 shadow-[0_0_15px_rgba(6,182,212,0.35)] animate-bounce' :
-                      'border-white/10'
-                    }`} 
-                  />
-                  <div className="mt-2 px-3 py-1 short-viewport-hide rounded-full bg-slate-950/90 border border-white/10 backdrop-blur-md shadow-lg flex items-center gap-1.5 animate-pulse">
-                    <span className="text-[10px] font-extrabold text-white uppercase tracking-wider">{selectedScenario.title.split(' ')[0]}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full ${
-                      characterEmotion === 'happy' ? 'bg-emerald-400' :
-                      characterEmotion === 'annoyed' ? 'bg-red-500 animate-ping' :
-                      characterEmotion === 'impatient' ? 'bg-amber-400' :
-                      characterEmotion === 'surprised' ? 'bg-cyan-400' :
-                      'bg-indigo-400'
-                    }`}></span>
+              {!focusMode && (
+                <div className="bg-slate-900/60 p-3 px-6 border-b border-white/5 flex items-center justify-between gap-4 text-xs font-semibold">
+                  <div className="flex items-center gap-2 text-slate-350">
+                    <span>😊 Tutor Satisfaction:</span>
+                    <span className={`font-extrabold ${tutorSatisfaction >= 70 ? 'text-emerald-400' : tutorSatisfaction >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                      {tutorSatisfaction}%
+                    </span>
+                  </div>
+                  <div className="flex-1 max-w-md h-2 bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                    <div 
+                      className={`h-full transition-all duration-500 ${
+                        tutorSatisfaction >= 70 ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 
+                        tutorSatisfaction >= 40 ? 'bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]' : 
+                        'bg-gradient-to-r from-red-650 to-rose-500 animate-pulse'
+                      }`}
+                      style={{ width: `${tutorSatisfaction}%` }}
+                    ></div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Visual Novel RPG Stage */}
+              {!focusMode && (
+                <div 
+                  className="w-full h-56 short-viewport-shrink relative bg-cover bg-center border-b border-white/10 flex items-end justify-center overflow-hidden"
+                  style={{ 
+                    backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${
+                      selectedScenario.id === 'nyc_diner' ? 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=85' :
+                      selectedScenario.id === 'jfk_airport' ? 'https://images.unsplash.com/photo-1544016768-982d1554f0b9?auto=format&fit=crop&w=800&q=85' :
+                      selectedScenario.id === 'texas_bbq' ? 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=800&q=85' :
+                      'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=800&q=85'
+                    })` 
+                  }}
+                >
+                  {/* Character Avatar Rendering with Dynamic Emotion CSS Styles */}
+                  <div className="relative z-10 flex flex-col items-center mb-4 short-viewport-shrink transition-all duration-500">
+                    <img 
+                      src={selectedScenario.imageUrl} 
+                      alt={selectedScenario.title} 
+                      className={`w-24 h-24 short-portrait-avatar rounded-full border-4 object-cover shadow-2xl transition-all duration-300 transform ${
+                        characterEmotion === 'happy' ? 'border-emerald-500 scale-105 shadow-[0_0_15px_rgba(16,185,129,0.35)] saturate-125' :
+                        characterEmotion === 'impatient' ? 'border-amber-500 animate-pulse animate-bounce' :
+                        characterEmotion === 'annoyed' ? 'border-rose-600 animate-bounce hue-rotate-[340deg] shadow-[0_0_15px_rgba(225,29,72,0.45)]' :
+                        characterEmotion === 'surprised' ? 'border-cyan-500 scale-110 shadow-[0_0_15px_rgba(6,182,212,0.35)] animate-bounce' :
+                        'border-white/10'
+                      }`} 
+                    />
+                    <div className="mt-2 px-3 py-1 short-viewport-hide rounded-full bg-slate-950/90 border border-white/10 backdrop-blur-md shadow-lg flex items-center gap-1.5 animate-pulse">
+                      <span className="text-[10px] font-extrabold text-white uppercase tracking-wider">{selectedScenario.title.split(' ')[0]}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        characterEmotion === 'happy' ? 'bg-emerald-400' :
+                        characterEmotion === 'annoyed' ? 'bg-red-500 animate-ping' :
+                        characterEmotion === 'impatient' ? 'bg-amber-400' :
+                        characterEmotion === 'surprised' ? 'bg-cyan-400' :
+                        'bg-indigo-400'
+                      }`}></span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Messages list */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-950/10">

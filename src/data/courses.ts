@@ -8,6 +8,7 @@ export interface LessonMetadata {
 export interface Course {
   id: string;
   title: string;
+  titlePt?: string;
   description: string;
   descriptionPt?: string;
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Specialty';
@@ -30,6 +31,7 @@ export const courses: Course[] = [
   {
     id: 'basic-english-daily-life',
     title: 'Basic English for Daily Life',
+    titlePt: 'Inglês Básico para o Dia a Dia',
     description: 'Survive and communicate in basic real-world English situations.',
     descriptionPt: 'Sobreviva e comunique-se em situações básicas do mundo real em inglês.',
     level: 'Beginner',
@@ -48,6 +50,7 @@ export const courses: Course[] = [
   {
     id: 'beginner-english-topics',
     title: 'Beginner English Topics & Conversation',
+    titlePt: 'Conversação Iniciante',
     description: 'Hold a simple, friendly conversation in English with confidence.',
     descriptionPt: 'Mantenha uma conversa simples e amigável em inglês com confiança.',
     level: 'Beginner',
@@ -68,6 +71,7 @@ export const courses: Course[] = [
   {
     id: 'intermediate-english-topics',
     title: 'Intermediate English Conversation Topics',
+    titlePt: 'Conversação Intermediária',
     description: 'Express complex thoughts, tell stories, and discuss ideas with confidence.',
     descriptionPt: 'Expresse pensamentos complexos, conte histórias e discuta ideias com confiança.',
     level: 'Intermediate',
@@ -87,6 +91,7 @@ export const courses: Course[] = [
   {
     id: 'english-grammar-beginner',
     title: 'Beginner Grammar',
+    titlePt: 'Gramática Básica',
     description: 'Master the fundamental building blocks of English grammar.',
     descriptionPt: 'Domine os blocos de construção fundamentais da gramática inglesa.',
     level: 'Intermediate', // Grouping under the Grammar track flow, though targeting beginners
@@ -105,6 +110,7 @@ export const courses: Course[] = [
   {
     id: 'english-grammar-high-beginner',
     title: 'High Beginner Grammar',
+    titlePt: 'Gramática Pré-Intermediária',
     description: 'Expand your sentence structure to talk about the past and describe the world.',
     descriptionPt: 'Expanda sua estrutura de frases para falar sobre o passado e descrever o mundo.',
     level: 'Intermediate',
@@ -123,6 +129,7 @@ export const courses: Course[] = [
   {
     id: 'english-grammar-intermediate',
     title: 'Intermediate Grammar',
+    titlePt: 'Gramática Intermediária',
     description: 'Unlock nuanced expression with perfect tenses and conditionals.',
     descriptionPt: 'Desbloqueie expressões sutis com tempos perfeitos e condicionais.',
     level: 'Intermediate',
@@ -141,6 +148,7 @@ export const courses: Course[] = [
   {
     id: 'english-grammar-advanced',
     title: 'Advanced Grammar',
+    titlePt: 'Gramática Avançada',
     description: 'Speak and write with academic and professional precision.',
     descriptionPt: 'Fale e escreva com precisão acadêmica e profissional.',
     level: 'Intermediate',
@@ -161,6 +169,7 @@ export const courses: Course[] = [
   {
     id: 'advanced-english-topics',
     title: 'Advanced English Conversation Topics',
+    titlePt: 'Conversação Avançada',
     description: 'Communicate with native-level fluency, subtlety, and cultural intelligence.',
     descriptionPt: 'Comunique-se com fluência de nível nativo, sutileza e inteligência cultural.',
     level: 'Advanced',
@@ -180,6 +189,7 @@ export const courses: Course[] = [
   {
     id: 'advanced-business-english',
     title: 'Advanced Business English Communication',
+    titlePt: 'Business English Avançado',
     description: 'Operate confidently at the executive level in English-speaking professional environments.',
     descriptionPt: 'Opere com confiança no nível executivo em ambientes profissionais de língua inglesa.',
     level: 'Advanced',
@@ -201,6 +211,7 @@ export const courses: Course[] = [
   {
     id: 'business-english',
     title: 'Business English',
+    titlePt: 'Business English Prático',
     description: 'Navigate meetings, emails, and professional interactions seamlessly.',
     descriptionPt: 'Navegue em reuniões, e-mails e interações profissionais de forma natural.',
     level: 'Advanced',
@@ -220,6 +231,7 @@ export const courses: Course[] = [
   {
     id: 'business-innovation',
     title: 'Business Innovation',
+    titlePt: 'Inovação e Linguagem de Negócios',
     description: 'Speak the language of startups, disruption, and product thinking.',
     descriptionPt: 'Fale a língua das startups, inovação e pensamento de produto.',
     level: 'Advanced',
@@ -238,6 +250,7 @@ export const courses: Course[] = [
   {
     id: 'business-marketing',
     title: 'Business Marketing',
+    titlePt: 'Marketing e Persuasão',
     description: 'Master the vocabulary of digital marketing, branding, and persuasion.',
     descriptionPt: 'Domine o vocabulário de marketing digital, branding e persuasão.',
     level: 'Advanced',
@@ -256,6 +269,7 @@ export const courses: Course[] = [
   {
     id: 'business-strategy',
     title: 'Business Strategy',
+    titlePt: 'Estratégia e Frameworks Corporativos',
     description: 'Framework-driven communication for management and consulting.',
     descriptionPt: 'Comunicação baseada em frameworks para gestão e consultoria.',
     level: 'Advanced',
@@ -268,7 +282,7 @@ export const courses: Course[] = [
       { id: 'biz-str-02', title: 'Stakeholder communication', lessonIndex: 1, xpReward: 45 },
       { id: 'biz-str-03', title: 'M&A and market entry language', lessonIndex: 2, xpReward: 45 },
       { id: 'biz-str-04', title: 'Competitive analysis discourse', lessonIndex: 3, xpReward: 45 },
-      { id: 'biz-str-05', title: 'Long-term vision & mission', lessonIndex: 4, xpReward: 55 },
+      { id: 'biz-str-05', title: 'Long-term vocabulary & vision', lessonIndex: 4, xpReward: 55 },
     ]
   },
 
@@ -276,6 +290,7 @@ export const courses: Course[] = [
   {
     id: 'electrical-engineering-english',
     title: 'Electrical Engineering English',
+    titlePt: 'Inglês para Engenharia Elétrica',
     description: 'Technical English for circuits, safety, and engineering documentation.',
     descriptionPt: 'Inglês técnico para circuitos, segurança e documentação de engenharia.',
     level: 'Specialty',
@@ -294,6 +309,7 @@ export const courses: Course[] = [
   {
     id: 'full-stack-development',
     title: 'Full Stack Development Culture',
+    titlePt: 'Inglês para Devs Full Stack',
     description: 'English fluency for remote dev teams, PRs, and Slack etiquette.',
     descriptionPt: 'Fluência em inglês para equipes de desenvolvimento remotas, PRs e Slack.',
     level: 'Specialty',
@@ -312,6 +328,7 @@ export const courses: Course[] = [
   {
     id: 'software-engineering-2026',
     title: 'Software Engineering English (2026)',
+    titlePt: 'Engenharia de Software (2026)',
     description: 'Navigate AI-assisted development, system design, and tech leadership.',
     descriptionPt: 'Navegue pelo desenvolvimento com IA, system design e liderança técnica.',
     level: 'Specialty',
@@ -331,6 +348,7 @@ export const courses: Course[] = [
   {
     id: 'cars-automotive-ev',
     title: 'Cars & Automotive EV English',
+    titlePt: 'Inglês Automotivo e Transição EV',
     description: 'Vocabulary for car enthusiasts, mechanics, and the EV transition.',
     descriptionPt: 'Vocabulário para entusiastas de carros, mecânicos e a transição EV.',
     level: 'Specialty',
@@ -349,6 +367,7 @@ export const courses: Course[] = [
   {
     id: 'english-for-traveling',
     title: 'English for Traveling',
+    titlePt: 'Inglês para Viagens',
     description: 'Practical English to navigate airports, hotels, and emergencies abroad.',
     descriptionPt: 'Inglês prático para navegar em aeroportos, hotéis e emergências no exterior.',
     level: 'Specialty',
@@ -367,6 +386,7 @@ export const courses: Course[] = [
   {
     id: 'usa-car-culture',
     title: 'American Car Culture & History',
+    titlePt: 'Cultura do Carro Americano',
     description: 'Explore the rich history of muscle cars, hot rods, legendary road trips, and cultural lowriders in the USA.',
     descriptionPt: 'Explore a rica história dos muscle cars, hot rods, viagens lendárias e lowriders culturais nos EUA.',
     level: 'Specialty',
@@ -384,6 +404,7 @@ export const courses: Course[] = [
   {
     id: 'medical-english',
     title: 'Medical English & Healthcare',
+    titlePt: 'Inglês Médico e Área de Saúde',
     description: 'Master specialized vocabulary for clinical settings, NICU/PICU care, nursing, and hospital management.',
     descriptionPt: 'Domine o vocabulário especializado para ambientes clínicos, cuidados de UTIP/UTIN, enfermagem e gestão hospitalar.',
     level: 'Specialty',
@@ -401,6 +422,7 @@ export const courses: Course[] = [
   {
     id: 'law-enforcement',
     title: 'Legal English & Courtroom Culture',
+    titlePt: 'Inglês Jurídico e Direitos nos EUA',
     description: 'Master communication for litigation, jury trials, courtroom hearings, and police encounter rights.',
     descriptionPt: 'Domine a comunicação para litígios, julgamentos por júri, audiências judiciais e direitos em encontros policiais.',
     level: 'Specialty',
@@ -418,6 +440,7 @@ export const courses: Course[] = [
   {
     id: 'describe-it',
     title: 'Describe It! English Imagery & Adjectives',
+    titlePt: 'Descreva Tudo! Imagens e Adjetivos',
     description: 'Master the art of describing objects, places, people, and feelings with vivid vocabulary.',
     descriptionPt: 'Domine a arte de descrever objetos, lugares, pessoas e sentimentos com um vocabulário vívido.',
     level: 'Intermediate',
@@ -435,6 +458,7 @@ export const courses: Course[] = [
   {
     id: 'friendship-social',
     title: 'Friendship & Social Connections',
+    titlePt: 'Amizade e Conexões Sociais',
     description: 'Navigate informal gatherings, make new friends, and share stories about relationships.',
     descriptionPt: 'Navegue por encontros informais, faça novos amigos e compartilhe histórias sobre relacionamentos.',
     level: 'Intermediate',
@@ -452,6 +476,7 @@ export const courses: Course[] = [
   {
     id: 'getting-outside',
     title: 'Getting Outside: Outdoor Activities & Nature',
+    titlePt: 'Atividades ao Ar Livre e Natureza',
     description: 'Vocabulary for hiking, camping, beach days, and discussing environmental topics.',
     descriptionPt: 'Vocabulário para caminhadas, acampamentos, dias de praia e discussões sobre temas ambientais.',
     level: 'Intermediate',
@@ -469,6 +494,7 @@ export const courses: Course[] = [
   {
     id: 'idioms-mastery',
     title: 'Idioms Mastery: Weather, Sports & Everyday Life',
+    titlePt: 'Domínio de Expressões Idiomáticas',
     description: 'Speak like a native using idiomatic expressions from sports, weather, and daily routines.',
     descriptionPt: 'Fale como um nativo usando expressões idiomáticas de esportes, clima e rotinas diárias.',
     level: 'Intermediate',
@@ -485,6 +511,7 @@ export const courses: Course[] = [
   {
     id: 'movies-tv-culture',
     title: 'Movies & Television: From Netflix to Amazon Prime',
+    titlePt: 'Filmes e Séries: Cultura Pop',
     description: 'Discuss your favorite series, analyze plots, debate character tropes, and talk about pop culture.',
     descriptionPt: 'Discuta suas séries favoritas, analise enredos, debata clichês de personagens e fale sobre cultura pop.',
     level: 'Advanced',
@@ -502,6 +529,7 @@ export const courses: Course[] = [
   {
     id: 'music-lyrics-culture',
     title: 'Music & Song Lyrics: Rhyme and Rhythm',
+    titlePt: 'Músicas e Letras: Ritmo e Cultura',
     description: 'Understand idioms in song lyrics, discuss musical genres, and explore the history of American music.',
     descriptionPt: 'Entenda expressões idiomáticas em letras de música, discuta gêneros musicais e explore a história da música americana.',
     level: 'Advanced',

@@ -1009,3 +1009,21 @@ The Agenda page already exceeded requirements with:
 - `vercel.json` - Added rewrites to map legacy paths transparently to the consolidated entry points.
 - `.env.example` - Added comments outlining GOOGLE_SERVICE_ACCOUNT_KEY formatting and newline-escaping behaviors in Vercel.
 
+### Future Localization Database Schema Roadmap
+- **Translations Schema Expansion**: Currently, the application uses a flat localization pattern in the static course definitions (`descriptionPt` and `titlePt` fields). If ELO! expands to additional languages (e.g. Spanish, German) or supports multi-field translation documents, this flat model will create data schema clutter. 
+- **Recommendation**: Transition from flat fields to a structured dictionary map:
+  ```typescript
+  translations?: {
+    pt?: {
+      title: string;
+      description?: string;
+    };
+    es?: {
+      title: string;
+      description?: string;
+    };
+  }
+  ```
+  This isolates translations inside clean, nested maps and avoids polluting the root level of the course data models.
+
+

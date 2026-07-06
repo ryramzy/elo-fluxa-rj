@@ -147,9 +147,16 @@ export default function CoursesPage() {
           {/* Course Identity Details */}
           <div className="flex items-start gap-2 mb-2">
             <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
-            <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
-              {course.title}
-            </h3>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
+                {course.title}
+              </h3>
+              {course.titlePt && (
+                <span className="block text-[10px] font-bold text-slate-400 italic mt-0.5 line-clamp-1">
+                  {course.titlePt}
+                </span>
+              )}
+            </div>
           </div>
           <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
             {course.descriptionPt || course.description}

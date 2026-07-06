@@ -17,6 +17,77 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   };
 }
 
+/**
+ * Calculates a voice quality score based on browser platform naming standards.
+ * Ensures premium neural, natural, online, and siri voices are prioritized.
+ */
+const getVoiceQualityScore = (voice: SpeechSynthesisVoice, targetAccent: string): number => {
+  let score = 0;
+  const nameLower = voice.name.toLowerCase();
+  const langLower = voice.lang.toLowerCase();
+
+  // Premium Apple Siri voices
+  if (nameLower.includes('siri')) {
+    score += 150;
+  }
+  // Microsoft Natural online voices (exceptional clarity)
+  else if (nameLower.includes('natural')) {
+    score += 100;
+    if (nameLower.includes('jenny')) score += 30; // Jenny is warm & joyous
+    if (nameLower.includes('aria')) score += 20;  // Aria is bright and soothing
+  }
+  // Neural/Online voice tokens
+  else if (nameLower.includes('neural') || nameLower.includes('online')) {
+    score += 80;
+  }
+  // Google online/premium voices
+  else if (nameLower.includes('google')) {
+    score += 70;
+  }
+  // Samantha classic iOS voice
+  else if (nameLower.includes('samantha')) {
+    score += 65;
+  }
+
+  // Penalize local offline dry default voices if natural online alternatives exist
+  const localRoboticVoices = ['david', 'zira', 'hazel', 'desktop', 'local', 'microsoft david', 'microsoft zira', 'hazel desktop'];
+  if (localRoboticVoices.some(v => nameLower.includes(v))) {
+    score -= 100;
+  }
+
+  // Prefer female profiles for a soothing default tone
+  const femaleKeywords = ['female', 'jenny', 'aria', 'samantha', 'zira', 'hazel', 'susan', 'karen', 'siri', 'fiona'];
+  if (femaleKeywords.some(keyword => nameLower.includes(keyword))) {
+    score += 15;
+  }
+
+  // Accent-specific scoring matching target regional dial
+  if (targetAccent === 'gb') {
+    const isBritish = langLower.includes('gb') || langLower.includes('uk') || nameLower.includes('daniel') || nameLower.includes('british') || nameLower.includes('uk') || nameLower.includes('gb') || nameLower.includes('oliver');
+    if (isBritish) {
+      score += 100;
+    } else {
+      score -= 300; // Penalize non-British voices
+    }
+  } else if (targetAccent === 'au') {
+    const isAustralian = langLower.includes('au') || nameLower.includes('karen') || nameLower.includes('australian') || nameLower.includes('au');
+    if (isAustralian) {
+      score += 100;
+    } else {
+      score -= 300; // Penalize non-Australian voices
+    }
+  } else {
+    const isUS = langLower.includes('us') || nameLower.includes('google us') || nameLower.includes('samantha') || nameLower.includes('david');
+    if (isUS) {
+      score += 100;
+    } else {
+      score -= 300; // Penalize non-US voices
+    }
+  }
+
+  return score;
+};
+
 export const speakText = (
   text: string,
   onStart?: () => void,
@@ -68,17 +139,27 @@ export const speakText = (
   };
 
   const targetAccent = accent || 'us';
-  const cachedVoice = cachedVoicesByAccent[targetAccent];
+  let cachedVoice = cachedVoicesByAccent[targetAccent];
+
+  // Refresh voices list in case they loaded asynchronously
+  if (cachedVoices.length === 0) {
+    cachedVoices = window.speechSynthesis.getVoices();
+  }
+
+  // DYNAMIC UPGRADE: If a low quality voice (score < 50) was cached during early async loads,
+  // discard it and re-evaluate if better online voices have loaded.
+  if (cachedVoice && cachedVoices.length > 2) {
+    const cachedScore = getVoiceQualityScore(cachedVoice, targetAccent);
+    if (cachedScore < 50) {
+      console.log(`[TTS] Cached voice '${cachedVoice.name}' has low score (${cachedScore}). Re-scanning to upgrade to premium online voice.`);
+      cachedVoice = null; // discard to force search
+    }
+  }
 
   if (cachedVoice) {
     utterance.voice = cachedVoice;
-    console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang})`);
+    console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang}) - Score: ${getVoiceQualityScore(cachedVoice, targetAccent)}`);
   } else {
-    // Refresh voices in case it wasn't caught by the event listener
-    if (cachedVoices.length === 0) {
-      cachedVoices = window.speechSynthesis.getVoices();
-    }
-
     // Determine target language code
     let targetLang = 'en-us';
     if (accent === 'gb') targetLang = 'en-gb';
@@ -107,62 +188,7 @@ export const speakText = (
     let highestScore = -1;
 
     for (const voice of targetVoices) {
-      let score = 0;
-      const nameLower = voice.name.toLowerCase();
-      const langLower = voice.lang.toLowerCase();
-      
-      // Apple Siri voices are premium and very natural
-      if (nameLower.includes('siri')) {
-        score += 150;
-      }
-      // Microsoft Natural online voices (Jenny/Aria are exceptionally friendly and clear)
-      else if (nameLower.includes('natural')) {
-        score += 100;
-        if (nameLower.includes('jenny')) score += 30; // Jenny is warm & joyous
-        if (nameLower.includes('aria')) score += 20;  // Aria is bright and soothing
-      }
-      // Google online voices
-      else if (nameLower.includes('google')) {
-        score += 80;
-      }
-      // Other specific premium local/online voices
-      else if (nameLower.includes('samantha')) {
-        score += 70; // Samantha is classic iOS voice
-      }
-      else if (nameLower.includes('online')) {
-        score += 60;
-      }
-
-      // Prefer female voices for a soothing, Siri-like default tone
-      const femaleKeywords = ['female', 'jenny', 'aria', 'samantha', 'zira', 'hazel', 'susan', 'karen', 'siri', 'fiona'];
-      if (femaleKeywords.some(keyword => nameLower.includes(keyword))) {
-        score += 15;
-      }
-
-      // Accent-specific scoring
-      if (accent === 'gb') {
-        const isBritish = langLower.includes('gb') || langLower.includes('uk') || nameLower.includes('daniel') || nameLower.includes('british') || nameLower.includes('uk') || nameLower.includes('gb') || nameLower.includes('oliver');
-        if (isBritish) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-British voices
-        }
-      } else if (accent === 'au') {
-        const isAustralian = langLower.includes('au') || nameLower.includes('karen') || nameLower.includes('australian') || nameLower.includes('au');
-        if (isAustralian) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-Australian voices
-        }
-      } else {
-        const isUS = langLower.includes('us') || nameLower.includes('google us') || nameLower.includes('samantha') || nameLower.includes('david');
-        if (isUS) {
-          score += 100;
-        } else {
-          score -= 300; // Penalize non-US voices
-        }
-      }
-
+      const score = getVoiceQualityScore(voice, targetAccent);
       if (score > highestScore) {
         highestScore = score;
         bestVoice = voice;
@@ -175,13 +201,18 @@ export const speakText = (
       console.log(`[TTS] Selected and cached voice for ${targetAccent}: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
     } else {
       utterance.lang = accent === 'gb' ? 'en-GB' : accent === 'au' ? 'en-AU' : 'en-US';
-      console.log(`[TTS] Using default system voice for lang: ${utterance.lang}`);
+      console.warn(`[TTS] No suitable English voice found. Using default system voice fallback for lang: ${utterance.lang}`);
     }
   }
 
   // Adjust parameters for a joyous, Siri-like tone
   utterance.rate = 0.98;  // Natural conversational speed
   utterance.pitch = 1.12; // Elevated pitch for a bright, joyous, friendly tone (default is 1.0)
-  
-  window.speechSynthesis.speak(utterance);
+
+  try {
+    window.speechSynthesis.speak(utterance);
+  } catch (speakErr) {
+    console.error('[TTS] Failed to execute window.speechSynthesis.speak', speakErr);
+    onError?.(speakErr);
+  }
 };

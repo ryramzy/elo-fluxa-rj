@@ -297,3 +297,23 @@ Every design decision must reinforce clarity, consistency, and recognition.
 ---
 
 *This is a living system. Update as the brand evolves, but maintain consistency.*
+
+---
+
+## 📣 Marketing Fabric & Human Positioning
+
+### Core Value Proposition (Cambly-Inspired Identity):
+> **What's our superpower? Being human.**
+> At Elo!, we believe in the power of human connection. Because let’s face it, no algorithm has ever made someone feel truly understood.
+>
+> You don’t need another app throwing dry grammar tips at you.
+> You need a real native tutor. Someone who listens to your English goals, gives you honest feedback, and adapts the lesson to you.
+>
+> Here’s what real tutors bring to the table:
+> - 🧠 Encouragement and empathy when you’re stuck
+> - 💬 Conversations that feel like… well, conversations
+> - 📈 Guidance that actually helps you grow over time
+>
+> **Because you’re not a robot. And neither are we. 😉**
+> Let’s make English learning human again.
+
