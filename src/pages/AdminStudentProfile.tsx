@@ -252,7 +252,7 @@ const AdminStudentProfile: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Student Header */}
         <div className="bg-white rounded-lg border border-slate-200 p-6 mb-6">
           <div className="flex items-start gap-6">

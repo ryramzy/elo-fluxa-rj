@@ -238,7 +238,7 @@ const CoursePage: React.FC = () => {
       {/* 🔮 DYNAMIC BACKGROUND MESH GLOW */}
       <div className={`absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.12] z-0 pointer-events-none ${theme.glowColor}`} />
       
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 relative z-10">
         
         {/* 🔙 BACK LINK */}
         <Link 
