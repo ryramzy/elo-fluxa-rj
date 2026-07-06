@@ -4,6 +4,38 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/calendar/(.*)",
+      "destination": "/api/calendar.ts"
+    },
+    {
+      "source": "/api/available-slots",
+      "destination": "/api/calendar.ts"
+    },
+    {
+      "source": "/api/email/(.*)",
+      "destination": "/api/email.ts"
+    },
+    {
+      "source": "/api/cron/(.*)",
+      "destination": "/api/admin.ts"
+    },
+    {
+      "source": "/api/webhooks/(.*)",
+      "destination": "/api/admin.ts"
+    },
+    {
+      "source": "/api/force-create-slots",
+      "destination": "/api/admin.ts"
+    },
+    {
+      "source": "/api/ai/(.*)",
+      "destination": "/api/ai.ts"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/api/health.ts"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

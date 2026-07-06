@@ -17,6 +17,7 @@
 - [FIXED] AgendaPage UI with cancel buttons and confirmation dialogs
 - [FIXED] Robotic TTS voice mitigated via abstraction layer prioritizing natural OS voices
 - [FIXED] Mobile SlideViewer safe-area cutoffs and hyper-sensitive swiping
+- [FIXED] Vercel Hobby Plan 12-function limit (consolidated all api/ routes to <= 5 consolidated files using background rewrites)
 
 ## LOW - BACKLOG
 - [OPEN] Add timezone handling for international users

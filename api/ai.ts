@@ -1,10 +1,16 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  const path = req.url?.split('?')[0] ?? '';
+
+  if ((path.endsWith('/ai/chat') || path === '/api/ai/chat') && req.method === 'POST') {
+    return handleChat(req, res);
   }
 
+  return res.status(404).json({ error: `Not found: ${path}` });
+}
+
+async function handleChat(req: VercelRequest, res: VercelResponse) {
   try {
     const { chatHistory, systemInstruction } = req.body;
 
@@ -53,11 +59,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     return res.status(200).json({ text: textResponse });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in Gemini API proxy:', error);
     return res.status(500).json({ 
       error: 'Internal Server Error',
-      details: error instanceof Error ? error.message : String(error)
+      details: error.message || String(error)
     });
   }
 }
