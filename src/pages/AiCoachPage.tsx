@@ -983,7 +983,7 @@ const AiCoachPage: React.FC = () => {
 
               {/* Visual Novel RPG Stage */}
               <div 
-                className="w-full h-56 relative bg-cover bg-center border-b border-white/10 flex items-end justify-center overflow-hidden"
+                className="w-full h-56 short-viewport-shrink relative bg-cover bg-center border-b border-white/10 flex items-end justify-center overflow-hidden"
                 style={{ 
                   backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${
                     selectedScenario.id === 'nyc_diner' ? 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=85' :
@@ -994,11 +994,11 @@ const AiCoachPage: React.FC = () => {
                 }}
               >
                 {/* Character Avatar Rendering with Dynamic Emotion CSS Styles */}
-                <div className="relative z-10 flex flex-col items-center mb-4 transition-all duration-500">
+                <div className="relative z-10 flex flex-col items-center mb-4 short-viewport-shrink transition-all duration-500">
                   <img 
                     src={selectedScenario.imageUrl} 
                     alt={selectedScenario.title} 
-                    className={`w-24 h-24 rounded-full border-4 object-cover shadow-2xl transition-all duration-300 transform ${
+                    className={`w-24 h-24 short-portrait-avatar rounded-full border-4 object-cover shadow-2xl transition-all duration-300 transform ${
                       characterEmotion === 'happy' ? 'border-emerald-500 scale-105 shadow-[0_0_15px_rgba(16,185,129,0.35)] saturate-125' :
                       characterEmotion === 'impatient' ? 'border-amber-500 animate-pulse animate-bounce' :
                       characterEmotion === 'annoyed' ? 'border-rose-600 animate-bounce hue-rotate-[340deg] shadow-[0_0_15px_rgba(225,29,72,0.45)]' :
@@ -1006,7 +1006,7 @@ const AiCoachPage: React.FC = () => {
                       'border-white/10'
                     }`} 
                   />
-                  <div className="mt-2 px-3 py-1 rounded-full bg-slate-950/90 border border-white/10 backdrop-blur-md shadow-lg flex items-center gap-1.5 animate-pulse">
+                  <div className="mt-2 px-3 py-1 short-viewport-hide rounded-full bg-slate-950/90 border border-white/10 backdrop-blur-md shadow-lg flex items-center gap-1.5 animate-pulse">
                     <span className="text-[10px] font-extrabold text-white uppercase tracking-wider">{selectedScenario.title.split(' ')[0]}</span>
                     <span className={`w-1.5 h-1.5 rounded-full ${
                       characterEmotion === 'happy' ? 'bg-emerald-400' :

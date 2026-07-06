@@ -6,7 +6,7 @@
  */
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
-let selectedVoice: SpeechSynthesisVoice | null = null;
+let cachedVoicesByAccent: Record<string, SpeechSynthesisVoice | null> = {};
 
 // Initialize voices as soon as possible, since getVoices() is asynchronous on some browsers
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -67,16 +67,12 @@ export const speakText = (
     onError?.(e);
   };
 
-  // Use cached voice if already determined for this specific accent
-  const langMatch = selectedVoice && (
-    (accent === 'gb' && (selectedVoice.lang.toLowerCase().includes('gb') || selectedVoice.lang.toLowerCase().includes('uk'))) ||
-    (accent === 'au' && selectedVoice.lang.toLowerCase().includes('au')) ||
-    ((!accent || accent === 'us') && (selectedVoice.lang.toLowerCase().includes('us') || selectedVoice.lang.toLowerCase() === 'en'))
-  );
+  const targetAccent = accent || 'us';
+  const cachedVoice = cachedVoicesByAccent[targetAccent];
 
-  if (selectedVoice && langMatch) {
-    utterance.voice = selectedVoice;
-    console.log(`[TTS] Using cached voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+  if (cachedVoice) {
+    utterance.voice = cachedVoice;
+    console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang})`);
   } else {
     // Refresh voices in case it wasn't caught by the event listener
     if (cachedVoices.length === 0) {
@@ -174,9 +170,9 @@ export const speakText = (
     }
 
     if (bestVoice) {
-      selectedVoice = bestVoice;
+      cachedVoicesByAccent[targetAccent] = bestVoice;
       utterance.voice = bestVoice;
-      console.log(`[TTS] Selected and cached voice: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
+      console.log(`[TTS] Selected and cached voice for ${targetAccent}: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
     } else {
       utterance.lang = accent === 'gb' ? 'en-GB' : accent === 'au' ? 'en-AU' : 'en-US';
       console.log(`[TTS] Using default system voice for lang: ${utterance.lang}`);

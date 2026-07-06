@@ -171,6 +171,22 @@
     .dark {
       color-scheme: dark;
     }
+    
+    @media (max-height: 680px) {
+      .short-viewport-hide {
+        display: none !important;
+      }
+      .short-viewport-shrink {
+        height: 70px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+      }
+      .short-portrait-avatar {
+        width: 48px !important;
+        height: 48px !important;
+        border-width: 2px !important;
+      }
+    }
   </style>
     <script type="module" src="index.tsx"></script>
 </head>

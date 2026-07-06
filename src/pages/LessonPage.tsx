@@ -274,6 +274,7 @@ const LessonPage: React.FC = () => {
         const heading = parts[1] || '';
         const body = parts[2] || '';
         const eloPrompt = parts[3] || '';
+        const targetPhrase = parts[4] || '';
 
         let typeLabel = '';
         if (type === 'VOCAB') typeLabel = 'Vocabulário Útil 🏷️';
@@ -360,7 +361,11 @@ const LessonPage: React.FC = () => {
               
               {eloPrompt && (type === 'DRILL' || type === 'ROLEPLAY') ? (
                 <div className="mt-4">
-                  <VoicePractice eloPrompt={eloPrompt} />
+                  <VoicePractice 
+                    eloPrompt={eloPrompt}
+                    targetPhrase={targetPhrase}
+                    accuracyThreshold={courseId?.includes('advanced') ? 90 : 80}
+                  />
                 </div>
               ) : eloPrompt ? (
                 <div className="mt-6 bg-blue-950/40 border border-blue-500/20 rounded-2xl p-4 relative shadow-[0_4px_12px_rgba(59,130,246,0.05)]">
