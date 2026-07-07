@@ -991,7 +991,7 @@ The Agenda page already exceeded requirements with:
 - **Import Node Core Modules as Namespaces**: When writing files in `/api/` (or helpers used by them), always import native Node modules (e.g. `crypto`, `fs`, `path`) using `import * as name from 'name'` syntax instead of default imports. This bypasses typescript compiler requirements for synthetic default configuration flags.
 - **Isolate Subdirectory Configs**: To decouple serverless backend node types from frontend web types, always place a local `tsconfig.json` (extending the parent configuration) inside the `/api` directory to resolve CommonJS/Node module queries.
 - **Verify Signer Health**: Use the `/api/health` checking path to verify that the Google REST auth gateway remains healthy.
-- **Vercel Hobby Plan Limits**: Vercel Hobby accounts enforce a hard limit of maximum 12 Serverless Functions per deployment. Because every file/endpoint in `/api` normally compiles as a separate function, we consolidated routes into 7 clean entry points using path-based dispatchers and `vercel.json` rewrites. Keep `/api` entry points consolidated to ≤ 8 entry point files.
+- **Vercel Hobby Plan Limits**: Vercel Hobby accounts enforce a hard limit of maximum 12 Serverless Functions per deployment. Because every file/endpoint in `/api` normally compiles as a separate function, we consolidated routes into 8 clean entry points using path-based dispatchers and `vercel.json` rewrites. Keep `/api` entry points consolidated to ≤ 9 entry point files.
 - **Scaling Backends Beyond Hobby**: If ELO!'s backend footprint outgrows the Hobby plan limits (e.g., more routes, cron frequencies, or functions exceeding the 10-second timeout limits):
   1. *Option A (Vercel Pro Upgrade)*: Upgrading to Vercel Pro raises function ceilings to unlimited/50+ and allows function execution timeouts up to 300 seconds, enabling the team to revert to flat `/api/` files if desired.
   2. *Option B (Dedicated API Service)*: Move complex server-side routes to a dedicated server environment (like Render, AWS App Runner, Fly.io, or Heroku) using Express/NestJS, or deploy to Google Cloud Functions to bypass Vercel serverless configurations completely.
@@ -1007,6 +1007,7 @@ The Agenda page already exceeded requirements with:
 - `api/admin.ts` - [NEW] Consolidated admin overrides, cron calculations, and webhooks.
 - `api/checkout.ts` - [NEW] Dedicated payment checkout API (creates Mercado Pago Pix transactions).
 - `api/stripe.ts` - [NEW] Dedicated Stripe checkout session generator and subscription webhook handler.
+- `api/tts.ts` - [NEW] Serverless TTS REST API for premium voice synthesis (ElevenLabs & OpenAI).
 - `api/ai.ts` - [NEW] Consolidated chat proxy functionality.
 - `vercel.json` - Added rewrites to map legacy paths transparently to the consolidated entry points.
 - `.env.example` - Added comments outlining GOOGLE_SERVICE_ACCOUNT_KEY formatting and newline-escaping behaviors in Vercel.

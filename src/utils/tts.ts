@@ -2,26 +2,41 @@
  * TTS Abstraction Layer
  * 
  * Centralizes text-to-speech functionality.
- * Optimized for natural, joyous, Siri-like voice synthesis.
+ * Optimized for natural, cloud-synthesized voices with local browser fallbacks.
  */
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
 let cachedVoicesByAccent: Record<string, SpeechSynthesisVoice | null> = {};
+let currentAudioElement: HTMLAudioElement | null = null;
 
 // Initialize voices as soon as possible, since getVoices() is asynchronous on some browsers
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   cachedVoices = window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => {
     cachedVoices = window.speechSynthesis.getVoices();
-    if (import.meta.env.DEV) {
-      console.log(`[TTS] Voices loaded. ${cachedVoices.length} voices detected.`);
-    }
   };
 }
 
 /**
+ * Halts any active cloud audio stream or local browser speechSynthesis.
+ */
+export const cancelSpeech = () => {
+  if (currentAudioElement) {
+    try {
+      currentAudioElement.pause();
+    } catch (e) {
+      console.warn('[TTS] Failed to pause audio element:', e);
+    }
+    currentAudioElement = null;
+  }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+};
+
+/**
  * Calculates a voice quality score based on browser platform naming standards.
- * Ensures premium neural, natural, online, and siri voices are prioritized.
+ * Used for local Web Speech fallbacks.
  */
 const getVoiceQualityScore = (voice: SpeechSynthesisVoice, targetAccent: string): number => {
   let score = 0;
@@ -32,11 +47,11 @@ const getVoiceQualityScore = (voice: SpeechSynthesisVoice, targetAccent: string)
   if (nameLower.includes('siri')) {
     score += 150;
   }
-  // Microsoft Natural online voices (exceptional clarity)
+  // Microsoft Natural online voices
   else if (nameLower.includes('natural')) {
     score += 100;
-    if (nameLower.includes('jenny')) score += 30; // Jenny is warm & joyous
-    if (nameLower.includes('aria')) score += 20;  // Aria is bright and soothing
+    if (nameLower.includes('jenny')) score += 30;
+    if (nameLower.includes('aria')) score += 20;
   }
   // Neural/Online voice tokens
   else if (nameLower.includes('neural') || nameLower.includes('online')) {
@@ -69,29 +84,32 @@ const getVoiceQualityScore = (voice: SpeechSynthesisVoice, targetAccent: string)
     if (isBritish) {
       score += 100;
     } else {
-      score -= 300; // Penalize non-British voices
+      score -= 300;
     }
   } else if (targetAccent === 'au') {
     const isAustralian = langLower.includes('au') || nameLower.includes('karen') || nameLower.includes('australian') || nameLower.includes('au');
     if (isAustralian) {
       score += 100;
     } else {
-      score -= 300; // Penalize non-Australian voices
+      score -= 300;
     }
   } else {
     const isUS = langLower.includes('us') || nameLower.includes('google us') || nameLower.includes('samantha') || nameLower.includes('david');
     if (isUS) {
       score += 100;
     } else {
-      score -= 300; // Penalize non-US voices
+      score -= 300;
     }
   }
 
   return score;
 };
 
-export const speakText = (
-  text: string,
+/**
+ * Local Web Speech Synthesis fallback.
+ */
+const speakLocalWebSpeech = (
+  cleanText: string,
   onStart?: () => void,
   onEnd?: () => void,
   onError?: (err: any) => void,
@@ -103,40 +121,13 @@ export const speakText = (
     return;
   }
 
-  // Safely cancel any active voice speech without disrupting browsers' internal queues
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-  }
-  
-  // Clean text from Markdown tags, formatting, and tables to prevent TTS crashes
-  let cleanText = text
-    .replace(/\|\|\|/g, '. ') // Replace slide separators with natural pauses
-    .replace(/\[NEW\]/gi, '')
-    .replace(/\[DELETE\]/gi, '')
-    .trim();
-
-  // Strip Markdown characters and formatting blocks
-  cleanText = cleanText
-    .replace(/\|/g, ' ')                  // Remove table pipes
-    .replace(/-{3,}/g, '')                // Remove table line dividers
-    .replace(/#{1,6}\s+/g, '')            // Remove markdown headers
-    .replace(/(\*\*|__)(.*?)\1/g, '$2')   // Remove bold formatting
-    .replace(/(\*|_)(.*?)\1/g, '$2')      // Remove italics formatting
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1')   // Remove links (keep link text)
-    .replace(/^\s*>\s+/gm, '')            // Remove blockquotes
-    .replace(/^\s*[\*\+-]\s+/gm, '')      // Remove bullet points
-    .replace(/^\s*\d+\.\s+/gm, '')        // Remove list numbers
-    .replace(/\s+/g, ' ')                 // Normalize spacing
-    .trim();
-
   const utterance = new SpeechSynthesisUtterance(cleanText);
   
-  // Set callbacks
   if (onStart) utterance.onstart = () => onStart();
   if (onEnd) utterance.onend = () => onEnd();
   
   utterance.onerror = (e) => {
-    console.error('[TTS] Error event:', e);
+    console.error('[TTS Local] Error event:', e);
     onError?.(e);
   };
 
@@ -148,36 +139,25 @@ export const speakText = (
     cachedVoices = window.speechSynthesis.getVoices();
   }
 
-  // DYNAMIC UPGRADE: If a low quality voice (score < 50) was cached during early async loads,
-  // discard it and re-evaluate if better online voices have loaded.
   if (cachedVoice && cachedVoices.length > 2) {
     const cachedScore = getVoiceQualityScore(cachedVoice, targetAccent);
     if (cachedScore < 50) {
-      if (import.meta.env.DEV) {
-        console.log(`[TTS] Cached voice '${cachedVoice.name}' has low score (${cachedScore}). Re-scanning to upgrade to premium online voice.`);
-      }
-      cachedVoice = null; // discard to force search
+      cachedVoice = null; // force re-scan
     }
   }
 
   if (cachedVoice) {
     utterance.voice = cachedVoice;
-    if (import.meta.env.DEV) {
-      console.log(`[TTS] Using cached voice for ${targetAccent}: ${cachedVoice.name} (${cachedVoice.lang}) - Score: ${getVoiceQualityScore(cachedVoice, targetAccent)}`);
-    }
   } else {
-    // Determine target language code
     let targetLang = 'en-us';
     if (accent === 'gb') targetLang = 'en-gb';
     else if (accent === 'au') targetLang = 'en-au';
 
-    // Find matching language tags
     let targetVoices = cachedVoices.filter(v => v.lang.toLowerCase() === targetLang || v.lang.toLowerCase().replace('_', '-') === targetLang);
     if (targetVoices.length === 0) {
       targetVoices = cachedVoices.filter(v => v.lang.toLowerCase().startsWith('en') || v.lang.toLowerCase().includes('en'));
     }
 
-    // Sequential fallback for popular voice names if default filter yields nothing
     if (targetVoices.length === 0 && cachedVoices.length > 0) {
       const preferredFallbacks = ['google us english', 'samantha', 'david', 'jenny', 'aria', 'daniel', 'karen', 'oliver', 'fiona'];
       for (const fallback of preferredFallbacks) {
@@ -189,7 +169,6 @@ export const speakText = (
       }
     }
     
-    // Score them based on how natural, soothing, and joyous they are
     let bestVoice: SpeechSynthesisVoice | undefined;
     let highestScore = -1;
 
@@ -204,25 +183,103 @@ export const speakText = (
     if (bestVoice) {
       cachedVoicesByAccent[targetAccent] = bestVoice;
       utterance.voice = bestVoice;
-      if (import.meta.env.DEV) {
-        console.log(`[TTS] Selected and cached voice for ${targetAccent}: ${bestVoice.name} (${bestVoice.lang}) - Score: ${highestScore}`);
-      }
     } else {
       utterance.lang = accent === 'gb' ? 'en-GB' : accent === 'au' ? 'en-AU' : 'en-US';
-      if (import.meta.env.DEV) {
-        console.warn(`[TTS] No suitable English voice found. Using default system voice fallback for lang: ${utterance.lang}`);
-      }
     }
   }
 
-  // Adjust parameters for a joyous, Siri-like tone
-  utterance.rate = 0.98;  // Natural conversational speed
-  utterance.pitch = 1.12; // Elevated pitch for a bright, joyous, friendly tone (default is 1.0)
+  utterance.rate = 0.98;
+  utterance.pitch = 1.12;
 
   try {
     window.speechSynthesis.speak(utterance);
   } catch (speakErr) {
-    console.error('[TTS] Failed to execute window.speechSynthesis.speak', speakErr);
+    console.error('[TTS Local] Failed to execute speak()', speakErr);
     onError?.(speakErr);
+  }
+};
+
+/**
+ * High-level speak routine. Attempts premium cloud API and falls back to local synthesis.
+ */
+export const speakText = async (
+  text: string,
+  onStart?: () => void,
+  onEnd?: () => void,
+  onError?: (err: any) => void,
+  accent?: 'us' | 'gb' | 'au'
+) => {
+  // 1. Terminate any active speakers
+  cancelSpeech();
+  
+  // Clean text from Markdown tags, formatting, and tables
+  let cleanText = text
+    .replace(/\|\|\|/g, '. ') // Natural pause replacement
+    .replace(/\[NEW\]/gi, '')
+    .replace(/\[DELETE\]/gi, '')
+    .trim();
+
+  cleanText = cleanText
+    .replace(/\|/g, ' ')
+    .replace(/-{3,}/g, '')
+    .replace(/#{1,6}\s+/g, '')
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    .replace(/^\s*>\s+/gm, '')
+    .replace(/^\s*[\*\+-]\s+/gm, '')
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!cleanText) {
+    return;
+  }
+
+  try {
+    // 2. Contact the serverless premium voice synthesis proxy
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: cleanText,
+        accent: accent || 'us'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API synthesis returned status: ${response.status}`);
+    }
+
+    // 3. Play back the returned MP3 stream using HTML5 Audio
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    currentAudioElement = audio;
+
+    if (onStart) {
+      audio.onplay = () => onStart();
+    }
+
+    audio.onended = () => {
+      if (onEnd) onEnd();
+      URL.revokeObjectURL(audioUrl);
+      if (currentAudioElement === audio) {
+        currentAudioElement = null;
+      }
+    };
+
+    audio.onerror = (e) => {
+      console.warn('[TTS] Audio element playback error, falling back:', e);
+      URL.revokeObjectURL(audioUrl);
+      speakLocalWebSpeech(cleanText, onStart, onEnd, onError, accent);
+    };
+
+    await audio.play();
+  } catch (err: any) {
+    console.log('[TTS] Premium cloud route bypassed/failed. Falling back to local WebSpeech:', err.message || err);
+    speakLocalWebSpeech(cleanText, onStart, onEnd, onError, accent);
   }
 };

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
-import { speakText } from '@utils/tts';
+import { speakText, cancelSpeech } from '@utils/tts';
 import { useToast } from '@/hooks/useToast';
 import { trackEvent } from '@utils/analytics';
 
@@ -41,9 +41,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
 
   const handleSpeakText = (text: string) => {
     if (isSpeaking) {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      cancelSpeech();
       setIsSpeaking(false);
       trackEvent('ai_coach_speech_stop', { slideIndex: currentIndex });
     } else {
@@ -63,9 +61,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
 
   useEffect(() => {
     // Cancel speaking when slide changes
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    cancelSpeech();
     setIsSpeaking(false);
   }, [currentIndex]);
 
@@ -100,9 +96,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      cancelSpeech();
     };
   }, []);
 

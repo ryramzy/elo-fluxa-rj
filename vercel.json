@@ -36,6 +36,10 @@
       "destination": "/api/stripe.ts"
     },
     {
+      "source": "/api/tts",
+      "destination": "/api/tts.ts"
+    },
+    {
       "source": "/api/ai/(.*)",
       "destination": "/api/ai.ts"
     },
