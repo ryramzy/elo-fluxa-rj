@@ -40,10 +40,6 @@
       "destination": "/api/tts.ts"
     },
     {
-      "source": "/api/ai/(.*)",
-      "destination": "/api/ai.ts"
-    },
-    {
       "source": "/api/health",
       "destination": "/api/health.ts"
     },

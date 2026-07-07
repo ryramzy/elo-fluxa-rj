@@ -33,7 +33,6 @@ import Sobre from './src/pages/Sobre';
 import Dicas from './src/pages/Dicas';
 import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
-import AiCoachPage from './src/pages/AiCoachPage';
 import VideoCallPage from './src/pages/VideoCallPage';
 import { GuestBanner } from './src/components/GuestBanner';
 
@@ -59,6 +58,14 @@ function AppShell() {
     // Scroll to top or specific area on route change
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
+
+  useEffect(() => {
+    // Clear orphaned AI Coach focus mode and Gemini API key variables from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('elo-ai-coach-focus-mode');
+      localStorage.removeItem('elo_gemini_api_key');
+    }
+  }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
@@ -157,11 +164,6 @@ function AppShell() {
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <ProfilePage />
-                </ProtectedRoute>
-              } />
-              <Route path="/ai-coach" element={
-                <ProtectedRoute>
-                  <AiCoachPage />
                 </ProtectedRoute>
               } />
               <Route path="/video-call/:roomId" element={

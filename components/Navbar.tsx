@@ -89,7 +89,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
       return 'dashboard';
     }
     if (location.pathname.startsWith('/courses')) return 'courses';
-    if (location.pathname === '/ai-coach') return 'ai-coach';
     if (location.pathname === '/profile') return 'profile';
     return '';
   };
@@ -140,13 +139,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   className={getLinkClasses('courses')}
                 >
                   Cursos
-                </a>
-                <a
-                  href="/ai-coach"
-                  onClick={(e) => handleLinkClick(e, 'ai-coach')}
-                  className={getLinkClasses('ai-coach')}
-                >
-                  Tutor IA
                 </a>
                 <a
                   href="/dashboard"
@@ -318,13 +310,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   className={activeSection === 'courses' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
                 >
                   Cursos
-                </a>
-                <a
-                  href="/ai-coach"
-                  onClick={(e) => handleLinkClick(e, 'ai-coach')}
-                  className={activeSection === 'ai-coach' ? 'text-blue-400 font-extrabold' : 'hover:text-blue-400 transition-colors font-medium'}
-                >
-                  Tutor IA
                 </a>
                 <a
                   href="/dashboard"

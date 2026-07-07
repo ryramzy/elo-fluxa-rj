@@ -259,7 +259,6 @@ const DashboardWorking: React.FC = () => {
                 <QuickLinks
                   onNavigateToAgenda={() => setActiveTab('booking')}
                   onNavigateToCourses={() => navigate('/courses')}
-                  onNavigateToAiCoach={() => navigate('/ai-coach')}
                 />
               </div>
             </div>

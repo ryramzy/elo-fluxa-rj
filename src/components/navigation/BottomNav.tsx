@@ -13,7 +13,6 @@ export const BottomNav: React.FC = () => {
     const navItems = [
       { name: 'Painel', path: '/dashboard', icon: <FaHome size={22} />, state: null },
       { name: 'Cursos', path: '/courses', icon: <FaGraduationCap size={22} />, state: null },
-      { name: 'Tutor IA', path: '/ai-coach', icon: <FaRobot size={22} />, state: null },
       { name: 'Agenda', path: '/agenda', icon: <FaCalendarPlus size={22} />, state: null },
       { name: 'Perfil', path: '/profile', icon: <FaUser size={22} />, state: null },
     ];
