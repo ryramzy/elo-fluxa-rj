@@ -44,6 +44,8 @@ export interface UserProfile {
   phone?: string;
   organizationId?: string;
   corporateCredits?: number;
+  hometown?: string;
+  currentLocation?: string;
 }
 
 export interface Enrollment {

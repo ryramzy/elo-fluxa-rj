@@ -1033,6 +1033,12 @@ The Agenda page already exceeded requirements with:
 - **Elo Narrator Role**: The AI Chat Coach page has been completely removed to prioritize human-centric live tutoring. Consequently, the **Elo Voice engine (`speakText`)** is now a high-fidelity **LMS TTS Narrator**.
 - **Slide Speech Prompts**: Slide prompts (`ELO_PROMPT`) previously written for conversational chat loops serve as narration guides read directly by the voice engine to walk the student through slides, exercises, and dialogues.
 
+### Student Geocoding API & Compliance Guidelines
+- **Nominatim Usage Limits**: ELO!'s student location feature queries public Nominatim OpenStreetMap reverse geocoding via standard browser client fetches. All queries are configured with `User-Agent: ELO-App/1.0 (elospeak.com.br)`.
+- **Scaling Geocoding Services**: If ELO!'s concurrent user base grows beyond a small prototype layout, the public Nominatim API limits may trigger IP bans.
+  - *Mitigation Plan*: Switch queries to either a dedicated self-hosted Nominatim Docker container or a commercial geocoding service (e.g. Google Maps Geocoding API, LocationIQ, or Positionstack).
+- **LGPD/GDPR Data Consent**: Brazil's LGPD guidelines are met by displaying explicit opt-in text near geolocation triggers and ensuring database writes only commit when students save updates manually.
+
 ### Red Teaming & Security Notes
 - **LLM Chat Decommissioned**: The student-facing Gemini AI Chat Coach has been removed from the platform. LLM prompt injection and adversarial payloads are no longer applicable to the current architecture.
 - **Reference Suite**: Retained [T3MP3ST](https://github.com/elder-plinius/T3MP3ST) in logs for future penetration reference if conversational layers are re-introduced.

@@ -251,7 +251,7 @@ const DashboardWorking: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <LiveTutorsWidget />
+                <LiveTutorsWidget onNavigateToAgenda={() => setActiveTab('booking')} />
                 <UpcomingClasses
                   bookings={bookings || []}
                   onNavigateToAgenda={() => setActiveTab('booking')}

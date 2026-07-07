@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useAdminGuard } from '../hooks/useAdminGuard';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 import { useToast } from '../hooks/useToast';
 import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
@@ -72,6 +72,7 @@ const TimezoneSyncPanel: React.FC = () => {
 
   useEffect(() => {
     loadBookings();
+    loadTutorPresence();
   }, []);
 
   const downloadBackup = async () => {
@@ -258,6 +259,40 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
+
+  const [tutorOnline, setTutorOnline] = useState(false);
+  const [tutorPresenceLoading, setTutorPresenceLoading] = useState(false);
+
+  const loadTutorPresence = async () => {
+    try {
+      const docRef = doc(db, 'settings', 'tutor_presence');
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setTutorOnline(docSnap.data().isOnline || false);
+      }
+    } catch (error) {
+      console.error('Error loading tutor presence:', error);
+    }
+  };
+
+  const toggleTutorPresence = async () => {
+    setTutorPresenceLoading(true);
+    const nextState = !tutorOnline;
+    try {
+      const docRef = doc(db, 'settings', 'tutor_presence');
+      await setDoc(docRef, {
+        isOnline: nextState,
+        updatedAt: new Date()
+      }, { merge: true });
+      setTutorOnline(nextState);
+      showToast({ type: 'success', message: `Status de Matt atualizado para: ${nextState ? 'ONLINE' : 'OFFLINE'}` });
+    } catch (error: any) {
+      console.error('Error updating tutor presence:', error);
+      alert('Failed to update tutor status: ' + error.message);
+    } finally {
+      setTutorPresenceLoading(false);
+    }
+  };
 
   // B2B states
   const [selectedUserUid, setSelectedUserUid] = useState('');
@@ -564,14 +599,32 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               Manage students, bookings, and revenue
             </p>
           </div>
-          {onSwitchToStudentView && (
-            <button
-              onClick={onSwitchToStudentView}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider text-xs px-5 py-3 rounded-lg shadow-md transition-all hover:scale-105"
-            >
-              Visualizar como Aluno
-            </button>
-          )}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Presence Toggler */}
+            <div className="flex items-center gap-3 bg-white dark:bg-slate-800 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <span className={`w-3 h-3 rounded-full ${tutorOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400 dark:bg-slate-650'}`}></span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Matt Online</span>
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 font-medium">Chamadas Instantâneas</span>
+              </div>
+              <button
+                disabled={tutorPresenceLoading}
+                onClick={toggleTutorPresence}
+                className={`ml-2 px-3 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wide transition-all border ${tutorOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-250 hover:bg-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/50' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-350 dark:border-slate-700 dark:hover:bg-slate-800'}`}
+              >
+                {tutorPresenceLoading ? '...' : tutorOnline ? 'Offline' : 'Online'}
+              </button>
+            </div>
+
+            {onSwitchToStudentView && (
+              <button
+                onClick={onSwitchToStudentView}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider text-xs px-5 py-3 rounded-lg shadow-md transition-all hover:scale-105"
+              >
+                Visualizar como Aluno
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Revenue Summary */}

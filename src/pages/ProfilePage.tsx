@@ -3,8 +3,9 @@ import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { updateUserProfile } from '../lib/firestore';
-import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave } from 'react-icons/fa';
+import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave, FaGlobe, FaMapMarkerAlt } from 'react-icons/fa';
 import { useToast } from '../hooks/useToast';
+import { TutorProfileModal } from '../components/profile/TutorProfileModal';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -17,8 +18,23 @@ const ProfilePage: React.FC = () => {
   const [bio, setBio] = useState('');
   const [targetGoal, setTargetGoal] = useState('');
   const [phone, setPhone] = useState('');
+  const [hometown, setHometown] = useState('');
+  const [currentLocation, setCurrentLocation] = useState('');
+  
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [locationConsent, setLocationConsent] = useState(false);
+  const [tutorModalOpen, setTutorModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const consentCookie = document.cookie.split('; ').find(row => row.startsWith('elo_location_consent='));
+      if (consentCookie) {
+        setLocationConsent(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -26,8 +42,65 @@ const ProfilePage: React.FC = () => {
       setBio(profile.bio || '');
       setTargetGoal(profile.targetGoal || '');
       setPhone(profile.phone || '');
+      setHometown(profile.hometown || '');
+      setCurrentLocation(profile.currentLocation || '');
     }
   }, [profile]);
+
+  const detectLocation = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      showToast({ type: 'error', message: 'Geolocalização não suportada no seu navegador.' });
+      return;
+    }
+
+    setDetecting(true);
+
+    // Save location consent cookie (valid for 1 year)
+    document.cookie = "elo_location_consent=true; max-age=31536000; path=/";
+    setLocationConsent(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // OpenStreetMap Nominatim Reverse API with app User-Agent header (required for compliant traffic identification)
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
+            headers: {
+              'User-Agent': 'ELO-App/1.0 (elospeak.com.br)'
+            }
+          });
+
+          if (!res.ok) {
+            throw new Error(`Nominatim query returned status: ${res.status}`);
+          }
+
+          const data = await res.json();
+          const address = data.address || {};
+          const city = address.city || address.town || address.village || address.state || '';
+          const country = address.country || '';
+
+          if (city || country) {
+            const formatted = [city, country].filter(Boolean).join(', ');
+            setCurrentLocation(formatted);
+            showToast({ type: 'success', message: `Localização detectada: ${formatted}` });
+          } else {
+            showToast({ type: 'error', message: 'Não foi possível identificar a cidade.' });
+          }
+        } catch (err: any) {
+          console.error('[Profile Geolocation] Fetch error:', err);
+          showToast({ type: 'error', message: 'Falha ao conectar com o serviço de geolocalização.' });
+        } finally {
+          setDetecting(false);
+        }
+      },
+      (error) => {
+        console.error('[Profile Geolocation] Permission error:', error);
+        showToast({ type: 'error', message: 'Acesso à localização negado pelo navegador.' });
+        setDetecting(false);
+      },
+      { timeout: 8000 }
+    );
+  };
 
   if (loading) {
     return (
@@ -53,6 +126,8 @@ const ProfilePage: React.FC = () => {
         bio,
         targetGoal,
         phone,
+        hometown,
+        currentLocation
       });
       setIsEditing(false);
       showToast({ type: 'success', message: 'Perfil atualizado com sucesso!' });
@@ -233,6 +308,53 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
 
+          {/* Hometown / Cidade Natal */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              Cidade Natal / Hometown
+            </label>
+            {isEditing ? (
+              <input
+                type="text"
+                value={hometown}
+                onChange={(e) => setHometown(e.target.value)}
+                placeholder="Ex: São Paulo, SP"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+              />
+            ) : (
+              <p className="text-slate-800 dark:text-slate-200 font-medium py-1">{hometown || <em className="text-slate-400">Não configurado</em>}</p>
+            )}
+          </div>
+
+          {/* Current Location / Localização Atual */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              Localização Atual
+            </label>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-slate-800 dark:text-slate-250">
+                  {currentLocation || <em className="text-slate-400 dark:text-slate-500">Não detectada</em>}
+                </span>
+                {isEditing && (
+                  <button
+                    type="button"
+                    disabled={detecting}
+                    onClick={detectLocation}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-650 disabled:opacity-50 text-slate-800 dark:text-slate-100 rounded-lg text-xs font-bold transition-all border border-slate-200 dark:border-slate-600"
+                  >
+                    <FaMapMarkerAlt /> {detecting ? 'Detectando...' : 'Detectar Localização'}
+                  </button>
+                )}
+              </div>
+              {isEditing && (
+                <p className="text-[10px] text-slate-500 leading-normal max-w-lg mt-1 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-lg border border-slate-200/50 dark:border-slate-800">
+                  💡 <strong>Nota sobre LGPD:</strong> Ao clicar em "Detectar Localização", você autoriza o ELO! a processar temporariamente sua geolocalização no navegador para identificar sua cidade/país. As informações só serão salvas no banco de dados quando você clicar em "Salvar".
+                </p>
+              )}
+            </div>
+          </div>
+
           {/* Biography */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
@@ -254,6 +376,31 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Meet your Tutor Section */}
+      <div className="bg-gradient-to-tr from-slate-900 via-slate-900 to-indigo-950/20 border border-slate-800/80 shadow-lg rounded-3xl p-6 sm:p-8 mt-8 relative overflow-hidden text-white">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-cover bg-center border border-white/10" style={{ backgroundImage: `url('/bobby.jpg')` }} />
+            <div className="text-center sm:text-left">
+              <h3 className="text-sm font-bold text-white font-serif">Seu Professor Particular</h3>
+              <p className="text-xs text-slate-400 mt-0.5">Matthew Ramsay (Boston, MA) • TEFL Certified</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setTutorModalOpen(true)}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors active:scale-95 shadow-md shadow-blue-900/10"
+          >
+            Ver Perfil do Tutor
+          </button>
+        </div>
+      </div>
+
+      <TutorProfileModal
+        isOpen={tutorModalOpen}
+        onClose={() => setTutorModalOpen(false)}
+      />
     </div>
   );
 };
