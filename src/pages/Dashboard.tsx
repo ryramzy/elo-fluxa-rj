@@ -25,10 +25,13 @@ import { FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
 import { DictionaryWidget } from '../components/dashboard/DictionaryWidget';
 import { TriviaWidget } from '../components/dashboard/TriviaWidget';
 import { TutorNotesWidget } from '../components/TutorNotesWidget';
+import SubscriptionModal from '../components/SubscriptionModal';
+import { LuTriangleAlert } from 'react-icons/lu';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const { enrollments, loading: enrollmentsLoading } = useEnrollments(user?.uid || '');
   const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { streak } = useStreak(user?.uid || '');
@@ -131,6 +134,26 @@ const DashboardWorking: React.FC = () => {
         profileLoaded={!profileLoading && !!profile} 
       />
       <WelcomeBanner profile={profile} streak={streak || 0} />
+
+      {profile?.paymentPastDue && (
+        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4">
+          <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-center gap-3 text-rose-500">
+              <LuTriangleAlert size={20} className="shrink-0" />
+              <div className="text-left">
+                <h4 className="text-sm font-bold text-white leading-tight">Pagamento Atrasado ⚠️</h4>
+                <p className="text-xs text-slate-455">Houve uma falha na cobrança da sua assinatura. Atualize seu cartão de crédito para evitar a interrupção do acesso.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSubscriptionModalOpen(true)}
+              className="bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl transition-colors shadow-[0_4px_12px_rgba(244,63,94,0.3)] shrink-0"
+            >
+              Atualizar Cartão
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         
@@ -265,6 +288,14 @@ const DashboardWorking: React.FC = () => {
           </div>
         )}
       </div>
+
+      <SubscriptionModal
+        isOpen={subscriptionModalOpen}
+        onClose={() => setSubscriptionModalOpen(false)}
+        onPlanSelect={(plan) => {
+          setSubscriptionModalOpen(false);
+        }}
+      />
     </div>
   );
 };

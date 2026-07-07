@@ -32,6 +32,10 @@
       "destination": "/api/admin.ts"
     },
     {
+      "source": "/api/stripe/(.*)",
+      "destination": "/api/stripe.ts"
+    },
+    {
       "source": "/api/ai/(.*)",
       "destination": "/api/ai.ts"
     },

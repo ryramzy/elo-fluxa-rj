@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode } from 'react-icons/lu';
+import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode, LuCreditCard } from 'react-icons/lu';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 import CheckoutForm from './CheckoutForm';
 
 interface SubscriptionModalProps {
@@ -9,7 +11,10 @@ interface SubscriptionModalProps {
 }
 
 export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: SubscriptionModalProps) {
+  const { user } = useAuth();
+  const { addToast } = useToast();
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'pro' | 'elite' | null>(null);
+  const [stripeLoading, setStripeLoading] = useState<'pro' | 'elite' | null>(null);
 
   if (!isOpen) return null;
 
@@ -19,6 +24,48 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
       onClose();
     } else {
       setSelectedPlanForCheckout(plan);
+    }
+  };
+
+  const handleStripeCheckout = async (plan: 'pro' | 'elite') => {
+    if (!user) {
+      addToast('Por favor, faça login para assinar um plano.', 'warning');
+      return;
+    }
+
+    setStripeLoading(plan);
+    try {
+      console.log(`[Stripe Checkout] Requesting checkout url for plan: ${plan}`);
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          plan,
+          price: plan === 'pro' ? 97 : 197,
+          email: user.email || '',
+          userId: user.uid
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Erro ao iniciar checkout Stripe.');
+      }
+
+      const data = await res.json();
+      if (data.url) {
+        // Redirect browser to Stripe Hosted Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('Nenhuma URL de checkout retornada.');
+      }
+    } catch (err: any) {
+      console.error('[Stripe Checkout Error]:', err);
+      addToast(err.message || 'Erro ao processar transação no cartão. Tente novamente.', 'error');
+    } finally {
+      setStripeLoading(null);
     }
   };
 
@@ -128,7 +175,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               
               <button
                 onClick={() => handlePlanClick('starter')}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-750"
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-750 font-semibold"
               >
                 Começar de graça
               </button>
@@ -170,12 +217,27 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 </ul>
               </div>
               
-              <button
-                onClick={() => handlePlanClick('pro')}
-                className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] flex items-center justify-center gap-1.5 active:scale-97"
-              >
-                <LuQrCode size={14} /> Assinar com Pix
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => handlePlanClick('pro')}
+                  className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] flex items-center justify-center gap-1.5 active:scale-97 font-semibold"
+                >
+                  <LuQrCode size={14} /> Assinar com Pix
+                </button>
+                <button
+                  onClick={() => handleStripeCheckout('pro')}
+                  disabled={stripeLoading !== null}
+                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-650 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-97 disabled:opacity-50 font-semibold"
+                >
+                  {stripeLoading === 'pro' ? (
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  ) : (
+                    <>
+                      <LuCreditCard size={14} /> Pagar com Cartão
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Elite Plan */}
@@ -207,12 +269,27 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 </ul>
               </div>
               
-              <button
-                onClick={() => handlePlanClick('elite')}
-                className="w-full py-2.5 bg-purple-650 hover:bg-purple-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-purple-600/30 flex items-center justify-center gap-1.5 active:scale-97"
-              >
-                <LuQrCode size={14} /> Adquirir com Pix
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => handlePlanClick('elite')}
+                  className="w-full py-2.5 bg-purple-650 hover:bg-purple-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-purple-600/30 flex items-center justify-center gap-1.5 active:scale-97 font-semibold"
+                >
+                  <LuQrCode size={14} /> Adquirir com Pix
+                </button>
+                <button
+                  onClick={() => handleStripeCheckout('elite')}
+                  disabled={stripeLoading !== null}
+                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-650 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-97 disabled:opacity-50 font-semibold"
+                >
+                  {stripeLoading === 'elite' ? (
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  ) : (
+                    <>
+                      <LuCreditCard size={14} /> Pagar com Cartão
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

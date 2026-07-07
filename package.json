@@ -25,6 +25,7 @@
     "react-speech-recognition": "^4.0.1",
     "remark-gfm": "^4.0.1",
     "resend": "^6.10.0",
+    "stripe": "^17.0.0",
     "swiper": "^12.1.4"
   },
   "devDependencies": {
