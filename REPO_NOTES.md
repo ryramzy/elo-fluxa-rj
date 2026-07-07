@@ -1026,4 +1026,8 @@ The Agenda page already exceeded requirements with:
   ```
   This isolates translations inside clean, nested maps and avoids polluting the root level of the course data models.
 
+### Red Teaming & Security Notes
+- **LLM Red Teaming & Guardrails**: As the AI Coach interacts directly with student inputs, robust security testing against prompt injections, jailbreaks, and instructions bypasses is essential.
+- **Reference Tool**: Keep track of [T3MP3ST](https://github.com/elder-plinius/T3MP3ST) (adversarial LLM red-teaming/jailbreak payload test suite) for future penetration and robustness evaluation of coach prompts.
+
 
