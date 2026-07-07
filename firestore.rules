@@ -111,5 +111,11 @@ service cloud.firestore {
       );
       allow delete: if isTutor();
     }
+
+    // Settings collection rules (Matt's availability presence status)
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isTutor();
+    }
   }
 }

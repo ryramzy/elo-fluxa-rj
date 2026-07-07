@@ -48,9 +48,13 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
     showToast({ type: 'success', message: 'Conectando chamada ao vivo com Matt...' });
 
     setTimeout(() => {
-      const idSuffix = Date.now().toString().slice(-4);
-      const uniqueRoomId = `elo-live-call-matt-${idSuffix}`;
-      navigate(`/video-call/${uniqueRoomId}`);
+      let room = sessionStorage.getItem('elo_active_tutor_room');
+      if (!room) {
+        const idSuffix = Date.now().toString().slice(-4);
+        room = `elo-live-call-matt-${idSuffix}`;
+        sessionStorage.setItem('elo_active_tutor_room', room);
+      }
+      navigate(`/video-call/${room}`);
     }, 1200);
   };
 
