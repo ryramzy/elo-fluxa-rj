@@ -43,4 +43,12 @@ export const useToast = (): UseToastReturn => {
   };
 };
 
+export const addGlobalToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+  const id = Math.random().toString(36).substring(2, 11);
+  const newToast: Toast = { message, type, id };
+  
+  memoryToasts = [...memoryToasts, newToast];
+  listeners.forEach(l => l(memoryToasts));
+};
+
 export default useToast;

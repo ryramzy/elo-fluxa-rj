@@ -18,6 +18,7 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { addGlobalToast } from '../hooks/useToast';
 import { TimeSlot, Booking } from '../types';
 import { createCalendarEvent, cancelCalendarEvent } from './googleCalendar';
 
@@ -253,9 +254,25 @@ export async function updateLessonProgress(
     if (typeof window !== 'undefined') {
       try {
         const queue: OfflineQueueItem[] = JSON.parse(localStorage.getItem('offline_progress_queue') || '[]');
-        queue.push({ uid, courseId, lessonId, slideIndex, isCompleted });
-        localStorage.setItem('offline_progress_queue', JSON.stringify(queue));
-        console.log('[Offline Queue] Queued progress update:', { courseId, lessonId, slideIndex });
+        
+        // Prevent duplicate queueing of identical slide coordinate updates
+        const exists = queue.some(item => 
+          item.courseId === courseId && 
+          item.lessonId === lessonId && 
+          item.slideIndex === slideIndex && 
+          item.isCompleted === isCompleted
+        );
+
+        if (!exists) {
+          if (queue.length >= 50) {
+            addGlobalToast('Limite de salvamento offline atingido. Conecte-se para salvar novos progressos.', 'warning');
+            console.warn('[Offline Queue] Progress queue limit (50) exceeded. Discarding new item.');
+          } else {
+            queue.push({ uid, courseId, lessonId, slideIndex, isCompleted, attempts: 0 });
+            localStorage.setItem('offline_progress_queue', JSON.stringify(queue));
+            console.log('[Offline Queue] Queued progress update:', { courseId, lessonId, slideIndex });
+          }
+        }
       } catch (storageError) {
         console.error('Failed to write to localStorage offline queue:', storageError);
       }
@@ -270,29 +287,60 @@ interface OfflineQueueItem {
   lessonId: string;
   slideIndex: number;
   isCompleted: boolean;
+  attempts: number;
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('online', async () => {
     try {
       const queueRaw = localStorage.getItem('offline_progress_queue');
-      if (!queueRaw) return;
+      if (!queueRaw) {
+        // Trigger completion event so that downstream listeners (XP) know progress queue is clear
+        window.dispatchEvent(new Event('progress_sync_complete'));
+        return;
+      }
       const queue: OfflineQueueItem[] = JSON.parse(queueRaw);
-      if (queue.length === 0) return;
+      if (queue.length === 0) {
+        window.dispatchEvent(new Event('progress_sync_complete'));
+        return;
+      }
       
       console.log(`[Offline Queue] Reconnection detected. Syncing ${queue.length} pending updates...`);
       localStorage.setItem('offline_progress_queue', '[]');
       
+      const failedItems: OfflineQueueItem[] = [];
+
       for (const item of queue) {
         try {
           await updateLessonProgress(item.uid, item.courseId, item.lessonId, item.slideIndex, item.isCompleted);
           console.log(`[Offline Queue] Sync success for course: ${item.courseId}`);
         } catch (syncError) {
-          console.error(`[Offline Queue] Sync failed for course: ${item.courseId}. Re-queuing.`, syncError);
-          const currentQueue: OfflineQueueItem[] = JSON.parse(localStorage.getItem('offline_progress_queue') || '[]');
-          currentQueue.push(item);
-          localStorage.setItem('offline_progress_queue', JSON.stringify(currentQueue));
+          const nextAttempts = (item.attempts || 0) + 1;
+          console.error(`[Offline Queue] Sync failed (tentativa ${nextAttempts}/3) for course: ${item.courseId}.`, syncError);
+          
+          if (nextAttempts < 3) {
+            failedItems.push({
+              ...item,
+              attempts: nextAttempts
+            });
+          } else {
+            console.error(`[Offline Queue] Progress item in ${item.courseId} exceeded max attempts (3). Discarding.`);
+            addGlobalToast(`Algum progresso offline no curso ${item.courseId.replace(/-/g, ' ').toUpperCase()} não pôde ser salvo após várias tentativas.`, 'error');
+          }
         }
+      }
+
+      if (failedItems.length > 0) {
+        const currentQueue: OfflineQueueItem[] = JSON.parse(localStorage.getItem('offline_progress_queue') || '[]');
+        localStorage.setItem('offline_progress_queue', JSON.stringify([...failedItems, ...currentQueue]));
+      }
+
+      // If all elements synced or were discarded (failedItems is empty), trigger next queue event
+      if (failedItems.length === 0) {
+        console.log('[Offline Queue] Progress sync finished successfully. Triggering progress_sync_complete.');
+        window.dispatchEvent(new Event('progress_sync_complete'));
+      } else {
+        console.warn(`[Offline Queue] Progress sync incomplete. Re-queued ${failedItems.length} items. Defying XP sync.`);
       }
     } catch (err) {
       console.error('[Offline Queue] Error processing queue sync:', err);
