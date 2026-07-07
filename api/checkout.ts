@@ -69,12 +69,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const expirationDate = new Date(Date.now() + 30 * 60 * 1000);
     const dateOfExpiration = expirationDate.toISOString();
 
-    // Construct notification URL dynamically based on host
+    // Construct notification URL: use hardcoded production base URL or VITE_APP_URL when deployed,
+    // falling back to local host dynamically only during local development.
     const host = req.headers.host;
-    const protocol = host?.includes('localhost') ? 'http' : 'https';
-    const notificationUrl = host 
-      ? `${protocol}://${host}/api/webhooks/mercado-pago` 
-      : 'https://elo-fluxa-rj.vercel.app/api/webhooks/mercado-pago';
+    const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
+    const baseUrl = isLocal 
+      ? `http://${host}` 
+      : (process.env.VITE_APP_URL || 'https://elo-fluxa-rj.vercel.app');
+    const notificationUrl = `${baseUrl}/api/webhooks/mercado-pago`;
 
     const mpBody = {
       transaction_amount: Number(price),
