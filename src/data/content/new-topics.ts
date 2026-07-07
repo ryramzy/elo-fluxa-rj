@@ -23,7 +23,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Compound Adjectives|||We often combine words with hyphens to create descriptive personality traits.\n\n*   **Examples:** 'Level-headed' (calm and sensible), 'Quick-witted' (intelligent and witty), 'Cold-hearted' (without empathy).|||Elo: Try describing a famous historical figure or leader as level-headed.",
         "EXAMPLE|||Meeting the Boss|||A: What is the new director like? — B: She's incredibly driven, but surprisingly easygoing when you talk to her one-on-one. She's also very quick-witted!|||Elo: Driven yet easygoing—a great combination for a leader.",
         "CULTURE|||Small Talk & Friendliness|||In the US, people are often described as 'friendly' or 'outgoing' because American culture values open, proactive socialization, even with strangers.|||Elo: Do you agree that Americans are generally very outgoing?",
-        "DRILL|||Personality Translation|||Translate: 'Ela é muito focada no sucesso e inteligente.'|||Elo: Try using the compound adjective 'quick-witted' and the word 'driven'.",
+        "DRILL|||Personality Translation|||Translate: 'Ela é muito focada no sucesso e inteligente.'|||Elo: Try using the compound adjective 'quick-witted' and the word 'driven'.|||She is very driven and quick-witted",
         "ROLEPLAY|||The Job Reference|||Recommend your former colleague for a promotion. Describe their work ethic and personality.\n\n*   **Goal:** Highlight their positive traits.\n*   **Target:** Use 'driven' and 'level-headed'.|||Elo: Tell me why I should hire your friend for a high-pressure team leader role.",
         "REVIEW|||Character Analyst|||You learned: Easygoing, witty, reserved, driven, and level-headed compound structures.|||Elo: You can now describe characters with precision."
       ]
@@ -37,7 +37,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Describing the Sensation|||Combine a taste adjective with a texture adjective to create a complete sensory profile.\n\n*   **Formula:** [Texture] + [Taste] + [Food item]\n*   **Example:** 'A crispy, savory pastry' or 'a rich, creamy chocolate mousse.'|||Elo: Describe your favorite dessert using this formula.",
         "EXAMPLE|||At the Restaurant|||A: How is the chicken? — B: Honestly, it's a bit bland. It needs salt. But the roasted potatoes are perfectly crispy on the outside.|||Elo: Crispy potatoes make up for bland chicken, I hope!",
         "CULTURE|||Food Culture Hyperbole|||Americans love food adjectives like 'mouth-watering', 'decadent' (for rich desserts), or 'fluffy' (for pancakes). Menus are highly descriptive.|||Elo: Have you ever ordered something just because the menu description sounded amazing?",
-        "DRILL|||Culinary Translation|||Translate: 'Este bolo de chocolate é muito cremoso e doce.'|||Elo: Use the word 'rich' to describe the heavy creaminess.",
+        "DRILL|||Culinary Translation|||Translate: 'Este bolo de chocolate é muito cremoso e doce.'|||Elo: Use the word 'rich' to describe the heavy creaminess.|||This chocolate cake is very rich and sweet",
         "ROLEPLAY|||The Food Critic|||You are reviewing a dish at a new restaurant. Describe the flavors and textures of the food.\n\n*   **Goal:** Write a detailed critique.\n*   **Target:** Use 'rich', 'crispy', or 'bland'.|||Elo: Welcome to the review. How was the signature steak and chocolate lava cake?",
         "REVIEW|||Connoisseur of Taste|||You learned: Savory, crispy, bland, rich, and food description formulas.|||Elo: Bon appétit! You're ready to review any restaurant."
       ]
@@ -51,7 +51,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Using Metaphors for Feelings|||Idiomatic metaphors are very common to describe how we feel inside.\n\n*   **On cloud nine** - Extremely happy.\n*   **Under the weather** - Slightly sick or depressed.\n*   **At peace** - Calm and serene.|||Elo: If you are 'on cloud nine', what just happened in your life?",
         "EXAMPLE|||After the Presentation|||A: How did the pitch go? — B: I was overwhelmed beforehand, but once it finished, I felt absolutely exhilarated!|||Elo: The relief after a big presentation is the best feeling.",
         "CULTURE|||Emotional Expression & Therapy Talk|||In the US, terms like 'burnout', 'overwhelmed', and 'mindful' are part of everyday conversation, reflecting an awareness of mental health.|||Elo: Do you think people talk openly about burnout in your country?",
-        "DRILL|||Emotional Translation|||Translate: 'Eu estava me sentindo sobrecarregado de trabalho, mas agora me sinto tranquilo.'|||Elo: Use the words 'overwhelmed' and 'serene' (or 'peaceful').",
+        "DRILL|||Emotional Translation|||Translate: 'Eu estava me sentindo sobrecarregado de trabalho, mas agora me sinto tranquilo.'|||Elo: Use the words 'overwhelmed' and 'serene' (or 'peaceful').|||I was feeling overwhelmed with work but now I feel serene",
         "ROLEPLAY|||Checking In with a Friend|||Your friend looks stressed out. Ask them how they are doing and offer support.\n\n*   **Goal:** Connect and use emotional terms.\n*   **Target:** Use 'restless', 'overwhelmed', or 'serene'.|||Elo: Hey, thanks for meeting up. I've just had so much on my plate lately...",
         "REVIEW|||Emotional Intelligence|||You learned: Anxious, exhilarated, overwhelmed, serene, and emotional metaphors.|||Elo: Excellent. You can now express your inner world clearly in English."
       ]
@@ -67,7 +67,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||The O.R.E.O. Method|||Structure small talk: **O**bserve, **R**eact, **E**xplore, **O**pen question.\n\n*   **Example:** 'Nice weather today! (Observe) -> I love sunny days. (React) -> I usually go hiking. (Explore) -> What do you do on weekends? (Open question)'|||Elo: Try the O.R.E.O. method with me now. Observe something about ELO!",
         "EXAMPLE|||At the Conference|||A: Great presentation, right? — B: Absolutely, the speaker was so engaging. By the way, I'm Bob. — A: Nice to meet you, Bob! Let's grab some coffee and catch up later.|||Elo: Simple, friendly, and open. That's how networks start.",
         "CULTURE|||Small Talk Topics|||Safe American small talk topics: weather, sports, local events, movies. Avoid: politics, religion, salary, and relationship status.|||Elo: Is discussing salary acceptable in your culture?",
-        "DRILL|||Icebreaker Translation|||Translate: 'Nós nos demos muito bem logo no primeiro dia.'|||Elo: Use the phrasal verb 'hit it off'.",
+        "DRILL|||Icebreaker Translation|||Translate: 'Nós nos demos muito bem logo no primeiro dia.'|||Elo: Use the phrasal verb 'hit it off'.|||We hit it off on the very first day",
         "ROLEPLAY|||The Party Mixer|||You are at a house party and don't know anyone except the host. Approach a stranger and start a conversation.\n\n*   **Goal:** Break the ice and establish a connection.\n*   **Target:** Use the O.R.E.O. method.|||Elo: Hey! I'm Alex. I see you standing near the snack table. Are you a friend of Sarah's?",
         "REVIEW|||Social Connector|||You learned: Catch up, hit it off, break the ice, and the O.R.E.O. method.|||Elo: You're ready to mingle! See you in the next lesson."
       ]
@@ -81,7 +81,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Polite Offers & Declines|||When hosting, make your guests feel comfortable with conditional offers: 'Would you like some...?', 'Can I get you...?'\n\n*   **Guests reply:** 'I'm good, thank you' (polite decline) or 'I'd love some, thank you!'|||Elo: If I offer you a glass of water, how do you politely accept or decline?",
         "EXAMPLE|||The Potluck Party|||A: Thanks for hosting! I brought some pasta. — B: Amazing! Put it on the counter, grab a drink, and help yourself to the appetizers!|||Elo: 'Help yourself' is the ultimate casual host phrase.",
         "CULTURE|||BYOB & Potlucks|||American get-togethers are highly collaborative. Hosts often supply the main dish, but expect guests to bring drinks (BYOB) or side dishes.|||Elo: Does the BYOB culture exist in Brazil, or does the host provide everything?",
-        "DRILL|||Hosting Translation|||Translate: 'Sinta-se à vontade para pegar o que quiser comer.'|||Elo: Use the phrase 'help yourself'.",
+        "DRILL|||Hosting Translation|||Translate: 'Sinta-se à vontade para pegar o que quiser comer.'|||Elo: Use the phrase 'help yourself'.|||Feel free to help yourself to whatever you want to eat",
         "ROLEPLAY|||The Housewarming|||Welcome a friend to your new apartment, take their coat, offer them a drink, and introduce the food.\n\n*   **Goal:** Be a hospitable and natural host.\n*   **Target:** Use 'potluck', 'help yourself', or 'BYOB'.|||Elo: Knock knock! Hey, congratulations on the new place! It looks beautiful.",
         "REVIEW|||Master Host|||You learned: Help yourself, potluck, BYOB, and polite hospitality dynamics.|||Elo: You're a certified host! Let's look at deep conversations next."
       ]
@@ -95,7 +95,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Active Listening & Validation|||Show you are listening by repeating key ideas and validating emotions: 'That sounds tough,' 'I see where you're coming from,' 'I completely understand.'|||Elo: Practice validation. I say: 'I had a really exhausting week.' How do you validate me?",
         "EXAMPLE|||Late Night Chat|||A: I've been struggling to open up to my family lately. — B: I can relate to that. It's hard to be vulnerable, but you can always count on me to listen.|||Elo: Notice the deep emotional support. This builds lifelong bonds.",
         "CULTURE|||'Deep' Conversations vs Privacy|||While Americans are outgoing, they can be private about financial problems or family drama unless you have built a strong, long-term friendship.|||Elo: Do you think Brazilians open up faster than Americans?",
-        "DRILL|||Connection Translation|||Translate: 'Eu sei que posso contar com você para qualquer coisa.'|||Elo: Use the phrasal verb 'count on'.",
+        "DRILL|||Connection Translation|||Translate: 'Eu sei que posso contar com você para qualquer coisa.'|||Elo: Use the phrasal verb 'count on'.|||I know I can count on you for anything",
         "ROLEPLAY|||Sharing a Challenge|||Confide in a close friend about feeling burnt out at work, and practice active listening when they respond.\n\n*   **Goal:** Share a personal struggle and bond.\n*   **Target:** Use 'open up' or 'relate to'.|||Elo: Hey, you've seemed a bit quiet lately. Is everything going okay with you?",
         "REVIEW|||Empathic Friend|||You learned: Open up, relate to, active validation, and building trust.|||Elo: Beautiful work. You are developing real emotional intelligence in English."
       ]
@@ -109,7 +109,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||The 'I' Statement|||Avoid blaming your friend ('You never call me!'). Instead, explain your perspective ('I feel left out when we don't catch up.').\n\n*   **Formula:** 'I feel [emotion] when [action].'|||Elo: Turn 'You are always late' into an 'I' statement.",
         "EXAMPLE|||Clearing the Air|||A: I feel like we haven't been connecting lately. — B: I'm sorry, I've been overwhelmed. Let's talk it out over lunch. I want to clear the air.|||Elo: Perfect. No blame, just honesty and a path forward.",
         "CULTURE|||Directness vs Harmony|||American culture values directness. If there is a conflict, friends are expected to talk it out honestly rather than letting it sit in silence.|||Elo: Do you prefer direct conflict resolution or indirect harmony?",
-        "DRILL|||Conflict Translation|||Translate: 'Nós passamos por momentos difíceis e bons juntos.'|||Elo: Use the idiom 'through thick and thin'.",
+        "DRILL|||Conflict Translation|||Translate: 'Nós passamos por momentos difíceis e bons juntos.'|||Elo: Use the idiom 'through thick and thin'.|||We have been through thick and thin together",
         "ROLEPLAY|||The Late Friend|||Your friend has been late to your last three meetings. Clear the air using an 'I' statement.\n\n*   **Goal:** Address the issue without starting an argument.\n*   **Target:** Use 'clear the air' and an 'I' statement.|||Elo: Hey! Sorry I'm late again. Traffic was just crazy today. What's up?",
         "REVIEW|||Conflict Resolver|||You learned: Talk it out, make up, clear the air, and the powerful 'I' statement.|||Elo: Fantastic. You now have the tools to maintain healthy, resilient friendships."
       ]
@@ -125,7 +125,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Leave No Trace|||Outdoor culture emphasizes environmental responsibility. Always practice the 'Leave No Trace' principles.\n\n*   **Jargon:** 'Pack it in, pack it out' (take all your trash back with you).|||Elo: What does the phrase 'leave only footprints, take only photos' mean to you?",
         "EXAMPLE|||Setting Up Camp|||A: Let's find a flat spot to pitch the tent before it gets dark. — B: Good idea. I'll unpack the cooking gear while you set up the sleeping bags.|||Elo: Teamwork makes pitching a tent easy.",
         "CULTURE|||US National Parks|||Hiking and camping are massive in the US. National Parks like Yellowstone and Yosemite attract millions of visitors every year who camp in the wilderness.|||Elo: Which American National Park would you love to visit?",
-        "DRILL|||Wilderness Translation|||Translate: 'Nós vamos montar a barraca perto da trilha.'|||Elo: Use the phrase 'pitch the tent' and the word 'trail'.",
+        "DRILL|||Wilderness Translation|||Translate: 'Nós vamos montar a barraca perto da trilha.'|||Elo: Use the phrase 'pitch the tent' and the word 'trail'.|||We are going to pitch the tent near the trail",
         "ROLEPLAY|||The Park Ranger|||You are planning a hike in a bear-populated forest. Ask the park ranger for safety advice.\n\n*   **Goal:** Ask about safety and trail conditions.\n*   **Target:** Use 'trailhead' and 'gear'.|||Elo: Howdy! Welcome to the Ranger Station. Are you folks heading out on the high trail today?",
         "REVIEW|||Wilderness Explorer|||You learned: Trail, gear, pitch a tent, and the 'Leave No Trace' safety culture.|||Elo: Great. You are ready to explore the wild safely!"
       ]
@@ -139,7 +139,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Expressing Temperature & Comfort|||Learn natural ways to describe beach weather: 'It's boiling' (very hot), 'A refreshing breeze', 'The water is crystal clear.'|||Elo: If a beach has a 'refreshing breeze', is it hot or comfortable?",
         "EXAMPLE|||On the Boardwalk|||A: Let's walk down the boardwalk and get some ice cream. — B: Definitely. But first, let's put on some sunscreen so we don't get a sunburn.|||Elo: Sunscreen is a must for beach days.",
         "CULTURE|||California & Hawaii Beach Culture|||Surfing culture in places like California and Hawaii has created its own slang (e.g., 'dude', 'rad', 'wipeout'). The beach is a lifestyle.|||Elo: Do you think beach culture in Rio is similar to California?",
-        "DRILL|||Coastal Translation|||Translate: 'A maré está subindo e as ondas estão ficando maiores.'|||Elo: Use the words 'tide' and 'swell' or 'waves'.",
+        "DRILL|||Coastal Translation|||Translate: 'A maré está subindo e as ondas estão ficando maiores.'|||Elo: Use the words 'tide' and 'swell' or 'waves'.|||The tide is rising and the waves are getting bigger",
         "ROLEPLAY|||The Surf Instructor|||Ask a local surf instructor about the water conditions and rent a surfboard.\n\n*   **Goal:** Learn about the swell and rent a board.\n*   **Target:** Use 'tide' and 'swell'.|||Elo: Hey dude! Welcome to Malibu Surf. Waves are looking clean today. Are you looking to rent a board?",
         "REVIEW|||Beach Bum|||You learned: Tide, boardwalk, sunburn, swell, and California beach aesthetics.|||Elo: Rad! You're ready to hit the beach."
       ]
@@ -153,7 +153,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Describing Degrees of Rain|||English has many words for rain: 'Drizzle' (light), 'Shower' (moderate), 'Downpour' (heavy), 'Pouring' (very heavy).|||Elo: If it is a 'downpour' outside, would you go for a walk?",
         "EXAMPLE|||Autumn in New England|||A: The autumn foliage in Vermont is breathtaking. — B: I know, the red and gold leaves are gorgeous. I don't even mind the cold drizzle.|||Elo: Foliage season in the US is a massive tourist attraction.",
         "CULTURE|||'Fall' and Foliage Tourism|||Americans call autumn 'Fall.' In New England, people who travel to look at the autumn leaves are jokingly called 'leaf peepers.'|||Elo: Would you travel just to see the leaves change color?",
-        "DRILL|||Nature Translation|||Translate: 'A vista do topo da montanha era de tirar o fôlego.'|||Elo: Use the adjective 'breathtaking' for 'de tirar o fôlego'.",
+        "DRILL|||Nature Translation|||Translate: 'A vista do topo da montanha era de tirar o fôlego.'|||Elo: Use the adjective 'breathtaking' for 'de tirar o fôlego'.|||The view from the top of the mountain was breathtaking",
         "ROLEPLAY|||The Weather Forecast|||Discuss weekend plans with a friend, but the weather forecast looks overcast and rainy.\n\n*   **Goal:** Change plans based on the weather.\n*   **Target:** Use 'overcast', 'drizzle', or 'downpour'.|||Elo: Hey! I was thinking we could go to the outdoor botanical garden on Saturday. What do you think?",
         "REVIEW|||Nature Guide|||You learned: Foliage, drizzle, breathtaking, overcast, and levels of rain.|||Elo: Excellent. You can now describe any weather or landscape."
       ]
@@ -167,7 +167,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Discussing Impact|||Use structures like: 'leads to...', 'results in...', 'has an impact on...' to connect causes and environmental effects.\n\n*   **Example:** 'Plastic pollution leads to ocean devastation, which has a direct impact on marine life.'|||Elo: Connect the cause 'deforestation' with an environmental effect.",
         "EXAMPLE|||Green Living|||A: I'm trying to reduce my carbon footprint by biking to work. — B: That's great! It's a very eco-friendly way to commute.|||Elo: Every small change helps the planet.",
         "CULTURE|||The Green Movement|||Sustainability is a major topic in American universities and progressive cities (like Portland or Seattle), where recycling and composting are strictly enforced.|||Elo: Is recycling common in your hometown?",
-        "DRILL|||Green Translation|||Translate: 'Energia solar é uma fonte de energia renovável.'|||Elo: Use the words 'solar energy' and 'renewable'.",
+        "DRILL|||Green Translation|||Translate: 'Energia solar é uma fonte de energia renovável.'|||Elo: Use the words 'solar energy' and 'renewable'.|||Solar energy is a renewable energy source",
         "ROLEPLAY|||The Eco-Friendly Startup|||Pitch a business idea for an eco-friendly product to an investor.\n\n*   **Goal:** Explain the environmental benefits of your product.\n*   **Target:** Use 'carbon footprint', 'eco-friendly', or 'biodegradable'.|||Elo: Thanks for pitching to me. Tell me, how does your product help the environment?",
         "REVIEW|||Eco Advocate|||You learned: Carbon footprint, eco-friendly, renewable, and discussing impact.|||Elo: You did the work. You've completed the Getting Outside module!"
       ]
@@ -183,7 +183,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Literal vs Idiomatic|||Never translate idioms literally! They are fixed chunks of meaning.\n\n*   **Example:** 'I'm under the weather' means 'I am sick,' not that you are physically standing under a rain cloud.|||Elo: What would 'taking a rain check' mean if you said it to a friend who invited you to coffee?",
         "EXAMPLE|||The Invitation|||A: Want to grab dinner tonight? — B: I'd love to, but I'm feeling a bit under the weather. Can I take a rain check? — A: Of course! Feel better.|||Elo: Simple, polite, and completely idiomatic.",
         "CULTURE|||Weather Small Talk|||Americans use weather idioms constantly because weather is the most common default topic for polite conversation with acquaintances.|||Elo: Do you think talking about the weather is boring, or a good social lubricant?",
-        "DRILL|||Weather Idiom Translation|||Translate: 'Eu ganhei a promoção e estou extremamente feliz!'|||Elo: Use the idiom 'on cloud nine'.",
+        "DRILL|||Weather Idiom Translation|||Translate: 'Eu ganhei a promoção e estou extremamente feliz!'|||Elo: Use the idiom 'on cloud nine'.|||I got the promotion and I am on cloud nine",
         "ROLEPLAY|||Canceling Plans|||You have a fever and need to cancel a dinner meeting with a client. Use weather idioms to be polite.\n\n*   **Goal:** Cancel and reschedule.\n*   **Target:** Use 'under the weather' and 'take a rain check'.|||Elo: Hey! I'm at the restaurant. Are you on your way?",
         "REVIEW|||Weather Wiseman|||You learned: Under the weather, rain check, cloud nine, and steal someone's thunder.|||Elo: Brilliant! You've mastered weather idioms."
       ]
@@ -197,7 +197,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Sports Idioms in Business|||Almost 50% of American business idioms come from sports. They emphasize teamwork, strategy, and competition.\n\n*   **Example:** 'Let's touch base next week' means 'Let's talk briefly next week.'|||Elo: How would you tell a client that the decision is theirs using a sports idiom?",
         "EXAMPLE|||The Project Update|||A: Did we finish the client contract? — B: No, I dropped the ball and forgot to sign it. I will touch base with them today to fix it. — A: Okay, the ball is in your court.|||Elo: Notice how three sports idioms fit naturally in one short business conversation.",
         "CULTURE|||Baseball & Football Influence|||Baseball ('touch base', 'out of left field', 'strike out') and Football ('game plan', 'touchdown') dominate American speech because of their historical cultural importance.|||Elo: Is football (soccer) the source of idioms in Portuguese?",
-        "DRILL|||Sports Idiom Translation|||Translate: 'Eu vou entrar em contato com você na segunda-feira.'|||Elo: Use the sports idiom 'touch base'.",
+        "DRILL|||Sports Idiom Translation|||Translate: 'Eu vou entrar em contato com você na segunda-feira.'|||Elo: Use the sports idiom 'touch base'.|||I will touch base with you on Monday",
         "ROLEPLAY|||The Crisis Meeting|||Your team made a mistake on a client project. Explain what happened and the plan to fix it.\n\n*   **Goal:** Take responsibility and discuss next steps.\n*   **Target:** Use 'drop the ball' and 'touch base'.|||Elo: Welcome to the meeting. The client is upset about the delay. What happened?",
         "REVIEW|||MVP Player|||You learned: Ball in your court, touch base, drop the ball, and business sports jargon.|||Elo: You're an MVP! Ready for everyday idioms?"
       ]
@@ -211,7 +211,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Contextual Idioms|||Always match the idiom to the context. 'Bite the bullet' is serious; 'Call it a day' is casual.|||Elo: If you are exhausted at 5 PM at the office, what would you say to your team?",
         "EXAMPLE|||Wrapping Up Work|||A: This code is still not working. — B: Yeah, let's just call it a day and look at it tomorrow with fresh eyes. We might have to go back to the drawing board.|||Elo: 'Call it a day' is the favorite phrase of developers everywhere.",
         "CULTURE|||Idiom Frequency|||Native speakers use idioms so often they don't even realize it. If you use them naturally, you instantly build cultural rapport.|||Elo: What Portuguese idiom do you use most frequently?",
-        "DRILL|||Everyday Idiom Translation|||Translate: 'Eu preciso aceitar essa situação difícil e fazer a cirurgia.'|||Elo: Use the idiom 'bite the bullet'.",
+        "DRILL|||Everyday Idiom Translation|||Translate: 'Eu preciso aceitar essa situação difícil e fazer a cirurgia.'|||Elo: Use the idiom 'bite the bullet'.|||I need to bite the bullet and have the surgery",
         "ROLEPLAY|||The Tough Presentation|||Your coworker is extremely nervous before pitching to a huge client. Encourage them.\n\n*   **Goal:** Motivate and support them.\n*   **Target:** Use 'break a leg' and 'bite the bullet'.|||Elo: Oh my god, my hands are shaking. This client is so important. What if I strike out?",
         "REVIEW|||Idiom Master|||You learned: Bite the bullet, break a leg, call it a day, and drawing board.|||Elo: You did the work. You've completed the Idioms Mastery course! Go get 'em!"
       ]
@@ -227,7 +227,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Expressing Addictive Behaviors|||Learn natural ways to talk about your favorite shows: 'I'm hooked on...', 'I couldn't tear myself away...', 'It's my guilty pleasure.'|||Elo: Is there a show that is your 'guilty pleasure' (you love it but are a bit embarrassed by it)?",
         "EXAMPLE|||Binging on Netflix|||A: Did you see the new season? — B: Yes! I was so hooked that I binge-watched the entire season in one weekend. Every episode ended on a crazy cliffhanger!|||Elo: Binge-watching is the new normal.",
         "CULTURE|||The Death of Cable TV|||In the US, 'cord-cutting' (canceling cable TV subscriptions for streaming services like Netflix, Amazon Prime, and Disney+) is almost universal.|||Elo: Have you cut the cord, or do you still have cable TV at home?",
-        "DRILL|||Streaming Translation|||Translate: 'Eu assisti a temporada inteira de uma vez só porque cada episódio terminava com suspense.'|||Elo: Use the terms 'binge-watch' and 'cliffhanger'.",
+        "DRILL|||Streaming Translation|||Translate: 'Eu assisti a temporada inteira de uma vez só porque cada episódio terminava com suspense.'|||Elo: Use the terms 'binge-watch' and 'cliffhanger'.|||I binge-watched the entire season because every episode ended on a cliffhanger",
         "ROLEPLAY|||Recommending a Show|||Convince your friend to watch your absolute favorite streaming series. Make it sound irresistible!\n\n*   **Goal:** Recommend a series.\n*   **Target:** Use 'cliffhanger', 'hooked', or 'hype'.|||Elo: Hey! I need a new show to watch on Netflix tonight. What should I check out?",
         "REVIEW|||Streaming Expert|||You learned: Binge-watch, cliffhanger, spoiler, hype, and expressing addiction to shows.|||Elo: Awesome. Let's look at movie genres next."
       ]
@@ -241,7 +241,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Discussing Plot Elements|||Use specific vocabulary to describe storytelling: 'character development' (how a character changes), 'pacing' (speed of the story), 'resolution'.|||Elo: How would you describe a movie with bad pacing? Too slow or too fast?",
         "EXAMPLE|||Dissecting a Sci-Fi Movie|||A: The ending of that movie blew me away. What a plot twist! — B: Really? I thought it was a bit cliché. It used the typical underdog trope.|||Elo: One person's plot twist is another's cliché.",
         "CULTURE|||The Hero's Journey|||Almost all American blockbuster movies (Star Wars, Marvel, Lord of the Rings) follow 'The Hero's Journey' formula, rooted in mythology.|||Elo: Why do you think the 'underdog' story is so popular in American cinema?",
-        "DRILL|||Cinema Translation|||Translate: 'O filme teve uma reviravolta incrível no final.'|||Elo: Use the term 'plot twist'.",
+        "DRILL|||Cinema Translation|||Translate: 'O filme teve uma reviravolta incrível no final.'|||Elo: Use the term 'plot twist'.|||The movie had an incredible plot twist at the end",
         "ROLEPLAY|||The Pitch Meeting|||Pitch a movie idea to a Hollywood studio executive. Make sure to include a hook!\n\n*   **Goal:** Pitch an original script idea.\n*   **Target:** Use 'plot twist' and 'underdog'.|||Elo: Alright, you have 2 minutes. What's your movie idea about?",
         "REVIEW|||Screenwriter Critic|||You learned: Plot twist, trope, underdog, box office hit, and character arcs.|||Elo: Cut! Print it. Let's write a review next."
       ]
@@ -255,7 +255,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Structuring a Review|||A standard review has: Hook (introduction) -> Synopsis (summary without spoilers) -> Critique (acting, direction, script) -> Verdict (recommendation).|||Elo: Summarize a movie in two sentences without giving away any spoilers.",
         "EXAMPLE|||Critiquing a Drama|||A: Have you seen the Oscar winner? — B: Yeah. The acting was incredible, very thought-provoking. But the soundtrack was a bit cheesy at times.|||Elo: Even masterworks can have cheesy elements.",
         "CULTURE|||Rotten Tomatoes & IMDb|||In the US, 'Rotten Tomatoes' scores (percentage of positive reviews) can make or break a movie's commercial success. Audiences check it religiously.|||Elo: Do you trust Rotten Tomatoes scores, or do you prefer to judge for yourself?",
-        "DRILL|||Review Translation|||Translate: 'Eu achei o filme muito clichê e superestimado.'|||Elo: Use the words 'cheesy' (or 'corny') and 'overrated'.",
+        "DRILL|||Review Translation|||Translate: 'Eu achei o filme muito clichê e superestimado.'|||Elo: Use the words 'cheesy' (or 'corny') and 'overrated'.|||I thought the movie was very cheesy and overrated",
         "ROLEPLAY|||The Letterboxd Review|||Write or say a review for a movie you recently watched. Be critical and honest!\n\n*   **Goal:** Give a structured critique.\n*   **Target:** Use 'thought-provoking' or 'overrated'.|||Elo: Hey! Welcome to the critique table. Tell me, what did you think of the latest blockbusting hit?",
         "REVIEW|||Certified Critic|||You learned: Thought-provoking, gory, cheesy, overrated, and review structures.|||Elo: Excellent review! You've got the vocabulary down."
       ]
@@ -269,7 +269,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Discussing Business Strategies|||Use verbs like: 'to acquire' (buy), 'to dominate', 'to target' (focus on an audience), 'to fund'.\n\n*   **Example:** 'Netflix targets a global audience by funding local-language original series.'|||Elo: Why do streaming services fund local shows in Brazil?",
         "EXAMPLE|||The Streaming Wars|||A: Disney+ is really challenging Netflix. — B: True, but Netflix still dominates because of its algorithm and massive catalog of niche content. They greenlight everything.|||Elo: The streaming wars have given consumers endless options.",
         "CULTURE|||The Writers' Strike|||The Hollywood writers and actors strike of 2023 highlighted disputes over AI use, streaming residuals, and labor rights in the digital age.|||Elo: Do you think AI will eventually write movie scripts?",
-        "DRILL|||Business Translation|||Translate: 'O estúdio finalmente deu sinal verde para a sequência do filme.'|||Elo: Use the verb 'greenlight' in your translation.",
+        "DRILL|||Business Translation|||Translate: 'O estúdio finalmente deu sinal verde para a sequência do filme.'|||Elo: Use the verb 'greenlight' in your translation.|||The studio finally greenlit the movie sequel",
         "ROLEPLAY|||The Studio Boardroom|||You are pitching a streaming platform expansion strategy to capture the Brazilian market.\n\n*   **Goal:** Pitch an expansion strategy.\n*   **Target:** Use 'niche', 'subscribers', or 'greenlight'.|||Elo: Welcome to the board meeting. How can we get more subscribers in Brazil?",
         "REVIEW|||Media Mogul|||You learned: Franchise, greenlight, niche, subscribers, and streaming dynamics.|||Elo: You did the work. You've completed the Movies & TV module!"
       ]
@@ -285,7 +285,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Describing the Sound|||Use descriptive vocabulary to talk about how music feels: 'melodic' (tuneful), 'upbeat' (lively/happy), 'mellow' (relaxed/smooth).|||Elo: Describe a 'mellow' song. When would you listen to it?",
         "EXAMPLE|||Musical Debate|||A: I love acoustic versions of pop songs. — B: Really? I prefer the upbeat versions. They have a better beat for dancing.|||Elo: Upbeat pop vs mellow acoustic—both have their place.",
         "CULTURE|||US Music Capital Cities|||America's music history is tied to cities: Seattle (Grunge), Nashville (Country), New Orleans (Jazz), Detroit (Motown), New York (Hip Hop).|||Elo: Which American city's musical history interests you the most?",
-        "DRILL|||Music Translation|||Translate: 'Eu gosto de músicas animadas com um ritmo forte.'|||Elo: Use the words 'upbeat' and 'beat' or 'tempo'.",
+        "DRILL|||Music Translation|||Translate: 'Eu gosto de músicas animadas com um ritmo forte.'|||Elo: Use the words 'upbeat' and 'beat' or 'tempo'.|||I like upbeat songs with a strong beat",
         "ROLEPLAY|||The DJ Recommendation|||Recommend a song or artist to a friend based on their mood (e.g., they are feeling sad or energetic).\n\n*   **Goal:** Suggest an artist and describe their style.\n*   **Target:** Use 'upbeat', 'catchy', or 'mellow'.|||Elo: Hey! I'm feeling a bit tired and low energy today. Do you have a good song recommendation to wake me up?",
         "REVIEW|||Music Enthusiast|||You learned: Genre, catchy, beat, acoustic, and descriptive sound terms.|||Elo: Great. Let's analyze some song lyrics next."
       ]
@@ -299,7 +299,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Deciphering Song Metaphors|||Lyrics are not literal. 'Under the bridge' (struggling/homeless), 'Shake it off' (let go of negativity), 'Cold play' (emotionless).|||Elo: What does Taylor Swift mean when she sings 'Shake it off'?",
         "EXAMPLE|||Analyzing Lyrics|||A: What does 'rolling in the deep' mean in Adele's song? — B: It's a metaphor for having someone who supports you completely, or feeling deep emotional pain.|||Elo: Lyrics are open to interpretation.",
         "CULTURE|||Hip Hop and Slang Dominance|||Modern English slang is heavily driven by Hip Hop lyrics. Words like 'chill', 'flex', 'goat', and 'slay' all entered mainstream English through music.|||Elo: Do you use any English slang that you learned from music?",
-        "DRILL|||Lyrics Translation|||Translate: 'A letra da música está cheia de metáforas.'|||Elo: Use the words 'lyrics' and 'metaphors'.",
+        "DRILL|||Lyrics Translation|||Translate: 'A letra da música está cheia de metáforas.'|||Elo: Use the words 'lyrics' and 'metaphors'.|||The song's lyrics are full of metaphors",
         "ROLEPLAY|||The Music Podcast|||You are hosting a podcast explaining the meaning of a famous song's lyrics to your audience.\n\n*   **Goal:** Explain the metaphorical meaning of a lyric.\n*   **Target:** Use 'hook', 'slang', or 'metaphor'.|||Elo: Welcome to the show! Today, we are analyzing the lyrics of a classic track. Which song are we looking at?",
         "REVIEW|||Lyrical Critic|||You learned: Rhyme scheme, slang, metaphors, hooks, and lyrical analysis.|||Elo: Awesome. You're reading between the lines now."
       ]
@@ -313,7 +313,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Describing the Crowd & Energy|||Useful adjectives for concerts: 'electric' (full of excitement), 'hyped' (very excited), 'packed' (crowded), 'sold out' (all tickets sold).|||Elo: If a venue is 'packed', how does it feel?",
         "EXAMPLE|||Ticket Hunting|||A: Did you get tickets for the show? — B: No, it sold out in five minutes! The venue is pretty small, but the lineup is incredible.|||Elo: Missing out on tickets is the worst feeling.",
         "CULTURE|||Coachella & Festival Fashion|||Festivals in the US (like Coachella, Lollapalooza, Burning Man) are as much about fashion, social media, and art installations as they are about the music.|||Elo: Do you think music festivals are becoming too commercial?",
-        "DRILL|||Concert Translation|||Translate: 'Todos os ingressos para o show esgotaram rapidamente.'|||Elo: Use the phrasal verb 'sell out' (or 'sold out').",
+        "DRILL|||Concert Translation|||Translate: 'Todos os ingressos para o show esgotaram rapidamente.'|||Elo: Use the phrasal verb 'sell out' (or 'sold out').|||All tickets for the show sold out quickly",
         "ROLEPLAY|||Buying Concert Tickets|||Call a ticket broker or talk to a friend about buying resell tickets for a sold-out concert.\n\n*   **Goal:** Negotiate ticket purchases.\n*   **Target:** Use 'headliner', 'venue', or 'sold out'.|||Elo: Hey! I have two extra tickets for the headliner show tonight. Are you interested in buying them?",
         "REVIEW|||Concert Goer|||You learned: Venue, lineup, headliner, gig, and crowd descriptions.|||Elo: Rock on! You're ready for the final lesson."
       ]
@@ -327,7 +327,7 @@ export const newTopicsContent: Record<string, Record<string, { id: string; title
         "CONCEPT|||Discussing Influence & Impact|||Use structures like: 'defines a generation', 'goes viral', 'shapes the culture', 'influences'.\n\n*   **Example:** 'Going viral on TikTok can launch an independent artist's career overnight.'|||Elo: Name a song or artist that 'defined a generation' in your country.",
         "EXAMPLE|||Algorithms vs Playlists|||A: How do you discover new music? — B: Mostly through the Spotify algorithm. If a track goes viral, it ends up on my weekly playlist.|||Elo: Algorithms know our musical tastes better than we do.",
         "CULTURE|||The Death of the Album|||Because of streaming, many artists now focus on releasing single tracks rather than full albums, to keep the algorithm engaged.|||Elo: Do you still listen to full albums, or do you just listen to playlists?",
-        "DRILL|||Industry Translation|||Translate: 'A nova faixa da banda viralizou no TikTok.'|||Elo: Use the words 'track' and 'went viral' (or 'viralizou').",
+        "DRILL|||Industry Translation|||Translate: 'A nova faixa da banda viralizou no TikTok.'|||Elo: Use the words 'track' and 'went viral' (or 'viralizou').|||The band's new track went viral on TikTok",
         "ROLEPLAY|||The Artist & The Producer|||You are a musician discussing your next track release with your producer. Decide on the sound.\n\n*   **Goal:** Discuss production details and marketing.\n*   **Target:** Use 'track', 'producer', or 'royalties'.|||Elo: Hey, I just listened to the demo track you sent. The beat is solid. How do you want to market it?",
         "REVIEW|||Industry Insider|||You learned: Royalties, tracks, viral marketing, and streaming music economy.|||Elo: You did the work. You've completed the Music & Song Lyrics module!"
       ]

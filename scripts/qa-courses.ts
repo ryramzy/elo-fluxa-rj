@@ -46,8 +46,8 @@ courses.forEach((course) => {
 
     lessonData.slides.forEach((slide, slideIdx) => {
       const parts = slide.split('|||');
-      if (parts.length < 3 || parts.length > 4) {
-        console.error(`  ❌ Error: Slide ${slideIdx} in lesson "${lessonId}" is malformed. Expected 3 or 4 parts (split by "|||"), got ${parts.length}.`);
+      if (parts.length < 3 || parts.length > 5) {
+        console.error(`  ❌ Error: Slide ${slideIdx} in lesson "${lessonId}" is malformed. Expected between 3 and 5 parts (split by "|||"), got ${parts.length}.`);
         console.error(`     Content: "${slide}"`);
         issuesCount++;
         return;
