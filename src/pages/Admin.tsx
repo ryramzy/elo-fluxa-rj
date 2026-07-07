@@ -411,9 +411,11 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
     }
     setSavingB2b(true);
     try {
+      const orgIdClean = targetOrgId.trim();
       await updateDoc(doc(db, 'users', selectedUserUid), {
-        organizationId: targetOrgId.trim() || null,
-        corporateCredits: Number(targetCredits)
+        organizationId: orgIdClean || null,
+        corporateCredits: Number(targetCredits),
+        plan: orgIdClean ? 'corporate' : 'free'
       });
       alert('B2B attributes updated successfully!');
       setSelectedUserUid('');

@@ -616,8 +616,8 @@ export async function checkCourseAccess(uid: string, courseId: string): Promise<
     
     const userProfile = userDoc.data() as UserProfile;
     
-    // Pro and Elite plans have access to all courses
-    if (userProfile.plan === 'pro' || userProfile.plan === 'elite') {
+    // Pro, Elite, and Corporate B2B plans have access to all courses
+    if (userProfile.plan === 'pro' || userProfile.plan === 'elite' || userProfile.plan === 'corporate' || !!userProfile.organizationId) {
       return { canAccess: true };
     }
     
@@ -846,6 +846,23 @@ export async function bookSlot(
       throw new Error('This slot is already booked by someone else.');
     }
 
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await transaction.get(userRef);
+    if (!userDoc.exists()) {
+      throw new Error('Student profile not found.');
+    }
+
+    const userData = userDoc.data();
+    const isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
+
+    if (isCorporate) {
+      const credits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
+      if (credits <= 0) {
+        throw new Error('Créditos B2B esgotados. Agendamento bloqueado!');
+      }
+      transaction.update(userRef, { corporateCredits: credits - 1 });
+    }
+
     transaction.set(bookingRef, {
       userId,
       userName,
@@ -888,7 +905,21 @@ export async function cancelBooking(
   }
   
   const bookingData = bookingDoc.data() as Booking;
-  
+  const userId = bookingData.userId || bookingData.uid;
+
+  // Calculate 24-hour cutoff policy for B2B refunds
+  let deservesRefund = true;
+  if (bookingData.datetime) {
+    const bookingDate = new Date(bookingData.datetime.seconds * 1000);
+    const hoursDiff = (bookingDate.getTime() - Date.now()) / (1000 * 60 * 60);
+    deservesRefund = hoursDiff >= 24;
+  } else if (bookingData.date && bookingData.time) {
+    const localIsoString = `${bookingData.date}T${bookingData.time}:00-03:00`;
+    const bookingDate = new Date(localIsoString);
+    const hoursDiff = (bookingDate.getTime() - Date.now()) / (1000 * 60 * 60);
+    deservesRefund = hoursDiff >= 24;
+  }
+
   if (bookingData.googleEventId || googleEventId) {
     try {
       await cancelCalendarEvent(bookingData.googleEventId || googleEventId);
@@ -897,7 +928,31 @@ export async function cancelBooking(
     }
   }
 
-  await deleteDoc(bookingRef);
+  await runTransaction(db, async (transaction) => {
+    const bDoc = await transaction.get(bookingRef);
+    if (!bDoc.exists()) return; // Already deleted
+
+    // Delete booking
+    transaction.delete(bookingRef);
+
+    // Process B2B refund if applicable
+    if (userId) {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await transaction.get(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
+        
+        if (isCorporate && deservesRefund) {
+          const currentCredits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
+          transaction.update(userRef, { corporateCredits: currentCredits + 1 });
+          console.log(`[B2B Cancellation] Refunded 1 credit to user ${userId}. New balance: ${currentCredits + 1}`);
+        } else if (isCorporate && !deservesRefund) {
+          console.log(`[B2B Cancellation] Late cancellation (<24h) for user ${userId}. No refund allocated.`);
+        }
+      }
+    }
+  });
 }
 
 // Get user's bookings

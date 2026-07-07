@@ -310,6 +310,15 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   const handleCancelBooking = async (bookingId: string) => {
     if (isAnySlotBooking || cancelling) return;
+
+    const confirmMessage = corporateCredits !== null 
+      ? 'Deseja cancelar esta aula? Cancelamentos com menos de 24h de antecedência não reembolsam créditos B2B.'
+      : 'Deseja realmente cancelar o agendamento desta aula?';
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
     setCancelling(true);
     
     try {
@@ -503,10 +512,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
-                      className={`absolute inset-0 w-full h-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'pointer-events-none opacity-40' : ''}`}
+                      className={`absolute inset-0 w-full h-full rounded-xl transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'}`}
                     >
                       {currentSlotLoading === 'booking' ? (
                         <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+                      ) : isCreditLocked ? (
+                        'Sem Crédito'
                       ) : (
                         'Reservar'
                       )}
@@ -590,22 +601,27 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                         ) : slotState === 'available' ? (
                           // Available slot
                           <button
-                            onClick={() => handleBookSlot(dateStr, time)}
-                            disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
-                            className={`absolute inset-0 w-full rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'pointer-events-none opacity-40' : ''}`}
-                          >
-                            {currentSlotLoading === 'booking' ? (
-                              <div className="flex flex-col items-center justify-center">
-                                <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
-                                <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Booking...</span>
-                              </div>
-                            ) : (
-                              <>
-                                <span className="text-sm font-bold tracking-wide">Available</span>
-                                <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
-                              </>
-                            )}
-                          </button>
+                             onClick={() => handleBookSlot(dateStr, time)}
+                             disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
+                             className={`absolute inset-0 w-full rounded-xl transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]'}`}
+                           >
+                             {currentSlotLoading === 'booking' ? (
+                               <div className="flex flex-col items-center justify-center">
+                                 <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+                                 <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Booking...</span>
+                               </div>
+                             ) : isCreditLocked ? (
+                               <>
+                                 <span className="text-sm font-bold tracking-wide text-slate-500">Bloqueado</span>
+                                 <span className="text-[9px] text-slate-550 uppercase tracking-wider mt-0.5">Sem Créditos</span>
+                               </>
+                             ) : (
+                               <>
+                                 <span className="text-sm font-bold tracking-wide">Available</span>
+                                 <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
+                               </>
+                             )}
+                           </button>
                         ) : slotState === 'mine' ? (
                           // User's booking
                           <button

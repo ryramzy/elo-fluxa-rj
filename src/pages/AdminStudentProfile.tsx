@@ -151,9 +151,11 @@ const AdminStudentProfile: React.FC = () => {
     if (!uid) return;
     setSavingB2b(true);
     try {
+      const orgIdClean = organizationId.trim();
       await updateUserProfile(uid, {
-        organizationId: organizationId.trim() || null,
-        corporateCredits: Number(corporateCredits)
+        organizationId: orgIdClean || null,
+        corporateCredits: Number(corporateCredits),
+        plan: orgIdClean ? 'corporate' : 'free'
       });
       alert('B2B attributes updated successfully!');
       await loadStudentData();
