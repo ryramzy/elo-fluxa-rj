@@ -1036,4 +1036,9 @@ The Agenda page already exceeded requirements with:
   - `29700762006` (or `14798369018`)
 - **Payment Verification**: Mock payments generated in sandbox can be approved using the Mercado Pago Sandbox Payment tool or by simulating callback webhooks with the generated transaction ID.
 
+### Lucide / React-Icons Version 5 Upgrades
+- **Icon Naming Changes**: React-Icons v5 (`react-icons/lu`) upgrades icons to match Lucide v4 naming conventions. In this update, multiple icons were renamed:
+  - `LuAlertTriangle` ➡️ `LuTriangleAlert`
+  - Ensure future development checks local package icon schemas before importing warnings.
+
 
