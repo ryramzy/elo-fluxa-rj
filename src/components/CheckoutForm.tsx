@@ -3,7 +3,7 @@ import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { LuCheck, LuCopy, LuAlertTriangle, LuQrCode, LuCreditCard } from 'react-icons/lu';
+import { LuCheck, LuCopy, LuTriangleAlert, LuQrCode, LuCreditCard } from 'react-icons/lu';
 
 interface CheckoutFormProps {
   plan: 'starter' | 'pro' | 'elite';
@@ -237,7 +237,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         
         {isExpired ? (
           <div className="text-center p-6 bg-red-500/5 border border-red-500/10 rounded-2xl mb-6">
-            <LuAlertTriangle className="text-red-400 mx-auto mb-2" size={24} />
+            <LuTriangleAlert className="text-red-400 mx-auto mb-2" size={24} />
             <h4 className="text-sm font-bold text-white mb-1">Código Pix Expirado</h4>
             <p className="text-xs text-slate-400 mb-4 font-medium leading-relaxed">
               O prazo de 30 minutos para pagamento deste Pix se esgotou. Por favor, gere um novo código.
