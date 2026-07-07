@@ -311,9 +311,29 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const handleCancelBooking = async (bookingId: string) => {
     if (isAnySlotBooking || cancelling) return;
 
-    const confirmMessage = corporateCredits !== null 
-      ? 'Deseja cancelar esta aula? Cancelamentos com menos de 24h de antecedência não reembolsam créditos B2B.'
-      : 'Deseja realmente cancelar o agendamento desta aula?';
+    const booking = bookings.find(b => b.id === bookingId);
+    let isLateCancellation = false;
+
+    if (booking) {
+      let bookingDate: Date;
+      if (booking.datetime) {
+        bookingDate = new Date(booking.datetime.seconds * 1000);
+      } else if (booking.date && booking.time) {
+        const localIsoString = `${booking.date}T${booking.time}:00-03:00`;
+        bookingDate = new Date(localIsoString);
+      } else {
+        bookingDate = new Date();
+      }
+      const hoursDiff = (bookingDate.getTime() - Date.now()) / (1000 * 60 * 60);
+      isLateCancellation = hoursDiff < 24;
+    }
+
+    let confirmMessage = 'Deseja realmente cancelar o agendamento desta aula?';
+    if (corporateCredits !== null) {
+      confirmMessage = isLateCancellation
+        ? 'Aviso: Esta aula começa em menos de 24h. Cancelar agora NÃO reembolsará seu crédito B2B. Deseja prosseguir?'
+        : 'Deseja cancelar esta aula? Como falta mais de 24h, seu crédito B2B será reembolsado na sua conta. Deseja prosseguir?';
+    }
 
     if (!window.confirm(confirmMessage)) {
       return;
