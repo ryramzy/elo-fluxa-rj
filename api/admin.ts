@@ -342,42 +342,50 @@ async function handleMercadoPagoWebhook(req: VercelRequest, res: VercelResponse)
 
     const payerEmail = paymentData.payer?.email;
     const planType = paymentData.metadata?.plan_type || 'pro';
+    const userId = paymentData.metadata?.user_id;
     const bookingLimit = planType === 'elite' ? 12 : 4;
 
     const token = await getFirestoreAccessToken();
     const projectId = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!).project_id;
     const baseRestUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
 
-    const queryUrl = `${baseRestUrl}:runQuery`;
-    const queryBody = {
-      structuredQuery: {
-        from: [{ collectionId: 'users' }],
-        where: {
-          fieldFilter: {
-            field: { fieldPath: 'email' },
-            op: 'EQUAL',
-            value: { stringValue: payerEmail }
-          }
-        },
-        limit: 1
+    let patchUrl = '';
+
+    if (userId) {
+      console.log(`[Webhook] Upgrading plan using metadata user_id: ${userId}`);
+      patchUrl = `${baseRestUrl}/users/${userId}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit`;
+    } else {
+      console.log(`[Webhook] No user_id in metadata. Querying by email: ${payerEmail}`);
+      const queryUrl = `${baseRestUrl}:runQuery`;
+      const queryBody = {
+        structuredQuery: {
+          from: [{ collectionId: 'users' }],
+          where: {
+            fieldFilter: {
+              field: { fieldPath: 'email' },
+              op: 'EQUAL',
+              value: { stringValue: payerEmail }
+            }
+          },
+          limit: 1
+        }
+      };
+
+      const queryResponse = await fetch(queryUrl, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(queryBody)
+      });
+
+      const queryResults = await queryResponse.json();
+      const documentData = queryResults[0]?.document;
+      
+      if (!documentData) {
+        throw new Error(`Zero registered database documents matched email: ${payerEmail}`);
       }
-    };
-
-    const queryResponse = await fetch(queryUrl, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(queryBody)
-    });
-
-    const queryResults = await queryResponse.json();
-    const documentData = queryResults[0]?.document;
-    
-    if (!documentData) {
-      throw new Error(`Zero registered database documents matched email: ${payerEmail}`);
+      patchUrl = `${documentData.name}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit`;
     }
 
-    const docName = documentData.name;
-    const patchUrl = `${docName}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit`;
     const patchBody = {
       fields: {
         plan: { stringValue: planType },
@@ -385,11 +393,16 @@ async function handleMercadoPagoWebhook(req: VercelRequest, res: VercelResponse)
       }
     };
 
-    await fetch(patchUrl, {
+    const patchResponse = await fetch(patchUrl, {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(patchBody)
     });
+
+    if (!patchResponse.ok) {
+      const patchError = await patchResponse.text();
+      throw new Error(`Failed to update user plan: ${patchError}`);
+    }
 
     const enrollmentUrl = `${baseRestUrl}/enrollments`;
     const enrollmentBody = {

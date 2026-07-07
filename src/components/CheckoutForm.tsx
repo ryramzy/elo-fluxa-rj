@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/useToast';
+import { useAuth } from '@/hooks/useAuth';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { LuCheck, LuCopy, LuAlertTriangle, LuQrCode, LuCreditCard } from 'react-icons/lu';
 
 interface CheckoutFormProps {
@@ -37,18 +40,89 @@ export function validateCPF(cpf: string): boolean {
   return true;
 }
 
+const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 export default function CheckoutForm({ plan, price, onSuccess, onCancel }: CheckoutFormProps) {
   const { addToast } = useToast();
+  const { user } = useAuth();
+  
   const [cpf, setCpf] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [pixPayload, setPixPayload] = useState<{ qrCodeUrl: string; copyPasteKey: string } | null>(null);
+  const [pixPayload, setPixPayload] = useState<{ qrCodeUrl: string; copyPasteKey: string; expirationTime: string } | null>(null);
   const [paymentComplete, setPaymentComplete] = useState(false);
+  
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [isExpired, setIsExpired] = useState(false);
+
+  // Pre-fill user information if logged in
+  useEffect(() => {
+    if (user) {
+      setName(user.displayName || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
+
+  // Real-time Firestore payment listener
+  useEffect(() => {
+    if (!user || !pixPayload) return;
+
+    // Listen to users/{uid} document to detect when plan changes to purchased plan
+    const docRef = doc(db, 'users', user.uid);
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (data.plan === plan) {
+          setPaymentComplete(true);
+          addToast('Pagamento confirmado! Sua assinatura foi liberada.', 'success');
+          if (onSuccess) onSuccess();
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user, pixPayload, plan, onSuccess, addToast]);
+
+  // Expiration countdown timer
+  useEffect(() => {
+    if (!pixPayload || !pixPayload.expirationTime) return;
+
+    const calculateSecondsRemaining = (expStr: string) => {
+      const exp = new Date(expStr).getTime();
+      const now = Date.now();
+      return Math.max(0, Math.floor((exp - now) / 1000));
+    };
+
+    const initialSeconds = calculateSecondsRemaining(pixPayload.expirationTime);
+    setSecondsLeft(initialSeconds);
+    setIsExpired(initialSeconds <= 0);
+
+    const interval = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setIsExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [pixPayload]);
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 11);
-    // Apply formatting mask: 000.000.000-00
     let formatted = raw;
     if (raw.length > 9) {
       formatted = `${raw.slice(0, 3)}.${raw.slice(3, 6)}.${raw.slice(6, 9)}-${raw.slice(9)}`;
@@ -87,32 +161,56 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     }
 
     try {
-      // Simulating backend call /api/checkout/pix mapping Mercado Pago responses
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const idempotencyKey = generateUUID();
+      console.log('[Checkout] Creating checkout transaction with idempotency:', idempotencyKey);
       
-      setPixPayload({
-        qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/123456789/pix520400005303986540597.005802BR5913Elo%2520Fluency6009SAO%2520PAULO62070503***63041234",
-        copyPasteKey: "00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/123456789/pix520400005303986540597.005802BR5913Elo%2520Fluency6009SAO%2520PAULO62070503***63041234"
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          plan,
+          price,
+          email,
+          name,
+          cpf: cleanCpf,
+          idempotencyKey,
+          userId: user?.uid || ''
+        })
       });
-      addToast('Pix gerado com sucesso! Aguardando pagamento.', 'success');
-      
-      // Simulate real-time webhook callback completion after 4 seconds
-      setTimeout(() => {
-        setPaymentComplete(true);
-        addToast('Pagamento confirmado! Sua assinatura foi liberada.', 'success');
-        if (onSuccess) onSuccess();
-      }, 4000);
 
-    } catch (err) {
-      addToast('Erro ao processar transação Pix. Tente novamente.', 'error');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Erro ao processar checkout Pix.');
+      }
+
+      const data = await res.json();
+      setPixPayload({
+        qrCodeUrl: data.qrCodeUrl,
+        copyPasteKey: data.copyPasteKey,
+        expirationTime: data.expirationTime
+      });
+      setIsExpired(false);
+      addToast('Pix gerado com sucesso! Aguardando pagamento.', 'success');
+
+    } catch (err: any) {
+      console.error('[Checkout Form Error]:', err);
+      addToast(err.message || 'Erro ao processar transação Pix. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
   };
 
+  const formatTime = (secs: number) => {
+    const minutes = Math.floor(secs / 60);
+    const seconds = secs % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
   if (paymentComplete) {
     return (
-      <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center max-w-md mx-auto backdrop-blur-md">
+      <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center max-w-md mx-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
         <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <LuCheck size={32} />
         </div>
@@ -132,42 +230,65 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
 
   if (pixPayload) {
     return (
-      <div className="bg-slate-900/40 border border-slate-800 p-6 md:p-8 rounded-3xl max-w-md mx-auto backdrop-blur-md">
+      <div className="bg-slate-900/40 border border-slate-800 p-6 md:p-8 rounded-3xl max-w-md mx-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
         <h3 className="text-lg font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
           <LuQrCode className="text-blue-400" /> Pague com Pix Copia e Cola
         </h3>
         
-        {/* QR Code display */}
-        <div className="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-6 flex items-center justify-center border border-slate-750">
-          <img src={pixPayload.qrCodeUrl} alt="Pix QR Code" className="w-full h-full object-contain" />
-        </div>
+        {isExpired ? (
+          <div className="text-center p-6 bg-red-500/5 border border-red-500/10 rounded-2xl mb-6">
+            <LuAlertTriangle className="text-red-400 mx-auto mb-2" size={24} />
+            <h4 className="text-sm font-bold text-white mb-1">Código Pix Expirado</h4>
+            <p className="text-xs text-slate-400 mb-4 font-medium leading-relaxed">
+              O prazo de 30 minutos para pagamento deste Pix se esgotou. Por favor, gere um novo código.
+            </p>
+            <button
+              onClick={() => setPixPayload(null)}
+              className="w-full py-2.5 bg-slate-850 hover:bg-slate-800 border border-slate-800 hover:border-slate-750 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all"
+            >
+              Gerar Novo Pix
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* QR Code display */}
+            <div className="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-6 flex items-center justify-center border border-slate-750">
+              <img src={pixPayload.qrCodeUrl} alt="Pix QR Code" className="w-full h-full object-contain" />
+            </div>
 
-        <p className="text-[10px] text-slate-400 text-center mb-6 leading-relaxed">
-          Abra o aplicativo do seu banco, escolha a opção "Pagar com Pix Copia e Cola" ou aponte a câmera para o QR Code acima.
-        </p>
+            <p className="text-[10px] text-slate-400 text-center mb-6 leading-relaxed">
+              Abra o aplicativo do seu banco, escolha a opção "Pagar com Pix Copia e Cola" ou aponte a câmera para o QR Code acima.
+            </p>
 
-        {/* Copy paste input container */}
-        <div className="flex gap-2 mb-6">
-          <input
-            type="text"
-            readOnly
-            value={pixPayload.copyPasteKey}
-            className="flex-1 bg-slate-950/80 border border-slate-800 text-slate-400 text-xs px-3 py-2.5 rounded-xl outline-none select-all truncate"
-          />
-          <button
-            onClick={handleCopyKey}
-            className="px-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-750 text-white rounded-xl transition-all flex items-center justify-center"
-            title="Copiar Código"
-          >
-            <LuCopy size={14} />
-          </button>
-        </div>
+            {/* Copy paste input container */}
+            <div className="flex gap-2 mb-6">
+              <input
+                type="text"
+                readOnly
+                value={pixPayload.copyPasteKey}
+                className="flex-1 bg-slate-950/80 border border-slate-800 text-slate-400 text-xs px-3 py-2.5 rounded-xl outline-none select-all truncate"
+              />
+              <button
+                onClick={handleCopyKey}
+                className="px-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-750 text-white rounded-xl transition-all flex items-center justify-center"
+                title="Copiar Código"
+              >
+                <LuCopy size={14} />
+              </button>
+            </div>
 
-        {/* Waiting indicators */}
-        <div className="flex items-center justify-center gap-2 text-xs text-blue-400 animate-pulse bg-blue-500/5 border border-blue-500/10 py-2.5 rounded-xl">
-          <span className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></span>
-          Aguardando confirmação do pagamento...
-        </div>
+            {/* Countdown timer display */}
+            <div className="text-center text-xs text-slate-400 mb-4 bg-slate-950/40 py-2.5 rounded-xl border border-slate-850">
+              Código expira em: <span className="font-mono font-bold text-blue-400">{formatTime(secondsLeft)}</span>
+            </div>
+
+            {/* Waiting indicators */}
+            <div className="flex items-center justify-center gap-2 text-xs text-blue-400 animate-pulse bg-blue-500/5 border border-blue-500/10 py-2.5 rounded-xl">
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></span>
+              Aguardando confirmação do pagamento...
+            </div>
+          </>
+        )}
       </div>
     );
   }

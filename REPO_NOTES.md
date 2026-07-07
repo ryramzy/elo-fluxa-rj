@@ -1030,4 +1030,9 @@ The Agenda page already exceeded requirements with:
 - **LLM Red Teaming & Guardrails**: As the AI Coach interacts directly with student inputs, robust security testing against prompt injections, jailbreaks, and instructions bypasses is essential.
 - **Reference Tool**: Keep track of [T3MP3ST](https://github.com/elder-plinius/T3MP3ST) (adversarial LLM red-teaming/jailbreak payload test suite) for future penetration and robustness evaluation of coach prompts.
 
+### Mercado Pago Sandbox Testing
+- **Sandbox Test CPF**: To test checkout Pix creation in the Mercado Pago sandbox environment, use valid test CPFs generated via checksum calculators or the standard sandbox buyer CPF:
+  - `29700762006` (or `14798369018`)
+- **Payment Verification**: Mock payments generated in sandbox can be approved using the Mercado Pago Sandbox Payment tool or by simulating callback webhooks with the generated transaction ID.
+
 

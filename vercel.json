@@ -20,6 +20,10 @@
       "destination": "/api/admin.ts"
     },
     {
+      "source": "/api/checkout",
+      "destination": "/api/checkout.ts"
+    },
+    {
       "source": "/api/webhooks/(.*)",
       "destination": "/api/admin.ts"
     },
