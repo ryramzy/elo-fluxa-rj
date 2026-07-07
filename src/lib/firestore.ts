@@ -590,7 +590,7 @@ export async function updateUserPlan(uid: string, plan: 'free' | 'pro' | 'elite'
     const bookingLimits = {
       free: 1,
       pro: 4,
-      elite: 999
+      elite: 12
     };
     
     await updateDoc(userRef, {
