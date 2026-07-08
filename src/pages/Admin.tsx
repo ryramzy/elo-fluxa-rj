@@ -453,15 +453,24 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   // Load users
   const loadUsers = async () => {
     try {
-      const usersQuery = query(
-        collection(db, 'users'),
-        orderBy('createdAt', 'desc')
-      );
+      const usersQuery = query(collection(db, 'users'));
       const snapshot = await getDocs(usersQuery);
       const usersData = snapshot.docs.map(doc => ({
         uid: doc.id,
         ...doc.data()
       } as User));
+      
+      // Sort in-memory by createdAt descending
+      usersData.sort((a, b) => {
+        const timeA = a.createdAt?.seconds 
+          ? a.createdAt.seconds * 1000 
+          : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const timeB = b.createdAt?.seconds 
+          ? b.createdAt.seconds * 1000 
+          : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return timeB - timeA;
+      });
+
       setUsers(usersData);
     } catch (error) {
       console.error('Error loading users:', error);
