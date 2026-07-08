@@ -256,7 +256,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities' | 'analytics'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
 
@@ -293,6 +293,37 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
       setTutorPresenceLoading(false);
     }
   };
+
+  // Analytics states
+  const [cancellations, setCancellations] = useState<any[]>([]);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  const [availableSlotsCount, setAvailableSlotsCount] = useState(0);
+
+  const loadAnalyticsData = async () => {
+    setLoadingAnalytics(true);
+    try {
+      const [cancellationsSnap, availableSlotsSnap] = await Promise.all([
+        getDocs(collection(db, 'booking_cancellations')),
+        getDocs(collection(db, 'availableSlots'))
+      ]);
+
+      const cancellationsList: any[] = [];
+      cancellationsSnap.forEach(d => cancellationsList.push({ id: d.id, ...d.data() }));
+      setCancellations(cancellationsList);
+      
+      setAvailableSlotsCount(availableSlotsSnap.size);
+    } catch (error) {
+      console.error('Error loading analytics data:', error);
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      loadAnalyticsData();
+    }
+  }, [activeTab]);
 
   // B2B states
   const [selectedUserUid, setSelectedUserUid] = useState('');
@@ -722,6 +753,16 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               }`}
             >
               Timezone Sync
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              📊 Analytics
             </button>
           </div>
         </div>
@@ -1280,6 +1321,244 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
 
         {activeTab === 'utilities' && (
           <TimezoneSyncPanel />
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className="space-y-6 mb-6">
+            {loadingAnalytics ? (
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-12 text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <p className="text-slate-600 dark:text-slate-400">Carregando métricas de agendamento...</p>
+              </div>
+            ) : (() => {
+              const totalCreated = bookings.length + availableSlotsCount;
+              const utilizationRate = totalCreated > 0 ? Math.round((bookings.length / totalCreated) * 100) : 0;
+              const totalSessionsRecorded = bookings.length + cancellations.length;
+              const cancellationRatio = totalSessionsRecorded > 0 ? Math.round((cancellations.length / totalSessionsRecorded) * 100) : 0;
+
+              const hourCounts: Record<string, number> = {};
+              bookings.forEach(b => {
+                if (b.time) {
+                  const hour = b.time.slice(0, 5);
+                  hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+                }
+              });
+              const sortedHours = Object.entries(hourCounts).sort((a, b) => b[1] - a[1]);
+              const maxHourCount = sortedHours.length > 0 ? sortedHours[0][1] : 1;
+
+              const earlyCancels = cancellations.filter(c => c.cancellationType === 'early').length;
+              const lateCancels = cancellations.filter(c => c.cancellationType === 'late').length;
+              const earlyCancelPercent = cancellations.length > 0 ? Math.round((earlyCancels / cancellations.length) * 100) : 0;
+              const lateCancelPercent = cancellations.length > 0 ? Math.round((lateCancels / cancellations.length) * 100) : 0;
+
+              const orgCancelCounts: Record<string, number> = {};
+              cancellations.forEach(c => {
+                const org = c.organizationId || 'Pessoa Física / B2C';
+                orgCancelCounts[org] = (orgCancelCounts[org] || 0) + 1;
+              });
+              const sortedOrgs = Object.entries(orgCancelCounts).sort((a, b) => b[1] - a[1]);
+
+              return (
+                <>
+                  {/* Metrics Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* Utilization Card */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Utilização dos Horários</h3>
+                      
+                      {/* Ring Chart */}
+                      <div className="relative w-24 h-24 flex items-center justify-center mb-2">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle cx="48" cy="48" r="40" stroke="currentColor" className="text-slate-100 dark:text-slate-700" strokeWidth="6" fill="transparent" />
+                          <circle cx="48" cy="48" r="40" stroke="currentColor" className="text-emerald-500" strokeWidth="6" fill="transparent"
+                            strokeDasharray={2 * Math.PI * 40}
+                            strokeDashoffset={2 * Math.PI * 40 * (1 - (totalCreated > 0 ? (bookings.length / totalCreated) : 0))}
+                          />
+                        </svg>
+                        <span className="absolute text-xl font-extrabold text-slate-900 dark:text-white font-serif">{utilizationRate}%</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-2">
+                        <strong>{bookings.length}</strong> de <strong>{totalCreated}</strong> slots reservados
+                      </p>
+                    </div>
+
+                    {/* Total Booked Card */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Aulas Agendadas</h3>
+                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wide">Status: Ativas / Confirmadas</p>
+                      </div>
+                      <div className="my-3">
+                        <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 font-serif">{bookings.length}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-550 dark:text-slate-450 border-t border-slate-100 dark:border-slate-750 pt-2">
+                        Contando reservas ativas nas próximas semanas.
+                      </p>
+                    </div>
+
+                    {/* Cancellations Card */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Cancelamentos</h3>
+                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wide">Métrica de Reserva</p>
+                      </div>
+                      <div className="my-3 flex items-baseline gap-2">
+                        <span className="text-3xl font-extrabold text-red-500 font-serif">{cancellations.length}</span>
+                        <span className="text-[10px] font-bold text-slate-400">({cancellationRatio}% taxa)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-550 dark:text-slate-450 border-t border-slate-100 dark:border-slate-750 pt-2">
+                        Total de reservas canceladas via painel do aluno.
+                      </p>
+                    </div>
+
+                    {/* Next Availability Slot Count */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Slots Livres</h3>
+                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wide">Disponíveis na Agenda</p>
+                      </div>
+                      <div className="my-3">
+                        <span className="text-3xl font-extrabold text-purple-650 dark:text-purple-400 font-serif">{availableSlotsCount}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-550 dark:text-slate-450 border-t border-slate-100 dark:border-slate-750 pt-2">
+                        Horários disponíveis aguardando agendamento.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Popular Hours and Cancellation Breakdown Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    {/* Peak Booking Hours */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-750 pb-3">
+                        Horários de Pico de Agendamento
+                      </h3>
+                      {sortedHours.length === 0 ? (
+                        <p className="text-xs text-slate-500 text-center py-12">Nenhum dado de horário registrado.</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {sortedHours.map(([hour, count]) => {
+                            const widthPercent = Math.round((count / maxHourCount) * 100);
+                            return (
+                              <div key={hour} className="space-y-1.5">
+                                <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                  <span>{hour}h</span>
+                                  <span>{count} reserva{count > 1 ? 's' : ''}</span>
+                                </div>
+                                <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden">
+                                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style={{ width: `${widthPercent}%` }}></div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Cancellation Ratios */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-750 pb-3">
+                          Relação de Cancelamento
+                        </h3>
+                        
+                        <div className="space-y-6">
+                          {/* Early Cancellation */}
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs font-semibold">
+                              <span className="text-emerald-500">Early (&ge; 24h - Reembolsado)</span>
+                              <span className="text-slate-700 dark:text-slate-350">{earlyCancels} ({earlyCancelPercent}%)</span>
+                            </div>
+                            <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden">
+                              <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${earlyCancelPercent}%` }}></div>
+                            </div>
+                          </div>
+
+                          {/* Late Cancellation */}
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs font-semibold">
+                              <span className="text-red-500">Late (&lt; 24h - Sem Reembolso)</span>
+                              <span className="text-slate-700 dark:text-slate-350">{lateCancels} ({lateCancelPercent}%)</span>
+                            </div>
+                            <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden">
+                              <div className="bg-red-500 h-2 rounded-full" style={{ width: `${lateCancelPercent}%` }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700/50 space-y-3">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Distribuição por Parceria (B2B)</h4>
+                        {sortedOrgs.length === 0 ? (
+                          <p className="text-[10px] text-slate-500">Sem dados corporativos registrados.</p>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-3 text-xs">
+                            {sortedOrgs.map(([org, count]) => (
+                              <div key={org} className="flex justify-between bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                                <span className="font-semibold truncate max-w-[120px]">{org}</span>
+                                <span className="text-slate-450 font-bold">{count} cancelamento{count > 1 ? 's' : ''}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Cancellations table */}
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">
+                      Registro Recente de Cancelamentos
+                    </h3>
+                    {cancellations.length === 0 ? (
+                      <p className="text-xs text-slate-500 text-center py-8">Nenhum registro de cancelamento encontrado.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse text-xs">
+                          <thead>
+                            <tr className="border-b border-slate-100 dark:border-slate-750 text-slate-550 font-bold uppercase tracking-wider">
+                              <th className="py-3 px-4">Estudante</th>
+                              <th className="py-3 px-4">Data do Slot</th>
+                              <th className="py-3 px-4">Horário</th>
+                              <th className="py-3 px-4">Cancelado Em</th>
+                              <th className="py-3 px-4">Tipo</th>
+                              <th className="py-3 px-4">Org ID</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 dark:divide-slate-750 text-slate-700 dark:text-slate-300">
+                            {cancellations.slice(0, 10).map((c) => {
+                              const cancelDate = c.cancelledAt?.toDate ? c.cancelledAt.toDate() : new Date(c.cancelledAt);
+                              return (
+                                <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+                                  <td className="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">
+                                    {c.studentName} <span className="block text-[10px] font-normal text-slate-400">{c.studentEmail}</span>
+                                  </td>
+                                  <td className="py-3 px-4">{c.slotDate}</td>
+                                  <td className="py-3 px-4 font-semibold">{c.slotTime}</td>
+                                  <td className="py-3 px-4">{cancelDate.toLocaleDateString('pt-BR')} {cancelDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</td>
+                                  <td className="py-3 px-4">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                      c.cancellationType === 'early' 
+                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' 
+                                        : 'bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400'
+                                    }`}>
+                                      {c.cancellationType === 'early' ? 'Reembolsado' : 'Sem Reembolso'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4 font-mono text-[10px]">{c.organizationId || '-'}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
         )}
 
         {/* Back to Dashboard */}

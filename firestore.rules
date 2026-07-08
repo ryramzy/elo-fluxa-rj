@@ -117,5 +117,12 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isTutor();
     }
+
+    // Booking cancellations rules (For admin analytics tracking)
+    match /booking_cancellations/{cancelId} {
+      allow read: if isTutor();
+      allow create: if isAuthenticated() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
+    }
   }
 }

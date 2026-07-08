@@ -937,6 +937,20 @@ export async function cancelBooking(
     // Delete booking
     transaction.delete(bookingRef);
 
+    // Record the cancellation event in booking_cancellations collection
+    const cancellationRef = doc(collection(db, 'booking_cancellations'));
+    transaction.set(cancellationRef, {
+      bookingId,
+      studentId: userId || 'unknown',
+      studentName: bookingData.userName || 'unknown',
+      studentEmail: bookingData.userEmail || 'unknown',
+      slotDate: bookingData.date || 'unknown',
+      slotTime: bookingData.time || 'unknown',
+      cancelledAt: new Date(),
+      cancellationType: deservesRefund ? 'early' : 'late',
+      organizationId: bookingData.organizationId || ''
+    });
+
     // Process B2B refund if applicable
     if (userId) {
       const userRef = doc(db, 'users', userId);
