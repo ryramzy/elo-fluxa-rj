@@ -77,6 +77,21 @@ VITE_FIREBASE_APP_ID=
 - **Avoid Flat Lists for Large Catalogs**: When a catalog grows beyond 20+ items, flat vertical grids lead to cognitive overload and bad visual hierarchy. Prefer category-grouped horizontal rows with rich visual borders to make scanning cards easy.
 - **Check React Icons Version Exports**: Icon libraries like `react-icons/lu` differ in naming exports across package versions. Always prefer globally safe icons (e.g. `LuCheck`, or FontAwesome `FaCheckCircle` / `FaLock`) to prevent Rollup build failures.
 
+## [July 8, 2026] — Role-Aware Agenda Dashboard, Geolocation Gating, and Timezone Robustness
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Role-Aware Agenda & Scheduling Dashboard**: Redesigned `AgendaPage.tsx` into a responsive split-pane Agenda control dashboard. Renders a Tutor Control Deck for Admin/Tutor roles (complete with a real-time pending request manager, custom JS mini-month calendar, quick actions, and filter toggles) and a personalized session tracker and booking launcher overlay for Student roles.
+- **Timezone-Robust Cell Matching**: Upgraded `getBooking` inside `VisualSlotPicker.tsx` to use a multi-path timezone-safe matching algorithm. Compares raw UTC timestamps (seconds/milliseconds) and formatted timezone-converted strings concurrently to bypass OS/browser time offset anomalies.
+- **Immediate Profile Creation & Account Auto-Heal**: Added direct, transactional writes to Firestore `/users` during authentication actions in `Signup.tsx` and `Login.tsx` (for both Google and email/password paths) to auto-create and auto-heal student records immediately, resolving invisible user listings in the Admin panel.
+- **Rolling Date Query Boundaries**: Optimized Firestore load times on `AgendaPage.tsx` by querying bookings and available slots within a narrow 7-week window (2 weeks past, 5 weeks future) and isolating student views by `userId` queries.
+- **Faded Red Occupied Slots Layout**: Redesigned the styling of booked/unavailable calendar slots to a clear faded red-rose theme (`bg-red-950/20 border-red-900/20 text-red-400 font-bold`) showing `Ocupado ❌` to clearly differentiate from open slots.
+
+### Why
+- The previous string-based date comparisons caused slots to fail to register as taken on devices with varying timezone padding or localized date strings.
+- Relying on react hook side-effects for Firestore profile creation led to race conditions where registered users remained invisible to the Admin list.
+- Subscribing to the entire bookings collection history caused severe UI performance and load time degradation as the database grew.
+
 ---
 ## [July 1, 2026] — React 19 Optimistic UI, RPG Coach, and Path Aliasing Refactoring
 **Status:** ✅ COMPLETED
