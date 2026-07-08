@@ -6,6 +6,7 @@ import { db, bookSlot, cancelBooking } from '../lib/firestore';
 import { 
   collection, 
   query, 
+  where,
   onSnapshot, 
   doc, 
   updateDoc, 
