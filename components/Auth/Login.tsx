@@ -35,7 +35,27 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Safely ensure user profile document in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        displayName: user.displayName || 'Estudante',
+        email: user.email || email,
+        photoURL: user.photoURL || '',
+        xp: 0,
+        level: 1,
+        streakDays: 0,
+        lastActiveDate: new Date(),
+        badgesEarned: [],
+        createdAt: new Date(),
+        role: 'student',
+        hasSeenOnboarding: false,
+        bio: '',
+        targetGoal: '',
+      }, { merge: true });
+
       trackEvent('auth_login', { method: 'email' });
       navigate('/dashboard');
     } catch (err: any) {
