@@ -129,11 +129,11 @@ function TutorAgendaView() {
   useEffect(() => {
     const today = new Date();
     const startObj = new Date(today);
-    startObj.setDate(today.getDate() - 14); // 2 weeks in the past
+    startObj.setDate(today.getDate() - 7); // 1 week in the past
     const startStr = startObj.toLocaleDateString('en-CA');
 
     const endObj = new Date(today);
-    endObj.setDate(today.getDate() + 35); // 5 weeks in the future
+    endObj.setDate(today.getDate() + 14); // 2 weeks in the future
     const endStr = endObj.toLocaleDateString('en-CA');
 
     const bookingsQuery = query(
@@ -170,20 +170,30 @@ function TutorAgendaView() {
       console.error('Error loading slots:', error);
     });
 
-    // Fetch users for booking modal
-    getDocs(collection(db, 'users')).then(snap => {
-      const uList: User[] = [];
-      snap.forEach(d => {
-        uList.push({ uid: d.id, ...d.data() } as User);
-      });
-      setUsers(uList);
-    });
-
     return () => {
       unsubBookings();
       unsubSlots();
     };
   }, []);
+
+  // Lazily load users only when the scheduling modal is opened
+  const [usersLoading, setUsersLoading] = useState(false);
+  useEffect(() => {
+    if (bookingModalOpen && users.length === 0) {
+      setUsersLoading(true);
+      getDocs(collection(db, 'users')).then(snap => {
+        const uList: User[] = [];
+        snap.forEach(d => {
+          uList.push({ uid: d.id, ...d.data() } as User);
+        });
+        setUsers(uList);
+      }).catch(err => {
+        console.error('Error loading users for modal:', err);
+      }).finally(() => {
+        setUsersLoading(false);
+      });
+    }
+  }, [bookingModalOpen, users.length]);
 
   const handleAcceptRequest = async (bookingId: string) => {
     try {
@@ -880,9 +890,10 @@ function TutorAgendaView() {
                   value={selectedStudentUid}
                   onChange={(e) => setSelectedStudentUid(e.target.value)}
                   required
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
+                  disabled={usersLoading}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white disabled:opacity-50"
                 >
-                  <option value="">-- Selecione o Aluno --</option>
+                  <option value="">{usersLoading ? 'Carregando lista de alunos...' : '-- Selecione o Aluno --'}</option>
                   {users.map(u => (
                     <option key={u.uid} value={u.uid}>{u.displayName || u.email}</option>
                   ))}
