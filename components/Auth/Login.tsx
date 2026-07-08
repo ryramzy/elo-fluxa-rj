@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { LOGIN_COPY_VARIANTS, DEFAULT_LOGIN_VARIANT, LoginCopyVariant } from '../../src/constants/loginCopy';
 import { trackEvent } from '../../src/utils/analytics';
 import { useAuth } from '../../src/hooks/useAuth';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../../src/lib/firestore';
 
 interface LoginProps {
   copyVariant?: LoginCopyVariant;
@@ -47,7 +49,27 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
     setError('');
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      const user = userCredential.user;
+
+      // Safely ensure user profile document in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        displayName: user.displayName || 'Estudante',
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        xp: 0,
+        level: 1,
+        streakDays: 0,
+        lastActiveDate: new Date(),
+        badgesEarned: [],
+        createdAt: new Date(),
+        role: 'student',
+        hasSeenOnboarding: false,
+        bio: '',
+        targetGoal: '',
+      }, { merge: true });
+
       trackEvent('auth_login', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {

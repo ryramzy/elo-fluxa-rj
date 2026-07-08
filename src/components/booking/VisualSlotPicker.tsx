@@ -364,17 +364,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   }, [selectedWeek]);
 
   const getBooking = (dateStr: string, timeStr: string) => {
-    const { date: mattDate, time: mattTime } = getMattLocalStrings(dateStr, timeStr);
+    const cellMs = parseLocalDate(dateStr, timeStr).getTime();
     return bookings.find(b => {
-      if (b.date && b.time) {
-        return b.date === mattDate && b.time === mattTime;
-      }
+      let bookingMs = 0;
       if (b.datetime) {
-        const cellMs = parseLocalDate(dateStr, timeStr).getTime();
-        const bookingMs = b.datetime.seconds * 1000;
-        return Math.abs(bookingMs - cellMs) < 60000;
+        bookingMs = b.datetime.seconds ? b.datetime.seconds * 1000 : new Date(b.datetime).getTime();
+      } else if (b.date && b.time) {
+        const localIsoString = `${b.date}T${b.time}:00-03:00`;
+        bookingMs = new Date(localIsoString).getTime();
       }
-      return false;
+      return Math.abs(bookingMs - cellMs) < 60000;
     });
   };
 

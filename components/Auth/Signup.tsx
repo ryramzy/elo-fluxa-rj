@@ -3,6 +3,8 @@ import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { trackEvent } from '../../src/utils/analytics';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../../src/lib/firestore';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -23,7 +25,27 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Explicitly create user profile document in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        displayName: user.displayName || 'Estudante',
+        email: user.email || email,
+        photoURL: user.photoURL || '',
+        xp: 0,
+        level: 1,
+        streakDays: 0,
+        lastActiveDate: new Date(),
+        badgesEarned: [],
+        createdAt: new Date(),
+        role: 'student',
+        hasSeenOnboarding: false,
+        bio: '',
+        targetGoal: '',
+      });
+
       trackEvent('auth_signup', { method: 'email' });
       navigate('/agenda');
     } catch (err: any) {
@@ -37,7 +59,27 @@ const Signup = () => {
     setError('');
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      const user = userCredential.user;
+
+      // Safely ensure user profile document in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        displayName: user.displayName || 'Estudante',
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        xp: 0,
+        level: 1,
+        streakDays: 0,
+        lastActiveDate: new Date(),
+        badgesEarned: [],
+        createdAt: new Date(),
+        role: 'student',
+        hasSeenOnboarding: false,
+        bio: '',
+        targetGoal: '',
+      }, { merge: true });
+
       trackEvent('auth_signup', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
