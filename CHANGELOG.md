@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Redesigned `AgendaPage.tsx` into a modern, role-aware Scheduling Dashboard (Tutor control panel with sidebar controls, JS mini-month calendar, reactive status filters, inline pending requests accept/decline actions, template editor, booking URLs copy actions, and chronological timeline stream; Student schedule list with upcoming confirmed slots and interactive Visual Slot Picker booking overlay).
+- Real-time Firestore presence status listeners (`/settings/tutor_presence`) enabling instant Jitsi Meet calling hooks.
+- Student geolocation coordinates lookups with Nominatim reverse geocoding API integration, browser cookie trackers, and Brazilian LGPD consent gating checks.
 - TTS abstraction layer (`src/utils/tts.ts`) prioritizing natural-sounding system voices (e.g., 'Samantha', 'Google US English').
 - Dark mode toggle functionality in navbar with sun/moon icons
 - Dark mode context provider with localStorage persistence
