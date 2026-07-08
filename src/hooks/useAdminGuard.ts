@@ -21,15 +21,22 @@ export function useAdminGuard() {
     const checkRole = async () => {
       try {
         const adminUid = import.meta.env.VITE_ADMIN_UID;
+        const userEmail = user.email?.toLowerCase().trim() || '';
+        const isAuthorizedEmail = 
+          userEmail === 'mramsayo@gmail.com' ||
+          userEmail === 'mramsay0@gmail.com' ||
+          userEmail === 'erneleducation@gmail.com' ||
+          userEmail.endsWith('@elospeak.com.br') ||
+          userEmail.endsWith('@elospeak.com');
         
-        // Immediate fallback check
-        if (adminUid && user.uid.trim() === adminUid.trim()) {
+        // Immediate fallback check by UID or authorized email
+        if (isAuthorizedEmail || (adminUid && user.uid.trim() === adminUid.trim())) {
           // Proactively ensure /users/{uid} document has role: 'admin' in Firestore
           try {
             const userRef = doc(db, 'users', user.uid);
             await setDoc(userRef, {
               displayName: user.displayName || 'Matthew Ramsay',
-              email: user.email || 'mramsayo@gmail.com',
+              email: user.email || userEmail,
               role: 'admin',
               createdAt: new Date()
             }, { merge: true });
