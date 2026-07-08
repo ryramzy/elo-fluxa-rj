@@ -365,15 +365,53 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   const getBooking = (dateStr: string, timeStr: string) => {
     const cellMs = parseLocalDate(dateStr, timeStr).getTime();
+    
+    let mattDate = '';
+    let mattTime = '';
+    try {
+      const res = getMattLocalStrings(dateStr, timeStr);
+      mattDate = res.date;
+      mattTime = res.time;
+    } catch (e) {
+      console.error('Error converting cell timezone:', e);
+    }
+
     return bookings.find(b => {
-      let bookingMs = 0;
+      // 1. Direct timestamp matching
       if (b.datetime) {
-        bookingMs = b.datetime.seconds ? b.datetime.seconds * 1000 : new Date(b.datetime).getTime();
-      } else if (b.date && b.time) {
-        const localIsoString = `${b.date}T${b.time}:00-03:00`;
-        bookingMs = new Date(localIsoString).getTime();
+        const bookingMs = b.datetime.seconds ? b.datetime.seconds * 1000 : new Date(b.datetime).getTime();
+        if (Math.abs(bookingMs - cellMs) < 60000) {
+          return true;
+        }
       }
-      return Math.abs(bookingMs - cellMs) < 60000;
+      
+      // 2. String comparison (converted to Rio timezone coordinates)
+      if (mattDate && mattTime && b.date && b.time) {
+        const bDate = b.date.trim();
+        const bTime = b.time.trim();
+        const mDate = mattDate.trim();
+        const mTime = mattTime.trim();
+        
+        const bHourMin = bTime.split(':').slice(0, 2).join(':');
+        const mHourMin = mTime.split(':').slice(0, 2).join(':');
+        
+        if (bDate === mDate && bHourMin === mHourMin) {
+          return true;
+        }
+      }
+      
+      // 3. Fallback: Parse stored Rio string directly to timestamp
+      if (b.date && b.time) {
+        try {
+          const localIsoString = `${b.date.trim()}T${b.time.trim()}:00-03:00`;
+          const bookingMs = new Date(localIsoString).getTime();
+          if (Math.abs(bookingMs - cellMs) < 60000) {
+            return true;
+          }
+        } catch (e) {}
+      }
+
+      return false;
     });
   };
 
@@ -550,8 +588,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                       Sua Aula (Cancelar)
                     </button>
                   ) : (
-                    <div className="absolute inset-0 rounded-xl bg-slate-850/20 border border-slate-850/40 text-slate-500 text-xs font-semibold flex items-center justify-center cursor-not-allowed">
-                      Reservado
+                    <div className="absolute inset-0 rounded-xl bg-red-950/20 border border-red-900/20 text-red-400 text-xs font-bold flex items-center justify-center cursor-not-allowed opacity-60">
+                      Ocupado ❌
                     </div>
                   )}
                 </div>
@@ -652,10 +690,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                             <span className="text-sm font-bold tracking-wide hidden group-hover/btn:block">Cancelar? ❌</span>
                           </button>
                         ) : (
-                          // Booked by someone else
-                          <div className="absolute inset-0 rounded-xl bg-slate-800/40 border border-white/5 flex flex-col items-center justify-center cursor-not-allowed overflow-hidden opacity-50">
-                            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-slate-900/50" />
-                            <span className="text-sm font-medium text-slate-500 relative z-10">Ocupado</span>
+                          // Booked by someone else (faded red)
+                          <div className="absolute inset-0 rounded-xl bg-red-950/20 border border-red-900/20 flex flex-col items-center justify-center cursor-not-allowed overflow-hidden opacity-60">
+                            <span className="text-sm font-bold text-red-400">Ocupado ❌</span>
                           </div>
                         )}
                       </div>
