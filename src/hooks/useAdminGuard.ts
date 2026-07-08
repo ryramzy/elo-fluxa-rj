@@ -31,18 +31,17 @@ export function useAdminGuard() {
         
         // Immediate fallback check by UID or authorized email
         if (isAuthorizedEmail || (adminUid && user.uid.trim() === adminUid.trim())) {
-          // Proactively ensure /users/{uid} document has role: 'admin' in Firestore
-          try {
-            const userRef = doc(db, 'users', user.uid);
-            await setDoc(userRef, {
-              displayName: user.displayName || 'Matthew Ramsay',
-              email: user.email || userEmail,
-              role: 'admin',
-              createdAt: new Date()
-            }, { merge: true });
-          } catch (writeErr) {
+          // Proactively ensure /users/{uid} document has role: 'admin' in Firestore (fire-and-forget)
+          const userRef = doc(db, 'users', user.uid);
+          setDoc(userRef, {
+            displayName: user.displayName || 'Matthew Ramsay',
+            email: user.email || userEmail,
+            role: 'admin',
+            createdAt: new Date()
+          }, { merge: true }).catch(writeErr => {
             console.error('Error auto-healing admin profile document:', writeErr);
-          }
+          });
+          
           setIsAdmin(true);
           setAdminLoading(false);
           return;
@@ -59,9 +58,11 @@ export function useAdminGuard() {
         }
         
         // Unauthorized
+        setAdminLoading(false);
         navigate('/dashboard');
       } catch (err) {
         console.error('Error checking admin permissions:', err);
+        setAdminLoading(false);
         navigate('/dashboard');
       }
     };
