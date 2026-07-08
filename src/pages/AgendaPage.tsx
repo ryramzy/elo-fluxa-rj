@@ -124,23 +124,49 @@ function TutorAgendaView() {
   const [endHour, setEndHour] = useState('21:00');
   const [savingTemplate, setSavingTemplate] = useState(false);
 
-  // Subscribe to bookings, available slots, and users list
+  // Subscribe to bookings, available slots, and users list within a rolling range
   useEffect(() => {
-    const unsubBookings = onSnapshot(collection(db, 'bookings'), (snap) => {
+    const today = new Date();
+    const startObj = new Date(today);
+    startObj.setDate(today.getDate() - 14); // 2 weeks in the past
+    const startStr = startObj.toLocaleDateString('en-CA');
+
+    const endObj = new Date(today);
+    endObj.setDate(today.getDate() + 35); // 5 weeks in the future
+    const endStr = endObj.toLocaleDateString('en-CA');
+
+    const bookingsQuery = query(
+      collection(db, 'bookings'),
+      where('date', '>=', startStr),
+      where('date', '<=', endStr)
+    );
+
+    const slotsQuery = query(
+      collection(db, 'availableSlots'),
+      where('date', '>=', startStr),
+      where('date', '<=', endStr)
+    );
+
+    const unsubBookings = onSnapshot(bookingsQuery, (snap) => {
       const list: Booking[] = [];
       snap.forEach(d => {
         list.push({ id: d.id, ...d.data() } as Booking);
       });
       setBookings(list);
       setLoading(false);
+    }, (error) => {
+      console.error('Error loading bookings:', error);
+      setLoading(false);
     });
 
-    const unsubSlots = onSnapshot(collection(db, 'availableSlots'), (snap) => {
+    const unsubSlots = onSnapshot(slotsQuery, (snap) => {
       const list: any[] = [];
       snap.forEach(d => {
         list.push({ id: d.id, ...d.data() });
       });
       setAvailableSlots(list);
+    }, (error) => {
+      console.error('Error loading slots:', error);
     });
 
     // Fetch users for booking modal
@@ -1042,19 +1068,19 @@ function StudentAgendaView() {
   useEffect(() => {
     if (!user) return;
     const q = query(
-      collection(db, 'bookings')
+      collection(db, 'bookings'),
+      where('userId', '==', user.uid)
     );
 
     const unsubscribe = onSnapshot(q, (snap) => {
       const list: Booking[] = [];
       snap.forEach(d => {
-        const data = d.data();
-        const userId = data.userId || data.uid;
-        if (userId === user.uid) {
-          list.push({ id: d.id, ...data } as Booking);
-        }
+        list.push({ id: d.id, ...d.data() } as Booking);
       });
       setBookings(list);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error loading student bookings:', error);
       setLoading(false);
     });
 
