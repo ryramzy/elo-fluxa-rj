@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 export function useAdminGuard() {
@@ -24,6 +24,18 @@ export function useAdminGuard() {
         
         // Immediate fallback check
         if (adminUid && user.uid.trim() === adminUid.trim()) {
+          // Proactively ensure /users/{uid} document has role: 'admin' in Firestore
+          try {
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, {
+              displayName: user.displayName || 'Matthew Ramsay',
+              email: user.email || 'mramsayo@gmail.com',
+              role: 'admin',
+              createdAt: new Date()
+            }, { merge: true });
+          } catch (writeErr) {
+            console.error('Error auto-healing admin profile document:', writeErr);
+          }
           setIsAdmin(true);
           setAdminLoading(false);
           return;
