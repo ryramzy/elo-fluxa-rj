@@ -91,7 +91,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
-              Email Address
+              Endereço de E-mail
             </label>
             <input
               type="email"
@@ -99,13 +99,13 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="you@example.com"
+              placeholder="seu-email@exemplo.com"
             />
           </div>
 
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
-              Password
+              Senha
             </label>
             <input
               type="password"
@@ -113,7 +113,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="•••••"
+              placeholder="••••••••"
             />
           </div>
 

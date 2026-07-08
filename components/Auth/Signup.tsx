@@ -54,8 +54,8 @@ const Signup = () => {
           <Link to="/" className="text-3xl font-serif font-bold tracking-tight text-white flex items-center justify-center gap-2 mb-2 hover:opacity-80 transition-opacity">
              <span className="text-blue-500">Elo!</span>
           </Link>
-          <h2 className="text-2xl font-bold text-white mb-2">Create Account</h2>
-          <p className="text-slate-400 text-sm font-light">Join us to book your sessions and start speaking</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Criar Conta</h2>
+          <p className="text-slate-400 text-sm font-light">Pratique conversação e domine o inglês com Matthew Ramsay</p>
         </div>
 
         {error && (
@@ -67,7 +67,7 @@ const Signup = () => {
         <form onSubmit={handleSignup} className="space-y-6">
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
-              Email Address
+              Endereço de E-mail
             </label>
             <input
               type="email"
@@ -75,13 +75,13 @@ const Signup = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="you@example.com"
+              placeholder="seu-email@exemplo.com"
             />
           </div>
 
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
-              Password
+              Senha
             </label>
             <input
               type="password"
@@ -96,7 +96,7 @@ const Signup = () => {
 
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
-              Confirm Password
+              Confirmar Senha
             </label>
             <input
               type="password"
@@ -114,7 +114,7 @@ const Signup = () => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? 'Criando conta...' : 'Criar Conta'}
           </button>
         </form>
 
@@ -147,9 +147,9 @@ const Signup = () => {
 
         <div className="mt-8 text-center text-sm">
           <p className="text-slate-400">
-            Already have an account?{' '}
+            Já tem uma conta?{' '}
             <Link to="/login" className="text-blue-500 hover:text-blue-400 font-bold transition-colors">
-              Log in
+              Entrar
             </Link>
           </p>
         </div>

@@ -400,7 +400,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                Book Your Class
+                Agende sua Aula
               </h2>
               {corporateCredits !== null && (
                 <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-550/20' : 'text-slate-350'}`}>
@@ -409,10 +409,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               )}
             </div>
             <p className="text-slate-400 mt-1 text-sm md:text-base font-normal">
-              Week of {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+              Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
             </p>
             {corporateCredits === 0 && (
-              <p className="text-rose-450 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
+              <p className="text-rose-455 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
                 Você consumiu todos os seus créditos corporativos do mês. Entre em contato com seu gestor de RH.
               </p>
             )}
@@ -423,7 +423,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               onClick={() => setSelectedWeek(selectedWeek - 1)}
               className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
             >
-              Previous
+              Anterior
             </button>
             <button
               onClick={() => setSelectedWeek(0)}
@@ -433,13 +433,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              Today
+              Hoje
             </button>
             <button
               onClick={() => setSelectedWeek(selectedWeek + 1)}
               className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
             >
-              Next
+              Próxima
             </button>
           </div>
         </div>
@@ -448,15 +448,15 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/5">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
-            <span className="text-xs font-medium text-slate-300">Available</span>
+            <span className="text-xs font-medium text-slate-300">Disponível</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-blue-500/80 shadow-[0_0_10px_rgba(59,130,246,0.4)]" />
-            <span className="text-xs font-medium text-slate-300">Your Booking</span>
+            <span className="text-xs font-medium text-slate-300">Seu Agendamento</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-slate-700/80" />
-            <span className="text-xs font-medium text-slate-400">Booked by Others</span>
+            <span className="text-xs font-medium text-slate-400">Reservado por outro aluno</span>
           </div>
         </div>
       </div>
@@ -466,7 +466,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f172a]/50 backdrop-blur-sm z-10">
             <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-            <p className="mt-4 text-slate-400 font-medium">Loading availability...</p>
+            <p className="mt-4 text-slate-400 font-medium">Carregando horários...</p>
           </div>
         ) : null}
 
@@ -491,7 +491,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 }`}
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider mb-0.5">
-                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                  {date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
                 </span>
                 <span className="text-lg font-black">
                   {date.getDate()}
@@ -513,7 +513,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             
             let slotState = 'available';
             if (existingBooking) {
-              if (existingBooking.userId === currentUserId) slotState = 'mine';
+              if (existingBooking.userId === currentUserId || existingBooking.uid === currentUserId) slotState = 'mine';
               else slotState = 'booked';
             }
 
@@ -521,12 +521,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             const currentSlotLoading = slotLoadingMap[slotKey];
 
             return (
-              <div key={time} className="flex items-center justify-between bg-slate-900/20 border border-slate-850 p-3.5 rounded-2xl gap-4">
+              <div key={`${dateStr}-${time}`} className="flex items-center justify-between bg-slate-900/40 p-4 rounded-2xl border border-white/5">
                 <span className="text-slate-200 text-sm font-extrabold shrink-0">{time}</span>
                 <div className="flex-1 max-w-[200px] h-12 relative">
                   {showAsUnavailable ? (
                     <div className="absolute inset-0 rounded-xl bg-slate-950/20 border border-slate-850 flex items-center justify-center">
-                      <span className="text-xs text-slate-600 font-medium">— Indisponível</span>
+                      <span className="text-xs text-slate-650 font-medium">— Indisponível</span>
                     </div>
                   ) : slotState === 'available' ? (
                     <button
@@ -546,9 +546,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleCancelBooking(existingBooking!.id)}
                       disabled={isAnySlotBooking || cancelling}
-                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_12px_rgba(59,130,246,0.1)]"
                     >
-                      Cancelar
+                      Sua Aula (Cancelar)
                     </button>
                   ) : (
                     <div className="absolute inset-0 rounded-xl bg-slate-850/20 border border-slate-850/40 text-slate-500 text-xs font-semibold flex items-center justify-center cursor-not-allowed">
@@ -566,18 +566,18 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="min-w-[800px]">
             {/* Days Header */}
             <div className="grid grid-cols-6 gap-4 mb-4">
-              <div className="text-right pr-4 text-slate-500 text-xs font-medium uppercase tracking-wider pt-2">
-                Time
+              <div className="text-right pr-4 text-slate-550 text-xs font-bold uppercase tracking-wider pt-2">
+                Horário
               </div>
               {weekDates.map((date, i) => {
                 const dateStr = date.toLocaleDateString('en-CA');
                 const isToday = dateStr === new Date().toLocaleDateString('en-CA');
                 return (
                   <div key={i} className={`flex flex-col items-center p-3 rounded-2xl transition-all ${isToday ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-transparent'}`}>
-                    <span className={`text-sm font-semibold mb-1 ${isToday ? 'text-blue-400' : 'text-slate-300'}`}>
-                      {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                    <span className={`text-xs font-bold uppercase mb-1 tracking-wider ${isToday ? 'text-blue-400' : 'text-slate-400'}`}>
+                      {date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
                     </span>
-                    <span className={`text-2xl font-bold ${isToday ? 'text-white' : 'text-slate-400'}`}>
+                    <span className={`text-2xl font-black ${isToday ? 'text-white' : 'text-slate-300'}`}>
                       {date.getDate()}
                     </span>
                   </div>
@@ -590,7 +590,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               {timeSlots.map((time) => (
                 <div key={time} className="grid grid-cols-6 gap-4 group">
                   {/* Time Label */}
-                  <div className="text-right pr-4 py-3 text-slate-400 text-sm font-medium flex items-center justify-end transform -translate-y-0.5">
+                  <div className="text-right pr-4 py-3 text-slate-455 text-sm font-extrabold flex items-center justify-end transform -translate-y-0.5">
                     {time}
                   </div>
                   
@@ -604,7 +604,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     
                     let slotState = 'available';
                     if (existingBooking) {
-                      if (existingBooking.userId === currentUserId) slotState = 'mine';
+                      if (existingBooking.userId === currentUserId || existingBooking.uid === currentUserId) slotState = 'mine';
                       else slotState = 'booked';
                     }
 
@@ -628,17 +628,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                              {currentSlotLoading === 'booking' ? (
                                <div className="flex flex-col items-center justify-center">
                                  <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
-                                 <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Booking...</span>
+                                 <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Agendando...</span>
                                </div>
                              ) : isCreditLocked ? (
                                <>
-                                 <span className="text-sm font-bold tracking-wide text-slate-500">Bloqueado</span>
-                                 <span className="text-[9px] text-slate-550 uppercase tracking-wider mt-0.5">Sem Créditos</span>
+                                 <span className="text-sm font-bold tracking-wide text-slate-550">Bloqueado</span>
+                                 <span className="text-[9px] text-slate-600 uppercase tracking-wider mt-0.5">Sem Créditos</span>
                                </>
                              ) : (
                                <>
-                                 <span className="text-sm font-bold tracking-wide">Available</span>
-                                 <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Click to Book</span>
+                                 <span className="text-sm font-bold tracking-wide">Disponível</span>
+                                 <span className="text-[10px] opacity-0 group-hover/btn:opacity-100 transition-opacity uppercase tracking-wider mt-0.5">Reservar</span>
                                </>
                              )}
                            </button>
@@ -647,16 +647,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                           <button
                             onClick={() => handleCancelBooking(existingBooking!.id)}
                             disabled={isAnySlotBooking || cancelling}
-                            className="absolute inset-0 w-full rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="absolute inset-0 w-full rounded-xl bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all duration-300 flex flex-col items-center justify-center group/btn active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(59,130,246,0.15)]"
                           >
-                            <span className="text-sm font-bold tracking-wide group-hover/btn:hidden">Your Class</span>
-                            <span className="text-sm font-bold tracking-wide hidden group-hover/btn:block">Cancel?</span>
+                            <span className="text-sm font-bold tracking-wide group-hover/btn:hidden">Sua Aula ✅</span>
+                            <span className="text-sm font-bold tracking-wide hidden group-hover/btn:block">Cancelar? ❌</span>
                           </button>
                         ) : (
                           // Booked by someone else
-                          <div className="absolute inset-0 rounded-xl bg-slate-800/60 border border-white/5 flex flex-col items-center justify-center cursor-not-allowed overflow-hidden">
+                          <div className="absolute inset-0 rounded-xl bg-slate-800/40 border border-white/5 flex flex-col items-center justify-center cursor-not-allowed overflow-hidden opacity-50">
                             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-slate-900/50" />
-                            <span className="text-sm font-medium text-slate-500 relative z-10">Booked</span>
+                            <span className="text-sm font-medium text-slate-500 relative z-10">Ocupado</span>
                           </div>
                         )}
                       </div>

@@ -131,7 +131,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   onClick={(e) => handleLinkClick(e, 'dashboard')}
                   className={getLinkClasses('dashboard')}
                 >
-                  Dashboard
+                  Painel
                 </a>
                 <a
                   href="/courses"
