@@ -21,6 +21,7 @@ import { auth, db } from './firebase';
 import { addGlobalToast } from '../hooks/useToast';
 import { TimeSlot, Booking } from '../types';
 import { createCalendarEvent, cancelCalendarEvent } from './googleCalendar';
+import { writeAuditLog } from './audit';
 
 // Types
 export interface UserProfile {
@@ -842,56 +843,83 @@ export async function bookSlot(
   const utcDate = new Date(localIsoString);
   const datetimeTimestamp = Timestamp.fromDate(utcDate);
 
-  await runTransaction(db, async (transaction) => {
-    const bookingDoc = await transaction.get(bookingRef);
-    if (bookingDoc.exists()) {
-      throw new Error('This slot is already booked by someone else.');
-    }
+  let isCorporate = false;
+  let plan = 'free';
 
-    const userRef = doc(db, 'users', userId);
-    const userDoc = await transaction.get(userRef);
-    if (!userDoc.exists()) {
-      throw new Error('Student profile not found.');
-    }
-
-    const userData = userDoc.data();
-    const isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
-
-    if (isCorporate) {
-      const credits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
-      if (credits <= 0) {
-        throw new Error('Créditos B2B esgotados. Agendamento bloqueado!');
+  try {
+    await runTransaction(db, async (transaction) => {
+      const bookingDoc = await transaction.get(bookingRef);
+      if (bookingDoc.exists()) {
+        throw new Error('This slot is already booked by someone else.');
       }
-      transaction.update(userRef, { corporateCredits: credits - 1 });
-    }
 
-    transaction.set(bookingRef, {
-      userId,
-      userName,
-      userEmail,
-      uid: userId,             // Legacy compatibility
-      studentName: userName,   // Legacy compatibility
-      studentEmail: userEmail, // Legacy compatibility
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await transaction.get(userRef);
+      if (!userDoc.exists()) {
+        throw new Error('Student profile not found.');
+      }
+
+      const userData = userDoc.data();
+      isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
+      plan = userData.plan || 'free';
+
+      if (isCorporate) {
+        const credits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
+        if (credits <= 0) {
+          throw new Error('Créditos B2B esgotados. Agendamento bloqueado!');
+        }
+        transaction.update(userRef, { corporateCredits: credits - 1 });
+      } else {
+        const currentCount = userData.bookingsThisMonth || 0;
+        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 1;
+        if (currentCount >= bookingLimit) {
+          throw new Error('Você atingiu o limite de agendamentos para este mês.');
+        }
+        transaction.update(userRef, { bookingsThisMonth: currentCount + 1 });
+      }
+
+      transaction.set(bookingRef, {
+        userId,
+        userName,
+        userEmail,
+        uid: userId,             // Legacy compatibility
+        studentName: userName,   // Legacy compatibility
+        studentEmail: userEmail, // Legacy compatibility
+        date,
+        time,
+        duration: 60,
+        status: 'confirmed',
+        googleEventId: googleEventId || null,
+        meetLink: meetLink || null,
+        notes: notes || '',
+        createdAt: serverTimestamp(),
+        datetime: datetimeTimestamp
+      });
+
+      transaction.set(notifRef, {
+        title: 'Aula agendada! 🗓️',
+        message: `Sua aula de inglês para o dia ${date} às ${time} foi agendada.`,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    });
+
+    await writeAuditLog('student_booked_lesson', userId, bookingId, 'success', {
       date,
       time,
-      duration: 60,
-      status: 'confirmed',
-      googleEventId: googleEventId || null,
-      meetLink: meetLink || null,
-      notes: notes || '',
-      createdAt: serverTimestamp(),
-      datetime: datetimeTimestamp
+      isCorporate,
+      plan
     });
 
-    transaction.set(notifRef, {
-      title: 'Aula agendada! 🗓️',
-      message: `Sua aula de inglês para o dia ${date} às ${time} foi agendada.`,
-      read: false,
-      createdAt: serverTimestamp()
+    return bookingId;
+  } catch (error: any) {
+    await writeAuditLog('student_booked_lesson', userId, bookingId, 'failure', {
+      date,
+      time,
+      error: error.message || 'Unknown error'
     });
-  });
-
-  return bookingId;
+    throw error;
+  }
 }
 
 // Cancel a booking
@@ -930,45 +958,61 @@ export async function cancelBooking(
     }
   }
 
-  await runTransaction(db, async (transaction) => {
-    const bDoc = await transaction.get(bookingRef);
-    if (!bDoc.exists()) return; // Already deleted
+  try {
+    await runTransaction(db, async (transaction) => {
+      const bDoc = await transaction.get(bookingRef);
+      if (!bDoc.exists()) return; // Already deleted
 
-    // Delete booking
-    transaction.delete(bookingRef);
+      // Delete booking
+      transaction.delete(bookingRef);
 
-    // Record the cancellation event in booking_cancellations collection
-    const cancellationRef = doc(collection(db, 'booking_cancellations'));
-    transaction.set(cancellationRef, {
-      bookingId,
-      studentId: userId || 'unknown',
-      studentName: bookingData.userName || 'unknown',
-      studentEmail: bookingData.userEmail || 'unknown',
-      slotDate: bookingData.date || 'unknown',
-      slotTime: bookingData.time || 'unknown',
-      cancelledAt: new Date(),
-      cancellationType: deservesRefund ? 'early' : 'late',
-      organizationId: bookingData.organizationId || ''
-    });
+      // Record the cancellation event in booking_cancellations collection
+      const cancellationRef = doc(collection(db, 'booking_cancellations'));
+      transaction.set(cancellationRef, {
+        bookingId,
+        studentId: userId || 'unknown',
+        studentName: bookingData.userName || 'unknown',
+        studentEmail: bookingData.userEmail || 'unknown',
+        slotDate: bookingData.date || 'unknown',
+        slotTime: bookingData.time || 'unknown',
+        cancelledAt: new Date(),
+        cancellationType: deservesRefund ? 'early' : 'late',
+        organizationId: bookingData.organizationId || ''
+      });
 
-    // Process B2B refund if applicable
-    if (userId) {
-      const userRef = doc(db, 'users', userId);
-      const userDoc = await transaction.get(userRef);
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
-        
-        if (isCorporate && deservesRefund) {
-          const currentCredits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
-          transaction.update(userRef, { corporateCredits: currentCredits + 1 });
-          console.log(`[B2B Cancellation] Refunded 1 credit to user ${userId}. New balance: ${currentCredits + 1}`);
-        } else if (isCorporate && !deservesRefund) {
-          console.log(`[B2B Cancellation] Late cancellation (<24h) for user ${userId}. No refund allocated.`);
+      // Process B2B/Standard refund if applicable
+      if (userId) {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await transaction.get(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
+          
+          if (isCorporate && deservesRefund) {
+            const currentCredits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
+            transaction.update(userRef, { corporateCredits: currentCredits + 1 });
+            console.log(`[B2B Cancellation] Refunded 1 credit to user ${userId}. New balance: ${currentCredits + 1}`);
+          } else if (!isCorporate && deservesRefund) {
+            const currentCount = typeof userData.bookingsThisMonth === 'number' ? userData.bookingsThisMonth : 0;
+            const newCount = Math.max(0, currentCount - 1);
+            transaction.update(userRef, { bookingsThisMonth: newCount });
+            console.log(`[Standard Cancellation] Refunded 1 credit to user ${userId}. New count: ${newCount}`);
+          }
         }
       }
-    }
-  });
+    });
+
+    await writeAuditLog('student_cancelled_lesson', userId || 'unknown', bookingId, 'success', {
+      date: bookingData.date,
+      time: bookingData.time,
+      deservesRefund
+    });
+  } catch (error: any) {
+    await writeAuditLog('student_cancelled_lesson', userId || 'unknown', bookingId, 'failure', {
+      error: error.message || 'Unknown error'
+    });
+    throw error;
+  }
 }
 
 // Get user's bookings

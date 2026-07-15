@@ -10,6 +10,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if ((path.endsWith('/email/booking-confirmation') || path === '/api/email/booking-confirmation') && req.method === 'POST') {
     return handleBookingConfirmation(req, res);
   }
+  if ((path.endsWith('/email/booking-cancellation') || path === '/api/email/booking-cancellation') && req.method === 'POST') {
+    return handleBookingCancellation(req, res);
+  }
   if ((path.endsWith('/email/enrollment-confirmation') || path === '/api/email/enrollment-confirmation') && req.method === 'POST') {
     return handleEnrollmentConfirmation(req, res);
   }
@@ -501,5 +504,93 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
   } catch (error: any) {
     console.error('Lesson reminder error:', error);
     res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+}
+
+async function handleBookingCancellation(req: VercelRequest, res: VercelResponse) {
+  try {
+    const {
+      attendeeName, attendeeEmail,
+      date, time, deservesRefund, cancellationType
+    } = req.body;
+
+    const formattedDate = new Date(date + 'T00:00:00')
+      .toLocaleDateString('pt-BR', {
+        weekday: 'long', day: 'numeric', month: 'long'
+      });
+
+    const isTutorCancel = cancellationType === 'tutor';
+
+    const refundText = deservesRefund
+      ? 'Seu crédito/aula foi reembolsado e está disponível para novo agendamento.'
+      : 'Atenção: Cancelamentos com menos de 24 horas de antecedência não geram reembolso de créditos.';
+
+    const emailSubject = isTutorCancel
+      ? `Aula Cancelada pelo Professor - ${formattedDate}`
+      : `Confirmação de Cancelamento de Aula - ${formattedDate}`;
+
+    const htmlContent = `
+      <div style="font-family:sans-serif;max-width:520px;
+                  margin:0 auto;color:#1a1a1a">
+        <h2 style="color:#dc2626;margin-bottom:8px">Elo!</h2>
+        <p style="margin:0 0 24px 0;font-size:16px">
+          Olá, <strong>${attendeeName}</strong>!
+        </p>
+        <p style="margin:0 0 20px 0">
+          ${isTutorCancel 
+            ? 'Infelizmente, o professor Matt precisou cancelar a aula agendada abaixo. Pedimos desculpas pelo inconveniente.' 
+            : 'Confirmamos o cancelamento da sua aula abaixo conforme solicitado.'}
+        </p>
+        
+        <div style="background:#fef2f2;border-left:4px solid #ef4444;
+                    padding:16px;border-radius:4px;margin:20px 0">
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#991b1b">
+            <strong>${formattedDate}</strong> às ${time}<br/>
+            Duração: 60 minutos<br/>
+            Status: <strong>Cancelado</strong>
+          </p>
+        </div>
+
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;
+                    padding:16px;border-radius:4px;margin:20px 0">
+          <p style="margin:0;font-size:13px;color:#475569;line-height:1.5">
+            <strong>Política de Reembolso:</strong><br/>
+            ${isTutorCancel ? 'Seu crédito foi totalmente reembolsado para sua conta.' : refundText}
+          </p>
+        </div>
+
+        <p style="color:#64748b;font-size:13px;margin-top:24px">
+          Quer agendar um novo horário? 
+          <a href="https://elospeak.com.br/dashboard" style="color:#2563eb;font-weight:bold">
+            Acesse seu dashboard
+          </a>.
+        </p>
+
+        <p style="color:#94a3b8;font-size:12px;margin-top:32px;
+                  padding-top:16px;border-top:1px solid #e2e8f0">
+          <strong>Elo!</strong><br/>
+          Inglês americano sem pressão<br/>
+          elospeak.com.br · matt@elospeak.com.br
+        </p>
+      </div>
+    `;
+
+    const { error } = await resend.emails.send({
+      from: 'Elo! <noreply@elospeak.com.br>',
+      replyTo: 'matt@elospeak.com.br',
+      to: [attendeeEmail, 'mramsao@gmail.com'],
+      subject: emailSubject,
+      html: htmlContent,
+    });
+
+    if (error) {
+      console.error('Email error:', error);
+      return res.status(500).json({ error: 'Failed to send email' });
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Booking cancellation email error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }

@@ -21,6 +21,49 @@ interface Booking {
   meetLink?: string;
 }
 
+function getGoogleCalendarLink(b: Booking) {
+  const title = encodeURIComponent("Aula de Inglês - Elo!");
+  const details = encodeURIComponent(`Aula de conversação com Matthew Ramsay. Link da aula: ${b.meetLink || ''}`);
+  const localIsoString = `${b.date}T${b.time}:00-03:00`;
+  const startDate = new Date(localIsoString);
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+  const formatCalDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const dates = `${formatCalDate(startDate)}/${formatCalDate(endDate)}`;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dates}`;
+}
+
+function downloadIcsFile(b: Booking) {
+  const localIsoString = `${b.date}T${b.time}:00-03:00`;
+  const startDate = new Date(localIsoString);
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+  const formatIcsDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Elo Speak//EN',
+    'BEGIN:VEVENT',
+    `UID:booking-${b.id}`,
+    `DTSTAMP:${formatIcsDate(new Date())}`,
+    `DTSTART:${formatIcsDate(startDate)}`,
+    `DTEND:${formatIcsDate(endDate)}`,
+    'SUMMARY:Aula de Inglês - Elo!',
+    `DESCRIPTION:Aula de conversação com Matthew Ramsay. Link da aula: ${b.meetLink || ''}`,
+    b.meetLink ? `URL:${b.meetLink}` : '',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(Boolean).join('\r\n');
+  
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `aula-elo-${b.date}.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export function StudentAgendaView() {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -67,8 +110,24 @@ export function StudentAgendaView() {
     if (!window.confirm(cancelMsg)) return;
 
     try {
+      const booking = bookings.find(b => b.id === bookingId);
       await cancelBooking(bookingId);
       showToast({ type: 'success', message: 'Agendamento cancelado com sucesso!' });
+      
+      if (booking) {
+        fetch('/api/email/booking-cancellation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attendeeName: booking.studentName || booking.userName || user?.displayName || 'Estudante',
+            attendeeEmail: booking.studentEmail || booking.userEmail || user?.email || '',
+            date: booking.date,
+            time: booking.time,
+            deservesRefund: !deservesWarning,
+            cancellationType: 'student'
+          })
+        }).catch(err => console.error('Error sending cancellation email:', err));
+      }
     } catch (err: any) {
       console.error('Error cancelling booking:', err);
       showToast({ type: 'error', message: 'Erro ao cancelar agendamento: ' + err.message });
@@ -161,6 +220,24 @@ export function StudentAgendaView() {
                     <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 uppercase tracking-wide">
                       {b.date.split('-').reverse().join('/')} • Sotaque Americano
                     </p>
+                    <div className="flex gap-2.5 mt-1.5 text-[9px] font-bold uppercase tracking-wider text-slate-450 dark:text-slate-400">
+                      <span>Adicionar:</span>
+                      <a
+                        href={getGoogleCalendarLink(b)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-500 hover:text-blue-400 transition-colors"
+                      >
+                        Google Agenda
+                      </a>
+                      <span>•</span>
+                      <button
+                        onClick={() => downloadIcsFile(b)}
+                        className="text-blue-500 hover:text-blue-400 transition-colors uppercase font-bold text-[9px]"
+                      >
+                        Apple / Outlook
+                      </button>
+                    </div>
                   </div>
                 </div>
 

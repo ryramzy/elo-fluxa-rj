@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 import { useToast } from '../hooks/useToast';
-import { FaTimes, FaSave } from 'react-icons/fa';
+import { FaTimes, FaSave, FaStar } from 'react-icons/fa';
 
 interface Booking {
   id: string;
@@ -14,6 +14,10 @@ interface Booking {
     pronunciation: string;
     vocabulary: string;
     homework: string;
+    summary: string;
+    studentRating: number;
+    nextGoal: string;
+    attendance: 'present' | 'absent';
     submittedAt: any;
   };
 }
@@ -25,20 +29,32 @@ interface BookingFeedbackModalProps {
 
 export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ booking, onClose }) => {
   const { showToast } = useToast();
+  const [summary, setSummary] = useState('');
   const [pronunciation, setPronunciation] = useState('');
   const [vocabulary, setVocabulary] = useState('');
   const [homework, setHomework] = useState('');
+  const [nextGoal, setNextGoal] = useState('');
+  const [studentRating, setStudentRating] = useState(5);
+  const [attendance, setAttendance] = useState<'present' | 'absent'>('present');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (booking.tutorNotes) {
+      setSummary(booking.tutorNotes.summary || '');
       setPronunciation(booking.tutorNotes.pronunciation || '');
       setVocabulary(booking.tutorNotes.vocabulary || '');
       setHomework(booking.tutorNotes.homework || '');
+      setNextGoal(booking.tutorNotes.nextGoal || '');
+      setStudentRating(booking.tutorNotes.studentRating || 5);
+      setAttendance(booking.tutorNotes.attendance || 'present');
     } else {
+      setSummary('');
       setPronunciation('');
       setVocabulary('');
       setHomework('');
+      setNextGoal('');
+      setStudentRating(5);
+      setAttendance('present');
     }
   }, [booking]);
 
@@ -50,9 +66,13 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
       const bookingRef = doc(db, 'bookings', booking.id);
       await updateDoc(bookingRef, {
         tutorNotes: {
+          summary,
           pronunciation,
           vocabulary,
           homework,
+          nextGoal,
+          studentRating,
+          attendance,
           submittedAt: Timestamp.now()
         }
       });
@@ -96,6 +116,58 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
 
         {/* Feedback Form */}
         <form onSubmit={handleSave} className="space-y-5">
+          {/* Attendance & Rating */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                Presença 📅
+              </label>
+              <select
+                value={attendance}
+                onChange={(e) => setAttendance(e.target.value as 'present' | 'absent')}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm font-semibold"
+              >
+                <option value="present">Presente</option>
+                <option value="absent">Ausente (No-show)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                Desempenho ⭐️
+              </label>
+              <div className="flex items-center gap-1 mt-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setStudentRating(star)}
+                    className="text-xl focus:outline-none transition-colors"
+                  >
+                    <FaStar 
+                      className={star <= studentRating ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600'} 
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Class Summary */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+              Resumo da Aula (Desempenho Geral) 📝
+            </label>
+            <textarea
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              rows={3}
+              placeholder="Descreva brevemente o foco da aula e o desempenho do aluno..."
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none text-sm"
+              required
+            />
+          </div>
+
           {/* Pronunciation Notes */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
@@ -104,7 +176,7 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
             <textarea
               value={pronunciation}
               onChange={(e) => setPronunciation(e.target.value)}
-              rows={3}
+              rows={2}
               placeholder="Descreva pontos de fonética ou pronúncia para melhorar..."
               className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none text-sm"
             />
@@ -118,7 +190,7 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
             <textarea
               value={vocabulary}
               onChange={(e) => setVocabulary(e.target.value)}
-              rows={3}
+              rows={2}
               placeholder="Adicione termos ou expressões importantes aprendidos hoje..."
               className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none text-sm"
             />
@@ -127,13 +199,27 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
           {/* Homework Notes */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
-              Tarefa & Próximos Passos 📝
+              Tarefa de Casa 🏠
             </label>
             <textarea
               value={homework}
               onChange={(e) => setHomework(e.target.value)}
-              rows={3}
-              placeholder="Descreva o dever de casa ou próximos tópicos de estudo..."
+              rows={2}
+              placeholder="Descreva a atividade ou dever de casa..."
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none text-sm"
+            />
+          </div>
+
+          {/* Next Goal */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+              Objetivo para Próxima Aula 🎯
+            </label>
+            <textarea
+              value={nextGoal}
+              onChange={(e) => setNextGoal(e.target.value)}
+              rows={2}
+              placeholder="Defina qual o próximo marco/foco de conversação..."
               className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none text-sm"
             />
           </div>

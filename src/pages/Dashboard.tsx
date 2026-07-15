@@ -14,6 +14,7 @@ import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { KpiCards } from '../components/dashboard/KpiCards';
 import { CoursesGrid } from '../components/dashboard/CoursesGrid';
 import { UpcomingClasses } from '../components/dashboard/UpcomingClasses';
+import { StudentTimeline } from '../components/dashboard/StudentTimeline';
 import { LiveTutorsWidget } from '../components/dashboard/LiveTutorsWidget';
 import { QuickLinks } from '../components/dashboard/QuickLinks';
 import { courses } from '../data/courses';
@@ -252,6 +253,11 @@ const DashboardWorking: React.FC = () => {
 
               <div className="space-y-6">
                 <LiveTutorsWidget onNavigateToAgenda={() => setActiveTab('booking')} />
+                <StudentTimeline
+                  bookings={bookings || []}
+                  xp={profile?.xp || 0}
+                  onBookNextLesson={() => setActiveTab('booking')}
+                />
                 <UpcomingClasses
                   bookings={bookings || []}
                   onNavigateToAgenda={() => setActiveTab('booking')}

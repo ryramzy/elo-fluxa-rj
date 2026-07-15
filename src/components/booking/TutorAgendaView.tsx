@@ -168,9 +168,25 @@ export function TutorAgendaView() {
   const handleDeclineRequest = async (bookingId: string) => {
     if (!window.confirm('Deseja realmente recusar esta solicitação de aula?')) return;
     try {
+      const booking = bookings.find(b => b.id === bookingId);
       const ref = doc(db, 'bookings', bookingId);
       await deleteDoc(ref);
       showToast({ type: 'success', message: 'Solicitação recusada com sucesso.' });
+
+      if (booking) {
+        fetch('/api/email/booking-cancellation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attendeeName: booking.studentName || booking.userName || 'Estudante',
+            attendeeEmail: booking.studentEmail || booking.userEmail || '',
+            date: booking.date,
+            time: booking.time,
+            deservesRefund: true,
+            cancellationType: 'tutor'
+          })
+        }).catch(err => console.error('Error sending decline email:', err));
+      }
     } catch (err: any) {
       console.error('Error declining booking:', err);
       showToast({ type: 'error', message: 'Erro ao recusar: ' + err.message });
@@ -180,8 +196,24 @@ export function TutorAgendaView() {
   const handleCancelBookingTutor = async (bookingId: string) => {
     if (!window.confirm('Deseja realmente cancelar esta aula confirmada?')) return;
     try {
+      const booking = bookings.find(b => b.id === bookingId);
       await cancelBooking(bookingId);
       showToast({ type: 'success', message: 'Aula cancelada com sucesso.' });
+
+      if (booking) {
+        fetch('/api/email/booking-cancellation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attendeeName: booking.studentName || booking.userName || 'Estudante',
+            attendeeEmail: booking.studentEmail || booking.userEmail || '',
+            date: booking.date,
+            time: booking.time,
+            deservesRefund: true,
+            cancellationType: 'tutor'
+          })
+        }).catch(err => console.error('Error sending cancellation email:', err));
+      }
     } catch (err: any) {
       console.error('Error cancelling booking:', err);
       showToast({ type: 'error', message: 'Erro ao cancelar: ' + err.message });
