@@ -5,9 +5,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { courses } from '../src/data/courses';
-import { useAuth } from '../hooks/useAuth';
-import { useEnrollments } from '../src/hooks/useEnrollments';
+import { courses } from '@/data/courses';
+import { useAuth } from '@/hooks/useAuth';
+import { useEnrollments } from '@/hooks/useEnrollments';
 
 export default function About() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { getUserProfile, getAllBookings, getAllEnrollments, updateUserXP, updateUserPlan, updateUserProfile } from '../lib/firestore';
 import { awardXP } from '../lib/xpSystem';
 import { courses } from '../data/courses';
