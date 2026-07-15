@@ -1,6 +1,6 @@
 // Firebase Initialization - Single Point of Entry
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, initializeFirestore } from 'firebase/firestore';
 import * as firestoreExports from 'firebase/firestore';
 import { firebaseConfig } from '../config/firebase';
@@ -10,6 +10,7 @@ const app = initializeApp(firebaseConfig);
 
 // Export initialized instances
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
 // Initialize Firestore with offline persistence only in browser environments
 let dbInstance;

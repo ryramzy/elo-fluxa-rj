@@ -54,7 +54,7 @@ const Sobre: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="text-3xl mb-4">??</div>
+              <div className="text-3xl mb-4">🇺🇸</div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">Cultura Primeiro</h3>
               <p className="text-slate-600">
                 A língua não existe isolada da cultura. Ensino inglês através do contexto cultural americano, 
@@ -63,7 +63,7 @@ const Sobre: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="text-3xl mb-4">??</div>
+              <div className="text-3xl mb-4">💡</div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">Língua Segundo</h3>
               <p className="text-slate-600">
                 A gramática e o vocabulário seguem naturalmente quando você entende o contexto cultural. 
@@ -72,7 +72,7 @@ const Sobre: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="text-3xl mb-4">??</div>
+              <div className="text-3xl mb-4">💪</div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">Prática Constante</h3>
               <p className="text-slate-600">
                 A fluência vem da prática consistente em situações reais. Aulas ao vivo, simulações, 
@@ -81,7 +81,7 @@ const Sobre: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="text-3xl mb-4">??</div>
+              <div className="text-3xl mb-4">🗣️</div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">Inglês Autêntico</h3>
               <p className="text-slate-600">
                 Sem inglês "escolar" ou artificial. Ensino o idioma que americanos realmente usam, 

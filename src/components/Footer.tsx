@@ -5,8 +5,8 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../constants.ts';
-import { trackEvent } from '../services/trackingService.ts';
+import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../../constants.ts';
+import { trackEvent } from '@/utils/analytics';
 
 interface FooterProps {
   onLinkClick?: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;

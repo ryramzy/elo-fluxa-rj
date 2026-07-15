@@ -254,6 +254,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
   const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities' | 'analytics'>('bookings');
@@ -509,15 +510,17 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const upgradeUserPlan = async (userId: string, newPlan: 'free' | 'pro' | 'elite') => {
     if (!confirm(`Upgrade user to ${newPlan.toUpperCase()}?`)) return;
     
+    const limit = newPlan === 'elite' ? 12 : newPlan === 'pro' ? 4 : 0;
     try {
       await updateDoc(doc(db, 'users', userId), {
         plan: newPlan,
+        bookingLimit: limit,
         planUpdatedAt: new Date()
       });
       
       // Update local state
       setUsers(prev => prev.map(user => 
-        user.uid === userId ? { ...user, plan: newPlan } : user
+        user.uid === userId ? { ...user, plan: newPlan, bookingLimit: limit } : user
       ));
       
       showToast({ type: 'success', message: `Plano atualizado para ${newPlan.toUpperCase()}` });
@@ -931,6 +934,15 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
               User Management (CRM)
             </h2>
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Buscar por nome, email ou telefone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-md bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-400"
+              />
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -944,7 +956,17 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users
+                    .filter((user) => {
+                      const query = searchQuery.toLowerCase().trim();
+                      if (!query) return true;
+                      return (
+                        user.displayName?.toLowerCase().includes(query) ||
+                        user.email?.toLowerCase().includes(query) ||
+                        user.phone?.includes(query)
+                      );
+                    })
+                    .map((user) => (
                     <tr key={user.uid} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="p-3">
                         <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">

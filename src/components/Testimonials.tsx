@@ -4,8 +4,8 @@
 */
 
 import React, { useMemo } from 'react';
-import { TESTIMONIALS } from '../constants.ts';
-import { Testimonial } from '../types.ts';
+import { TESTIMONIALS } from '../../constants.ts';
+import { Testimonial } from '../../types.ts';
 
 const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => {
   const isRTL = testimonial.language === 'ar';

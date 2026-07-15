@@ -6,10 +6,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaWhatsapp } from 'react-icons/fa';
-import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE, getWhatsAppLink } from '../constants.ts';
+import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE, getWhatsAppLink } from '../../constants.ts';
 import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
-import { NotificationDropdown } from '../src/components/navigation/NotificationDropdown';
+import { NotificationDropdown } from './navigation/NotificationDropdown';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;

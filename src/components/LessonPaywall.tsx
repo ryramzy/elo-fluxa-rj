@@ -26,7 +26,7 @@ const LessonPaywall: React.FC<LessonPaywallProps> = ({ courseId, lessonTitle, on
         </div>
         
         <h2 className="text-2xl font-bold mb-2">
-          Você terminou sua aula grátis! ?
+          Você terminou sua aula grátis! 🎉
         </h2>
         
         <p className="text-lg opacity-90 mb-4">

@@ -10,7 +10,7 @@ const NotFound: React.FC = () => {
         {/* 404 Illustration */}
         <div className="mb-8">
           <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">??</span>
+            <span className="text-4xl">🔍</span>
           </div>
           <h1 className="text-6xl font-bold text-slate-900 mb-2">404</h1>
         </div>
@@ -50,7 +50,7 @@ const NotFound: React.FC = () => {
           <div className="mt-4 space-y-2">
             <p className="italic">"How do you say 'página não encontrada' in English?"</p>
             <p className="font-medium text-slate-700">"Page not found" ?</p>
-            <p className="text-green-600">?? Correct!</p>
+            <p className="text-green-600">🎉 Correct!</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db, createNotification } from './firestore';
-import { auth } from '../../firebase';
+import { auth } from './firebase';
 import { addGlobalToast } from '../hooks/useToast';
 
 // XP award amounts

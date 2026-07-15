@@ -37,6 +37,9 @@ export const trackEvent = (eventName: string, params?: Record<string, any>) => {
     if ((window as any).posthog) {
       (window as any).posthog.capture(eventName, params);
     }
+    if ((window as any).fbq) {
+      (window as any).fbq('trackCustom', eventName, params);
+    }
     
     // Always print to console in development mode
     if (import.meta.env.DEV) {

@@ -1,44 +1,34 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../../firebase';
+import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '@/lib/firebase';
 import { useNavigate, Link } from 'react-router-dom';
-import { LOGIN_COPY_VARIANTS, DEFAULT_LOGIN_VARIANT, LoginCopyVariant } from '../../src/constants/loginCopy';
-import { trackEvent } from '../../src/utils/analytics';
-import { useAuth } from '../../src/hooks/useAuth';
+import { trackEvent } from '@/utils/analytics';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../../src/lib/firestore';
+import { db } from '@/lib/firestore';
 
-interface LoginProps {
-  copyVariant?: LoginCopyVariant;
-}
-
-const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
-  const { signInAsGuest } = useAuth();
+const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleGuestSignIn = () => {
-    trackEvent('auth_login', { method: 'guest' });
-    signInAsGuest();
-    navigate('/dashboard');
-  };
-
-  // Get copy for current variant
-  const copy = LOGIN_COPY_VARIANTS[copyVariant];
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (password !== confirmPassword) {
+      return setError('Passwords do not match');
+    }
+
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Safely ensure user profile document in Firestore
+      // Explicitly create user profile document in Firestore
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, {
         displayName: user.displayName || 'Estudante',
@@ -54,12 +44,12 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         hasSeenOnboarding: false,
         bio: '',
         targetGoal: '',
-      }, { merge: true });
+      });
 
-      trackEvent('auth_login', { method: 'email' });
-      navigate('/dashboard');
+      trackEvent('auth_signup', { method: 'email' });
+      navigate('/agenda');
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      setError(err.message || 'Failed to create an account');
     } finally {
       setLoading(false);
     }
@@ -90,10 +80,10 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         targetGoal: '',
       }, { merge: true });
 
-      trackEvent('auth_login', { method: 'google' });
+      trackEvent('auth_signup', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login with Google');
+      setError(err.message || 'Failed to sign up with Google');
     } finally {
       setLoading(false);
     }
@@ -102,35 +92,21 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-6">
       <div className="max-w-md w-full bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 font-sans">
-        {/* Login Header - Low friction, task-focused */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-serif font-bold tracking-tight text-white flex items-center justify-center gap-2 mb-4 hover:opacity-80 transition-opacity">
-            <span className="text-blue-500">Elo!</span>
+          <Link to="/" className="text-3xl font-serif font-bold tracking-tight text-white flex items-center justify-center gap-2 mb-2 hover:opacity-80 transition-opacity">
+             <span className="text-blue-500">Elo!</span>
           </Link>
-          
-          <h1 className="text-2xl font-bold text-white mb-2">
-            {copy.header}
-          </h1>
-          
-          <p className="text-slate-400 text-sm font-light">
-            {copy.subheader}
-          </p>
-          
-          {/* Optional micro-tagline - low emphasis */}
-          <p className="text-xs text-slate-500 mt-3">
-            {copy.microTagline}
-          </p>
+          <h2 className="text-2xl font-bold text-white mb-2">Criar Conta</h2>
+          <p className="text-slate-400 text-sm font-light">Pratique conversação e domine o inglês com Matthew Ramsay</p>
         </div>
 
-        {/* Error message */}
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded mb-6 text-sm">
             {error}
           </div>
         )}
 
-        {/* Login Form - Clear visual hierarchy */}
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleSignup} className="space-y-6">
           <div>
             <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
               Endereço de E-mail
@@ -156,6 +132,22 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
               required
               className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
               placeholder="••••••••"
+              minLength={6}
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">
+              Confirmar Senha
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="w-full bg-slate-900 border border-slate-700 rounded-md py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="••••••••"
+              minLength={6}
             />
           </div>
 
@@ -164,16 +156,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50"
           >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleGuestSignIn}
-            disabled={loading}
-            className="w-full bg-slate-700 hover:bg-slate-650 text-white font-bold py-4 rounded-md transition-colors tracking-wide uppercase text-sm disabled:opacity-50 border border-slate-600 mt-3"
-          >
-            Continuar como Visitante (10 min)
+            {loading ? 'Criando conta...' : 'Criar Conta'}
           </button>
         </form>
 
@@ -204,12 +187,11 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
           </div>
         </div>
 
-        {/* Footer - Minimal, no distractions */}
         <div className="mt-8 text-center text-sm">
           <p className="text-slate-400">
-            Não tem uma conta?{' '}
-            <Link to="/signup" className="text-blue-500 hover:text-blue-400 font-bold transition-colors">
-              Criar conta
+            Já tem uma conta?{' '}
+            <Link to="/login" className="text-blue-500 hover:text-blue-400 font-bold transition-colors">
+              Entrar
             </Link>
           </p>
         </div>
@@ -218,4 +200,4 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
   );
 };
 
-export default Login;
+export default Signup;

@@ -4,8 +4,8 @@
 */
 
 import React from 'react';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../constants.ts';
-import { trackEvent } from '../services/trackingService.ts';
+import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../../constants.ts';
+import { trackEvent } from '@/utils/analytics';
 
 interface HeroProps {
   onEnter: () => void;

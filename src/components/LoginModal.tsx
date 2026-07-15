@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '../firebase';
-import { useAuth } from '../src/hooks/useAuth';
-
-// Initialize Google provider
-const googleProvider = new GoogleAuthProvider();
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LoginModalProps {
   isOpen: boolean;
