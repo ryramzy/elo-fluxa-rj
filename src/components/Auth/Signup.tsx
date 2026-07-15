@@ -47,7 +47,7 @@ const Signup = () => {
       });
 
       trackEvent('auth_signup', { method: 'email' });
-      navigate('/agenda');
+      navigate('/dashboard', { state: { tab: 'booking' } });
     } catch (err: any) {
       setError(err.message || 'Failed to create an account');
     } finally {

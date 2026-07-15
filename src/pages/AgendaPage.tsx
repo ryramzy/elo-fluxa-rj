@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { TutorAgendaView } from '@/components/booking/TutorAgendaView';
-import { StudentAgendaView } from '@/components/booking/StudentAgendaView';
+import { Navigate } from 'react-router-dom';
 
 export default function AgendaPage() {
   const { user } = useAuth();
@@ -26,9 +26,13 @@ export default function AgendaPage() {
     );
   }
 
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" state={{ tab: 'booking' }} replace />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-      {isAdmin ? <TutorAgendaView /> : <StudentAgendaView />}
+      <TutorAgendaView />
     </div>
   );
 }

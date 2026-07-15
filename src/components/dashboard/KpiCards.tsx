@@ -96,7 +96,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({
               </p>
             ) : (
               <button 
-                onClick={() => navigate('/agenda')}
+                onClick={() => navigate('/dashboard', { state: { tab: 'booking' } })}
                 className="text-xs text-purple-600 dark:text-purple-400 hover:underline mt-1 block font-medium"
               >
                 Agendar agora →

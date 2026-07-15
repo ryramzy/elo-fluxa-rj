@@ -11,9 +11,9 @@ export const BottomNav: React.FC = () => {
   }
 
     const navItems = [
-      { name: 'Painel', path: '/dashboard', icon: <FaHome size={22} />, state: null },
+      { name: 'Painel', path: '/dashboard', icon: <FaHome size={22} />, state: { tab: 'overview' } },
       { name: 'Cursos', path: '/courses', icon: <FaGraduationCap size={22} />, state: null },
-      { name: 'Agenda', path: '/agenda', icon: <FaCalendarPlus size={22} />, state: null },
+      { name: 'Agenda', path: '/dashboard', icon: <FaCalendarPlus size={22} />, state: { tab: 'booking' } },
       { name: 'Perfil', path: '/profile', icon: <FaUser size={22} />, state: null },
     ];
 
