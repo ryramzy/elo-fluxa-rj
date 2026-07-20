@@ -20,6 +20,7 @@ interface CalendarEventRequest {
   endDateTime: string;
   attendeeEmail: string;
   attendeeName: string;
+  tutorCalendarId?: string;
 }
 
 interface AvailableSlot {
@@ -52,14 +53,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
   try {
-    const { summary, description, startDateTime, endDateTime, attendeeEmail, attendeeName }: CalendarEventRequest = req.body;
+    const { summary, description, startDateTime, endDateTime, attendeeEmail, attendeeName, tutorCalendarId }: CalendarEventRequest = req.body;
 
     if (!summary || !startDateTime || !endDateTime || !attendeeEmail || !attendeeName) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID;
 
     if (!serviceAccountJson || !calendarId) {
       console.log('Returning mock calendar event for local development');

@@ -8,6 +8,7 @@ export interface CalendarEvent {
   endDateTime: string;
   attendeeEmail: string;
   attendeeName: string;
+  tutorCalendarId?: string;
 }
 
 // Google Calendar API integration

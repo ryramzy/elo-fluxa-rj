@@ -40,6 +40,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 15] — Multi-Tutor Scale & Calendar Syncs (Instructor Slots Routing)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Tutor Selection Interface (`VisualSlotPicker.tsx`)**: Incorporated a tutor selector bar on the booking flow containing avatar listings and bios for different educators (defaults to Matthew and Sarah).
+- **Dynamic Slot Calendars (`VisualSlotPicker.tsx` & `firestore.ts`)**: Upgraded queries to segregate slot bookings per teacher, saving tutor identifiers directly to document transaction records.
+- **Calendar Invite Router (`api/calendar.ts` & `googleCalendar.ts`)**: Updated the backend calendar generator to accept a `tutorCalendarId` parameter, routing Google Meet invites directly to the designated tutor's email calendar instead of a global fallback account.
+
 ## [July 20, 2026 - Sprint 14] — Sales Pipeline CRM & Advanced Analytics (Conversion Funnels)
 **Status:** ✅ COMPLETED
 

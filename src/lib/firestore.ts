@@ -828,12 +828,14 @@ export async function bookSlot(
   userEmail: string,
   notes?: string,
   googleEventId?: string | null,
-  meetLink?: string | null
+  meetLink?: string | null,
+  tutorId: string = 'matthew',
+  tutorName: string = 'Matthew'
 ): Promise<string> {
   if (userId === 'guest_user') {
     throw new Error('Guests cannot book sessions.');
   }
-  const bookingId = `${date}_${time.replace(':', '')}`;
+  const bookingId = `${tutorId}_${date}_${time.replace(':', '')}`;
   const bookingRef = doc(db, 'bookings', bookingId);
   const notifId = `booking_notif_${Date.now()}`;
   const notifRef = doc(db, 'users', userId, 'notifications', notifId);
@@ -887,6 +889,8 @@ export async function bookSlot(
         studentEmail: userEmail, // Legacy compatibility
         date,
         time,
+        tutorId,
+        tutorName,
         duration: 60,
         status: 'confirmed',
         googleEventId: googleEventId || null,

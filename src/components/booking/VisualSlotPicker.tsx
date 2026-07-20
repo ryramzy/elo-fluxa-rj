@@ -15,7 +15,37 @@ interface Booking {
   userId: string;
   userName: string;
   datetime?: any; // UTC Timestamp for timezone sync
+  tutorId?: string;
+  tutorName?: string;
 }
+
+interface Tutor {
+  id: string;
+  name: string;
+  email: string;
+  calendarId: string;
+  bio: string;
+  photoUrl: string;
+}
+
+const DEFAULT_TUTORS: Tutor[] = [
+  {
+    id: 'matthew',
+    name: 'Matthew (Matt)',
+    email: 'matt@elospeak.com.br',
+    calendarId: 'matt@elospeak.com.br',
+    bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
+    photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+  },
+  {
+    id: 'sarah',
+    name: 'Sarah Jenkins',
+    email: 'sarah@elospeak.com.br',
+    calendarId: 'sarah@elospeak.com.br',
+    bio: 'Nativa de Boston, especialista em inglês para negócios, apresentações e entrevistas de emprego.',
+    photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'
+  }
+];
 
 interface VisualSlotPickerProps {
   onSlotSelect?: (date: string, time: string) => void;
@@ -39,6 +69,25 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const { profile } = useUserProfile(currentUserId);
   const corporateCredits = profile?.corporateCredits ?? null;
   const isCreditLocked = corporateCredits === 0;
+
+  const [tutors, setTutors] = useState<Tutor[]>(DEFAULT_TUTORS);
+  const [selectedTutor, setSelectedTutor] = useState<Tutor>(DEFAULT_TUTORS[0]);
+
+  useEffect(() => {
+    const fetchTutors = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'tutors'));
+        if (!snapshot.empty) {
+          const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Tutor));
+          setTutors(list);
+          setSelectedTutor(list[0]);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch tutors from Firestore, using default roster:', e);
+      }
+    };
+    fetchTutors();
+  }, []);
 
   const isAnySlotBooking = Object.values(slotLoadingMap).some(status => status === 'booking');
   
@@ -235,12 +284,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         const endDateTime = endDateObj.toISOString().replace('Z', '-03:00'); // Convert to local Rio ISO
         
         const calRes = await createCalendarEvent({
-          summary: `Aula de Inglês com Matt: ${studentName}`,
-          description: `Sua aula particular de inglês americano com o Professor Matt.\nGoogle Meet: a ser acessado pelo link.`,
+          summary: `Aula de Inglês com ${selectedTutor.name}: ${studentName}`,
+          description: `Sua aula particular de inglês com ${selectedTutor.name}.\nGoogle Meet: a ser acessado pelo link.`,
           startDateTime,
           endDateTime,
           attendeeEmail: studentEmail,
-          attendeeName: studentName
+          attendeeName: studentName,
+          tutorCalendarId: selectedTutor.calendarId
         });
         eventId = calRes.eventId;
         meetLink = calRes.meetLink;
@@ -252,15 +302,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         eventId = `fallback_event_${Date.now()}`;
       }
       
-      await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail, '', eventId, meetLink);
+      await firestoreBookSlot(mattDate, mattTime, currentUserId, studentName, studentEmail, '', eventId, meetLink, selectedTutor.id, selectedTutor.name);
       
       // Create local booking object to merge optimistically
       const newBooking: Booking = {
-        id: `${mattDate}_${mattTime.replace(':', '')}`,
+        id: `${selectedTutor.id}_${mattDate}_${mattTime.replace(':', '')}`,
         date: mattDate,
         time: mattTime,
         userId: currentUserId,
-        userName: studentName
+        userName: studentName,
+        tutorId: selectedTutor.id,
+        tutorName: selectedTutor.name
       };
 
       // Optimistically merge into local state array to trigger immediate re-render and update cache
@@ -363,7 +415,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   useEffect(() => {
     loadWeekBookings();
-  }, [selectedWeek]);
+  }, [selectedWeek, selectedTutor]);
 
   const getBooking = (dateStr: string, timeStr: string) => {
     const cellMs = parseLocalDate(dateStr, timeStr).getTime();
@@ -379,6 +431,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     }
 
     return bookings.find(b => {
+      const bTutorId = b.tutorId || 'matthew';
+      if (bTutorId !== selectedTutor.id) {
+        return false;
+      }
+      
       // 1. Direct timestamp matching
       if (b.datetime) {
         const bookingMs = b.datetime.seconds ? b.datetime.seconds * 1000 : new Date(b.datetime).getTime();
@@ -499,6 +556,41 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-slate-700/80" />
             <span className="text-xs font-medium text-slate-400">Reservado por outro aluno</span>
+          </div>
+        </div>
+
+        {/* Tutor Selector */}
+        <div className="mt-6 pt-6 border-t border-white/5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-3">Escolha o seu Tutor:</span>
+          <div className="flex flex-wrap gap-4">
+            {tutors.map(t => {
+              const isSelected = selectedTutor.id === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setSelectedTutor(t)}
+                  className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
+                    isSelected 
+                      ? 'bg-blue-600/25 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                      : 'bg-slate-900/50 border-white/5 text-slate-300 hover:bg-white/5'
+                  }`}
+                >
+                  <img src={t.photoUrl} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                  <div className="text-left">
+                    <div className="text-sm font-extrabold">{t.name}</div>
+                    <div className="text-[10px] text-slate-400">{t.email}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Selected Tutor Bio */}
+          <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="flex-1">
+              <span className="text-[10px] font-black text-blue-450 uppercase tracking-widest block">Sobre o Tutor</span>
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">{selectedTutor.bio}</p>
+            </div>
           </div>
         </div>
       </div>
