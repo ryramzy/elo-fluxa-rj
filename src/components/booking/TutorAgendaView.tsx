@@ -12,6 +12,8 @@ import {
   getDocs,
   setDoc
 } from 'firebase/firestore';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { 
   FaCalendarAlt, 
   FaCalendarCheck, 
@@ -48,12 +50,21 @@ interface User {
 }
 
 export function TutorAgendaView() {
+  const { user } = useAuth();
+  const { profile } = useUserProfile(user?.uid || '');
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'schedule' | 'open'>('schedule');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Tutor selector states
+  const [selectedTutorId, setSelectedTutorId] = useState<string>('matthew');
+  const [tutorList, setTutorList] = useState<any[]>([
+    { id: 'matthew', name: 'Matthew (Matt)' },
+    { id: 'sarah', name: 'Sarah Jenkins' }
+  ]);
 
   // Filters state
   const [filterAvailable, setFilterAvailable] = useState(true);
@@ -62,6 +73,22 @@ export function TutorAgendaView() {
 
   // Calendar State
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Auto-resolve logged-in tutor ID
+  useEffect(() => {
+    if (profile && (profile.role === 'tutor' || profile.role === 'teacher')) {
+      setSelectedTutorId(profile.uid);
+    }
+  }, [profile]);
+
+  // Load available tutors
+  useEffect(() => {
+    getDocs(collection(db, 'tutors')).then(snapshot => {
+      if (!snapshot.empty) {
+        setTutorList(snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name })));
+      }
+    }).catch(e => console.warn('Failed to load tutors list, using default roster:', e));
+  }, []);
 
   // Modal states
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -110,7 +137,10 @@ export function TutorAgendaView() {
     const unsubBookings = onSnapshot(bookingsQuery, (snap) => {
       const list: Booking[] = [];
       snap.forEach(d => {
-        list.push({ id: d.id, ...d.data() } as Booking);
+        const data = d.data();
+        if ((data.tutorId || 'matthew') === selectedTutorId) {
+          list.push({ id: d.id, ...data } as Booking);
+        }
       });
       setBookings(list);
       setLoading(false);
@@ -122,7 +152,10 @@ export function TutorAgendaView() {
     const unsubSlots = onSnapshot(slotsQuery, (snap) => {
       const list: any[] = [];
       snap.forEach(d => {
-        list.push({ id: d.id, ...d.data() });
+        const data = d.data();
+        if ((data.tutorId || 'matthew') === selectedTutorId) {
+          list.push({ id: d.id, ...data });
+        }
       });
       setAvailableSlots(list);
     }, (error) => {
@@ -133,7 +166,7 @@ export function TutorAgendaView() {
       unsubBookings();
       unsubSlots();
     };
-  }, []);
+  }, [selectedTutorId]);
 
   // Lazily load users only when the scheduling modal is opened
   const [usersLoading, setUsersLoading] = useState(false);
@@ -236,8 +269,9 @@ export function TutorAgendaView() {
       const idSuffix = Date.now().toString().slice(-4);
       const meetLink = `https://meet.jit.si/elo-class-particular-${idSuffix}`;
       const eventId = `manual_${Date.now()}`;
+      const tutorName = tutorList.find(t => t.id === selectedTutorId)?.name || 'Matthew';
 
-      await bookSlot(manualDate, manualTime, selectedStudentUid, studentName, studentEmail, 'Criado manualmente pelo Tutor', eventId, meetLink);
+      await bookSlot(manualDate, manualTime, selectedStudentUid, studentName, studentEmail, 'Criado manualmente pelo Tutor', eventId, meetLink, selectedTutorId, tutorName);
       showToast({ type: 'success', message: 'Aula agendada com sucesso!' });
       setBookingModalOpen(false);
       setSelectedStudentUid('');
@@ -278,10 +312,11 @@ export function TutorAgendaView() {
         }
 
         if (date && time) {
-          const slotId = `${date}_${time.replace(':', '')}`;
+          const slotId = `${selectedTutorId}_${date}_${time.replace(':', '')}`;
           await setDoc(doc(db, 'availableSlots', slotId), {
             date,
             time,
+            tutorId: selectedTutorId,
             createdAt: new Date()
           });
           count++;
@@ -321,10 +356,11 @@ export function TutorAgendaView() {
           const dateStr = dateObj.toLocaleDateString('en-CA');
           for (let hour = startH; hour <= endH; hour++) {
             const timeStr = `${hour.toString().padStart(2, '0')}:00`;
-            const slotId = `${dateStr}_${timeStr.replace(':', '')}`;
+            const slotId = `${selectedTutorId}_${dateStr}_${timeStr.replace(':', '')}`;
             await setDoc(doc(db, 'availableSlots', slotId), {
               date: dateStr,
               time: timeStr,
+              tutorId: selectedTutorId,
               createdAt: new Date()
             });
             count++;
@@ -529,6 +565,22 @@ export function TutorAgendaView() {
             {getWeekRangeString()}
           </p>
         </div>
+
+        {/* Tutor selector for super-admins */}
+        {profile?.role === 'admin' && (
+          <div className="flex items-center gap-2.5 bg-white dark:bg-slate-800 p-2 rounded-xl border border-gray-150 dark:border-slate-700">
+            <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Visualizar Agenda de:</span>
+            <select
+              value={selectedTutorId}
+              onChange={(e) => setSelectedTutorId(e.target.value)}
+              className="text-xs font-bold text-gray-700 dark:text-slate-200 bg-transparent border-none focus:outline-none"
+            >
+              {tutorList.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">

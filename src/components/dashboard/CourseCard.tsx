@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import type { Course } from '../../data/courses';
 
 interface CourseCardProps {
@@ -8,122 +10,124 @@ interface CourseCardProps {
   onContinue: (courseId: string) => void;
 }
 
+// Explicit dynamic Tailwind color theme mapping matrix
+const themeMatrix = {
+  'cyber-blue': {
+    bgGlow: 'hover:shadow-[0_0_25px_rgba(56,189,248,0.25)]',
+    border: 'border-sky-500/30 hover:border-sky-400',
+    text: 'text-sky-400',
+    badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+    progress: 'bg-sky-500'
+  },
+  'amber': {
+    bgGlow: 'hover:shadow-[0_0_25px_rgba(251,191,36,0.25)]',
+    border: 'border-amber-500/30 hover:border-amber-400',
+    text: 'text-amber-400',
+    badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    progress: 'bg-amber-500'
+  },
+  'purple': {
+    bgGlow: 'hover:shadow-[0_0_25px_rgba(168,85,247,0.25)]',
+    border: 'border-purple-500/30 hover:border-purple-400',
+    text: 'text-purple-400',
+    badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    progress: 'bg-purple-500'
+  },
+  'pink': {
+    bgGlow: 'hover:shadow-[0_0_25px_rgba(244,63,94,0.25)]',
+    border: 'border-pink-500/30 hover:border-pink-400',
+    text: 'text-pink-400',
+    badge: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+    progress: 'bg-pink-500'
+  }
+};
+
+const getCourseTheme = (tag: string, id: string) => {
+  if (tag === 'Grammar') return 'purple';
+  if (['Conversation', 'Essentials', 'Travel'].includes(tag)) return 'amber';
+  const technicalTags = ['Tech', 'Engineering', 'Software Developers'];
+  if (technicalTags.includes(tag) || id.includes('tech') || id.includes('dev')) {
+    return 'cyber-blue';
+  }
+  return 'pink';
+};
+
 export const CourseCard: React.FC<CourseCardProps> = ({ 
   course, 
   enrollment, 
   onEnroll, 
   onContinue 
 }) => {
+  const navigate = useNavigate();
   const isEnrolled = !!enrollment;
-  const isCompleted = enrollment?.progress === 100;
+  const lessonsCompleted = enrollment?.lessonsCompleted || 0;
+  const totalLessons = course.lessons.length;
+  const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
+
+  const themeKey = getCourseTheme(course.tag, course.id);
+  const colors = themeMatrix[themeKey];
 
   const handleCardClick = () => {
-    if (isEnrolled && !isCompleted) {
-      onContinue(course.id);
-    }
-  };
-
-  const handleEnrollClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEnroll(course.id);
-  };
-
-  const handleContinueClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onContinue(course.id);
+    navigate(`/courses/${course.id}`);
   };
 
   return (
-    <div 
-      className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer relative"
+    <motion.div
       onClick={handleCardClick}
+      whileHover={{ y: -4, scale: 1.01 }}
+      className={`w-full bg-slate-900/80 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer select-none ${colors.bgGlow} flex flex-col justify-between`}
     >
-      {/* Course image */}
-      <div className="h-32 relative bg-gradient-to-br from-blue-500 to-indigo-600">
-        {course.imageUrl ? (
-          <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl opacity-50">
-            {course.emoji || '📚'}
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        <div className="absolute bottom-2 left-2 text-white">
-          <h3 className="font-bold text-sm">{course.title}</h3>
-        </div>
-        {/* Status badge */}
-        <div className="absolute top-2 right-2">
-          {isCompleted ? (
-            <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-              Concluído
-            </span>
-          ) : isEnrolled ? (
-            <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-              Em andamento
-            </span>
-          ) : (
-            <span className="bg-slate-500 text-white text-xs px-2 py-1 rounded-full">
-              Não inscrito
-            </span>
-          )}
-        </div>
-      </div>
-      
-      <div className="p-4">
-        {/* Course tags */}
-        <div className="flex flex-wrap gap-1 mb-3">
-          <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
             {course.tag}
           </span>
-          <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">
-            {course.level}
-          </span>
-        </div>
-        
-        {/* XP reward */}
-        <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-          +{course.lessons.reduce((sum, l) => sum + l.xpReward, 0)} XP
-        </div>
-        
-        {/* Progress bar */}
-        {isEnrolled && (
-          <div className="mb-3">
-            <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400 mb-1">
-              <span>Progress</span>
-              <span>{Math.round((enrollment?.completedLessons?.length || 0) / course.totalLessons * 100)}%</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-              <div 
-                className="h-2 rounded-full transition-all bg-blue-500"
-                style={{ width: `${Math.round((enrollment?.completedLessons?.length || 0) / course.totalLessons * 100)}%` }}
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-slate-400">
+              +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
+            </span>
           </div>
-        )}
-        
-        {/* Context-aware CTA */}
+        </div>
+
+        <div className="flex items-start gap-2 mb-2">
+          <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji || '📚'}</span>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-extrabold text-slate-100 line-clamp-1">
+              {course.title}
+            </h3>
+            {course.titlePt && (
+              <span className="block text-[10px] font-bold text-slate-400 italic mt-0.5 line-clamp-1">
+                {course.titlePt}
+              </span>
+            )}
+          </div>
+        </div>
+        <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
+          {course.descriptionPt || course.description}
+        </p>
+      </div>
+
+      <div className="mt-auto pt-2 border-t border-slate-800">
+        <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
+          <span>{isEnrolled ? 'Progresso' : 'Não Inscrito'}</span>
+          {isEnrolled && <span>{lessonsCompleted}/{totalLessons} Lições</span>}
+        </div>
         {isEnrolled ? (
-          isCompleted ? (
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded transition-colors">
-              Review
-            </button>
-          ) : (
-            <button 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 rounded transition-colors"
-              onClick={handleContinueClick}
-            >
-              Continue
-            </button>
-          )
+          <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
+            <div 
+              className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         ) : (
           <button 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 rounded transition-colors"
-            onClick={handleEnrollClick}
+            onClick={(e) => { e.stopPropagation(); onEnroll(course.id); }}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[10px] transition-colors uppercase tracking-wider"
           >
-            Enroll
+            Iniciar Trilha
           </button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
