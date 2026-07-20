@@ -136,7 +136,7 @@ export const StudentTimeline: React.FC<StudentTimelineProps> = ({ bookings, xp, 
 
       {/* Book Next Lesson Loop CTA */}
       <div className="mt-8 pt-4 border-t border-slate-50 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="text-left">
+        <div className="text-center sm:text-left">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Avançar no Inglês</p>
           <h4 className="text-xs font-bold text-slate-800 dark:text-white mt-0.5">Pratique regularmente para manter a fluência!</h4>
         </div>

@@ -71,7 +71,17 @@ function AppShell() {
     e.preventDefault();
     
     if (targetId === 'agenda') {
-      navigate('/agenda');
+      const isAdmin = user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() || 
+                      user?.email?.endsWith('@elospeak.com.br') || 
+                      user?.email?.endsWith('@elospeak.com') ||
+                      user?.email === 'mramsay0@gmail.com' ||
+                      user?.email === 'mramsayo@gmail.com' ||
+                      user?.email === 'erneleducation@gmail.com';
+      if (isAdmin) {
+        navigate('/agenda');
+      } else {
+        navigate('/dashboard', { state: { tab: 'booking' } });
+      }
     } else if (targetId === 'dashboard') {
       navigate('/dashboard', { state: { tab: 'overview' } });
     } else {
