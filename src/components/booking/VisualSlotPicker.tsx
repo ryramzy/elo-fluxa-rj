@@ -105,10 +105,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     ];
 
     const localTimesSet = new Set<string>();
+    const userTz = profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
 
     mattHours.forEach(hour => {
       const dateObj = new Date(`${referenceDateStr}T${hour}:00-03:00`);
       const localTime = dateObj.toLocaleTimeString('en-US', {
+        timeZone: userTz,
         hour: '2-digit',
         minute: '2-digit',
         hourCycle: 'h23'
@@ -445,8 +447,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-slate-400 mt-1 text-sm md:text-base font-normal">
+             <p className="text-slate-400 mt-1 text-sm md:text-base font-normal flex flex-wrap items-center gap-2">
               Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
+              <span className="text-[10px] text-slate-400 bg-slate-900/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
+                🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}
+              </span>
             </p>
             {corporateCredits === 0 && (
               <p className="text-rose-455 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">

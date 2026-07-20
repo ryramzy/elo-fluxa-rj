@@ -48,6 +48,7 @@ const Signup = () => {
         bio: '',
         targetGoal: '',
         referredBy: referrerId || null,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       });
 
       trackEvent('auth_signup', { method: 'email' });
@@ -83,6 +84,7 @@ const Signup = () => {
         bio: '',
         targetGoal: '',
         referredBy: referrerId || null,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       }, { merge: true });
 
       trackEvent('auth_signup', { method: 'google' });

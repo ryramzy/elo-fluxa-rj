@@ -40,6 +40,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 12] — Timezone Alignment & Scheduling Hardening (Internationalization & Resiliency)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Automatic Timezone Capture (`src/components/Auth/Signup.tsx` & `Login.tsx`)**: Captured student's local timezone (using `Intl.DateTimeFormat().resolvedOptions().timeZone`) on both email/Google signup and logins, syncing the `timezone` field to their profile under Firestore.
+- **Dynamic Time Slot Conversions (`src/components/booking/VisualSlotPicker.tsx`)**: Upgraded the Visual Slot Picker to dynamically convert slot hours between the tutor's America/Sao_Paulo timezone and the student's designated local timezone, with a timezone indicator badge.
+- **Resilient Booking Fallbacks (`api/calendar.ts` & `VisualSlotPicker.tsx`)**: Audited booking creation endpoints. Failure of Google Calendar API (due to authorization / token timeouts) now falls back gracefully to compiling a secure Jitsi Meet link instead of blocking student slot reservations.
+
 ## [July 20, 2026 - Sprint 11] — Payments, WhatsApp & B2B Scaling (Monetization & Corporate Launch)
 **Status:** ✅ COMPLETED
 

@@ -54,6 +54,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         hasSeenOnboarding: false,
         bio: '',
         targetGoal: '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       }, { merge: true });
 
       trackEvent('auth_login', { method: 'email' });
@@ -88,6 +89,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         hasSeenOnboarding: false,
         bio: '',
         targetGoal: '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       }, { merge: true });
 
       trackEvent('auth_login', { method: 'google' });
