@@ -35,6 +35,7 @@ import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
 import VideoCallPage from './src/pages/VideoCallPage';
 import OrgAdminDashboard from './src/pages/OrgAdminDashboard';
+import AiCoachPage from './src/pages/AiCoachPage';
 import { GuestBanner } from './src/components/GuestBanner';
 
 
@@ -180,6 +181,11 @@ function AppShell() {
               <Route path="/video-call/:roomId" element={
                 <ProtectedRoute>
                   <VideoCallPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/ai-coach" element={
+                <ProtectedRoute>
+                  <AiCoachPage />
                 </ProtectedRoute>
               } />
 

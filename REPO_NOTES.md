@@ -40,6 +40,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 13] — Conversational AI Accent Coach (Tutor Elo Practice Loop)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Conversational AI Accent Coach (`src/pages/AiCoachPage.tsx`)**: Created the AI conversational practice portal. Supports selecting real-life scenarios (Job Interview, Airport Check-in, Restaurant ordering, Starbucks Cafe Talk) to practice speaking English.
+- **Hands-Free Speech Synthesis & Capture (`webkitSpeechRecognition` & `src/utils/tts.ts`)**: Wired browser native Speech Recognition for speech capturing, automatically triggering voice playback fallbacks.
+- **Gemini Evaluation Gateway (`api/ai-coach-evaluate.ts` & `vercel.json`)**: Connected dialogue streams to Gemini APIs to provide real-time ratings (Excellent / Good / Needs Improvement), grammar suggestions in Portuguese, and distribute XP rewards.
+
 ## [July 20, 2026 - Sprint 12] — Timezone Alignment & Scheduling Hardening (Internationalization & Resiliency)
 **Status:** ✅ COMPLETED
 
