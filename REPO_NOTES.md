@@ -40,6 +40,16 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 9 & 10] — PWA Integration, Jitsi Meet API Upgrade, and Lightweight AI PR Reviewer
+**Status:** ✅ COMPLETED
+
+### What changed
+- **PWA & Manifest Integration**: Configured `vite-plugin-pwa` in `vite.config.ts`, registered service worker in `index.tsx`, added `pwa/client` type reference to `vite-env.d.ts`, generated size-compliant adaptive/maskable icons, and created `public/.well-known/assetlinks.json` verification.
+- **Upgraded Jitsi Meet Client API**: Swapped primitive `<iframe>` embed layout for Jitsi's official External JavaScript API with a custom `useJitsi.ts` hook and `VideoRoom.tsx` component, resolving device permission issues and ensuring clean camera/mic disposal on unmount.
+- **Direct SPA Tab Navigation**: Optimized menu handlers in `App.tsx`, `BottomNav.tsx`, and `KpiCards.tsx` to switch student views to the dashboard booking picker tab in-memory using state flags, bypassing slow legacy page routing.
+- **Audit Logs & Transaction Validation**: Set up atomic transactional guards for booking/cancellation slots and automated action logging to `/audit_logs`.
+- **Lightweight AI PR Reviewer**: Added `scripts/ai_reviewer.py` and `.github/workflows/ai-review.yml` to automatically review pull request diffs using Gemini and file issues for critical findings.
+
 ## [July 2, 2026 - Sprint 2] — Serverless Vercel Rollback, Decoupling Diagnoses & Safe Roadmaps
 **Status:** ✅ COMPLETED
 
