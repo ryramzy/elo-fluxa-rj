@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { trackEvent } from '@/utils/analytics';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
@@ -12,7 +12,10 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  const referrerId = searchParams.get('ref');
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +47,7 @@ const Signup = () => {
         hasSeenOnboarding: false,
         bio: '',
         targetGoal: '',
+        referredBy: referrerId || null,
       });
 
       trackEvent('auth_signup', { method: 'email' });
@@ -78,6 +82,7 @@ const Signup = () => {
         hasSeenOnboarding: false,
         bio: '',
         targetGoal: '',
+        referredBy: referrerId || null,
       }, { merge: true });
 
       trackEvent('auth_signup', { method: 'google' });

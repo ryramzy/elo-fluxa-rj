@@ -175,18 +175,86 @@ async function handleWebhook(req: VercelRequest, res: VercelResponse) {
           }
         }
 
-        const patchBody = {
-          fields: {
-            plan: { stringValue: planType },
-            bookingLimit: { integerValue: String(bookingLimit) },
-            paymentPastDue: { booleanValue: false }
-          }
+        // Fetch user profile to check referredBy details
+        const userRes = await fetch(`${baseRestUrl}/users/${firebaseUid}`, {
+          headers: { Authorization: `Bearer ${googleAuthToken}` }
+        });
+        
+        let referredBy: string | null = null;
+        let hasReferredRewardBeenPaid = false;
+        
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          referredBy = userData.fields?.referredBy?.stringValue || null;
+          hasReferredRewardBeenPaid = userData.fields?.hasReferredRewardBeenPaid?.booleanValue || false;
+        }
+
+        let paidPatchUrl = `${baseRestUrl}/users/${firebaseUid}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit&updateMask.fieldPaths=bookingsThisMonth&updateMask.fieldPaths=paymentPastDue`;
+        const fieldsToPatch: any = {
+          plan: { stringValue: planType },
+          bookingLimit: { integerValue: String(bookingLimit) },
+          bookingsThisMonth: { integerValue: '0' },
+          paymentPastDue: { booleanValue: false }
         };
 
-        const patchResponse = await fetch(patchUrl, {
+        // Process referral reward if referrer is present and reward not paid yet
+        if (referredBy && !hasReferredRewardBeenPaid) {
+          fieldsToPatch.hasReferredRewardBeenPaid = { booleanValue: true };
+          paidPatchUrl += '&updateMask.fieldPaths=hasReferredRewardBeenPaid';
+
+          // 1. Fetch referrer profile
+          const refRes = await fetch(`${baseRestUrl}/users/${referredBy}`, {
+            headers: { Authorization: `Bearer ${googleAuthToken}` }
+          });
+          
+          if (refRes.ok) {
+            const refData = await refRes.json();
+            const currentCredits = Number(refData.fields?.corporateCredits?.integerValue || 
+                                         refData.fields?.corporateCredits?.doubleValue || 0);
+            const newCredits = currentCredits + 1;
+            
+            // 2. Patch referrer credits (+1 credit)
+            await fetch(`${baseRestUrl}/users/${referredBy}?updateMask.fieldPaths=corporateCredits`, {
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer ${googleAuthToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                fields: {
+                  corporateCredits: { integerValue: String(newCredits) }
+                }
+              })
+            });
+
+            // Log referral credit audit log
+            await fetch(`${baseRestUrl}/audit_logs`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${googleAuthToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fields: {
+                  action: { stringValue: 'referral_reward_processed' },
+                  userId: { stringValue: referredBy },
+                  timestamp: { timestampValue: new Date().toISOString() },
+                  details: {
+                    mapValue: {
+                      fields: {
+                        referredUserId: { stringValue: firebaseUid },
+                        creditIncrement: { integerValue: '1' }
+                      }
+                    }
+                  }
+                }
+              })
+            });
+            console.log(`[Stripe Webhook] Credited +1 referral lesson to referrer ${referredBy} for user ${firebaseUid}`);
+          }
+        }
+
+        const patchResponse = await fetch(paidPatchUrl, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${googleAuthToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(patchBody)
+          body: JSON.stringify({ fields: fieldsToPatch })
         });
 
         if (!patchResponse.ok) {
@@ -194,6 +262,34 @@ async function handleWebhook(req: VercelRequest, res: VercelResponse) {
         }
 
         console.log(`[Stripe Webhook] Activated/Renewed plan ${planType} for user ${firebaseUid}`);
+
+        // Write audit log entry
+        const auditBody = {
+          fields: {
+            action: { stringValue: 'stripe_payment_received' },
+            userId: { stringValue: firebaseUid },
+            timestamp: { timestampValue: new Date().toISOString() },
+            details: {
+              mapValue: {
+                fields: {
+                  invoiceId: { stringValue: sessionObj.id || '' },
+                  plan: { stringValue: planType },
+                  amount: { doubleValue: Number((sessionObj.amount_paid || 0) / 100) }
+                }
+              }
+            }
+          }
+        };
+
+        const auditResponse = await fetch(`${baseRestUrl}/audit_logs`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${googleAuthToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(auditBody)
+        });
+
+        if (!auditResponse.ok) {
+          console.error(`[Stripe Webhook] Failed to write audit log: ${await auditResponse.text()}`);
+        }
         break;
       }
 

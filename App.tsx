@@ -34,6 +34,7 @@ import Dicas from './src/pages/Dicas';
 import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
 import VideoCallPage from './src/pages/VideoCallPage';
+import OrgAdminDashboard from './src/pages/OrgAdminDashboard';
 import { GuestBanner } from './src/components/GuestBanner';
 
 
@@ -201,6 +202,13 @@ function AppShell() {
               </div>
             </ProtectedRoute>
           } />
+
+              {/* B2B Org Admin route */}
+              <Route path="/org-admin" element={
+                <ProtectedRoute>
+                  <OrgAdminDashboard />
+                </ProtectedRoute>
+              } />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />

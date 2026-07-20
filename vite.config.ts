@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['apple-touch-icon.png', 'maskable-icon-512x512.png'],
+        workbox: {
+          maximumFileSizeToCacheInBytes: 4000000
+        },
         manifest: {
           name: 'Elo Speak',
           short_name: 'Elo',
