@@ -40,6 +40,17 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 11] — Payments, WhatsApp & B2B Scaling (Monetization & Corporate Launch)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Mercado Pago Webhook (`api/webhooks/mercado-pago.ts`)**: Implemented serverless webhook handler to process approved Pix payments, activate subscriptions, reset monthly booking credits (`bookingsThisMonth = 0`), and log transactions.
+- **Stripe Renewals (`api/stripe.ts`)**: Upgraded Stripe invoice webhook handler to reset monthly lesson limits (`bookingsThisMonth = 0`) on successful renewals, ensuring seamless credit rollover.
+- **WhatsApp Notification Automation (`api/whatsapp.ts`)**: Created a template-based message dispatcher connecting bookings, cancellations, and tutor feedback notifications to WhatsApp gateways (falling back to console logging when offline).
+- **Student Referral Loop (`src/pages/Dashboard.tsx` & `src/components/Auth/Signup.tsx`)**: Introduced student-to-student sharing flows. Shows a referral copy-link (`/signup?ref={userId}`) inside a new dashboard tab and awards referrers `+1` credit on signup conversions.
+- **B2B HR Management Portal (`src/pages/OrgAdminDashboard.tsx` & `App.tsx`)**: Created the `/org-admin` page allowing company admins (`role: 'org_admin'`) to monitor team metrics, allocate credits, and pre-onboard corporate emails.
+- **Firestore Security Hardening (`firestore.rules`)**: Audited security rules and added the `isOrgAdminOf` helper function, granting corporate HR admins permission to read and manage employee records in their organizations.
+
 ## [July 20, 2026 - Sprint 9 & 10] — PWA Integration, Jitsi Meet API Upgrade, and Lightweight AI PR Reviewer
 **Status:** ✅ COMPLETED
 
