@@ -40,6 +40,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 20, 2026 - Sprint 14] — Sales Pipeline CRM & Advanced Analytics (Conversion Funnels)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Sales Funnel CRM Tab (`src/pages/Admin.tsx`)**: Incorporated an operational Lead Pipeline dashboard inside the Admin page. Classifies registered students dynamically into: Leads, Trial, Active Subscribers, and Churn Risk.
+- **Dynamic LTV & Churn Calculations (`Admin.tsx`)**: Created math models calculating Monthly Recurring Revenue (MRR) forecasts, churn risk percentages, estimated customer Lifetime Value (LTV), and Customer Acquisition Cost (CAC) ROI analysis.
+- **Pipeline Override Actions (`Admin.tsx`)**: Enabled admin managers to manually upgrade/downgrade subscription plans or regularize past-due payment flags inside the pipeline cards.
+
 ## [July 20, 2026 - Sprint 13] — Conversational AI Accent Coach (Tutor Elo Practice Loop)
 **Status:** ✅ COMPLETED
 

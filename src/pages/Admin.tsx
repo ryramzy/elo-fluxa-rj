@@ -257,9 +257,10 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'enrollments' | 'b2b' | 'utilities' | 'analytics'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'crm' | 'enrollments' | 'b2b' | 'utilities' | 'analytics'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
+  const [cacInput, setCacInput] = useState<number>(30);
 
   const [tutorOnline, setTutorOnline] = useState(false);
   const [tutorPresenceLoading, setTutorPresenceLoading] = useState(false);
@@ -530,6 +531,21 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
     }
   };
 
+  const togglePaymentPastDue = async (userId: string, currentPastDue: boolean) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        paymentPastDue: !currentPastDue
+      });
+      setUsers(prev => prev.map(user => 
+        user.uid === userId ? { ...user, paymentPastDue: !currentPastDue } : user
+      ));
+      showToast({ type: 'success', message: 'Status de pagamento atualizado com sucesso!' });
+    } catch (error) {
+      console.error('Error toggling past due:', error);
+      showToast({ type: 'error', message: 'Erro ao atualizar status de pagamento' });
+    }
+  };
+
   // Save edited phone number
   const handlePhoneSave = async (userId: string, newPhone: string) => {
     try {
@@ -735,6 +751,16 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               }`}
             >
               Revenue
+            </button>
+            <button
+              onClick={() => setActiveTab('crm')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'crm'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              💼 Pipeline CRM
             </button>
             <button
               onClick={() => setActiveTab('enrollments')}
@@ -1591,6 +1617,289 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
             })()}
           </div>
         )}
+
+        {activeTab === 'crm' && (() => {
+          // Helper functions to trace user metrics
+          const getUserBookings = (userId: string) => {
+            return bookings.filter(b => b.userId === userId || b.uid === userId);
+          };
+          
+          const getUserLastBookingDate = (userId: string) => {
+            const userBookings = getUserBookings(userId);
+            if (userBookings.length === 0) return null;
+            const dates = userBookings.map(b => {
+              if (b.date) {
+                return new Date(b.date).getTime();
+              }
+              return 0;
+            }).filter(d => d > 0);
+            if (dates.length === 0) return null;
+            return new Date(Math.max(...dates));
+          };
+
+          // Categorize users into funnel stages
+          const getStage = (u: any) => {
+            const isSub = u.plan === 'pro' || u.plan === 'elite' || u.plan === 'corporate' || !!u.organizationId;
+            const bookingsCount = getUserBookings(u.uid).length;
+            const lastBooking = getUserLastBookingDate(u.uid);
+            const isInactive = lastBooking && (Date.now() - lastBooking.getTime() > 14 * 24 * 60 * 60 * 1000);
+            
+            if (u.paymentPastDue || (isSub && isInactive)) {
+              return 'risk';
+            }
+            if (isSub) {
+              return 'subscriber';
+            }
+            if (bookingsCount > 0) {
+              return 'trial';
+            }
+            return 'lead';
+          };
+
+          const leads = users.filter(u => getStage(u) === 'lead');
+          const trials = users.filter(u => getStage(u) === 'trial');
+          const subscribers = users.filter(u => getStage(u) === 'subscriber');
+          const risks = users.filter(u => getStage(u) === 'risk');
+
+          const totalLeadsCount = leads.length;
+          const totalTrialsCount = trials.length;
+          const totalSubscribersCount = subscribers.length;
+          const totalRisksCount = risks.length;
+          const totalUsers = users.length;
+
+          // Conversion Rates
+          const leadToTrialRate = totalUsers > 0 ? Math.round(((totalTrialsCount + totalSubscribersCount) / totalUsers) * 100) : 0;
+          const trialToSubRate = (totalTrialsCount + totalSubscribersCount) > 0 ? Math.round((totalSubscribersCount / (totalTrialsCount + totalSubscribersCount)) * 100) : 0;
+
+          // Churn rate assumption
+          const totalPaid = totalSubscribersCount + totalRisksCount;
+          const churnRate = totalPaid > 0 ? (totalRisksCount / totalPaid) : 0.05; // default 5%
+          
+          // LTV calculation
+          const avgPrice = 147;
+          const estimatedLtv = Math.round(avgPrice / (churnRate > 0 ? churnRate : 0.05));
+
+          // Monthly forecast
+          const mrrForecast = (users.filter(u => u.plan === 'pro').length * 97) + (users.filter(u => u.plan === 'elite').length * 197);
+
+          return (
+            <div className="space-y-6 mb-6">
+              {/* Header metrics card */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Pipeline Metrics & LTV Calculator</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-slate-50 dark:bg-slate-700/55 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase block">MRR Forecast</span>
+                    <span className="text-2xl font-black text-blue-600 dark:text-blue-450 mt-1 block">R$ {mrrForecast}</span>
+                    <span className="text-[10px] text-slate-400 mt-1 block">Com base em planos ativos</span>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-700/55 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase block">Taxa de Churn</span>
+                    <span className="text-2xl font-black text-rose-600 dark:text-rose-450 mt-1 block">{(churnRate * 100).toFixed(1)}%</span>
+                    <span className="text-[10px] text-slate-400 mt-1 block">Clientes em Risco / Assinantes</span>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-700/55 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase block">LTV Estimado</span>
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-450 mt-1 block">R$ {estimatedLtv}</span>
+                    <span className="text-[10px] text-slate-400 mt-1 block">LTV = Preço Médio (R$147) / Churn</span>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-700/55 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase block">CAC Adquirido (R$)</span>
+                    <input
+                      type="number"
+                      value={cacInput}
+                      onChange={(e) => setCacInput(Number(e.target.value))}
+                      className="text-lg font-black text-slate-800 dark:text-white mt-1 w-20 bg-white dark:bg-slate-850 border border-slate-350 dark:border-slate-650 rounded px-2 block"
+                    />
+                    <span className="text-[10px] text-slate-400 mt-1 block">ROI: {(estimatedLtv / (cacInput || 1)).toFixed(1)}x</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                  <div>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block font-semibold">Conversão Lead ➡️ Aula de Teste:</span>
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${leadToTrialRate}%` }}></div>
+                    </div>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-350 mt-1 block">{leadToTrialRate}% de leads agendaram</span>
+                  </div>
+
+                  <div>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block font-semibold">Conversão Aula de Teste ➡️ Assinatura:</span>
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+                      <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${trialToSubRate}%` }}></div>
+                    </div>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-350 mt-1 block">{trialToSubRate}% de conversão pós-aula</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Kanban board */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Leads Column */}
+                <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800/80">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Lead Inicial ({totalLeadsCount})</h4>
+                    <span className="w-5 h-5 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-400">{totalLeadsCount}</span>
+                  </div>
+
+                  <div className="space-y-3 overflow-y-auto max-h-[500px] pr-1">
+                    {leads.map(u => (
+                      <div key={u.uid} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow border border-slate-100 dark:border-slate-700 space-y-2">
+                        <div className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{u.displayName || 'Sem Nome'}</div>
+                        <div className="text-[10px] text-slate-400 truncate">{u.email}</div>
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-55 dark:border-slate-705">
+                          <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 font-semibold">{u.plan || 'free'}</span>
+                          <select
+                            onChange={(e) => upgradeUserPlan(u.uid, e.target.value as any)}
+                            className="text-[9px] bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-1 text-slate-700 dark:text-slate-300"
+                            value={u.plan || 'free'}
+                          >
+                            <option value="free">Free</option>
+                            <option value="pro">Pro</option>
+                            <option value="elite">Elite</option>
+                          </select>
+                        </div>
+                      </div>
+                    ))}
+                    {leads.length === 0 && (
+                      <div className="text-center py-8 text-[11px] text-slate-400">Nenhum lead nesta fase.</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Trial Column */}
+                <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800/80">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-xs font-bold text-blue-500 uppercase tracking-wider">Fase de Teste ({totalTrialsCount})</h4>
+                    <span className="w-5 h-5 bg-blue-100 dark:bg-blue-950 rounded-full flex items-center justify-center text-[10px] font-bold text-blue-600 dark:text-blue-400">{totalTrialsCount}</span>
+                  </div>
+
+                  <div className="space-y-3 overflow-y-auto max-h-[500px] pr-1">
+                    {trials.map(u => {
+                      const bookingsCount = getUserBookings(u.uid).length;
+                      return (
+                        <div key={u.uid} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow border border-slate-100 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{u.displayName || 'Sem Nome'}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{u.email}</div>
+                          <div className="text-[9px] text-blue-500 font-bold bg-blue-500/5 px-2 py-0.5 rounded inline-block">
+                            {bookingsCount} {bookingsCount === 1 ? 'Aula Agendada' : 'Aulas Agendadas'}
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-55 dark:border-slate-705">
+                            <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 font-semibold">{u.plan || 'free'}</span>
+                            <select
+                              onChange={(e) => upgradeUserPlan(u.uid, e.target.value as any)}
+                              className="text-[9px] bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-1 text-slate-700 dark:text-slate-300"
+                              value={u.plan || 'free'}
+                            >
+                              <option value="free">Free</option>
+                              <option value="pro">Pro</option>
+                              <option value="elite">Elite</option>
+                            </select>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {trials.length === 0 && (
+                      <div className="text-center py-8 text-[11px] text-slate-400">Nenhum estudante em trial.</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Subscribers Column */}
+                <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800/80">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-wider">Assinante Ativo ({totalSubscribersCount})</h4>
+                    <span className="w-5 h-5 bg-emerald-100 dark:bg-emerald-950 rounded-full flex items-center justify-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{totalSubscribersCount}</span>
+                  </div>
+
+                  <div className="space-y-3 overflow-y-auto max-h-[500px] pr-1">
+                    {subscribers.map(u => {
+                      const lastBooking = getUserLastBookingDate(u.uid);
+                      return (
+                        <div key={u.uid} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow border border-slate-100 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{u.displayName || 'Sem Nome'}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{u.email}</div>
+                          {lastBooking && (
+                            <div className="text-[9px] text-slate-400">
+                              Última aula: {lastBooking.toLocaleDateString('pt-BR')}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-55 dark:border-slate-705">
+                            <span className={`text-[9px] uppercase tracking-wider px-2 py-0.5 rounded font-black ${
+                              u.plan === 'elite' ? 'bg-orange-100 text-orange-850' :
+                              u.plan === 'pro' ? 'bg-blue-100 text-blue-850' :
+                              'bg-emerald-100 text-emerald-850'
+                            }`}>{u.plan || 'free'}</span>
+                            
+                            <button
+                              onClick={() => togglePaymentPastDue(u.uid, u.paymentPastDue || false)}
+                              className="text-[9px] bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/25 rounded px-2 py-0.5"
+                            >
+                              Forçar Atraso
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {subscribers.length === 0 && (
+                      <div className="text-center py-8 text-[11px] text-slate-400">Nenhum assinante ativo.</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Churn Risk Column */}
+                <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-100 dark:border-slate-800/80">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-xs font-bold text-rose-500 uppercase tracking-wider">Risco de Churn ({totalRisksCount})</h4>
+                    <span className="w-5 h-5 bg-rose-100 dark:bg-rose-950 rounded-full flex items-center justify-center text-[10px] font-bold text-rose-600 dark:text-rose-400">{totalRisksCount}</span>
+                  </div>
+
+                  <div className="space-y-3 overflow-y-auto max-h-[500px] pr-1">
+                    {risks.map(u => {
+                      const lastBooking = getUserLastBookingDate(u.uid);
+                      const isPastDue = u.paymentPastDue;
+                      return (
+                        <div key={u.uid} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow border border-rose-200 dark:border-rose-950/30 space-y-2">
+                          <div className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{u.displayName || 'Sem Nome'}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{u.email}</div>
+                          <div className="flex flex-wrap gap-1">
+                            {isPastDue && (
+                              <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-red-100 text-red-700 rounded border border-red-200 font-semibold">Atraso</span>
+                            )}
+                            <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-yellow-100 text-yellow-750 rounded border border-yellow-200 font-semibold">Inativo &gt; 14d</span>
+                          </div>
+                          {lastBooking && (
+                            <div className="text-[9px] text-slate-400">
+                              Última aula: {lastBooking.toLocaleDateString('pt-BR')}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-55 dark:border-slate-705">
+                            <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 font-semibold">{u.plan || 'free'}</span>
+                            
+                            <button
+                              onClick={() => togglePaymentPastDue(u.uid, u.paymentPastDue || false)}
+                              className="text-[9px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/25 rounded px-2 py-0.5"
+                            >
+                              Regularizar
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {risks.length === 0 && (
+                      <div className="text-center py-8 text-[11px] text-slate-400">Nenhum cliente em risco.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Back to Dashboard */}
         <div className="text-center">
