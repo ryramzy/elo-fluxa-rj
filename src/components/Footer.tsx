@@ -92,7 +92,7 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
       </div>
 
       <div className="max-w-[1800px] mx-auto mt-20 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] font-bold opacity-40">
-        <p>© 2025 Elo! - Professor de Inglês Nativo no Rio</p>
+        <p>© 2026 Elo! - Professor de Inglês Nativo no Rio</p>
         <p className="flex items-center gap-4">
           <span>Conformidade LGPD</span>
           <span>Rio de Janeiro, Brasil</span>
