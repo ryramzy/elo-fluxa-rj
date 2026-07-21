@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../hooks/useAuth';
+import { useUserProfile } from '../../hooks/useUserProfile';
+import { FaLock, FaUnlock } from 'react-icons/fa';
 import type { Course } from '../../data/courses';
 
 interface CourseCardProps {
@@ -58,11 +61,15 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   onEnroll, 
   onContinue 
 }) => {
+  const { user } = useAuth();
+  const { profile } = useUserProfile(user?.uid || '');
   const navigate = useNavigate();
   const isEnrolled = !!enrollment;
   const lessonsCompleted = enrollment?.lessonsCompleted || 0;
   const totalLessons = course.lessons.length;
   const progressPercent = Math.round((lessonsCompleted / totalLessons) * 100) || 0;
+  
+  const isLocked = (profile?.plan || 'free') === 'free' && course.level !== 'Beginner' && course.id !== 'basic-english-daily-life';
 
   const themeKey = getCourseTheme(course.tag, course.id);
   const colors = themeMatrix[themeKey];
@@ -86,6 +93,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             <span className="text-[10px] font-bold text-slate-400">
               +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
             </span>
+            {isLocked ? (
+              <FaLock size={12} className="text-slate-500 animate-pulse" />
+            ) : (
+              <FaUnlock size={12} className="text-slate-400 opacity-40" />
+            )}
           </div>
         </div>
 
