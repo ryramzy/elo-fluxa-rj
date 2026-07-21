@@ -35,7 +35,6 @@ import NotFound from './src/pages/NotFound';
 import ProfilePage from './src/pages/ProfilePage';
 import VideoCallPage from './src/pages/VideoCallPage';
 import OrgAdminDashboard from './src/pages/OrgAdminDashboard';
-import AiCoachPage from './src/pages/AiCoachPage';
 import { GuestBanner } from './src/components/GuestBanner';
 
 
@@ -89,7 +88,6 @@ function AppShell() {
     } else {
       const tabMap: Record<string, string> = {
         'courses': '/courses',
-        'ai-coach': '/ai-coach',
         'profile': '/profile'
       };
 
@@ -183,11 +181,7 @@ function AppShell() {
                   <VideoCallPage />
                 </ProtectedRoute>
               } />
-              <Route path="/ai-coach" element={
-                <ProtectedRoute>
-                  <AiCoachPage />
-                </ProtectedRoute>
-              } />
+
 
               {/* Admin-only routes */}
               <Route path="/admin" element={

@@ -566,21 +566,7 @@ export function TutorAgendaView() {
           </p>
         </div>
 
-        {/* Tutor selector for super-admins */}
-        {profile?.role === 'admin' && (
-          <div className="flex items-center gap-2.5 bg-white dark:bg-slate-800 p-2 rounded-xl border border-gray-150 dark:border-slate-700">
-            <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Visualizar Agenda de:</span>
-            <select
-              value={selectedTutorId}
-              onChange={(e) => setSelectedTutorId(e.target.value)}
-              className="text-xs font-bold text-gray-700 dark:text-slate-200 bg-transparent border-none focus:outline-none"
-            >
-              {tutorList.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
+
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">

@@ -65,7 +65,6 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
           <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Plataforma</h4>
           <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
             <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Painel Geral 📊</Link></li>
-            <li><Link to="/ai-coach" className="hover:text-blue-400 transition-colors">Tutor de IA 🤖</Link></li>
             <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós Sobre</Link></li>
           </ul>
         </div>

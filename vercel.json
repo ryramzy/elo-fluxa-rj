@@ -39,10 +39,7 @@
       "source": "/api/tts",
       "destination": "/api/tts.ts"
     },
-    {
-      "source": "/api/ai-coach-evaluate",
-      "destination": "/api/ai-coach-evaluate.ts"
-    },
+
     {
       "source": "/api/health",
       "destination": "/api/health.ts"

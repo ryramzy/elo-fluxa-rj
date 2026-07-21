@@ -36,14 +36,6 @@ const DEFAULT_TUTORS: Tutor[] = [
     calendarId: 'matt@elospeak.com.br',
     bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
     photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
-  },
-  {
-    id: 'sarah',
-    name: 'Sarah Jenkins',
-    email: 'sarah@elospeak.com.br',
-    calendarId: 'sarah@elospeak.com.br',
-    bio: 'Nativa de Boston, especialista em inglês para negócios, apresentações e entrevistas de emprego.',
-    photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'
   }
 ];
 
@@ -559,36 +551,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         </div>
 
-        {/* Tutor Selector */}
+        {/* Tutor Profile (Boutique Model) */}
         <div className="mt-6 pt-6 border-t border-white/5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-3">Escolha o seu Tutor:</span>
-          <div className="flex flex-wrap gap-4">
-            {tutors.map(t => {
-              const isSelected = selectedTutor.id === t.id;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => setSelectedTutor(t)}
-                  className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
-                    isSelected 
-                      ? 'bg-blue-600/25 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                      : 'bg-slate-900/50 border-white/5 text-slate-300 hover:bg-white/5'
-                  }`}
-                >
-                  <img src={t.photoUrl} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                  <div className="text-left">
-                    <div className="text-sm font-extrabold">{t.name}</div>
-                    <div className="text-[10px] text-slate-400">{t.email}</div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-          
-          {/* Selected Tutor Bio */}
-          <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col md:flex-row gap-4 items-start md:items-center">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col md:flex-row gap-4 items-center">
+            <img src={selectedTutor.photoUrl} alt={selectedTutor.name} className="w-12 h-12 rounded-full object-cover border border-white/10" />
             <div className="flex-1">
-              <span className="text-[10px] font-black text-blue-450 uppercase tracking-widest block">Sobre o Tutor</span>
+              <span className="text-[10px] font-black text-blue-450 uppercase tracking-widest block">Seu Professor: {selectedTutor.name}</span>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">{selectedTutor.bio}</p>
             </div>
           </div>
