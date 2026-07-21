@@ -1,0 +1,6 @@
+{
+  "appId": "com.elospeak.app",
+  "appName": "Elo Speak",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

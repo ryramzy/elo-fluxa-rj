@@ -40,6 +40,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+## [July 21, 2026 - Sprint 16] — Mobile App Store Packaging (Native Wrapping Configurations)
+**Status:** ✅ COMPLETED
+
+### What changed
+- **Bubblewrap TWA Manifest (`twa-manifest.json` & `public/.well-known/assetlinks.json`)**: Configured launcher names, package configurations (`com.elospeak.app`), and digital asset verification links to hide the browser address bar on Android app launch.
+- **Capacitor Mobile Setup (`capacitor.config.json` & `package.json`)**: Integrated `@capacitor/core`, `@capacitor/cli`, `@capacitor/ios`, and `@capacitor/android` config files to enable Xcode bundle generation.
+- **Platform-Independent Permissions API (`src/utils/mobilePermissions.ts`)**: Built a runtime module checking platform frames and asking camera/mic access cleanly, preventing build crashes on browser-only layouts.
+
 ## [July 20, 2026 - Sprint 15] — Multi-Tutor Scale & Calendar Syncs (Instructor Slots Routing)
 **Status:** ✅ COMPLETED
 

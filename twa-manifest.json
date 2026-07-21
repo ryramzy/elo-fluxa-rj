@@ -1,0 +1,18 @@
+{
+  "packageId": "com.elospeak.app",
+  "host": "elospeak.com.br",
+  "name": "Elo Speak",
+  "launcherName": "Elo!",
+  "display": "standalone",
+  "themeColor": "#0f172a",
+  "navigationColor": "#0f172a",
+  "backgroundColor": "#0f172a",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "orientation": "portrait",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./elo-key.keystore",
+    "alias": "elo-alias"
+  }
+}
