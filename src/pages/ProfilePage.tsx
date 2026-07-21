@@ -6,6 +6,7 @@ import { updateUserProfile } from '../lib/firestore';
 import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave, FaGlobe, FaMapMarkerAlt } from 'react-icons/fa';
 import { useToast } from '../hooks/useToast';
 import { TutorProfileModal } from '../components/profile/TutorProfileModal';
+import { courses } from '../data/courses';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -374,6 +375,48 @@ const ProfilePage: React.FC = () => {
               </p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Badges and Achievements Display */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-md rounded-3xl p-6 sm:p-8 mt-8">
+        <h2 className="text-xl font-bold font-serif text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
+          Conquistas & Emblemas 🏆
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6">
+          {courses.map(course => {
+            const hasBadge = profile?.badgesEarned?.includes(course.id);
+            return (
+              <div 
+                key={course.id} 
+                className={`flex flex-col items-center text-center p-4 rounded-2xl border transition-all duration-300 ${
+                  hasBadge 
+                    ? 'bg-emerald-500/5 border-emerald-500/20 text-slate-850 dark:text-slate-200' 
+                    : 'bg-slate-50/50 border-slate-100 dark:bg-slate-900/10 dark:border-slate-800 text-slate-400 opacity-60'
+                }`}
+                title={course.title}
+              >
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-3 relative shadow-inner ${
+                  hasBadge 
+                    ? 'bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-500/35 animate-in fade-in zoom-in duration-500' 
+                    : 'bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700'
+                }`}>
+                  <span>{course.emoji}</span>
+                  {!hasBadge && (
+                    <span className="absolute -bottom-1 -right-1 bg-slate-700 text-white rounded-full p-1 border border-white dark:border-slate-800 text-[8px]">
+                      🔒
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-black tracking-tight line-clamp-2 uppercase">
+                  {course.titlePt || course.title}
+                </span>
+                <span className="text-[8px] font-bold text-slate-500 mt-1 uppercase tracking-wider">
+                  {hasBadge ? 'Concluído' : 'Bloqueado'}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
