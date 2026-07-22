@@ -98,6 +98,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // 3. Signal local Web Speech API fallback
-  return res.status(404).json({ error: 'No premium TTS providers configured. Using browser fallback.' });
+  // 3. Try Google Translate TTS fallback (zero-key, natural, reliable)
+  try {
+    console.log(`[TTS Web] Synthesizing with Google Translate fallback (accent: ${accent || 'us'})`);
+    let tl = 'en-US';
+    if (accent === 'gb') tl = 'en-GB';
+    else if (accent === 'au') tl = 'en-AU';
+
+    const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${tl}&client=tw-ob&q=${encodeURIComponent(text)}`;
+    const response = await fetch(googleTtsUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+
+    if (response.ok) {
+      const audioBuffer = await response.arrayBuffer();
+      res.setHeader('Content-Type', 'audio/mpeg');
+      return res.status(200).send(Buffer.from(audioBuffer));
+    } else {
+      console.warn(`[TTS Web] Google Translate API returned status: ${response.status}`);
+    }
+  } catch (err: any) {
+    console.error('[TTS Web] Google Translate fallback failed:', err);
+  }
+
+  // 4. Signal local Web Speech API fallback
+  return res.status(404).json({ error: 'No premium or fallback TTS providers configured. Using browser fallback.' });
 }
