@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/useToast';
 import { trackEvent } from '@utils/analytics';
 
 
+import confetti from 'canvas-confetti';
+
 interface Slide {
   id: string;
   title?: string;
@@ -30,6 +32,14 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
   const [isSpeaking, setIsSpeaking] = useState(false);
   const swiperRef = useRef<SwiperType | undefined>(undefined);
   const { showToast } = useToast();
+
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
 
   const handleNext = () => {
     swiperRef.current?.slideNext();
@@ -63,7 +73,12 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
     // Cancel speaking when slide changes
     cancelSpeech();
     setIsSpeaking(false);
-  }, [currentIndex]);
+
+    // Trigger celebratory confetti on Drill (5) or Review (7)
+    if (currentIndex === 5 || currentIndex === 7 || currentIndex === slides.length - 1) {
+      triggerConfetti();
+    }
+  }, [currentIndex, slides.length]);
 
   // Typing-safe keyboard navigation handler
   useEffect(() => {

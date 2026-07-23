@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { courses } from '@/data/courses';
 import { useAuth } from '@/hooks/useAuth';
 import { useEnrollments } from '@/hooks/useEnrollments';
+import Hero from './Hero';
 
 export default function About() {
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ export default function About() {
   const { enrollments } = useEnrollments(user?.uid || '');
   const [linkCopied, setLinkCopied] = useState(false);
 
-  // Redirect logged-in users to dashboard
+  // Redirect logged-in full users to dashboard (allow guests & unauthenticated to explore)
   useEffect(() => {
-    if (user) {
+    if (user && !user.isGuest) {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
@@ -34,7 +35,12 @@ export default function About() {
   };
 
   return (
-    <div className="animate-fade-in-up">
+    <div className="animate-fade-in-up space-y-6">
+      
+      {/* Hero Banner for Visitors & Guest Users */}
+      {(!user || user.isGuest) && (
+        <Hero onEnter={() => navigate('/login')} />
+      )}
       
       {/* Social Proof Bar */}
       <section className="bg-white py-8 px-6 border-b border-slate-200">

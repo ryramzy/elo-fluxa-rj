@@ -40,19 +40,17 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                     minute: '2-digit' 
                   })}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Duração: {booking.duration || 60} minutos
+                <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
+                  👨‍🏫 Tutor: Matt Ramsay • {booking.duration || 60} min
                 </div>
-                {booking.meetLink && (
-                  <a
-                    href={booking.meetLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2 rounded-lg transition-all shadow-[0_2px_8px_rgba(16,185,129,0.2)] hover:shadow-lg"
-                  >
-                    🎥 Entrar na Aula
-                  </a>
-                )}
+                <a
+                  href={booking.meetLink || `/video-call/${booking.id}`}
+                  target={booking.meetLink ? "_blank" : "_self"}
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2 rounded-lg transition-all shadow-[0_2px_8px_rgba(16,185,129,0.2)] hover:shadow-lg"
+                >
+                  🎥 Entrar na Aula com Matt
+                </a>
               </div>
               <div className="flex items-center gap-2 self-start sm:self-auto">
                 <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${

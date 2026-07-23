@@ -19,7 +19,7 @@
   - lesson-reminder.ts (cron: hourly)
 
 ### GCP Project
-- **Project**: elo-matt-prod
+- **Project**: elo-fluxa-rj
 - **Service Account**: elo-matt-calendar-service
 - **APIs enabled**: Calendar, Gmail, Meet
 - **OAuth Client**: Elo Matt Web

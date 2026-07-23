@@ -7,11 +7,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
-import { registerSW } from 'virtual:pwa-register';
-
 // Register service worker for PWA offline features
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  registerSW({ immediate: true });
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
 const rootElement = document.getElementById('root');

@@ -1,3 +1,78 @@
+const uint01 = {
+  id: "gr-uint-01",
+  title: "Passive voice",
+  slides: [
+    "INTRO|||The Passive Voice 🏗️|||Shift focus from WHO did it to WHAT was done. Essential for business reports and news.|||Elo: Quando o foco é o resultado e não a pessoa, a voz passiva entra em ação.",
+    "VOCAB|||Passive Mechanics ⚙️|||*   **Active**: *'John built the app.'*\n*   **Passive**: *'The app was built by John.'*\n*   **Structure**: *Subject + To Be + Past Participle*.\n*   **Common Use**: *'It was decided...', 'The server was updated...'*.|||Elo: Muito usada quando não sabemos ou não importa quem fez a ação.",
+    "CONCEPT|||Connected Speech: Wuz-built 🗣️|||The auxiliary 'was' reduces to a weak 'wuz' sound.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'It was built'* becomes **'it-wuz-built'**\n> * *'They were told'* becomes **'they-wer-told'**|||Elo: Diga 'it-wuz-built' bem suave.",
+    "EXAMPLE|||Corporate Reporting 📊|||*\"The quarterly report was delivered on time, and all security patches were applied.\"*\n\n> 🗣️ **Phonetics:**\n> *'Was delivered'* sounds like **'wuz-di-li-verd'**.|||Elo: Soa super profissional e objetivo.",
+    "CULTURE|||Diplomatic Blame Reduction 🇺🇸|||In corporate email, passive voice avoids pointing fingers. Instead of *'You broke the API'*, say *'The API was broken during deployment'*.|||Elo: A voz passiva é a melhor amiga da diplomacia corporativa!",
+    "DRILL|||⚡ Quick Challenge: The Update|||Your boss asks for a quick project status update:\n\n*\"Did someone fix the bug on the checkout page?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'Yes, the bug was fixed this morning!'*\n> \n> 🏆 **XP Multiplier:** Use 'wuz-fixt' connected speech!|||Elo: Dê a resposta na voz passiva com confiança!|||Yes, the bug was fixed this morning!",
+    "ROLEPLAY|||🎭 Executive Standup in NYC|||You are presenting status to Director Mark in Manhattan.\n\n> *\"What is the status of the new feature release?\"*\n\n> 🎭 **Challenge:** Inform Mark that *'The code was tested and deployed yesterday'*.|||Elo: Apresente o status na voz passiva para o Mark!",
+    "REVIEW|||Passive Master 🏆|||You unlocked 4 corporate reporting skills:\n\n1. **Shifting focus** to results\n2. **Connected Speech**: **'wuz-built'** weak form\n3. **Diplomatic blame avoidance** in emails\n4. **Executive reporting** structures|||Elo: Trabalho de mestre! Sua comunicação corporativa subiu de nível."
+  ]
+};
+
+const uint02 = {
+  id: "gr-uint-02",
+  title: "Reported speech",
+  slides: [
+    "INTRO|||Reporting What Others Said 🗣️|||Master Reported Speech to pass along messages, meeting notes, and updates smoothly.|||Elo: Como você conta pro seu chefe o que o cliente disse na reunião?",
+    "VOCAB|||Reported Speech Tense Shift ⏪|||*   **Direct**: *\"I am busy.\"* -> **Reported**: *\"He said he was busy.\"*\n*   **Direct**: *\"I will call you.\"* -> **Reported**: *\"She said she would call me.\"*\n*   **Direct**: *\"We finished.\"* -> **Reported**: *\"They said they had finished.\"*|||Elo: Regra geral: O verbo dá um passo para o passado!",
+    "CONCEPT|||Connected Speech: Sed-he-wuz 🗣️|||Drop the 'h' sound in pronouns when reporting speech rapidly.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'He said he was'* becomes **'he-sed-e-wuz'**\n> * *'She told me that'* becomes **'she-tol-mi-that'**|||Elo: Treine falar 'he-sed-e-wuz' sem fazer a pausa do 'h'.",
+    "EXAMPLE|||Reporting Client Feedback 📞|||*\"The client said they were happy with the proposal and would sign tomorrow.\"*\n\n> 🗣️ **Phonetics:**\n> *'Said they were'* flows into **'sed-they-wer'**.|||Elo: Perfeito para relatar atualizações em reuniões de equipe.",
+    "CULTURE|||Meeting Notes & Minutes 🇺🇸|||In US corporate culture, summarizing meetings (*'Mark mentioned that...', 'Sarah agreed that...'*) is a valued leadership skill.|||Elo: Saber resumir o que outros disseram demonstra alto nível de atenção.",
+    "DRILL|||⚡ Quick Challenge: Passing the Message|||Your coworker asks what the manager said on the call:\n\n*\"What did Manager Dave say about our deadline?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'He said that we had to deliver by Friday.'*\n> \n> 🏆 **XP Multiplier:** Shift the tense correctly with 'he-sed-that'!|||Elo: Relate o recado do gerente!|||He said that we had to deliver by Friday.",
+    "ROLEPLAY|||🎭 Post-Client Call Sync|||Syncing up with your teammate Rachel after a client call with Target.\n\n> *\"I missed the last 5 minutes of the call! What did the client say?\"*\n\n> 🎭 **Challenge:** Tell Rachel *'They said they loved the demo and would follow up'*.|||Elo: Passe o resumo da chamada para a Rachel!",
+    "REVIEW|||Reporting Master 🏆|||You unlocked 4 messaging skills:\n\n1. **Tense backshifting** for reported speech\n2. **Connected Speech**: **'he-sed-e-wuz'** link\n3. **Client feedback** reporting\n4. **Executive meeting summaries**|||Elo: Sensacional! Suas atualizações agora têm precisão absoluta."
+  ]
+};
+
+const uint03 = {
+  id: "gr-uint-03",
+  title: "Second & third conditionals",
+  slides: [
+    "INTRO|||Hypotheticals & Past Regrets 💭|||Expressing 'what if' in the present (Second) and 'what could have been' in the past (Third).|||Elo: Se você pudesse mudar uma decisão do passado, qual seria?",
+    "VOCAB|||Advanced Conditional Formulas 🧬|||*   **Second Conditional** (Hypothetical Present): *If + Past, Would + Verb* (*If I won the lottery, I would buy a house*).\n*   **Third Conditional** (Past Regret): *If + Had + PP, Would Have + PP* (*If I had studied, I would have passed*).|||Elo: Use 'If I WERE you' no 2º condicional (nunca 'If I was you'!).",
+    "CONCEPT|||Connected Speech: Woulda / Coulda 🗣️|||In fast speech, 'would have' and 'could have' reduce to single words!\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'Would have'* becomes **'woulda'**\n> * *'Could have'* becomes **'coulda'**\n> * *'If I had known'* becomes **'i-fai-d-known'**|||Elo: Diga 'I-woulda-called-you' bem solto.",
+    "EXAMPLE|||Reflecting on Decisions 🔄|||*\"If we had launched earlier, we woulda captured 50% of the market.\"*\n\n> 🗣️ **Phonetics:**\n> *'Would have captured'* sounds like **'woulda-cap-churd'**.|||Elo: Frase clássica de pós-mortem de projetos.",
+    "CULTURE|||Post-Mortem Meetings 🇺🇸|||In tech startups, 'post-mortem' meetings review failed launches using Third Conditional (*'If we had tested X, we wouldn't have crashed'*). Focus is learning, not blame.|||Elo: Usar esses condicionais em reuniões pós-projeto mostra maturidade analítica.",
+    "DRILL|||⚡ Quick Challenge: Giving Advice|||A friend asks what you would do in their tricky career situation:\n\n*\"I don't know if I should accept this job offer or stay at my current company...\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'If I were you, I would take the new offer!'*\n> \n> 🏆 **XP Multiplier:** Use 'If I were you' correctly!|||Elo: Dê o conselho na estrutura do 2º condicional!|||If I were you, I would take the new offer!",
+    "ROLEPLAY|||🎭 Post-Mortem in Austin|||Analyzing a missed deadline with your project manager Emily.\n\n> *\"Why did we lose the client deal last week?\"*\n\n> 🎭 **Challenge:** Explain using Third Conditional (*'If we had responded faster, we woulda won the deal'*) with *'woulda'*.|||Elo: Faça a análise técnica com a Emily!",
+    "REVIEW|||Hypothetical Master 🏆|||You unlocked 4 advanced conditional skills:\n\n1. **Present hypotheticals** with Second Conditional\n2. **Past regrets & analysis** with Third Conditional\n3. **Connected Speech**: **'woulda / coulda'** reductions\n4. **Corporate post-mortem** analytical framing|||Elo: Análise de nível sênior! Você domina o pensamento hipotético."
+  ]
+};
+
+const uint04 = {
+  id: "gr-uint-04",
+  title: "Advanced inversion & cleft sentences",
+  slides: [
+    "INTRO|||Executive Emphasis & Inversion 🌟|||Take your speech to C-level elegance using Inversion and Cleft Sentences.|||Elo: Quer dar um impacto épico a frases importantes em apresentações?",
+    "VOCAB|||Emphasis Structures ⚡|||*   **Negative Inversion**: *Never have I seen...*, *Rarely do we find...* (Auxiliary before subject!).\n*   **Cleft Sentence**: *What we need is...*, *It was John who...* (Wrapping focus at the start!).|||Elo: Essas estruturas são a marca registrada de grandes oradores.",
+    "CONCEPT|||Connected Speech: Wut-we-need-iz 🗣️|||Cleft phrases flow as a single rhythmic unit.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'What we need is'* becomes **'wut-we-need-iz'**\n> * *'Never have I'* becomes **'ne-ver-ha-vai'**|||Elo: Fale 'wut-we-need-iz-focus' com autoridade.",
+    "EXAMPLE|||Keynote Speech Impact 🎤|||*\"Never have I seen such dedication from a team. What we accomplished is historic.\"*\n\n> 🗣️ **Phonetics:**\n> *'Never have I seen'* links into **'ne-ver-ha-vai-seen'**.|||Elo: O tom de liderança é inquestionável nessa estrutura.",
+    "CULTURE|||Steve Jobs & Keynote Rhetoric 🇺🇸|||American tech CEOs (like Steve Jobs or Tim Cook) heavily use cleft sentences (*'What we are introducing today is...'*) to build suspense in product launches.|||Elo: Repare nos eventos da Apple: eles usam cleft sentences o tempo todo!",
+    "DRILL|||⚡ Quick Challenge: Executive Focus|||You are addressing your team at the start of a high-stakes sprint:\n\n*\"How can we win this quarter's targets?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'What we need is 100% focus on execution!'*\n> \n> 🏆 **XP Multiplier:** Flow through 'wut-we-need-iz'!|||Elo: Dê a resposta com presença executiva!|||What we need is 100% focus on execution!",
+    "ROLEPLAY|||🎭 Keynote Address in San Jose|||Opening the annual company summit in Silicon Valley as Vice President.\n\n> *\"Welcome everyone! What is the core message for our engineering team today?\"*\n\n> 🎭 **Challenge:** Open with *'Rarely have we faced such an opportunity'* or *'What we built this year is...'*.|||Elo: Comande o palco com as estruturas de ênfase!",
+    "REVIEW|||Executive Presence Master 🏆|||You unlocked 4 rhetorical emphasis skills:\n\n1. **Negative Inversion** for dramatic impact\n2. **Cleft sentences** for key focus\n3. **Connected Speech**: **'wut-we-need-iz'** flow\n4. **Keynote speech rhetoric** for leadership|||Elo: Presença de palco extraordinária! Você fala como um CEO."
+  ]
+};
+
+const uint05 = {
+  id: "gr-uint-05",
+  title: "Linking words & discourse markers",
+  slides: [
+    "INTRO|||Advanced Linking & Transitions 🌉|||Connect complex ideas seamlessly using high-level discourse markers.|||Elo: Chega de usar apenas 'and' e 'but'. Vamos elevar seu vocabulário de transição!",
+    "VOCAB|||Executive Transition Vocabulary 🏛️|||*   **Adding**: *Furthermore, Moreover, In addition*.\n*   **Contrasting**: *However, Nevertheless, On the other hand, Despite*.\n*   **Result**: *Consequently, Therefore, As a result*.|||Elo: 'Despite' é seguido por substantivo ou -ING (nunca oração inteira!).",
+    "CONCEPT|||Connected Speech: As-uh-re-zult 🗣️|||Discourse markers act as rhythmic signposts for your listener.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'As a result'* becomes **'as-uh-re-zult'**\n> * *'On the other hand'* becomes **'on-thee-u-ther-hand'**|||Elo: Respire e marque a transição com clareza.",
+    "EXAMPLE|||Strategic Argumentation 📈|||*\"Sales dropped in Q2; however, our new marketing push resulted in a 40% growth in Q3.\"*\n\n> 🗣️ **Phonetics:**\n> *'Sales dropped'* links into **'sales-dropt'**.|||Elo: Transição limpa que transforma um problema numa vitória.",
+    "CULTURE|||Boardroom Persuasion Structure 🇺🇸|||In formal presentations, using clear discourse markers (*'Furthermore', 'Consequently'*) shows logical rigor and structured thinking.|||Elo: A estrutura dos seus conectores reflete a clareza da sua mente.",
+    "DRILL|||⚡ Quick Challenge: The Pivot|||Explain a setback that led to a positive outcome in a meeting:\n\n*\"How did the project turn out after the initial delay?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'We faced delays; however, as a result, our final product was much better.'*\n> \n> 🏆 **XP Multiplier:** Use 'however' and 'as-uh-re-zult' smoothly!|||Elo: Conecte o contraste com elegância!|||We faced delays; however, as a result, our final product was much better.",
+    "ROLEPLAY|||🎭 Quarterly Board Review in NYC|||Presenting performance metrics to board members in New York.\n\n> *\"The market conditions were tough this quarter. How did we adapt?\"*\n\n> 🎭 **Challenge:** Explain using *'Despite the market challenges... nevertheless...'* to demonstrate leadership resilience.|||Elo: Apresente o argumento com conectores de alto nível!",
+    "REVIEW|||Discourse Master 🏆|||You unlocked 4 advanced transition skills:\n\n1. **Addition & contrast** with *'Furthermore'* & *'However'*\n2. **Result framing** with *'Consequently'* & *'As a result'*\n3. **Connected Speech**: **'as-uh-re-zult'** link\n4. **Boardroom rhetorical logic** & flow|||Elo: Parabéns! Você concluiu com maestria todo o módulo Intermediário & Avançado!"
+  ]
+};
+
 export const intermediateContent: Record<string, Record<string, { id: string; title: string; slides: string[] }>> = {
   "intermediate-english-topics": {
     "int-tc-01": {
@@ -158,75 +233,24 @@ export const intermediateContent: Record<string, Record<string, { id: string; ti
     }
   },
   "english-grammar-upper-intermediate": {
-    "gr-uint-01": {
-      id: "gr-uint-01",
-      title: "Passive voice",
-      slides: [
-        "INTRO|||The Passive Voice 🏗️|||Shift focus from WHO did it to WHAT was done. Essential for business reports and news.|||Elo: Quando o foco é o resultado e não a pessoa, a voz passiva entra em ação.",
-        "VOCAB|||Passive Mechanics ⚙️|||*   **Active**: *'John built the app.'*\n*   **Passive**: *'The app was built by John.'*\n*   **Structure**: *Subject + To Be + Past Participle*.\n*   **Common Use**: *'It was decided...', 'The server was updated...'*.|||Elo: Muito usada quando não sabemos ou não importa quem fez a ação.",
-        "CONCEPT|||Connected Speech: Wuz-built 🗣️|||The auxiliary 'was' reduces to a weak 'wuz' sound.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'It was built'* becomes **'it-wuz-built'**\n> * *'They were told'* becomes **'they-wer-told'**|||Elo: Diga 'it-wuz-built' bem suave.",
-        "EXAMPLE|||Corporate Reporting 📊|||*\"The quarterly report was delivered on time, and all security patches were applied.\"*\n\n> 🗣️ **Phonetics:**\n> *'Was delivered'* sounds like **'wuz-di-li-verd'**.|||Elo: Soa super profissional e objetivo.",
-        "CULTURE|||Diplomatic Blame Reduction 🇺🇸|||In corporate email, passive voice avoids pointing fingers. Instead of *'You broke the API'*, say *'The API was broken during deployment'*.|||Elo: A voz passiva é a melhor amiga da diplomacia corporativa!",
-        "DRILL|||⚡ Quick Challenge: The Update|||Your boss asks for a quick project status update:\n\n*\"Did someone fix the bug on the checkout page?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'Yes, the bug was fixed this morning!'*\n> \n> 🏆 **XP Multiplier:** Use 'wuz-fixt' connected speech!|||Elo: Dê a resposta na voz passiva com confiança!|||Yes, the bug was fixed this morning!",
-        "ROLEPLAY|||🎭 Executive Standup in NYC|||You are presenting status to Director Mark in Manhattan.\n\n> *\"What is the status of the new feature release?\"*\n\n> 🎭 **Challenge:** Inform Mark that *'The code was tested and deployed yesterday'*.|||Elo: Apresente o status na voz passiva para o Mark!",
-        "REVIEW|||Passive Master 🏆|||You unlocked 4 corporate reporting skills:\n\n1. **Shifting focus** to results\n2. **Connected Speech**: **'wuz-built'** weak form\n3. **Diplomatic blame avoidance** in emails\n4. **Executive reporting** structures|||Elo: Trabalho de mestre! Sua comunicação corporativa subiu de nível."
-      ]
-    },
-    "gr-uint-02": {
-      id: "gr-uint-02",
-      title: "Reported speech",
-      slides: [
-        "INTRO|||Reporting What Others Said 🗣️|||Master Reported Speech to pass along messages, meeting notes, and updates smoothly.|||Elo: Como você conta pro seu chefe o que o cliente disse na reunião?",
-        "VOCAB|||Reported Speech Tense Shift ⏪|||*   **Direct**: *\"I am busy.\"* -> **Reported**: *\"He said he was busy.\"*\n*   **Direct**: *\"I will call you.\"* -> **Reported**: *\"She said she would call me.\"*\n*   **Direct**: *\"We finished.\"* -> **Reported**: *\"They said they had finished.\"*|||Elo: Regra geral: O verbo dá um passo para o passado!",
-        "CONCEPT|||Connected Speech: Sed-he-wuz 🗣️|||Drop the 'h' sound in pronouns when reporting speech rapidly.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'He said he was'* becomes **'he-sed-e-wuz'**\n> * *'She told me that'* becomes **'she-tol-mi-that'**|||Elo: Treine falar 'he-sed-e-wuz' sem fazer a pausa do 'h'.",
-        "EXAMPLE|||Reporting Client Feedback 📞|||*\"The client said they were happy with the proposal and would sign tomorrow.\"*\n\n> 🗣️ **Phonetics:**\n> *'Said they were'* flows into **'sed-they-wer'**.|||Elo: Perfeito para relatar atualizações em reuniões de equipe.",
-        "CULTURE|||Meeting Notes & Minutes 🇺🇸|||In US corporate culture, summarizing meetings (*'Mark mentioned that...', 'Sarah agreed that...'*) is a valued leadership skill.|||Elo: Saber resumir o que outros disseram demonstra alto nível de atenção.",
-        "DRILL|||⚡ Quick Challenge: Passing the Message|||Your coworker asks what the manager said on the call:\n\n*\"What did Manager Dave say about our deadline?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'He said that we had to deliver by Friday.'*\n> \n> 🏆 **XP Multiplier:** Shift the tense correctly with 'he-sed-that'!|||Elo: Relate o recado do gerente!|||He said that we had to deliver by Friday.",
-        "ROLEPLAY|||🎭 Post-Client Call Sync|||Syncing up with your teammate Rachel after a client call with Target.\n\n> *\"I missed the last 5 minutes of the call! What did the client say?\"*\n\n> 🎭 **Challenge:** Tell Rachel *'They said they loved the demo and would follow up'*.|||Elo: Passe o resumo da chamada para a Rachel!",
-        "REVIEW|||Reporting Master 🏆|||You unlocked 4 messaging skills:\n\n1. **Tense backshifting** for reported speech\n2. **Connected Speech**: **'he-sed-e-wuz'** link\n3. **Client feedback** reporting\n4. **Executive meeting summaries**|||Elo: Sensacional! Suas atualizações agora têm precisão absoluta."
-      ]
-    },
-    "gr-uint-03": {
-      id: "gr-uint-03",
-      title: "Second & third conditionals",
-      slides: [
-        "INTRO|||Hypotheticals & Past Regrets 💭|||Expressing 'what if' in the present (Second) and 'what could have been' in the past (Third).|||Elo: Se você pudesse mudar uma decisão do passado, qual seria?",
-        "VOCAB|||Advanced Conditional Formulas 🧬|||*   **Second Conditional** (Hypothetical Present): *If + Past, Would + Verb* (*If I won the lottery, I would buy a house*).\n*   **Third Conditional** (Past Regret): *If + Had + PP, Would Have + PP* (*If I had studied, I would have passed*).|||Elo: Use 'If I WERE you' no 2º condicional (nunca 'If I was you'!).",
-        "CONCEPT|||Connected Speech: Woulda / Coulda 🗣️|||In fast speech, 'would have' and 'could have' reduce to single words!\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'Would have'* becomes **'woulda'**\n> * *'Could have'* becomes **'coulda'**\n> * *'If I had known'* becomes **'i-fai-d-known'**|||Elo: Diga 'I-woulda-called-you' bem solto.",
-        "EXAMPLE|||Reflecting on Decisions 🔄|||*\"If we had launched earlier, we woulda captured 50% of the market.\"*\n\n> 🗣️ **Phonetics:**\n> *'Would have captured'* sounds like **'woulda-cap-churd'**.|||Elo: Frase clássica de pós-mortem de projetos.",
-        "CULTURE|||Post-Mortem Meetings 🇺🇸|||In tech startups, 'post-mortem' meetings review failed launches using Third Conditional (*'If we had tested X, we wouldn't have crashed'*). Focus is learning, not blame.|||Elo: Usar esses condicionais em reuniões pós-projeto mostra maturidade analítica.",
-        "DRILL|||⚡ Quick Challenge: Giving Advice|||A friend asks what you would do in their tricky career situation:\n\n*\"I don't know if I should accept this job offer or stay at my current company...\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'If I were you, I would take the new offer!'*\n> \n> 🏆 **XP Multiplier:** Use 'If I were you' correctly!|||Elo: Dê o conselho na estrutura do 2º condicional!|||If I were you, I would take the new offer!",
-        "ROLEPLAY|||🎭 Post-Mortem in Austin|||Analyzing a missed deadline with your project manager Emily.\n\n> *\"Why did we lose the client deal last week?\"*\n\n> 🎭 **Challenge:** Explain using Third Conditional (*'If we had responded faster, we woulda won the deal'*) with *'woulda'*.|||Elo: Faça a análise técnica com a Emily!",
-        "REVIEW|||Hypothetical Master 🏆|||You unlocked 4 advanced conditional skills:\n\n1. **Present hypotheticals** with Second Conditional\n2. **Past regrets & analysis** with Third Conditional\n3. **Connected Speech**: **'woulda / coulda'** reductions\n4. **Corporate post-mortem** analytical framing|||Elo: Análise de nível sênior! Você domina o pensamento hipotético."
-      ]
-    },
-    "gr-uint-04": {
-      id: "gr-uint-04",
-      title: "Advanced inversion & cleft sentences",
-      slides: [
-        "INTRO|||Executive Emphasis & Inversion 🌟|||Take your speech to C-level elegance using Inversion and Cleft Sentences.|||Elo: Quer dar um impacto épico a frases importantes em apresentações?",
-        "VOCAB|||Emphasis Structures ⚡|||*   **Negative Inversion**: *Never have I seen...*, *Rarely do we find...* (Auxiliary before subject!).\n*   **Cleft Sentence**: *What we need is...*, *It was John who...* (Wrapping focus at the start!).|||Elo: Essas estruturas são a marca registrada de grandes oradores.",
-        "CONCEPT|||Connected Speech: Wut-we-need-iz 🗣️|||Cleft phrases flow as a single rhythmic unit.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'What we need is'* becomes **'wut-we-need-iz'**\n> * *'Never have I'* becomes **'ne-ver-ha-vai'**|||Elo: Fale 'wut-we-need-iz-focus' com autoridade.",
-        "EXAMPLE|||Keynote Speech Impact 🎤|||*\"Never have I seen such dedication from a team. What we accomplished is historic.\"*\n\n> 🗣️ **Phonetics:**\n> *'Never have I seen'* links into **'ne-ver-ha-vai-seen'**.|||Elo: O tom de liderança é inquestionável nessa estrutura.",
-        "CULTURE|||Steve Jobs & Keynote Rhetoric 🇺🇸|||American tech CEOs (like Steve Jobs or Tim Cook) heavily use cleft sentences (*'What we are introducing today is...'*) to build suspense in product launches.|||Elo: Repare nos eventos da Apple: eles usam cleft sentences o tempo todo!",
-        "DRILL|||⚡ Quick Challenge: Executive Focus|||You are addressing your team at the start of a high-stakes sprint:\n\n*\"How can we win this quarter's targets?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'What we need is 100% focus on execution!'*\n> \n> 🏆 **XP Multiplier:** Flow through 'wut-we-need-iz'!|||Elo: Dê a resposta com presença executiva!|||What we need is 100% focus on execution!",
-        "ROLEPLAY|||🎭 Keynote Address in San Jose|||Opening the annual company summit in Silicon Valley as Vice President.\n\n> *\"Welcome everyone! What is the core message for our engineering team today?\"*\n\n> 🎭 **Challenge:** Open with *'Rarely have we faced such an opportunity'* or *'What we built this year is...'*.|||Elo: Comande o palco com as estruturas de ênfase!",
-        "REVIEW|||Executive Presence Master 🏆|||You unlocked 4 rhetorical emphasis skills:\n\n1. **Negative Inversion** for dramatic impact\n2. **Cleft sentences** for key focus\n3. **Connected Speech**: **'wut-we-need-iz'** flow\n4. **Keynote speech rhetoric** for leadership|||Elo: Presença de palco extraordinária! Você fala como um CEO."
-      ]
-    },
-    "gr-uint-05": {
-      id: "gr-uint-05",
-      title: "Linking words & discourse markers",
-      slides: [
-        "INTRO|||Advanced Linking & Transitions 🌉|||Connect complex ideas seamlessly using high-level discourse markers.|||Elo: Chega de usar apenas 'and' e 'but'. Vamos elevar seu vocabulário de transição!",
-        "VOCAB|||Executive Transition Vocabulary 🏛️|||*   **Adding**: *Furthermore, Moreover, In addition*.\n*   **Contrasting**: *However, Nevertheless, On the other hand, Despite*.\n*   **Result**: *Consequently, Therefore, As a result*.|||Elo: 'Despite' é seguido por substantivo ou -ING (nunca oração inteira!).",
-        "CONCEPT|||Connected Speech: As-uh-re-zult 🗣️|||Discourse markers act as rhythmic signposts for your listener.\n\n> 🗣️ **Connected Speech Phonetics:**\n> * *'As a result'* becomes **'as-uh-re-zult'**\n> * *'On the other hand'* becomes **'on-thee-u-ther-hand'**|||Elo: Respire e marque a transição com clareza.",
-        "EXAMPLE|||Strategic Argumentation 📈|||*\"Sales dropped in Q2; however, our new marketing push resulted in a 40% growth in Q3.\"*\n\n> 🗣️ **Phonetics:**\n> *'Sales dropped'* links into **'sales-dropt'**.|||Elo: Transição limpa que transforma um problema numa vitória.",
-        "CULTURE|||Boardroom Persuasion Structure 🇺🇸|||In formal presentations, using clear discourse markers (*'Furthermore', 'Consequently'*) shows logical rigor and structured thinking.|||Elo: A estrutura dos seus conectores reflete a clareza da sua mente.",
-        "DRILL|||⚡ Quick Challenge: The Pivot|||Explain a setback that led to a positive outcome in a meeting:\n\n*\"How did the project turn out after the initial delay?\"*\n\n> 🗣️ **Help Box (Your Response):**\n> * *'We faced delays; however, as a result, our final product was much better.'*\n> \n> 🏆 **XP Multiplier:** Use 'however' and 'as-uh-re-zult' smoothly!|||Elo: Conecte o contraste com elegância!|||We faced delays; however, as a result, our final product was much better.",
-        "ROLEPLAY|||🎭 Quarterly Board Review in NYC|||Presenting performance metrics to board members in New York.\n\n> *\"The market conditions were tough this quarter. How did we adapt?\"*\n\n> 🎭 **Challenge:** Explain using *'Despite the market challenges... nevertheless...'* to demonstrate leadership resilience.|||Elo: Apresente o argumento com conectores de alto nível!",
-        "REVIEW|||Discourse Master 🏆|||You unlocked 4 advanced transition skills:\n\n1. **Addition & contrast** with *'Furthermore'* & *'However'*\n2. **Result framing** with *'Consequently'* & *'As a result'*\n3. **Connected Speech**: **'as-uh-re-zult'** link\n4. **Boardroom rhetorical logic** & flow|||Elo: Parabéns! Você concluiu com maestria todo o módulo Intermediário & Avançado!"
-      ]
-    }
+    "gr-uint-01": uint01,
+    "gr-uint-02": uint02,
+    "gr-uint-03": uint03,
+    "gr-uint-04": uint04,
+    "gr-uint-05": uint05
+  },
+
+  // Aliases for courses.ts english-grammar-advanced
+  "english-grammar-advanced": {
+    "gr-adv-01": uint01,
+    "gr-adv-02": uint02,
+    "gr-adv-03": uint03,
+    "gr-adv-04": uint04,
+    "gr-adv-05": uint05,
+    "gr-uint-01": uint01,
+    "gr-uint-02": uint02,
+    "gr-uint-03": uint03,
+    "gr-uint-04": uint04,
+    "gr-uint-05": uint05
   }
 };

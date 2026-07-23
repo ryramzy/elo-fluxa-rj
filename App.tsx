@@ -47,10 +47,9 @@ function AppShell() {
 
   useEffect(() => {
     if (!loading) {
-      if (user && (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup')) {
+      // Only auto-redirect non-guest authenticated users away from auth/landing pages
+      if (user && !user.isGuest && (location.pathname === '/login' || location.pathname === '/signup')) {
         navigate('/dashboard', { replace: true });
-      } else if (!user && location.pathname === '/') {
-        navigate('/login', { replace: true });
       }
     }
   }, [user, loading, location.pathname, navigate]);

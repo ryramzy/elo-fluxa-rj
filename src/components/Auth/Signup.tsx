@@ -31,15 +31,18 @@ const Signup = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Check if guest user accumulated XP during demo lesson
+      const guestXp = parseInt(localStorage.getItem('elo_user_xp') || '0', 10);
+
       // Explicitly create user profile document in Firestore
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, {
         displayName: user.displayName || 'Estudante',
         email: user.email || email,
         photoURL: user.photoURL || '',
-        xp: 0,
-        level: 1,
-        streakDays: 0,
+        xp: guestXp > 0 ? guestXp : 0,
+        level: guestXp > 100 ? Math.floor(guestXp / 100) + 1 : 1,
+        streakDays: 1,
         lastActiveDate: new Date(),
         badgesEarned: [],
         createdAt: new Date(),
@@ -51,6 +54,8 @@ const Signup = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       });
 
+      sessionStorage.removeItem('elo_guest');
+      sessionStorage.removeItem('elo_guest_time');
       trackEvent('auth_signup', { method: 'email' });
       navigate('/dashboard', { state: { tab: 'booking' } });
     } catch (err: any) {
@@ -66,6 +71,7 @@ const Signup = () => {
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
+      const guestXp = parseInt(localStorage.getItem('elo_user_xp') || '0', 10);
 
       // Safely ensure user profile document in Firestore
       const userRef = doc(db, 'users', user.uid);
@@ -73,9 +79,9 @@ const Signup = () => {
         displayName: user.displayName || 'Estudante',
         email: user.email || '',
         photoURL: user.photoURL || '',
-        xp: 0,
-        level: 1,
-        streakDays: 0,
+        xp: guestXp > 0 ? guestXp : 0,
+        level: guestXp > 100 ? Math.floor(guestXp / 100) + 1 : 1,
+        streakDays: 1,
         lastActiveDate: new Date(),
         badgesEarned: [],
         createdAt: new Date(),
@@ -87,6 +93,8 @@ const Signup = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       }, { merge: true });
 
+      sessionStorage.removeItem('elo_guest');
+      sessionStorage.removeItem('elo_guest_time');
       trackEvent('auth_signup', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
