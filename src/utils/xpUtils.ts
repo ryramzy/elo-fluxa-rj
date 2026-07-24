@@ -21,6 +21,9 @@ export const getXPToNextLevel = (profile: any) => {
 export const getXPProgress = (profile: any) => {
   if (!profile) return { current: 0, total: 100, percentage: 0 };
 
+  const userLevel = profile.level || 1;
+  const userXP = profile.xp || 0;
+
   const ranges = [
     { level: 1, min: 0, max: 499 },
     { level: 2, min: 500, max: 999 },
@@ -29,10 +32,16 @@ export const getXPProgress = (profile: any) => {
     { level: 5, min: 3000, max: 4999 },
   ];
 
-  const current = ranges.find(r => r.level === profile.level);
-  if (!current) return { current: 0, total: 100, percentage: 0 };
+  let current = ranges.find(r => r.level === userLevel);
+  if (!current) {
+    if (userLevel > 5) {
+      current = { level: userLevel, min: 5000, max: 10000 };
+    } else {
+      current = { level: 1, min: 0, max: 499 };
+    }
+  }
 
-  const currentXP = profile.xp - current.min;
+  const currentXP = Math.max(0, userXP - current.min);
   const totalXP = current.max - current.min;
   const percentage = (currentXP / totalXP) * 100;
 

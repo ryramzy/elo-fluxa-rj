@@ -7,7 +7,7 @@ let memoryToasts: Toast[] = [];
 
 interface UseToastReturn {
   toasts: Toast[];
-  showToast: (toast: Omit<Toast, 'id'>) => void;
+  showToast: (toastOrMessage: Omit<Toast, 'id'> | string, type?: 'success' | 'error' | 'info' | 'warning') => void;
   removeToast: (id: string) => void;
 }
 
@@ -23,9 +23,14 @@ export const useToast = (): UseToastReturn => {
     };
   }, []);
 
-  const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = { ...toast, id };
+  const showToast = useCallback((toastOrMessage: Omit<Toast, 'id'> | string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+    const id = Math.random().toString(36).substring(2, 11);
+    let newToast: Toast;
+    if (typeof toastOrMessage === 'string') {
+      newToast = { message: toastOrMessage, type, id };
+    } else {
+      newToast = { ...toastOrMessage, id };
+    }
     
     memoryToasts = [...memoryToasts, newToast];
     listeners.forEach(l => l(memoryToasts));
