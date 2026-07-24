@@ -25,13 +25,31 @@ interface SlideViewerProps {
   onSlideChange?: (index: number) => void;
   onComplete: () => void;
   onClose: () => void;
+  userXp?: number;
+  userStreak?: number;
+  userLevel?: number;
 }
 
-export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide = 0, onSlideChange, onComplete, onClose }) => {
+export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide = 0, onSlideChange, onComplete, onClose, userXp = 0, userStreak = 0, userLevel = 1 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialSlide);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [sessionXp, setSessionXp] = useState(0);
+  const [floatingXp, setFloatingXp] = useState<{ amount: number; id: number } | null>(null);
   const swiperRef = useRef<SwiperType | undefined>(undefined);
   const { showToast } = useToast();
+
+  // Expose addSessionXp for parent components to call
+  const addSessionXp = (amount: number) => {
+    setSessionXp(prev => prev + amount);
+    setFloatingXp({ amount, id: Date.now() });
+    setTimeout(() => setFloatingXp(null), 1200);
+  };
+
+  // Attach to window for child components to call
+  useEffect(() => {
+    (window as any).__eloAddSessionXp = addSessionXp;
+    return () => { delete (window as any).__eloAddSessionXp; };
+  }, []);
 
   const triggerConfetti = () => {
     confetti({
@@ -148,6 +166,11 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         .siri-bar-2 { animation: siri-wave 1.3s infinite ease-in-out; animation-delay: 0.2s; }
         .siri-bar-3 { animation: siri-wave 1.0s infinite ease-in-out; animation-delay: 0.4s; }
         .siri-bar-4 { animation: siri-wave 1.2s infinite ease-in-out; animation-delay: 0.6s; }
+        
+        @keyframes floatUp {
+          0% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-30px); }
+        }
       `}</style>
       
       {/* Top Bar Navigation */}
@@ -208,6 +231,32 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
           )}
         </div>
         
+        {/* 🎮 Gamification HUD */}
+        <div className="flex items-center gap-3 text-xs font-bold">
+          <div className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-full">
+            <span>🔥</span>
+            <span className="text-amber-300">{userStreak}</span>
+          </div>
+          <div className="flex items-center gap-1 bg-purple-500/15 border border-purple-500/30 px-2.5 py-1 rounded-full">
+            <span>⭐</span>
+            <span className="text-purple-300">Lv.{userLevel}</span>
+          </div>
+          <div className="relative flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+            <span>💎</span>
+            <span className="text-emerald-300">{userXp + sessionXp} XP</span>
+            {/* Floating +XP animation */}
+            {floatingXp && (
+              <span
+                key={floatingXp.id}
+                className="absolute -top-6 right-0 text-emerald-400 font-extrabold text-sm animate-bounce pointer-events-none"
+                style={{ animation: 'floatUp 1.2s ease-out forwards' }}
+              >
+                +{floatingXp.amount} XP
+              </span>
+            )}
+          </div>
+        </div>
+
         {/* Segmented Progress Bar */}
         <div className="flex gap-1 w-full max-w-3xl mx-auto">
           {slides.map((_, idx) => (

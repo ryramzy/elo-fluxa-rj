@@ -8,6 +8,7 @@ import { checkCourseAccess, enrollUserInCourse } from '@lib/firestore';
 import { awardXP } from '@lib/xpSystem';
 import SubscriptionModal from '@components/SubscriptionModal';
 import { sounds } from '@utils/sounds';
+import { WHATSAPP_NUMBER } from '../../constants';
 import { trackEvent } from '@utils/analytics';
 import { 
   LuBookOpen, 
@@ -600,7 +601,7 @@ const CoursePage: React.FC = () => {
                 Dúvidas?
               </h3>
               <a
-                href={`https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20curso%20${encodeURIComponent(course.title)}`}
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20curso%20${encodeURIComponent(course.title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors text-xs font-bold uppercase tracking-wider"

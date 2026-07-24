@@ -23,12 +23,16 @@
 
 ---
 
-## 🛠️ Tech Stack
-- **Frontend Framework**: Vite, React 19, TypeScript
-- **Styling**: TailwindCSS & Custom Glassmorphism System
-- **Database & Auth**: Firebase Auth, Firestore, Security Rules
-- **APIs**: Resend Email, Google Calendar, Web Speech API
-- **Deployment**: Vercel (`elo-fluxa-rj.vercel.app`), GitHub Actions (`ryramzy/elo-fluxa-rj`), GCP (`elo-fluxa-rj`)
+## 🛠️ Architecture & Tech Stack
+
+ELO! is designed as a **100% Serverless, Cloud-Native Web & Mobile Platform**:
+
+* **Web Frontend (Vite + React 19 + TypeScript)**: Built with Vite for ultra-fast client-side bundle execution, instant hot-reloading (HMR), and zero SSR server overhead. Hosted on **Vercel Edge Network**.
+* **Mobile Ready**: Capacitor wrapper configured for Android/iOS, with a complete REST API spec (`docs/MOBILE_FLUTTER_API_SPEC.md`) ready for React Native or Flutter mobile apps.
+* **Backend & Database**: Firebase Auth + Cloud Firestore + GCP Cloud Functions (Serverless).
+* **Serverless APIs**: Vercel Serverless Functions (`/api/*`) handling Email (Resend), Google Calendar sync, and webhook integrations.
+* **Styling**: Modern TailwindCSS + Custom Glassmorphism UI/UX design system.
+* **CI/CD Pipeline**: GitHub -> Vercel automatic deployments (`ryramzy/elo-fluxa-rj`).
 
 ---
 

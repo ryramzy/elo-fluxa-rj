@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { getUserProfile, getAllBookings, getAllEnrollments, updateUserXP, updateUserPlan, updateUserProfile } from '../lib/firestore';
 import { awardXP } from '../lib/xpSystem';
 import { courses } from '../data/courses';
@@ -52,6 +53,7 @@ const AdminStudentProfile: React.FC = () => {
   const { uid } = useParams<{ uid: string }>();
   const navigate = useNavigate();
   const { user: adminUser } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdminGuard();
   
   const [student, setStudent] = useState<StudentProfile | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -66,6 +68,14 @@ const AdminStudentProfile: React.FC = () => {
   const [organizationId, setOrganizationId] = useState('');
   const [corporateCredits, setCorporateCredits] = useState('0');
   const [savingB2b, setSavingB2b] = useState(false);
+
+  // Block rendering until admin check completes
+  if (adminLoading) {
+    return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div></div>;
+  }
+  if (!isAdmin) {
+    return null; // useAdminGuard will redirect to /dashboard
+  }
 
   useEffect(() => {
     if (!uid || !adminUser) return;

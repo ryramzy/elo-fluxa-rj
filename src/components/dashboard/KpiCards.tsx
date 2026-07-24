@@ -23,7 +23,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({
     const now = new Date();
     return bookings.find(b => {
       if (b.status !== 'confirmed') return false;
-      const bDate = new Date(`${b.date}T${b.time}:00`);
+      const bDate = new Date(`${b.date}T${b.time}:00-03:00`);
       return bDate >= now;
     });
   };

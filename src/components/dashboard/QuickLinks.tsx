@@ -28,7 +28,7 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({
           <span className="text-slate-900 dark:text-white">Todos os Cursos</span>
         </button>
         <a
-          href="https://wa.me/5511999999999"
+          href={`https://wa.me/${WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"

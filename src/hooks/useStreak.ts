@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { updateStreak } from '../lib/firestore';
+import { updateStreak, getUserProfile } from '../lib/firestore';
 import { awardXP, XP_REWARDS } from '../lib/xpSystem';
 
 export function useStreak(uid: string) {
@@ -17,8 +17,13 @@ export function useStreak(uid: string) {
     const updateStreakOnMount = async () => {
       try {
         await updateStreak(uid);
+        // Fetch the updated profile to get the actual streak value
+        const profile = await getUserProfile(uid);
+        if (profile) {
+          setStreak(profile.streakDays || 0);
+        }
         setLoading(false);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error updating streak:', err);
         setError(err.message);
         setLoading(false);

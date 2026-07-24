@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useEnrollments } from '../hooks/useEnrollments';
+import { useUserProfile } from '../hooks/useUserProfile';
 import { courses } from '../data/courses';
 import { lessonContent } from '../data/lessonContent';
 import { awardXP } from '../lib/xpSystem';
@@ -21,13 +22,15 @@ interface QuizSlideContentProps {
   questionText: string;
   options: string[];
   correctAnswerIndex: number;
+  onCorrectAnswer?: () => void;
 }
 
 const QuizSlideContent: React.FC<QuizSlideContentProps> = ({
   slideId,
   questionText,
   options,
-  correctAnswerIndex
+  correctAnswerIndex,
+  onCorrectAnswer
 }) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -48,6 +51,7 @@ const QuizSlideContent: React.FC<QuizSlideContentProps> = ({
     setSubmitted(true);
     if (selectedIdx === correctAnswerIndex) {
       sounds.playSuccess();
+      onCorrectAnswer?.();
     } else {
       sounds.playError();
     }
@@ -127,6 +131,7 @@ const LessonPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
+  const { profile } = useUserProfile(user?.uid || '');
   
   const course = courses.find(c => c.id === courseId);
   const lessonIndex = course?.lessons.findIndex(l => l.id === lessonId);
@@ -326,6 +331,13 @@ const LessonPage: React.FC = () => {
               questionText={questionText}
               options={quizOptions}
               correctAnswerIndex={correctAnswerIndex}
+              onCorrectAnswer={() => {
+                if (user?.uid) {
+                  awardXP(user.uid, 10, 'quiz_correct');
+                  // Trigger floating +XP in the gamification HUD
+                  (window as any).__eloAddSessionXp?.(10);
+                }
+              }}
             />
           );
         } else {
@@ -412,6 +424,9 @@ const LessonPage: React.FC = () => {
       onSlideChange={handleSlideChange}
       onComplete={handleCompleteLesson}
       onClose={() => navigate(`/courses/${courseId}`)}
+      userXp={profile?.xp || 0}
+      userStreak={profile?.streakDays || 0}
+      userLevel={profile?.level || 1}
     />
   );
 };

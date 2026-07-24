@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { trackEvent } from '@/utils/analytics';
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
 
 const Signup = () => {
@@ -54,6 +54,30 @@ const Signup = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       });
 
+      // Migrate guest enrollments to Firestore
+      const guestEnrollmentsStr = sessionStorage.getItem('elo_guest_enrollments');
+      if (guestEnrollmentsStr) {
+        try {
+          const guestEnrollments = JSON.parse(guestEnrollmentsStr);
+          // Write each enrollment to the user's Firestore subcollection
+          for (const enrollment of guestEnrollments) {
+            const enrollRef = doc(db, 'users', user.uid, 'courses', enrollment.courseId);
+            await setDoc(enrollRef, {
+              courseId: enrollment.courseId,
+              lessonId: enrollment.lessonId || '',
+              activeSlideIndex: enrollment.activeSlideIndex || 0,
+              progress: enrollment.progress || 0,
+              xpEarned: enrollment.xpEarned || 0,
+              completedLessons: enrollment.completedLessons || [],
+              enrolledAt: new Date(),
+            }, { merge: true });
+          }
+        } catch (migrationErr) {
+          console.error('Failed to migrate guest enrollments:', migrationErr);
+        }
+      }
+      sessionStorage.removeItem('elo_guest_enrollments');
+
       sessionStorage.removeItem('elo_guest');
       sessionStorage.removeItem('elo_guest_time');
       trackEvent('auth_signup', { method: 'email' });
@@ -92,6 +116,30 @@ const Signup = () => {
         referredBy: referrerId || null,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       }, { merge: true });
+
+      // Migrate guest enrollments to Firestore
+      const guestEnrollmentsStr = sessionStorage.getItem('elo_guest_enrollments');
+      if (guestEnrollmentsStr) {
+        try {
+          const guestEnrollments = JSON.parse(guestEnrollmentsStr);
+          // Write each enrollment to the user's Firestore subcollection
+          for (const enrollment of guestEnrollments) {
+            const enrollRef = doc(db, 'users', user.uid, 'courses', enrollment.courseId);
+            await setDoc(enrollRef, {
+              courseId: enrollment.courseId,
+              lessonId: enrollment.lessonId || '',
+              activeSlideIndex: enrollment.activeSlideIndex || 0,
+              progress: enrollment.progress || 0,
+              xpEarned: enrollment.xpEarned || 0,
+              completedLessons: enrollment.completedLessons || [],
+              enrolledAt: new Date(),
+            }, { merge: true });
+          }
+        } catch (migrationErr) {
+          console.error('Failed to migrate guest enrollments:', migrationErr);
+        }
+      }
+      sessionStorage.removeItem('elo_guest_enrollments');
 
       sessionStorage.removeItem('elo_guest');
       sessionStorage.removeItem('elo_guest_time');

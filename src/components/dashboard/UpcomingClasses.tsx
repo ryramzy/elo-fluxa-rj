@@ -26,7 +26,7 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
         {upcomingBookings.map((booking) => {
           const bookingDate = booking.datetime?.toDate 
             ? booking.datetime.toDate() 
-            : new Date(`${booking.date}T${booking.time || '00:00'}:00`);
+            : new Date(`${booking.date}T${booking.time || '00:00'}:00-03:00`);
           
           return (
             <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl gap-3 bg-slate-50/50 dark:bg-slate-900/30">
@@ -41,7 +41,7 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                   })}
                 </div>
                 <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
-                  👨‍🏫 Tutor: Matt Ramsay • {booking.duration || 60} min
+                  👨‍🏫 Tutor: {booking.tutorName || 'Matt Ramsay'} • {booking.duration || 60} min
                 </div>
                 <a
                   href={booking.meetLink || `/video-call/${booking.id}`}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { WHATSAPP_NUMBER } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 
 const Sobre: React.FC = () => {
@@ -154,7 +155,7 @@ const Sobre: React.FC = () => {
             Adoro conversar sobre inglês, cultura americana, e como posso ajudar você a alcançar seus objetivos.
           </p>
           <a
-            href="https://wa.me/5521999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20as%20aulas%20de%20ingl%C3%AAs"
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20as%20aulas%20de%20ingl%C3%AAs`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 bg-white text-green-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
