@@ -10,7 +10,7 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
   bookings, 
   onNavigateToAgenda 
 }) => {
-  const upcomingBookings = bookings
+  const upcomingBookings = (bookings || [])
     .filter(b => b.status === 'confirmed')
     .sort((a, b) => {
       const dateA = new Date(a.date);

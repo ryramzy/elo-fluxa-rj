@@ -119,6 +119,12 @@ const DashboardWorking: React.FC = () => {
     }).length;
   };
 
+  useEffect(() => {
+    if (!profileLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, profileLoading, navigate]);
+
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -128,11 +134,7 @@ const DashboardWorking: React.FC = () => {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-slate-600">No user found</div>
-      </div>
-    );
+    return null;
   }
 
   // Unified Ecosystem: Render Tutor Dashboard if user has tutor or admin role
@@ -169,7 +171,7 @@ const DashboardWorking: React.FC = () => {
               <LuTriangleAlert size={20} className="shrink-0" />
               <div className="text-left">
                 <h4 className="text-sm font-bold text-white leading-tight">Pagamento Atrasado ⚠️</h4>
-                <p className="text-xs text-slate-455">Houve uma falha na cobrança da sua assinatura. Atualize seu cartão de crédito para evitar a interrupção do acesso.</p>
+                <p className="text-xs text-slate-400">Houve uma falha na cobrança da sua assinatura. Atualize seu cartão de crédito para evitar a interrupção do acesso.</p>
               </div>
             </div>
             <button
