@@ -675,14 +675,18 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
               </button>
             </div>
 
-            {onSwitchToStudentView && (
-              <button
-                onClick={onSwitchToStudentView}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider text-xs px-5 py-3 rounded-lg shadow-md transition-all hover:scale-105"
-              >
-                Visualizar como Aluno
-              </button>
-            )}
+            <button
+              onClick={() => {
+                sessionStorage.setItem('elo_admin_view', 'false');
+                if (onSwitchToStudentView) {
+                  onSwitchToStudentView();
+                }
+                navigate('/dashboard');
+              }}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-extrabold uppercase tracking-wider text-xs px-5 py-3 rounded-xl shadow-md transition-all hover:scale-105 flex items-center gap-2"
+            >
+              <span>🎓</span> Visualizar como Aluno
+            </button>
           </div>
         </div>
 

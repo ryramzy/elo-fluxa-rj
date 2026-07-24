@@ -60,6 +60,7 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (
         isOwner(userId) || 
         isTutor() ||
+        (resource != null && resource.data.referredBy != null && resource.data.referredBy == request.auth.uid) ||
         (resource != null && resource.data.organizationId != null && isOrgAdminOf(resource.data.organizationId))
       );
       
