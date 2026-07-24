@@ -7,6 +7,7 @@ import { collection, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, 
 import { db } from '../lib/firestore';
 import { useToast } from '../hooks/useToast';
 import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
+import { setAdminViewMode } from '../utils/adminView';
 
 interface Booking {
   id: string;
@@ -677,7 +678,7 @@ const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
 
             <button
               onClick={() => {
-                sessionStorage.setItem('elo_admin_view', 'false');
+                setAdminViewMode(false);
                 if (onSwitchToStudentView) {
                   onSwitchToStudentView();
                 }

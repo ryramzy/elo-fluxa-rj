@@ -10,6 +10,7 @@ import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE, getWhatsAppLink } from '
 import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
 import { NotificationDropdown } from './navigation/NotificationDropdown';
+import { setAdminViewMode } from '../utils/adminView';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
@@ -22,7 +23,16 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signInWithGoogle, signOut } = useAuth();
+  const { user, signInWithGoogle, signOut, signInAsGuest } = useAuth();
+
+  const userEmail = (user?.email || '').toLowerCase().trim();
+  const isAuthorizedEmail = 
+    userEmail === 'mramsayo@gmail.com' ||
+    userEmail === 'mramsay0@gmail.com' ||
+    userEmail === 'erneleducation@gmail.com' ||
+    userEmail.endsWith('@elospeak.com.br') ||
+    userEmail.endsWith('@elospeak.com') ||
+    (user?.uid && import.meta.env.VITE_ADMIN_UID && user.uid.trim() === import.meta.env.VITE_ADMIN_UID.trim());
 
   // Check for returnTo state from auth gate
   useEffect(() => {
@@ -243,18 +253,29 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   
                   {userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50 divide-y divide-slate-750">
-                      {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
-                        <a
-                          href="/admin"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate('/admin');
-                            setUserDropdownOpen(false);
-                          }}
-                          className="block px-4 py-2 text-sm font-semibold text-blue-400 hover:bg-slate-700 transition-colors"
-                        >
-                          Painel Admin 👑
-                        </a>
+                      {isAuthorizedEmail && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              setAdminViewMode(true);
+                              navigate('/dashboard');
+                            }}
+                            className="block w-full text-left px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-blue-400 hover:bg-slate-700 transition-colors"
+                          >
+                            👑 Painel Admin
+                          </button>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              setAdminViewMode(false);
+                              navigate('/dashboard');
+                            }}
+                            className="block w-full text-left px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-emerald-400 hover:bg-slate-700 transition-colors"
+                          >
+                            🎓 Modo Aluno
+                          </button>
+                        </>
                       )}
                       <a
                         href="/dashboard"

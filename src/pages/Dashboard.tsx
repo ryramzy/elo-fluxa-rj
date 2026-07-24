@@ -32,6 +32,8 @@ import { LuTriangleAlert } from 'react-icons/lu';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
+import { getAdminViewMode, setAdminViewMode } from '../utils/adminView';
+
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
@@ -49,13 +51,20 @@ const DashboardWorking: React.FC = () => {
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [referralsLoading, setReferralsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isAdminView, setIsAdminView] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('elo_admin_view');
-      return saved === null ? true : saved === 'true';
-    }
-    return true;
-  });
+  const [isAdminView, setIsAdminView] = useState(() => getAdminViewMode());
+
+  useEffect(() => {
+    const handleViewChange = (e: any) => {
+      if (typeof e.detail === 'boolean') {
+        setIsAdminView(e.detail);
+      } else {
+        setIsAdminView(getAdminViewMode());
+      }
+    };
+
+    window.addEventListener('elo_admin_view_changed' as any, handleViewChange);
+    return () => window.removeEventListener('elo_admin_view_changed' as any, handleViewChange);
+  }, []);
 
   useEffect(() => {
     const stateTab = (location.state as any)?.tab;
@@ -85,11 +94,9 @@ const DashboardWorking: React.FC = () => {
   }, [user?.uid, activeTab]);
 
   const toggleViewMode = () => {
-    setIsAdminView(prev => {
-      const next = !prev;
-      sessionStorage.setItem('elo_admin_view', String(next));
-      return next;
-    });
+    const next = !isAdminView;
+    setIsAdminView(next);
+    setAdminViewMode(next);
   };
   
   const loading = profileLoading || enrollmentsLoading || bookingsLoading;
