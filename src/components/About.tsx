@@ -190,17 +190,15 @@ export default function About() {
             <p className="text-lg text-slate-700 font-medium mb-6">
               Isso é o que os meus alunos vivem. Vem viver também.
             </p>
-            <a
-              href="https://wa.me/5522992322566?text=Oi%20Matt!%20Vi%20seu%20site%20e%20quero%20come%C3%A7ar%20a%20aprender%20ingl%C3%AAs%20americano"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-lg transition-colors"
+            <button
+              onClick={() => {
+                signInAsGuest();
+                navigate('/courses/basic-english-daily-life/lessons/be-dl-01');
+              }}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl transition-all shadow-lg text-sm uppercase tracking-wider hover:scale-105 border border-blue-400/40"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-              </svg>
-              Começar agora
-            </a>
+              <span>⚡</span> Experimentar Aula Grátis (Sem Cadastro)
+            </button>
           </div>
         </div>
       </section>
@@ -302,24 +300,23 @@ export default function About() {
                         {isEnrolled ? 'Continuar' : 'Ver curso'}
                       </button>
                     ) : (
-                      // Anonymous users - WhatsApp CTA
+                      // Anonymous users - High Converting Interactive Trial CTA
                       <div className="space-y-2">
-                        <a
-                          href={`https://wa.me/5522992322566?text=Tenho%20interesse%20no%20curso%20de%20${encodeURIComponent(course.title)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-medium py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+                        <button
+                          onClick={() => {
+                            signInAsGuest();
+                            const firstLessonId = course.lessons[0]?.id || 'be-dl-01';
+                            navigate(`/courses/${course.id}/lessons/${firstLessonId}`);
+                          }}
+                          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-xs uppercase tracking-wider border border-blue-400/40 hover:scale-102"
                         >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-                          </svg>
-                          Quero começar
-                        </a>
+                          ⚡ Experimentar 1ª Aula Grátis
+                        </button>
                         <button 
                           onClick={() => handleEnrollClick(course.id)}
-                          className="w-full text-blue-600 hover:text-blue-700 font-medium py-2 text-sm transition-colors"
+                          className="w-full text-slate-600 hover:text-slate-900 font-semibold py-1 text-xs transition-colors"
                         >
-                          Ver detalhes
+                          Ver Detalhes do Curso
                         </button>
                       </div>
                     )}
@@ -595,27 +592,24 @@ export default function About() {
             Pronto para parar de estudar<br />e começar a falar?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Mande uma mensagem para nossos professores.<br />
-            Sem formulário, sem espera.<br />
-            Só você e um professor nativo.
+            Experimente a primeira aula 100% interativa agora.<br />
+            Sem cartão de crédito, sem formulário.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <a
-              href="https://wa.me/5522992322566?text=Oi!%20Vi%20seu%20site%20e%20quero%20come%C3%A7ar%20a%20aprender%20ingl%C3%AAs%20americano"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-white hover:bg-slate-100 text-blue-600 font-bold rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+            <button
+              onClick={() => {
+                signInAsGuest();
+                navigate('/courses/basic-english-daily-life/lessons/be-dl-01');
+              }}
+              className="px-8 py-4 bg-white hover:bg-slate-100 text-blue-600 font-extrabold rounded-2xl transition-all shadow-lg inline-flex items-center justify-center gap-2 uppercase tracking-wider text-xs border-2 border-white hover:scale-105"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.694 2.547 2.628-.69c.904.536 1.774.821 2.809.822 3.183 0 5.768-2.587 5.769-5.767 0-3.181-2.587-5.766-5.769-5.766zm3.386 8.213c-.148.416-.745.76-1.024.811-.278.051-.62.083-1.002-.134-1.482-.84-2.441-2.355-2.515-2.454-.074-.1-.603-.803-.603-1.532s.38-1.083.515-1.232c.134-.149.297-.186.396-.186.099 0 .198.001.284.004.092.003.216-.034.338.257.123.292.421 1.024.458 1.099.037.075.062.163.013.261-.05.1-.074.162-.149.248-.074.086-.156.193-.223.259-.074.075-.152.156-.065.306.087.149.387.639.83 1.034.57.507 1.05.664 1.2.739.149.075.236.063.323-.037.086-.1.371-.433.47-.583.099-.15.198-.124.334-.075.137.049.866.408 1.015.483.149.075.248.112.284.174.037.062.037.36-.112.776zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.18L2 22l4.947-1.3c1.472.822 3.161 1.3 4.978 1.3 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-              </svg>
-              Falar com professores no WhatsApp
-            </a>
+              <span>⚡</span> Testar Aula Demonstrativa (Grátis)
+            </button>
             <button 
-              onClick={() => navigate('/', { state: { openAuthModal: true } })}
-              className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold rounded-lg transition-colors"
+              onClick={() => navigate('/login')}
+              className="px-8 py-4 border-2 border-white text-white hover:bg-white/10 font-extrabold rounded-2xl transition-all uppercase tracking-wider text-xs"
             >
-              Criar conta grátis
+              Criar Conta Grátis
             </button>
           </div>
           <p className="text-sm opacity-80">
