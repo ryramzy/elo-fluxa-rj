@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -9,11 +10,18 @@ import { TutorProfileModal } from '../components/profile/TutorProfileModal';
 import { courses } from '../data/courses';
 
 const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { profile, loading } = useUserProfile(user?.uid || '');
   const { showToast } = useToast();
   
   useDocumentTitle('Meu Perfil - Elo');
+
+  useEffect(() => {
+    if (!loading && (!user || !profile)) {
+      navigate('/login');
+    }
+  }, [loading, user, profile, navigate]);
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
