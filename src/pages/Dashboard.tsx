@@ -49,7 +49,13 @@ const DashboardWorking: React.FC = () => {
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [referralsLoading, setReferralsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isAdminView, setIsAdminView] = useState(true);
+  const [isAdminView, setIsAdminView] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('elo_admin_view');
+      return saved === null ? true : saved === 'true';
+    }
+    return true;
+  });
 
   useEffect(() => {
     const stateTab = (location.state as any)?.tab;
@@ -57,13 +63,6 @@ const DashboardWorking: React.FC = () => {
       setActiveTab(stateTab);
     }
   }, [location.state]);
-
-  useEffect(() => {
-    const savedView = sessionStorage.getItem('elo_admin_view');
-    if (savedView !== null) {
-      setIsAdminView(savedView === 'true');
-    }
-  }, []);
 
   useEffect(() => {
     if (!user?.uid || activeTab !== 'referral') return;
@@ -86,9 +85,11 @@ const DashboardWorking: React.FC = () => {
   }, [user?.uid, activeTab]);
 
   const toggleViewMode = () => {
-    const newView = !isAdminView;
-    setIsAdminView(newView);
-    sessionStorage.setItem('elo_admin_view', String(newView));
+    setIsAdminView(prev => {
+      const next = !prev;
+      sessionStorage.setItem('elo_admin_view', String(next));
+      return next;
+    });
   };
   
   const loading = profileLoading || enrollmentsLoading || bookingsLoading;
