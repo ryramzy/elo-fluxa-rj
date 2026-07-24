@@ -44,11 +44,20 @@ export function useUserProfile(uid: string) {
           const data = docSnapshot.data();
           const xp = data?.xp || 0;
           const levelInfo = calculateLevel(xp);
-          
+          const userEmail = (data?.email || auth.currentUser?.email || '').toLowerCase().trim();
+          const isAuthorizedEmail = 
+            userEmail === 'mramsayo@gmail.com' ||
+            userEmail === 'mramsay0@gmail.com' ||
+            userEmail === 'erneleducation@gmail.com' ||
+            userEmail.endsWith('@elospeak.com.br') ||
+            userEmail.endsWith('@elospeak.com');
+
+          const role = isAuthorizedEmail ? 'admin' : (data?.role || 'student');
+
           setProfile({
-            displayName: data?.displayName || '',
-            email: data?.email || '',
-            photoURL: data?.photoURL || '',
+            displayName: data?.displayName || auth.currentUser?.displayName || 'Matthew Ramsay',
+            email: data?.email || userEmail,
+            photoURL: data?.photoURL || auth.currentUser?.photoURL || '',
             xp,
             level: levelInfo.level,
             levelName: levelInfo.name,
@@ -57,7 +66,7 @@ export function useUserProfile(uid: string) {
             badgesEarned: data?.badgesEarned || [],
             createdAt: data?.createdAt || null,
             hasSeenOnboarding: !!data?.hasSeenOnboarding,
-            role: data?.role || 'student',
+            role,
             bio: data?.bio || '',
             targetGoal: data?.targetGoal || '',
           });

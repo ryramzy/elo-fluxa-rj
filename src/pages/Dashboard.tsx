@@ -139,7 +139,15 @@ const DashboardWorking: React.FC = () => {
 
   // Unified Ecosystem: Render Tutor Dashboard if user has tutor or admin role
   const adminUid = import.meta.env.VITE_ADMIN_UID;
-  const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
+  const userEmail = (user?.email || profile?.email || '').toLowerCase().trim();
+  const isAuthorizedEmail = 
+    userEmail === 'mramsayo@gmail.com' ||
+    userEmail === 'mramsay0@gmail.com' ||
+    userEmail === 'erneleducation@gmail.com' ||
+    userEmail.endsWith('@elospeak.com.br') ||
+    userEmail.endsWith('@elospeak.com');
+
+  const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || isAuthorizedEmail || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
   
   if (isTutorOrAdmin && isAdminView) {
     return <Admin onSwitchToStudentView={toggleViewMode} />;

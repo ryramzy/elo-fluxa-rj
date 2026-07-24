@@ -59,11 +59,15 @@ export function useAdminGuard() {
         
         // Unauthorized
         setAdminLoading(false);
-        navigate('/dashboard');
+        if (window.location.pathname !== '/dashboard') {
+          navigate('/dashboard');
+        }
       } catch (err) {
         console.error('Error checking admin permissions:', err);
         setAdminLoading(false);
-        navigate('/dashboard');
+        if (window.location.pathname !== '/dashboard') {
+          navigate('/dashboard');
+        }
       }
     };
 
