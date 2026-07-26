@@ -275,7 +275,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         const startDateTime = `${mattDate}T${mattTime}:00-03:00`;
         const endDateTime = endDateObj.toISOString().replace('Z', '-03:00'); // Convert to local Rio ISO
         
-        const calRes = await createCalendarEvent({
+        const createCallPromise = createCalendarEvent({
           summary: `Aula de Inglês com ${selectedTutor.name}: ${studentName}`,
           description: `Sua aula particular de inglês com ${selectedTutor.name}.\nGoogle Meet: a ser acessado pelo link.`,
           startDateTime,
@@ -284,10 +284,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           attendeeName: studentName,
           tutorCalendarId: selectedTutor.calendarId
         });
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Calendar API response timeout')), 3500)
+        );
+
+        const calRes = await Promise.race([createCallPromise, timeoutPromise]) as any;
         eventId = calRes.eventId;
         meetLink = calRes.meetLink;
       } catch (calErr) {
-        console.error('Failed to create calendar event, continuing with booking:', calErr);
+        console.warn('Calendar API timeout or error, proceeding with instant meeting link:', calErr);
         // Fallback to Jitsi meet link directly
         const sanitizedName = studentName.toLowerCase().replace(/[^a-z0-9]/g, '-');
         meetLink = `https://meet.jit.si/elo-class-${sanitizedName}-${Date.now().toString().slice(-4)}`;

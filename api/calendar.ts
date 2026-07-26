@@ -59,21 +59,27 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID;
+    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
 
-    if (!serviceAccountJson || !calendarId) {
-      console.log('Returning mock calendar event for local development');
+    if (!serviceAccountJson) {
+      console.log('Returning fallback calendar event (No service account key configured)');
+      const fallbackMeetingId = `elo-class-${attendeeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
       const mockResponse = {
-        eventId: `mock_event_${Date.now()}`,
-        meetLink: `https://meet.google.com/mock-${Date.now()}`,
-        htmlLink: `https://calendar.google.com/calendar/event?eid=${Date.now()}`
+        eventId: `fallback_event_${Date.now()}`,
+        meetLink: `https://meet.jit.si/${fallbackMeetingId}`,
+        htmlLink: `https://meet.jit.si/${fallbackMeetingId}`,
+        isFallback: true
       };
       return res.status(200).json(mockResponse);
     }
 
     try {
-      const credentials = JSON.parse(serviceAccountJson);
+      let rawJson = serviceAccountJson.trim();
+      if (rawJson.startsWith("'") && rawJson.endsWith("'")) {
+        rawJson = rawJson.slice(1, -1);
+      }
+      const credentials = JSON.parse(rawJson);
       if (credentials.private_key) {
         credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
       }
