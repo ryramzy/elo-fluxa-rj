@@ -33,6 +33,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 import { getAdminViewMode, setAdminViewMode } from '../utils/adminView';
+import { WidgetErrorBoundary } from '../components/dashboard/WidgetErrorBoundary';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
@@ -156,6 +157,8 @@ const DashboardWorking: React.FC = () => {
     userEmail.endsWith('@elospeak.com');
 
   const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || isAuthorizedEmail || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
+
+  console.log('[Dashboard] VIEW DECISION:', { isAdminView, isTutorOrAdmin, willRenderAdmin: isTutorOrAdmin && isAdminView, userEmail, profileRole: profile?.role });
   
   if (isTutorOrAdmin && isAdminView) {
     return <Admin onSwitchToStudentView={toggleViewMode} />;
@@ -258,69 +261,88 @@ const DashboardWorking: React.FC = () => {
               </button>
             </div>
 
-            <KpiCards
-              bookings={bookings || []}
-              enrollments={enrollments || []}
-              profile={profile}
-              weeklyBookingsCount={getWeeklyBookingsCount(bookings || [])}
-            />
+            <WidgetErrorBoundary widgetName="Resumo de Métricas">
+              <KpiCards
+                bookings={bookings || []}
+                enrollments={enrollments || []}
+                profile={profile}
+                weeklyBookingsCount={getWeeklyBookingsCount(bookings || [])}
+              />
+            </WidgetErrorBoundary>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
-                <TutorNotesWidget bookings={bookings || []} />
-                <div className="tour-step-courses">
-                  <CoursesGrid
-                    courses={courses}
-                    enrollments={enrollments || []}
-                    onEnroll={async (courseId) => {
-                      if (!user) return;
-                      const course = courses.find(c => c.id === courseId);
-                      if (!course) return;
-                      try {
-                        trackEvent('course_enroll', { courseId });
-                        await enrollUserInCourse(user.uid, courseId, course.lessons.length);
-                        navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
-                      } catch (err) {
-                        console.error('Failed to enroll:', err);
-                        showToast({ type: 'error', message: 'Não foi possível se matricular no curso. Verifique sua conexão e tente novamente.' });
-                        navigate(`/courses/${courseId}`);
-                      }
-                    }}
-                    onContinue={(courseId) => {
-                      const course = courses.find(c => c.id === courseId);
-                      const enrollment = enrollments?.find(e => e.courseId === courseId);
-                      if (enrollment?.activeLessonId) {
-                        navigate(`/courses/${courseId}/lessons/${enrollment.activeLessonId}`);
-                      } else if (course?.lessons[0]) {
-                        navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
-                      } else {
-                        navigate(`/courses/${courseId}`);
-                      }
-                    }}
-                  />
-                </div>
+                <WidgetErrorBoundary widgetName="Notas do Professor">
+                  <TutorNotesWidget bookings={bookings || []} />
+                </WidgetErrorBoundary>
+
+                <WidgetErrorBoundary widgetName="Grade de Cursos">
+                  <div className="tour-step-courses">
+                    <CoursesGrid
+                      courses={courses}
+                      enrollments={enrollments || []}
+                      onEnroll={async (courseId) => {
+                        if (!user) return;
+                        const course = courses.find(c => c.id === courseId);
+                        if (!course) return;
+                        try {
+                          trackEvent('course_enroll', { courseId });
+                          await enrollUserInCourse(user.uid, courseId, course.lessons.length);
+                          navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
+                        } catch (err) {
+                          console.error('Failed to enroll:', err);
+                          showToast({ type: 'error', message: 'Não foi possível se matricular no curso. Verifique sua conexão e tente novamente.' });
+                          navigate(`/courses/${courseId}`);
+                        }
+                      }}
+                      onContinue={(courseId) => {
+                        const course = courses.find(c => c.id === courseId);
+                        const enrollment = enrollments?.find(e => e.courseId === courseId);
+                        if (enrollment?.activeLessonId) {
+                          navigate(`/courses/${courseId}/lessons/${enrollment.activeLessonId}`);
+                        } else if (course?.lessons[0]) {
+                          navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
+                        } else {
+                          navigate(`/courses/${courseId}`);
+                        }
+                      }}
+                    />
+                  </div>
+                </WidgetErrorBoundary>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <DictionaryWidget />
-                  <TriviaWidget />
+                  <WidgetErrorBoundary widgetName="Dicionário">
+                    <DictionaryWidget />
+                  </WidgetErrorBoundary>
+                  <WidgetErrorBoundary widgetName="Trivia">
+                    <TriviaWidget />
+                  </WidgetErrorBoundary>
                 </div>
               </div>
 
               <div className="space-y-6">
-                <LiveTutorsWidget onNavigateToAgenda={() => setActiveTab('booking')} />
-                <StudentTimeline
-                  bookings={bookings || []}
-                  xp={profile?.xp || 0}
-                  onBookNextLesson={() => setActiveTab('booking')}
-                />
-                <UpcomingClasses
-                  bookings={bookings || []}
-                  onNavigateToAgenda={() => setActiveTab('booking')}
-                />
-                <QuickLinks
-                  onNavigateToAgenda={() => setActiveTab('booking')}
-                  onNavigateToCourses={() => navigate('/courses')}
-                />
+                <WidgetErrorBoundary widgetName="Professores Ao Vivo">
+                  <LiveTutorsWidget onNavigateToAgenda={() => setActiveTab('booking')} />
+                </WidgetErrorBoundary>
+                <WidgetErrorBoundary widgetName="Linha do Tempo">
+                  <StudentTimeline
+                    bookings={bookings || []}
+                    xp={profile?.xp || 0}
+                    onBookNextLesson={() => setActiveTab('booking')}
+                  />
+                </WidgetErrorBoundary>
+                <WidgetErrorBoundary widgetName="Próximas Aulas">
+                  <UpcomingClasses
+                    bookings={bookings || []}
+                    onNavigateToAgenda={() => setActiveTab('booking')}
+                  />
+                </WidgetErrorBoundary>
+                <WidgetErrorBoundary widgetName="Links Rápidos">
+                  <QuickLinks
+                    onNavigateToAgenda={() => setActiveTab('booking')}
+                    onNavigateToCourses={() => navigate('/courses')}
+                  />
+                </WidgetErrorBoundary>
               </div>
             </div>
           </>

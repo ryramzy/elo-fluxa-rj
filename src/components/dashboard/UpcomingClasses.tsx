@@ -24,21 +24,30 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Próximas Aulas</h3>
       <div className="space-y-3">
         {upcomingBookings.map((booking) => {
-          const bookingDate = booking.datetime?.toDate 
-            ? booking.datetime.toDate() 
-            : new Date(`${booking.date}T${booking.time || '00:00'}:00-03:00`);
+          let formattedDate = `${booking.date} às ${booking.time || ''}`;
+          try {
+            const bookingDate = booking.datetime?.toDate 
+              ? booking.datetime.toDate() 
+              : new Date(`${booking.date}T${booking.time || '00:00'}:00-03:00`);
+            
+            if (!isNaN(bookingDate.getTime())) {
+              formattedDate = bookingDate.toLocaleDateString('pt-BR', { 
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit', 
+                minute: '2-digit' 
+              });
+            }
+          } catch (e) {
+            console.error('Error formatting booking date:', e);
+          }
           
           return (
             <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl gap-3 bg-slate-50/50 dark:bg-slate-900/30">
               <div className="flex-1">
-                <div className="font-extrabold text-sm text-slate-900 dark:text-slate-100">
-                  {bookingDate.toLocaleDateString('pt-BR', { 
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
+                <div className="font-extrabold text-sm text-slate-900 dark:text-slate-100 capitalize">
+                  {formattedDate}
                 </div>
                 <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
                   👨‍🏫 Tutor: {booking.tutorName || 'Matt Ramsay'} • {booking.duration || 60} min
