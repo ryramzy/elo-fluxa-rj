@@ -1129,4 +1129,25 @@ The Agenda page already exceeded requirements with:
   - `LuAlertTriangle` ➡️ `LuTriangleAlert`
   - Ensure future development checks local package icon schemas before importing warnings.
 
+## [July 25, 2026 - Sprint 32] — Global View Mode Event Bus, Granular Error Boundaries & Conversion Loop
+**Status:** ✅ COMPLETED
+
+### Architectural Principles & Fixes
+1. **Global Custom Event Bus (`src/utils/adminView.ts`)**:
+   - **Pattern**: Implemented a global broadcaster (`setAdminViewMode`) that writes `elo_admin_view` to `sessionStorage` and dispatches a custom `elo_admin_view_changed` window event.
+   - **Rationale**: Relying on prop-drilling or component mounts created race conditions between `useState` initializers and asynchronous `useEffect` reads. The event listener pattern guarantees instant, synchronous view mode re-renders across `Dashboard.tsx`, `Admin.tsx`, and `Navbar.tsx`.
+
+2. **Isolated Widget Error Boundaries (`src/components/dashboard/WidgetErrorBoundary.tsx`)**:
+   - **Pattern**: Every student dashboard widget (`KpiCards`, `TutorNotesWidget`, `CoursesGrid`, `DictionaryWidget`, `TriviaWidget`, `LiveTutorsWidget`, `StudentTimeline`, `UpcomingClasses`, `QuickLinks`) is wrapped in `<WidgetErrorBoundary>`.
+   - **Rationale**: Prevents a runtime exception in any single widget from crashing or unmounting the parent application. Failed widgets render a clean fallback card with a 1-click retry button.
+
+3. **Defensive Date & Time Parsing Guidelines**:
+   - **Rule**: All date constructions and `.toLocaleDateString()` / `.toLocaleTimeString()` calls MUST be wrapped in defensive try/catch blocks and checked against `isNaN(dateObj.getTime())`.
+   - **Rationale**: Prevents `RangeError: Invalid time value` crashes when rendering legacy or unformatted dates from Firestore.
+
+4. **Self-Serve Interactive Trial Conversion Loop**:
+   - **Pattern**: Replaced off-site WhatsApp redirect buttons on course cards and hero sections with instant guest trial CTAs (**"⚡ Experimentar 1ª Aula Grátis"**).
+   - **Behavior**: Auto-authenticates unauthorized visitors in Guest Mode and opens the interactive slide player immediately with live XP tracking. Direct WhatsApp contact is preserved as a single, subtle support link in the footer.
+
+
 
