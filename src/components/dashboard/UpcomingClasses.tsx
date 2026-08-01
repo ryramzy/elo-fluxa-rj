@@ -13,9 +13,11 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
   const upcomingBookings = (bookings || [])
     .filter(b => b.status === 'confirmed')
     .sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return dateA.getTime() - dateB.getTime();
+      const dateA = new Date(a.date || '');
+      const dateB = new Date(b.date || '');
+      const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime();
+      const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime();
+      return timeA - timeB;
     })
     .slice(0, 3);
 

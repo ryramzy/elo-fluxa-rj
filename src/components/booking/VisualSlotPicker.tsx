@@ -285,13 +285,23 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           tutorCalendarId: selectedTutor.calendarId
         });
 
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Calendar API response timeout')), 3500)
-        );
+        // Suppress unhandled rejection if calendar call finishes after timeout
+        createCallPromise.catch(() => {});
 
-        const calRes = await Promise.race([createCallPromise, timeoutPromise]) as any;
-        eventId = calRes.eventId;
-        meetLink = calRes.meetLink;
+        let timeoutId: ReturnType<typeof setTimeout>;
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error('Calendar API response timeout')), 3500);
+        });
+
+        try {
+          const calRes = await Promise.race([createCallPromise, timeoutPromise]);
+          clearTimeout(timeoutId!);
+          eventId = calRes.eventId;
+          meetLink = calRes.meetLink;
+        } catch (raceErr) {
+          clearTimeout(timeoutId!);
+          throw raceErr; // re-throw so outer catch handles fallback
+        }
       } catch (calErr) {
         console.warn('Calendar API timeout or error, proceeding with instant meeting link:', calErr);
         // Fallback to Jitsi meet link directly

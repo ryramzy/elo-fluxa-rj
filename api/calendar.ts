@@ -1,17 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
-import { getFirestore, collection, addDoc, serverTimestamp, writeBatch, doc, getDocs } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-
-// Firebase config for seed-slots
-const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY,
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_FIREBASE_APP_ID,
-};
 
 interface CalendarEventRequest {
   summary: string;
@@ -23,10 +11,22 @@ interface CalendarEventRequest {
   tutorCalendarId?: string;
 }
 
-interface AvailableSlot {
-  start: string;
-  end: string;
-  label: string;
+/**
+ * Shared helper: parse service account JSON from environment variables.
+ * Handles single-quote wrapping and escaped newlines in private_key.
+ */
+function parseServiceAccountCredentials(): any | null {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!raw) return null;
+  let json = raw.trim();
+  if (json.startsWith("'") && json.endsWith("'")) {
+    json = json.slice(1, -1);
+  }
+  const credentials = JSON.parse(json);
+  if (credentials.private_key) {
+    credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+  }
+  return credentials;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -53,10 +53,10 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const credentials = parseServiceAccountCredentials();
     const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
 
-    if (!serviceAccountJson) {
+    if (!credentials) {
       console.log('Returning fallback calendar event (No service account key configured)');
       const fallbackMeetingId = `elo-class-${attendeeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
       const mockResponse = {
@@ -69,14 +69,6 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-      let rawJson = serviceAccountJson.trim();
-      if (rawJson.startsWith("'") && rawJson.endsWith("'")) {
-        rawJson = rawJson.slice(1, -1);
-      }
-      const credentials = JSON.parse(rawJson);
-      if (credentials.private_key) {
-        credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
-      }
       const auth = new google.auth.GoogleAuth({
         credentials,
         scopes: ['https://www.googleapis.com/auth/calendar'],
@@ -167,17 +159,12 @@ async function handleCancelEvent(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'eventId is required' });
     }
 
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    const credentials = parseServiceAccountCredentials();
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
 
-    if (!serviceAccountJson || !calendarId) {
-      console.log('Mock calendar event cancellation for local development:', eventId);
+    if (!credentials) {
+      console.log('Mock calendar event cancellation (no service account):', eventId);
       return res.status(200).json({ success: true });
-    }
-
-    const credentials = JSON.parse(serviceAccountJson);
-    if (credentials.private_key) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
     }
     const auth = new google.auth.GoogleAuth({
       credentials,
@@ -215,35 +202,12 @@ async function handleGetEvents(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'from date is required' });
     }
 
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    const credentials = parseServiceAccountCredentials();
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
 
-    if (!serviceAccountJson || !calendarId) {
-      console.log('Returning mock calendar events for local development');
-      const mockEvents = [
-        {
-          id: 'mock_event_1',
-          summary: 'Aula de Inglês - João Silva',
-          start: { dateTime: '2026-04-28T14:00:00-03:00' },
-          end: { dateTime: '2026-04-28T15:00:00-03:00' },
-          attendees: [{ email: 'joao@example.com', displayName: 'João Silva' }],
-          hangoutLink: 'https://meet.google.com/mock-1'
-        },
-        {
-          id: 'mock_event_2',
-          summary: 'Aula de Inglês - Maria Santos',
-          start: { dateTime: '2026-04-29T16:00:00-03:00' },
-          end: { dateTime: '2026-04-29T17:00:00-03:00' },
-          attendees: [{ email: 'maria@example.com', displayName: 'Maria Santos' }],
-          hangoutLink: 'https://meet.google.com/mock-2'
-        }
-      ];
-      return res.status(200).json({ events: mockEvents });
-    }
-
-    const credentials = JSON.parse(serviceAccountJson);
-    if (credentials.private_key) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+    if (!credentials) {
+      console.log('Returning mock calendar events (no service account)');
+      return res.status(200).json({ events: [] });
     }
     const auth = new google.auth.GoogleAuth({
       credentials,

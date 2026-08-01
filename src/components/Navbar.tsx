@@ -406,17 +406,31 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 <div className="text-center text-slate-600 mb-2">
                   {user.displayName || user.email}
                 </div>
-                {user?.uid.trim() === import.meta.env.VITE_ADMIN_UID?.trim() && (
-                  <button 
-                    onClick={() => {
-                      navigate('/admin');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg flex items-center justify-center gap-2"
-                    style={{ width: '100%', maxWidth: '300px' }}
-                  >
-                    Painel Admin 👑
-                  </button>
+                {isAuthorizedEmail && (
+                  <>
+                    <button 
+                      onClick={() => {
+                        setAdminViewMode(true);
+                        navigate('/dashboard');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg flex items-center justify-center gap-2"
+                      style={{ width: '100%', maxWidth: '300px' }}
+                    >
+                      👑 Painel Admin
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setAdminViewMode(false);
+                        navigate('/dashboard');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="bg-emerald-600 border border-emerald-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-emerald-700 transition-colors rounded-lg flex items-center justify-center gap-2"
+                      style={{ width: '100%', maxWidth: '300px' }}
+                    >
+                      🎓 Modo Aluno
+                    </button>
+                  </>
                 )}
                 <button 
                   onClick={() => {

@@ -40,9 +40,8 @@ interface User {
   corporateCredits?: number;
 }
 
-interface AdminProps {
-  onSwitchToStudentView?: () => void;
-}
+// Admin is always controlled via the setAdminViewMode event bus
+interface AdminProps {}
 
 const TimezoneSyncPanel: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -245,7 +244,7 @@ const TimezoneSyncPanel: React.FC = () => {
   );
 };
 
-const Admin: React.FC<AdminProps> = ({ onSwitchToStudentView }) => {
+const Admin: React.FC<AdminProps> = () => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminGuard();
   const navigate = useNavigate();

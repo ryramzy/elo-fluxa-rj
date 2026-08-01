@@ -161,7 +161,7 @@ const DashboardWorking: React.FC = () => {
   console.log('[Dashboard] VIEW DECISION:', { isAdminView, isTutorOrAdmin, willRenderAdmin: isTutorOrAdmin && isAdminView, userEmail, profileRole: profile?.role });
   
   if (isTutorOrAdmin && isAdminView) {
-    return <Admin onSwitchToStudentView={toggleViewMode} />;
+    return <Admin />;
   }
 
   return (
@@ -181,7 +181,9 @@ const DashboardWorking: React.FC = () => {
         hasSeenOnboarding={profile?.hasSeenOnboarding || false} 
         profileLoaded={!profileLoading && !!profile} 
       />
-      <WelcomeBanner profile={profile} streak={streak || 0} />
+      <WidgetErrorBoundary widgetName="Boas-vindas">
+        <WelcomeBanner profile={profile} streak={streak || 0} />
+      </WidgetErrorBoundary>
 
       {profile?.paymentPastDue && (
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4">
@@ -363,10 +365,12 @@ const DashboardWorking: React.FC = () => {
               </button>
             </div>
             
-            <VisualSlotPicker onSlotSelect={() => {
-              setActiveTab('overview');
-              showToast({ type: 'success', message: 'Sua aula foi agendada e está disponível no seu painel.' });
-            }} />
+            <WidgetErrorBoundary widgetName="Agenda de Aulas">
+              <VisualSlotPicker onSlotSelect={() => {
+                setActiveTab('overview');
+                showToast({ type: 'success', message: 'Sua aula foi agendada e está disponível no seu painel.' });
+              }} />
+            </WidgetErrorBoundary>
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-750/50">
