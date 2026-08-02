@@ -134,7 +134,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col font-sans text-white touch-none relative overflow-hidden">
+    <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col font-sans text-white relative overflow-hidden">
       {/* 🔮 SLATE GLOW ACCENT DECK SHIELDS */}
       <div className="absolute inset-0 bg-slate-950 z-0 pointer-events-none" />
       <div className="absolute -top-1/4 -right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none" />
@@ -298,8 +298,8 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
             <div 
               className="relative z-10 max-w-3xl mx-auto w-full flex flex-col justify-center text-left"
               style={{ 
-                paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
-                paddingTop: 'calc(6rem + env(safe-area-inset-top))'
+                paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))',
+                paddingTop: 'calc(4.5rem + env(safe-area-inset-top))'
               }}
             >
               {slide.title && (

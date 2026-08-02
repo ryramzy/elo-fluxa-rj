@@ -127,7 +127,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-slate-900 backdrop-blur-md py-4 shadow-sm border-b border-slate-700">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-slate-900 backdrop-blur-md py-4 shadow-sm border-b border-slate-700" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top))' }}>
         <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
@@ -300,7 +300,11 @@ export default function Navbar({ onNavClick }: NavbarProps) {
               </div>
             )}
             
-            <button className={`block md:hidden focus:outline-none transition-colors duration-500 ${textColorClass}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button 
+              className={`block md:hidden focus:outline-none p-2.5 -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors duration-500 ${textColorClass}`} 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Abrir Menu"
+            >
                {mobileMenuOpen ? (
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                ) : (
@@ -311,10 +315,16 @@ export default function Navbar({ onNavClick }: NavbarProps) {
         </div>
       </nav>
 
-      <div className={`fixed inset-0 bg-slate-900 z-40 flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
+      <div 
+        className={`fixed inset-0 bg-slate-900 z-40 flex flex-col justify-start items-center overflow-y-auto transition-all duration-500 ease-in-out ${
           mobileMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
-      }`}>
-          <div className="flex flex-col items-center space-y-10 text-2xl font-serif font-bold text-white">
+        }`}
+        style={{
+          paddingTop: 'calc(5rem + env(safe-area-inset-top))',
+          paddingBottom: 'calc(2rem + env(safe-area-inset-bottom))'
+        }}
+      >
+          <div className="flex flex-col items-center space-y-8 text-2xl font-serif font-bold text-white w-full max-w-sm px-6">
             {user ? (
               <>
                 <a

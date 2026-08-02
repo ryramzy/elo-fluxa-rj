@@ -1,41 +1,38 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
-*/
-
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './src/components/Navbar.tsx';
-import Hero from './src/components/Hero.tsx';
-import About from './src/components/About.tsx';
 import Footer from './src/components/Footer';
-import Testimonials from './src/components/Testimonials.tsx';
 import ProtectedRoute from './src/components/Auth/ProtectedRoute';
-import Login from './src/components/Auth/Login';
-import Signup from './src/components/Auth/Signup';
 import { ToastContainer } from './src/components/Toast';
 import { useToast } from './src/hooks/useToast';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { BottomNav } from './src/components/navigation/BottomNav';
 import { useAuth } from './src/hooks/useAuth';
 import { AnimatePresence, motion } from 'framer-motion';
-
-// Import Dashboard and Admin components
-import Dashboard from './src/pages/Dashboard';
-import Admin from './src/pages/Admin';
-import CoursePage from './src/pages/CoursePage';
-import CoursesPage from './src/pages/CoursesPage';
-import LessonPage from './src/pages/LessonPage';
-import AdminStudentProfile from './src/pages/AdminStudentProfile';
-import AgendaPage from './src/pages/AgendaPage';
-import Sobre from './src/pages/Sobre';
-import Dicas from './src/pages/Dicas';
-import NotFound from './src/pages/NotFound';
-import ProfilePage from './src/pages/ProfilePage';
-import VideoCallPage from './src/pages/VideoCallPage';
-import OrgAdminDashboard from './src/pages/OrgAdminDashboard';
 import { GuestBanner } from './src/components/GuestBanner';
+
+// Lazy-loaded page components — each becomes its own chunk
+const Dashboard = React.lazy(() => import('./src/pages/Dashboard'));
+const Admin = React.lazy(() => import('./src/pages/Admin'));
+const CoursePage = React.lazy(() => import('./src/pages/CoursePage'));
+const CoursesPage = React.lazy(() => import('./src/pages/CoursesPage'));
+const LessonPage = React.lazy(() => import('./src/pages/LessonPage'));
+const AdminStudentProfile = React.lazy(() => import('./src/pages/AdminStudentProfile'));
+const AgendaPage = React.lazy(() => import('./src/pages/AgendaPage'));
+const ProfilePage = React.lazy(() => import('./src/pages/ProfilePage'));
+const VideoCallPage = React.lazy(() => import('./src/pages/VideoCallPage'));
+const OrgAdminDashboard = React.lazy(() => import('./src/pages/OrgAdminDashboard'));
+const NotFound = React.lazy(() => import('./src/pages/NotFound'));
+
+// Landing page components — also lazy since most users go straight to /dashboard
+const Hero = React.lazy(() => import('./src/components/Hero.tsx'));
+const About = React.lazy(() => import('./src/components/About.tsx'));
+const Testimonials = React.lazy(() => import('./src/components/Testimonials.tsx'));
+const Login = React.lazy(() => import('./src/components/Auth/Login'));
+const Signup = React.lazy(() => import('./src/components/Auth/Signup'));
+const Sobre = React.lazy(() => import('./src/pages/Sobre'));
+const Dicas = React.lazy(() => import('./src/pages/Dicas'));
 
 
 
@@ -132,6 +129,11 @@ function AppShell() {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
+              <Suspense fallback={
+                <div className="min-h-[60vh] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+              }>
               <Routes location={location}>
               {/* Auth routes */}
               <Route path="/login" element={<Login />} />
@@ -212,6 +214,7 @@ function AppShell() {
           {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </main>

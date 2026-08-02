@@ -1,8 +1,12 @@
 // Firebase Initialization - Single Point of Entry
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, initializeFirestore } from 'firebase/firestore';
-import * as firestoreExports from 'firebase/firestore';
+import {
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager
+} from 'firebase/firestore';
 import { firebaseConfig } from '../config/firebase';
 
 // Initialize Firebase app once
@@ -16,13 +20,12 @@ export const googleProvider = new GoogleAuthProvider();
 let dbInstance;
 
 if (typeof window !== 'undefined') {
-  const plc = (firestoreExports as any).persistentLocalCache;
-  const pmtm = (firestoreExports as any).persistentMultipleTabManager;
-  if (plc && pmtm) {
+  try {
     dbInstance = initializeFirestore(app, {
-      localCache: plc({ tabManager: pmtm() })
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
     });
-  } else {
+  } catch {
+    // Fallback if persistent cache is not supported or already initialized
     dbInstance = getFirestore(app);
   }
 } else {
@@ -31,11 +34,3 @@ if (typeof window !== 'undefined') {
 
 export const db = dbInstance;
 export { app };
-
-// Debug logging for deployment verification
-console.log("Firebase Initialization:", {
-  projectId: firebaseConfig.projectId,
-  hasConfig: !!firebaseConfig.apiKey,
-  authInitialized: !!auth,
-  dbInitialized: !!db,
-});
