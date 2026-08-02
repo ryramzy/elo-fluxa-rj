@@ -528,13 +528,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded-xl border border-white/5">
             <button
               onClick={() => setSelectedWeek(selectedWeek - 1)}
-              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
+              className="px-4 py-2.5 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center"
             >
               Anterior
             </button>
             <button
               onClick={() => setSelectedWeek(0)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`px-4 py-2.5 min-h-[44px] text-sm font-medium rounded-lg transition-all duration-200 flex items-center ${
                 selectedWeek === 0 
                   ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
@@ -544,7 +544,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             </button>
             <button
               onClick={() => setSelectedWeek(selectedWeek + 1)}
-              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200"
+              className="px-4 py-2.5 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center"
             >
               Próxima
             </button>
@@ -589,7 +589,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         ) : null}
 
         {/* 1. Mobile Day Selector (Tabs) - Visible only on mobile */}
-        <div className="md:hidden flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-6 pt-6">
+        <div className="md:hidden sticky top-0 z-20 bg-[#0f172a] flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-6 pt-6">
           {weekDates.map((date, idx) => {
             const dateStr = date.toLocaleDateString('en-CA');
             const isToday = dateStr === new Date().toLocaleDateString('en-CA');

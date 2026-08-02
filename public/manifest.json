@@ -1,7 +1,8 @@
 {
-  "name": "Elo!",
+  "id": "/",
+  "name": "Elo! Inglês Americano",
   "short_name": "Elo!",
-  "description": "Inglês Americano de Verdade no Rio de Janeiro",
+  "description": "Aprenda inglês americano de verdade no Rio de Janeiro",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -14,16 +15,27 @@
       "type": "image/png"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

@@ -167,11 +167,11 @@ const DashboardWorking: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {isTutorOrAdmin && (
-        <div className="w-full bg-blue-600 text-white text-center py-3 px-4 font-bold text-xs tracking-wider uppercase shadow-md flex items-center justify-center gap-4">
+        <div className="w-full bg-blue-600 text-white text-center py-2.5 px-4 font-bold text-xs tracking-wider uppercase shadow-md flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
           <span>Você está no modo de visualização de aluno.</span>
           <button 
             onClick={toggleViewMode}
-            className="bg-white text-blue-600 px-4 py-1.5 rounded-lg font-extrabold hover:bg-slate-100 transition-colors shadow-sm"
+            className="bg-white text-blue-600 px-4 py-1.5 rounded-lg font-extrabold hover:bg-slate-100 transition-colors shadow-sm text-xs"
           >
             Voltar para o Painel Admin
           </button>
@@ -208,11 +208,11 @@ const DashboardWorking: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         
         {/* Navigation Tabs for Student Dashboard */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-slate-200/60 dark:bg-slate-800/80 p-1 rounded-xl shadow-inner border border-slate-300/20">
+        <div className="w-full flex justify-start sm:justify-center overflow-x-auto no-scrollbar pb-1 mb-8">
+          <div className="inline-flex bg-slate-200/60 dark:bg-slate-800/80 p-1 rounded-xl shadow-inner border border-slate-300/20 shrink-0">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-wide transition-all whitespace-nowrap ${
                 activeTab === 'overview'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -223,7 +223,7 @@ const DashboardWorking: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('booking')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-wide transition-all whitespace-nowrap ${
                 activeTab === 'booking'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -234,7 +234,7 @@ const DashboardWorking: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('referral')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-wide transition-all whitespace-nowrap ${
                 activeTab === 'referral'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
