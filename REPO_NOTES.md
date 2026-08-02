@@ -716,7 +716,10 @@ the specific content and themes of each course.
 - Begin CRM client tracking feature (booked classes)
 
 ---
-## [April 6, 2026] — Fixed React App Loading Issue
+## [April 6, 2026] — Fixed React App Loading Issue [SUPERSEDED - HISTORICAL NOTE]
+> [!NOTE]
+> *Architecture Note*: Docker container / Nginx / GCP Cloud Run configurations described below have been superseded by the current Vercel Serverless + Edge architecture. This entry is retained for historical debugging reference.
+
 **Commit:** eeae960
 **Status:** working
 

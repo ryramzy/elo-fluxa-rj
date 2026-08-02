@@ -54,6 +54,34 @@ All auxiliary API dispatches (e.g., transactional emails via Resend, background 
 * Never mutate state collections directly via push arrays or raw assignments.
 * All interactive view updates (such as grays, status shifts, or loading flags) must perform a functional update layout (`setX(prev => [...prev, newElement])`) to guarantee instant DOM updates across React 19 concurrent pipelines.
 
+### D. Widget Error Boundaries (Dashboard Isolation)
+* Every dashboard widget **must** be wrapped in `<WidgetErrorBoundary widgetName="...">` ([WidgetErrorBoundary.tsx](file:///c:/Users/DELL%20I5%20DE%208%C2%BA/Soft%20Dev/elo-fluxa-rj/src/components/dashboard/WidgetErrorBoundary.tsx)).
+* This prevents a single widget crash (e.g., malformed Firestore date) from taking down the entire student dashboard.
+* The boundary renders a "Recarregar Widget" retry button and logs the component name for debugging.
+
+### E. Admin View Event Bus (`setAdminViewMode`)
+* Admin/Student view toggling is managed via a custom event bus in [adminView.ts](file:///c:/Users/DELL%20I5%20DE%208%C2%BA/Soft%20Dev/elo-fluxa-rj/src/utils/adminView.ts).
+* `setAdminViewMode(boolean)` writes to `sessionStorage` and dispatches `CustomEvent('elo_admin_view_changed')`.
+* All components (Navbar, Dashboard, Admin) listen to this event — **never** call toggle functions directly across component boundaries.
+* `sessionStorage` access is wrapped in `try/catch` for restricted environments (private browsing, iframes).
+
+### F. Promise.race Timeout Pattern (Calendar API)
+* The booking flow in [VisualSlotPicker.tsx](file:///c:/Users/DELL%20I5%20DE%208%C2%BA/Soft%20Dev/elo-fluxa-rj/src/components/booking/VisualSlotPicker.tsx) uses `Promise.race` with a 3.5s timeout to prevent the slot confirmation from hanging on cold-start API delays.
+* **Critical**: When the calendar promise wins the race, `clearTimeout()` must be called. When the timeout wins, `createCallPromise.catch(() => {})` must suppress the unhandled rejection from the still-pending calendar promise.
+* All `fetch()` calls in [googleCalendar.ts](file:///c:/Users/DELL%20I5%20DE%208%C2%BA/Soft%20Dev/elo-fluxa-rj/src/lib/googleCalendar.ts) also carry `AbortSignal.timeout(10000)` as a safety net.
+
+### G. Admin Authorization (`isAuthorizedEmail`)
+* Admin access is resolved via a dual check across the codebase:
+  1. **Hardcoded authorized emails/domains**: `mramsayo@gmail.com`, `mramsay0@gmail.com`, `erneleducation@gmail.com`, `@elospeak.com.br`, `@elospeak.com`
+  2. **Environment UID match**: `user.uid === VITE_ADMIN_UID`
+* This pattern is used in `Navbar.tsx`, `Dashboard.tsx`, `useAdminGuard.ts`, and `firestore.rules`.
+* **Both desktop and mobile** nav menus must use `isAuthorizedEmail` — never restrict to UID-only checks.
+
+### H. Service Account Credentials (`parseServiceAccountCredentials`)
+* All serverless endpoints in [api/calendar.ts](file:///c:/Users/DELL%20I5%20DE%208%C2%BA/Soft%20Dev/elo-fluxa-rj/api/calendar.ts) use a shared `parseServiceAccountCredentials()` helper.
+* Handles: `GOOGLE_SERVICE_ACCOUNT_JSON` or `GOOGLE_SERVICE_ACCOUNT_KEY` env vars, single-quote wrapping, escaped `\\n` → `\n` in private keys.
+* Wrapped in `try/catch` — returns `null` on malformed JSON to gracefully fall back to mock/Jitsi mode.
+
 ---
 
 ## 4. B2B Corporate Expansion Directives

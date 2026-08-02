@@ -18,15 +18,20 @@ interface CalendarEventRequest {
 function parseServiceAccountCredentials(): any | null {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!raw) return null;
-  let json = raw.trim();
-  if (json.startsWith("'") && json.endsWith("'")) {
-    json = json.slice(1, -1);
+  try {
+    let json = raw.trim();
+    if (json.startsWith("'") && json.endsWith("'")) {
+      json = json.slice(1, -1);
+    }
+    const credentials = JSON.parse(json);
+    if (credentials.private_key) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+    }
+    return credentials;
+  } catch (e) {
+    console.error('Failed to parse service account credentials:', e);
+    return null;
   }
-  const credentials = JSON.parse(json);
-  if (credentials.private_key) {
-    credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
-  }
-  return credentials;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -216,9 +221,16 @@ async function handleGetEvents(req: VercelRequest, res: VercelResponse) {
 
     const calendar = google.calendar({ version: 'v3', auth });
 
-    const timeMin = new Date(from as string).toISOString();
-    const timeMax = to ? new Date(to as string).toISOString() : 
-      new Date(new Date(from as string).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const fromDate = new Date(from as string);
+    if (isNaN(fromDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid from date format' });
+    }
+    const timeMin = fromDate.toISOString();
+    const toDate = to ? new Date(to as string) : new Date(fromDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    if (isNaN(toDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid to date format' });
+    }
+    const timeMax = toDate.toISOString();
 
     const eventsResponse = await calendar.events.list({
       calendarId,

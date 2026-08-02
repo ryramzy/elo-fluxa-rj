@@ -36,19 +36,25 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
   const [sessionXp, setSessionXp] = useState(0);
   const [floatingXp, setFloatingXp] = useState<{ amount: number; id: number } | null>(null);
   const swiperRef = useRef<SwiperType | undefined>(undefined);
+  const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { showToast } = useToast();
 
   // Expose addSessionXp for parent components to call
   const addSessionXp = (amount: number) => {
     setSessionXp(prev => prev + amount);
     setFloatingXp({ amount, id: Date.now() });
-    setTimeout(() => setFloatingXp(null), 1200);
+    // Clear any previous timer to prevent overlapping animations
+    if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+    xpTimerRef.current = setTimeout(() => setFloatingXp(null), 1200);
   };
 
   // Attach to window for child components to call
   useEffect(() => {
     (window as any).__eloAddSessionXp = addSessionXp;
-    return () => { delete (window as any).__eloAddSessionXp; };
+    return () => {
+      delete (window as any).__eloAddSessionXp;
+      if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+    };
   }, []);
 
   const triggerConfetti = () => {
