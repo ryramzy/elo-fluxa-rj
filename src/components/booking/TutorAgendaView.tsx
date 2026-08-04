@@ -569,7 +569,7 @@ export function TutorAgendaView() {
 
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col-reverse md:flex-row gap-6">
         
         {/* SIDEBAR */}
         <div className="w-full md:w-80 flex-shrink-0 space-y-6">

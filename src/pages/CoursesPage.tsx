@@ -181,7 +181,7 @@ export default function CoursesPage() {
   };
 
   return (
-    <div className="text-slate-100 font-sans selection:bg-sky-500/30 relative overflow-hidden -mx-4 md:-mx-12 -mt-20 -mb-20 px-4 md:px-12 pt-28 pb-20 min-h-screen bg-slate-950">
+    <div className="text-slate-100 font-sans selection:bg-sky-500/30 relative overflow-hidden -mt-20 pt-28 pb-20 px-4 sm:px-6 md:px-12 min-h-screen bg-slate-950">
       
       {/* 🔮 BACKGROUND DECORATIVE ORBS */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />

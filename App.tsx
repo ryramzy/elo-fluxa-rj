@@ -111,16 +111,24 @@ function AppShell() {
   }
 
   
+  const isFullscreenPage = location.pathname.startsWith('/video-call/') || location.pathname.includes('/lessons/');
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100">
-        <Navbar onNavClick={handleNavClick} />
+        {!isFullscreenPage && <Navbar onNavClick={handleNavClick} />}
 
         <main
           id="content-area"
-          className="pt-20 pb-20 px-4 md:px-12 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)]"
+          className={isFullscreenPage 
+            ? "pt-0 pb-0 px-0 w-full min-h-screen" 
+            : "pt-20 pb-20 px-0 max-w-[1800px] mx-auto min-h-[calc(100vh-200px)]"}
         >
-          {user?.isGuest && <GuestBanner />}
+          {user?.isGuest && (
+            <div className="px-4 sm:px-6 md:px-0">
+              <GuestBanner />
+            </div>
+          )}
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

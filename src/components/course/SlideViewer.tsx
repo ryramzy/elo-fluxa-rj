@@ -292,7 +292,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         resistanceRatio={0.65} // Makes it harder to over-swipe past the edges
       >
         {slides.map((slide, idx) => (
-          <SwiperSlide key={slide.id} className="relative w-full h-full flex flex-col justify-center px-8 md:px-16 overflow-y-auto">
+          <SwiperSlide key={slide.id} className="relative w-full h-full flex flex-col justify-center px-4 sm:px-8 md:px-16 overflow-y-auto">
             {slide.imageUrl && (
               <div 
                 className="absolute inset-0 bg-cover bg-center opacity-20 z-0" 

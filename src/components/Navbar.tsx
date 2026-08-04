@@ -128,7 +128,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-slate-900 backdrop-blur-md py-4 shadow-sm border-b border-slate-700" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top))' }}>
-        <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-8 flex items-center justify-between">
           <a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="text-2xl md:text-3xl font-serif font-bold tracking-tight z-50 relative transition-colors duration-500 flex items-center gap-2">
             <span className={logoColorClass}>{BRAND_NAME}</span>
           </a>
