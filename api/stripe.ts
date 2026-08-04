@@ -52,6 +52,53 @@ async function handleCheckout(req: VercelRequest, res: VercelResponse) {
     const token = process.env.STRIPE_SECRET_KEY;
     if (!token) {
       console.warn('[Stripe] STRIPE_SECRET_KEY is not configured. Falling back to sandbox mock redirect.');
+      
+      // Auto-upgrade user profile in sandbox if Firestore credentials exist
+      try {
+        if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+          const googleAuthToken = await getFirestoreAccessToken();
+          const projectId = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY).project_id;
+          const baseRestUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+          const patchUrl = `${baseRestUrl}/users/${userId}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit&updateMask.fieldPaths=bookingsThisMonth&updateMask.fieldPaths=paymentPastDue`;
+
+          let planType = 'pro';
+          let bookingLimit = 4;
+          // Match generic IDs or environment variables
+          if (
+            priceId === process.env.STRIPE_PRICE_IMERSAO || 
+            String(priceId).toLowerCase().includes('imersao') || 
+            String(priceId).toLowerCase().includes('elite') ||
+            String(priceId).toLowerCase().includes('immersao')
+          ) {
+            planType = 'elite';
+            bookingLimit = 12;
+          }
+
+          const fieldsToPatch: any = {
+            plan: { stringValue: planType },
+            bookingLimit: { integerValue: String(bookingLimit) },
+            bookingsThisMonth: { integerValue: '0' },
+            paymentPastDue: { booleanValue: false }
+          };
+
+          const patchResponse = await fetch(patchUrl, {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${googleAuthToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: fieldsToPatch })
+          });
+          
+          if (patchResponse.ok) {
+            console.log(`[Stripe Sandbox] Automatically upgraded user ${userId} to plan ${planType}`);
+          } else {
+            console.error(`[Stripe Sandbox] Failed to upgrade user: ${await patchResponse.text()}`);
+          }
+        } else {
+          console.warn('[Stripe Sandbox] GOOGLE_SERVICE_ACCOUNT_KEY missing. Skipping auto-upgrade.');
+        }
+      } catch (err: any) {
+        console.error('[Stripe Sandbox Upgrade Error]:', err);
+      }
+
       const host = req.headers.host;
       const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
       const baseUrl = isLocal 
