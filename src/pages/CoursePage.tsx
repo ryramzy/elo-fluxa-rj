@@ -251,7 +251,14 @@ const CoursePage: React.FC = () => {
         </Link>
 
         {/* 🎭 COURSE HERO BRIEFING PANEL */}
-        <div className={`relative overflow-hidden bg-slate-900/40 border border-slate-800 rounded-3xl p-8 md:p-10 mb-8 backdrop-blur-md`}>
+        <div className="relative overflow-hidden bg-slate-900/40 border border-slate-800 rounded-3xl p-8 md:p-10 mb-8 backdrop-blur-md group">
+          {/* Faded cover background image */}
+          <div 
+            className="absolute right-0 top-0 w-full md:w-2/3 h-full bg-cover bg-center opacity-10 pointer-events-none transition-transform duration-700 group-hover:scale-105" 
+            style={{ backgroundImage: `url(${course.imageUrl})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent pointer-events-none" />
+          
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-3">

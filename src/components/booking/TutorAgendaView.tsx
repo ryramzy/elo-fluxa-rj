@@ -753,7 +753,7 @@ export function TutorAgendaView() {
                       {day.items.map((item, idx) => (
                         <div
                           key={idx}
-                          className={`p-4 rounded-2xl border flex items-center justify-between transition-all shadow-sm ${
+                          className={`p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 sm:items-center justify-between transition-all shadow-sm ${
                             item.type === 'confirmed'
                               ? 'bg-emerald-50/40 border-emerald-100 dark:bg-emerald-950/10 dark:border-emerald-900/30'
                               : item.type === 'pending'
@@ -789,7 +789,7 @@ export function TutorAgendaView() {
                             </div>
                           </div>
 
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 w-full sm:w-auto justify-end">
                             {item.type === 'confirmed' && (
                               <>
                                 {item.booking.meetLink && (

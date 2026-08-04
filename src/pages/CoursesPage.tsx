@@ -119,61 +119,75 @@ export default function CoursesPage() {
       <motion.div
         key={course.id}
         onClick={() => navigate(`/courses/${course.id}`)}
-        whileHover={{ y: -4, scale: 1.01 }}
+        whileHover={{ y: -6, scale: 1.02 }}
         className={`${
           isGridMode 
             ? 'w-full' 
-            : 'snap-start min-w-[290px] sm:min-w-[340px] max-w-[340px]'
-        } bg-slate-900/80 border ${colors.border} rounded-2xl p-6 transition-all duration-300 cursor-pointer select-none ${colors.bgGlow} flex flex-col justify-between`}
+            : 'snap-start min-w-[300px] sm:min-w-[340px] max-w-[340px]'
+        } bg-slate-900/50 backdrop-blur-md border border-slate-800/80 rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer select-none ${colors.bgGlow} flex flex-col group`}
       >
-        {/* Top Row Status Flags */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge}`}>
+        {/* Course Thumbnail Image with Overlay */}
+        <div className="h-36 w-full relative overflow-hidden bg-slate-950 shrink-0">
+          <img 
+            src={course.imageUrl} 
+            alt={course.title} 
+            className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500" 
+          />
+          {/* Subtle gradient vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent" />
+          
+          {/* Tag floaters */}
+          <div className="absolute top-4 left-4">
+            <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border ${colors.badge} backdrop-blur-md`}>
               {course.tag}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-slate-400">
-                +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
-              </span>
-              {isLocked ? (
-                <FaLock size={12} className="text-slate-500 animate-pulse" />
-              ) : (
-                <FaUnlock size={12} className="text-slate-400 opacity-40" />
-              )}
-            </div>
           </div>
 
-          {/* Course Identity Details */}
-          <div className="flex items-start gap-2 mb-2">
-            <span className="text-2xl filter drop-shadow-sm shrink-0">{course.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base font-extrabold group-hover:text-white text-slate-100 transition-colors line-clamp-1">
-                {course.title}
-              </h3>
-              {course.titlePt && (
-                <span className="block text-[10px] font-bold text-slate-400 italic mt-0.5 line-clamp-1">
-                  {course.titlePt}
-                </span>
-              )}
-            </div>
+          <div className="absolute top-4 right-4 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-md border border-slate-800/60">
+            <span className="text-[10px] font-bold text-slate-350">
+              +{course.totalXpReward || course.lessons.reduce((acc, l) => acc + l.xpReward, 0)} XP
+            </span>
+            {isLocked ? (
+              <FaLock size={10} className="text-amber-500 animate-pulse" />
+            ) : (
+              <FaUnlock size={10} className="text-emerald-400 opacity-60" />
+            )}
           </div>
-          <p className="text-slate-400 text-xs leading-relaxed mb-6 h-12 overflow-hidden line-clamp-2">
-            {course.descriptionPt || course.description}
-          </p>
+
+          {/* Floating Emoji */}
+          <div className="absolute bottom-3 left-4 w-9 h-9 bg-slate-900/90 border border-slate-800/80 rounded-xl flex items-center justify-center text-lg shadow-lg">
+            {course.emoji}
+          </div>
         </div>
 
-        {/* Progress System Elements */}
-        <div className="mt-auto pt-2 border-t border-slate-800">
-          <div className="flex justify-between items-center text-[10px] mb-1.5 font-medium text-slate-400">
-            <span>Progresso</span>
-            <span>{lessonsCompleted}/{totalLessons} Lições</span>
+        {/* Content details */}
+        <div className="p-5 flex-1 flex flex-col justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-slate-100 group-hover:text-white transition-colors tracking-tight line-clamp-1">
+              {course.title}
+            </h3>
+            {course.titlePt && (
+              <span className="block text-[10px] font-bold text-slate-400 italic mt-0.5 line-clamp-1">
+                {course.titlePt}
+              </span>
+            )}
+            <p className="text-slate-400 text-xs mt-3 leading-relaxed line-clamp-2 h-8 overflow-hidden">
+              {course.descriptionPt || course.description}
+            </p>
           </div>
-          <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
-            <div 
-              className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
-              style={{ width: `${progressPercent}%` }}
-            />
+
+          {/* Progress Section */}
+          <div className="pt-3 border-t border-slate-800/60">
+            <div className="flex justify-between items-center text-[9px] mb-1.5 font-bold text-slate-400">
+              <span className="uppercase tracking-wider">Progresso</span>
+              <span>{lessonsCompleted}/{totalLessons} Lições</span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800/40">
+              <div 
+                className={`h-full ${colors.progress} transition-all duration-500 rounded-full`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
         </div>
       </motion.div>

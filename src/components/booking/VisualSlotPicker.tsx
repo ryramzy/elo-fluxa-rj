@@ -525,26 +525,26 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             )}
           </div>
           
-          <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded-xl border border-white/5">
+          <div className="flex items-center justify-between sm:justify-start gap-2 p-1 bg-slate-900/50 rounded-xl border border-white/5 w-full sm:w-auto">
             <button
               onClick={() => setSelectedWeek(selectedWeek - 1)}
-              className="px-4 py-2.5 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center"
+              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all"
             >
               Anterior
             </button>
             <button
               onClick={() => setSelectedWeek(0)}
-              className={`px-4 py-2.5 min-h-[44px] text-sm font-medium rounded-lg transition-all duration-200 flex items-center ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
                 selectedWeek === 0 
                   ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
-                  : 'text-slate-300 hover:text-white hover:bg-white/10'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
               Hoje
             </button>
             <button
               onClick={() => setSelectedWeek(selectedWeek + 1)}
-              className="px-4 py-2.5 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white bg-transparent hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center"
+              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all"
             >
               Próxima
             </button>
