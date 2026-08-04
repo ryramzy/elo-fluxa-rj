@@ -49,7 +49,7 @@ const themeMatrix = {
 const getCourseTheme = (tag: string, id: string) => {
   if (tag === 'Grammar') return 'purple';
   if (['Conversation', 'Essentials', 'Travel'].includes(tag)) return 'amber';
-  const technicalTags = ['Tech', 'Engineering', 'Software Developers'];
+  const technicalTags = ['Tech', 'Engineering', 'Software Developers', 'Finance', 'Product'];
   if (technicalTags.includes(tag) || id.includes('tech') || id.includes('dev')) {
     return 'cyber-blue';
   }
@@ -66,7 +66,7 @@ const getCourseAudience = (course: Course) => {
   if (['Healthcare', 'Legal', 'Automotive'].includes(course.tag)) {
     return 'Especialidades';
   }
-  const profTags = ['Business', 'Tech', 'Engineering', 'Startup', 'Marketing', 'Management'];
+  const profTags = ['Business', 'Tech', 'Engineering', 'Startup', 'Marketing', 'Management', 'Finance', 'Product'];
   if (profTags.includes(course.tag) || course.id.includes('tech') || course.id.includes('dev')) {
     return 'Profissional';
   }

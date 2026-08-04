@@ -46,7 +46,8 @@ const knownCourseKeys = [
   'business-strategy', 'electrical-engineering-english', 'full-stack-development', 'software-engineering-2026',
   'cars-automotive-ev', 'english-for-traveling', 'usa-car-culture', 'medical-english', 'law-enforcement',
   'describe-it', 'friendship-social', 'getting-outside', 'out-and-about', 'idioms-mastery', 'idioms-express',
-  'movies-tv-culture', 'movies-tv', 'music-lyrics-culture', 'music-arts', 'legal-english-litigation', 'nursing-medical-english'
+  'movies-tv-culture', 'movies-tv', 'music-lyrics-culture', 'music-arts', 'legal-english-litigation', 'nursing-medical-english',
+  'financial-english-vc', 'agile-product-management'
 ];
 
 // Proxy wrapper guaranteeing 100% resolve rate for ANY course or lesson ID

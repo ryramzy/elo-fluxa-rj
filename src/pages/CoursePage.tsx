@@ -75,7 +75,7 @@ const getCourseTheme = (course: Course) => {
   if (['Conversation', 'Essentials', 'Travel'].includes(course.tag)) {
     return 'amber';
   }
-  const technicalTags = ['Tech', 'Engineering', 'Software Developers'];
+  const technicalTags = ['Tech', 'Engineering', 'Software Developers', 'Finance', 'Product'];
   if (technicalTags.includes(course.tag) || course.id.includes('tech') || course.id.includes('dev')) {
     return 'cyber-blue';
   }

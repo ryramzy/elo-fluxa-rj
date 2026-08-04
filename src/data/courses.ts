@@ -543,5 +543,41 @@ export const courses: Course[] = [
       { id: 'mus-03', title: 'Concerts, Festivals & Live Events', lessonIndex: 2, xpReward: 40 },
       { id: 'mus-04', title: 'Music Production, Streaming & Global Influence', lessonIndex: 3, xpReward: 50 },
     ]
+  },
+  {
+    id: 'financial-english-vc',
+    title: 'Financial English & Venture Capital',
+    titlePt: 'Inglês para Mercado Financeiro e VC',
+    description: 'Master EBITDA metrics, investor pitches, fundraising runs, and valuation strategy dialogues.',
+    descriptionPt: 'Domine métricas de EBITDA, pitches de captação, rodadas de investimento e avaliação de startups.',
+    level: 'Advanced',
+    tag: 'Finance',
+    emoji: '💸',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'fin-01', title: 'Financial Reporting & Metrics', lessonIndex: 0, xpReward: 45 },
+      { id: 'fin-02', title: 'Venture Capital & Investor Pitching', lessonIndex: 1, xpReward: 45 },
+      { id: 'fin-03', title: 'Fundraising & Runway Discussions', lessonIndex: 2, xpReward: 45 },
+      { id: 'fin-04', title: 'M&A and Startup Valuation Strategy', lessonIndex: 3, xpReward: 55 }
+    ]
+  },
+  {
+    id: 'agile-product-management',
+    title: 'Agile & Product Management English',
+    titlePt: 'Agile e Gestão de Produtos em Inglês',
+    description: 'Communicate fluently during sprint planning, daily standups, retros, and roadmap alignments.',
+    descriptionPt: 'Comunique-se com fluência no planejamento de sprint, standups diários, retros e alinhamento de roadmaps.',
+    level: 'Advanced',
+    tag: 'Product',
+    emoji: '🎯',
+    imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&q=80',
+    totalLessons: 4,
+    lessons: [
+      { id: 'agp-01', title: 'Daily Standups & Blocker Updates', lessonIndex: 0, xpReward: 45 },
+      { id: 'agp-02', title: 'Sprint Planning & Estimations', lessonIndex: 1, xpReward: 45 },
+      { id: 'agp-03', title: 'Roadmapping & OKRs Alignment', lessonIndex: 2, xpReward: 45 },
+      { id: 'agp-04', title: 'Sprint Retrospectives & Feedback', lessonIndex: 3, xpReward: 55 }
+    ]
   }
 ];
