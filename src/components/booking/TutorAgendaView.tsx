@@ -122,23 +122,23 @@ export function TutorAgendaView() {
     endObj.setDate(selectedDate.getDate() + 60); // 60 days in the future from selectedDate
     const endStr = endObj.toLocaleDateString('en-CA');
 
+    // Load tutor's bookings (single-field index-free query)
     const bookingsQuery = query(
       collection(db, 'bookings'),
-      where('date', '>=', startStr),
-      where('date', '<=', endStr)
+      where('tutorId', '==', selectedTutorId)
     );
 
+    // Load tutor's available slots (single-field index-free query)
     const slotsQuery = query(
       collection(db, 'availableSlots'),
-      where('date', '>=', startStr),
-      where('date', '<=', endStr)
+      where('tutorId', '==', selectedTutorId)
     );
 
     const unsubBookings = onSnapshot(bookingsQuery, (snap) => {
       const list: Booking[] = [];
       snap.forEach(d => {
         const data = d.data();
-        if ((data.tutorId || 'matthew') === selectedTutorId) {
+        if (data.date >= startStr && data.date <= endStr) {
           list.push({ id: d.id, ...data } as Booking);
         }
       });
@@ -153,7 +153,7 @@ export function TutorAgendaView() {
       const list: any[] = [];
       snap.forEach(d => {
         const data = d.data();
-        if ((data.tutorId || 'matthew') === selectedTutorId) {
+        if (data.date >= startStr && data.date <= endStr) {
           list.push({ id: d.id, ...data });
         }
       });

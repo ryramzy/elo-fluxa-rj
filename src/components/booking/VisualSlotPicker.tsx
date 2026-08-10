@@ -211,39 +211,40 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       const endUtc = new Date(`${localEndStr}T23:59:59`);
       endUtc.setDate(endUtc.getDate() + 2);
       
+      // Load bookings only for the selected tutor (index-free single-field filter query)
       const bookingsQuery = query(
         collection(db, 'bookings'),
-        where('datetime', '>=', Timestamp.fromDate(startUtc)),
-        where('datetime', '<=', Timestamp.fromDate(endUtc))
+        where('tutorId', '==', selectedTutor.id)
       );
       
       const snapshot = await getDocs(bookingsQuery);
-      const bookingsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Booking));
+      const bookingsData = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Booking))
+        .filter(b => {
+          if (!b.datetime) return false;
+          const ts = b.datetime.toDate ? b.datetime.toDate().getTime() : new Date(b.datetime).getTime();
+          return ts >= startUtc.getTime() && ts <= endUtc.getTime();
+        });
 
-      // Query available slots for the selected tutor
-      const dateStartObj = new Date(weekDates[0]);
-      dateStartObj.setDate(dateStartObj.getDate() - 2);
-      const queryStartStr = dateStartObj.toLocaleDateString('en-CA');
-
-      const dateEndObj = new Date(weekDates[4]);
-      dateEndObj.setDate(dateEndObj.getDate() + 2);
-      const queryEndStr = dateEndObj.toLocaleDateString('en-CA');
-
+      // Query available slots only for the selected tutor (index-free single-field filter query)
       const slotsQuery = query(
         collection(db, 'availableSlots'),
-        where('date', '>=', queryStartStr),
-        where('date', '<=', queryEndStr),
         where('tutorId', '==', selectedTutor.id)
       );
 
       const slotsSnapshot = await getDocs(slotsQuery);
-      const slotsData = slotsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const slotsData = slotsSnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(s => {
+          if (!s.date) return false;
+          return s.date >= localStartStr && s.date <= localEndStr;
+        });
       
       // Save to cache
       bookingsCache[selectedWeek] = { data: bookingsData, timestamp: Date.now() };
