@@ -556,7 +556,7 @@ export function TutorAgendaView() {
   const timelineDays = getTimelineDays();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-8">
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -577,7 +577,7 @@ export function TutorAgendaView() {
         <div className="w-full md:w-80 flex-shrink-0 space-y-6">
           
           {/* Pending Requests Component */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-5 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
             <div className="flex justify-between items-center pb-3 border-b border-gray-50 dark:border-slate-700/50 mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Solicitações de Reserva</h3>
               {pendingRequests.length > 0 && (
@@ -663,7 +663,7 @@ export function TutorAgendaView() {
           </div>
 
           {/* Display Filters */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-5 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
             <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-4 pb-2 border-b border-gray-50 dark:border-slate-700/50">
               Exibir no Calendário
             </h3>
@@ -801,7 +801,7 @@ export function TutorAgendaView() {
                       {day.items.map((item, idx) => (
                         <div
                           key={idx}
-                          className={`p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 sm:items-center justify-between transition-all shadow-sm ${
+                          className={`p-3 sm:p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 sm:items-center justify-between transition-all shadow-sm ${
                             item.type === 'confirmed'
                               ? 'bg-emerald-50/40 border-emerald-100 dark:bg-emerald-950/10 dark:border-emerald-900/30'
                               : item.type === 'pending'

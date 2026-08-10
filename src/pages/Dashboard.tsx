@@ -205,7 +205,7 @@ const DashboardWorking: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6">
         
         {/* Navigation Tabs for Student Dashboard */}
         <div className="w-full flex justify-start sm:justify-center overflow-x-auto no-scrollbar pb-1 mb-8">
@@ -349,7 +349,7 @@ const DashboardWorking: React.FC = () => {
             </div>
           </>
         ) : activeTab === 'booking' ? (
-          <div className="bg-[#020617] rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800/80 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-[#020617] to-[#020617]">
+          <div className="bg-[#020617] rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-8 shadow-2xl border border-slate-800/80 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-[#020617] to-[#020617]">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">

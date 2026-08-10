@@ -516,7 +516,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-[#0f172a]/80 rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative">
+    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-[#0f172a]/80 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative">
       
       {/* Toast Notification */}
       {toast && (
@@ -528,7 +528,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       )}
 
       {/* Header */}
-      <div className="p-6 md:p-8 border-b border-white/5 bg-white/5">
+      <div className="p-4 md:p-8 border-b border-white/5 bg-white/5">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -618,7 +618,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         ) : null}
 
         {/* 1. Mobile Day Selector (Tabs) - Visible only on mobile */}
-        <div className="md:hidden sticky top-0 z-20 bg-[#0f172a] flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-4 pt-6">
+        <div className="md:hidden sticky top-0 z-20 bg-[#0f172a] flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-2 pt-4">
           {weekDates.map((date, idx) => {
             const dateStr = date.toLocaleDateString('en-CA');
             const isToday = dateStr === new Date().toLocaleDateString('en-CA');
@@ -649,7 +649,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         </div>
 
         {/* 2. Mobile Slots List - Visible only on mobile */}
-        <div className="md:hidden space-y-3 px-4 pb-6">
+        <div className="md:hidden space-y-3 px-2 pb-4">
           {timeSlots.map((time) => {
             const date = weekDates[activeMobileDay];
             const dateStr = date.toLocaleDateString('en-CA');
