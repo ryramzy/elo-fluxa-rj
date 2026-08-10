@@ -591,7 +591,7 @@ const Admin: React.FC<AdminProps> = () => {
 
   // Revenue calculations
   const calculateRevenue = () => {
-    const paidUsers = users.filter(u => u.plan !== 'free');
+    const paidUsers = users.filter(u => u.plan && u.plan !== 'free');
     const proRevenue = users.filter(u => u.plan === 'pro').length * 97; // R$97/month
     const eliteRevenue = users.filter(u => u.plan === 'elite').length * 197; // R$197/month
     return {
@@ -622,10 +622,15 @@ const Admin: React.FC<AdminProps> = () => {
   useEffect(() => {
     if (isAdmin) {
       loadWeekBookings();
+    }
+  }, [isAdmin, selectedWeek]);
+
+  useEffect(() => {
+    if (isAdmin) {
       loadUsers();
       loadEnrollments();
     }
-  }, [isAdmin, selectedWeek]);
+  }, [isAdmin]);
 
   const weekDates = getWeekDates(selectedWeek);
   const isCurrentWeek = selectedWeek === 0;
@@ -1012,11 +1017,11 @@ const Admin: React.FC<AdminProps> = () => {
                       </td>
                       <td className="p-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          user.plan === 'elite' ? 'bg-orange-100 text-orange-800' :
-                          user.plan === 'pro' ? 'bg-blue-100 text-blue-800' :
+                          (user.plan || 'free') === 'elite' ? 'bg-orange-100 text-orange-800' :
+                          (user.plan || 'free') === 'pro' ? 'bg-blue-100 text-blue-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
-                          {user.plan.toUpperCase()}
+                          {(user.plan || 'free').toUpperCase()}
                         </span>
                       </td>
                       <td className="p-3">
@@ -1099,7 +1104,7 @@ const Admin: React.FC<AdminProps> = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Free Users:</span>
-                    <span>{users.filter(u => u.plan === 'free').length}</span>
+                    <span>{users.filter(u => !u.plan || u.plan === 'free').length}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Pro Users (R$97/month):</span>
