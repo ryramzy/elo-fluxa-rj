@@ -1152,5 +1152,25 @@ The Agenda page already exceeded requirements with:
    - **Pattern**: Replaced off-site WhatsApp redirect buttons on course cards and hero sections with instant guest trial CTAs (**"⚡ Experimentar 1ª Aula Grátis"**).
    - **Behavior**: Auto-authenticates unauthorized visitors in Guest Mode and opens the interactive slide player immediately with live XP tracking. Direct WhatsApp contact is preserved as a single, subtle support link in the footer.
 
+## [August 10, 2026 - Sprint 33] — Calendar Performance Decoupling, ESM Serverless Alignment & Dashboard CRM Hardening
+**Status:** ✅ COMPLETED
+
+### Architectural Principles & Fixes
+1. **Decoupled Admin CRM Hooks**:
+   - **Pattern**: Split the admin page loading hooks, decoupling `loadUsers()` and `loadEnrollments()` from the calendar `selectedWeek` shifts.
+   - **Rationale**: Prevents redundant and expensive Firestore collection downloads when navigating the agenda schedule.
+
+2. **Defensive plan fallback rendering**:
+   - **Pattern**: Added string fallback defaults `(user.plan || 'free').toUpperCase()` in user CRM table rows.
+   - **Rationale**: Resolves runtime `TypeError` crashes on missing plan fields for newly registered user documents.
+
+3. **Index-Free Single-Field Query Optimizations**:
+   - **Pattern**: Swapped composite queries in both tutor agenda subscriptions and student slot queries to filter on the single field `tutorId` directly in Firestore, performing date filtering in memory.
+   - **Rationale**: Completely eliminates the need for composite indexes in Firestore, avoiding potential index errors and speeding up calendar loading times.
+
+4. **Vercel ESM Compiler Config Alignment**:
+   - **Pattern**: Switched the TypeScript compilation target module in `api/tsconfig.json` from `"CommonJS"` to `"ESNext"` and added explicit `.js` extensions to all relative imports inside the `api/` folder.
+   - **Rationale**: Aligns backend transpilation outputs with Vercel's Node.js ES Modules serverless runtime environment, resolving the `ReferenceError: exports is not defined` and `ERR_MODULE_NOT_FOUND` deployment crashes.
+
 
 

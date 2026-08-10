@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive dark mode CSS styling for all components
 
 ### Fixed
+- Decoupled admin CRM page loading hooks `loadUsers()` and `loadEnrollments()` from active scheduling calendar week shifts to prevent redundant database queries.
+- Added default plan fallback safeguards (`(user.plan || 'free').toUpperCase()`) to prevent admin CRM page crashes on newly registered user accounts without assigned plans.
+- Re-architected tutor agenda and student scheduling slot queries to query by `tutorId` directly in Firestore and date-slice documents in memory, avoiding composite index dependencies and resolving calendar loading lag.
+- Switched Vercel serverless TypeScript compilation settings to `"module": "ESNext"` and added explicit `.js` extensions to relative api imports, aligning local compilation with Node.js ES Modules serverless runtime to prevent `ReferenceError: exports is not defined` and `ERR_MODULE_NOT_FOUND` deployment crashes.
 - Mobile `SlideViewer` safe area padding (`env(safe-area-inset)`) to prevent notch cut-offs.
 - `Swiper` sensitivity in `SlideViewer` (added `threshold` and `resistanceRatio`) to prevent accidental slide changes.
 - **CRITICAL**: Dark mode conflict between Context API and useDarkMode hook - standardized on hook approach, removed Context implementation
