@@ -71,9 +71,14 @@ const TimezoneSyncPanel: React.FC = () => {
   };
 
   useEffect(() => {
-    loadBookings();
     loadTutorPresence();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'utilities') {
+      loadBookings();
+    }
+  }, [activeTab]);
 
   const downloadBackup = async () => {
     setLoading(true);
