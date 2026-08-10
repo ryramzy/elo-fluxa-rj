@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getFirestoreAccessToken } from './utils/googleAuth';
+import { getFirestoreAccessToken } from './utils/googleAuth.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_temp_key');
 

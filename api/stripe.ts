@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { getFirestoreAccessToken } from './utils/googleAuth';
+import { getFirestoreAccessToken } from './utils/googleAuth.js';
 import { Readable } from 'stream';
 
 // Disable default Vercel body parsing to allow raw signature verification

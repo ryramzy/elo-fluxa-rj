@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getFirestoreAccessToken } from './utils/googleAuth';
+import { getFirestoreAccessToken } from './utils/googleAuth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
