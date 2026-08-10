@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { getFirestoreAccessToken } from './utils/googleAuth';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_temp_key');
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const path = req.url?.split('?')[0] ?? '';
