@@ -73,6 +73,7 @@ export function TutorAgendaView() {
 
   // Calendar State
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Auto-resolve logged-in tutor ID
   useEffect(() => {
@@ -111,15 +112,14 @@ export function TutorAgendaView() {
   const [endHour, setEndHour] = useState('21:00');
   const [savingTemplate, setSavingTemplate] = useState(false);
 
-  // Subscribe to bookings, available slots, and users list within a rolling range
+  // Subscribe to bookings, available slots, and users list within a rolling range relative to selectedDate
   useEffect(() => {
-    const today = new Date();
-    const startObj = new Date(today);
-    startObj.setDate(today.getDate() - 7); // 1 week in the past
+    const startObj = new Date(selectedDate);
+    startObj.setDate(selectedDate.getDate() - 30); // 30 days in the past from selectedDate
     const startStr = startObj.toLocaleDateString('en-CA');
 
-    const endObj = new Date(today);
-    endObj.setDate(today.getDate() + 14); // 2 weeks in the future
+    const endObj = new Date(selectedDate);
+    endObj.setDate(selectedDate.getDate() + 60); // 60 days in the future from selectedDate
     const endStr = endObj.toLocaleDateString('en-CA');
 
     const bookingsQuery = query(
@@ -166,7 +166,7 @@ export function TutorAgendaView() {
       unsubBookings();
       unsubSlots();
     };
-  }, [selectedTutorId]);
+  }, [selectedTutorId, selectedDate]);
 
   // Lazily load users only when the scheduling modal is opened
   const [usersLoading, setUsersLoading] = useState(false);
@@ -389,11 +389,10 @@ export function TutorAgendaView() {
   const pendingRequests = bookings.filter(b => b.status === 'pending');
 
   const getWeekRangeString = () => {
-    const today = new Date();
-    const currentDay = today.getDay();
+    const currentDay = selectedDate.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
+    const monday = new Date(selectedDate);
+    monday.setDate(selectedDate.getDate() + mondayOffset);
 
     const friday = new Date(monday);
     friday.setDate(monday.getDate() + 4);
@@ -402,11 +401,10 @@ export function TutorAgendaView() {
   };
 
   const getTimelineDays = () => {
-    const today = new Date();
-    const currentDay = today.getDay();
+    const currentDay = selectedDate.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
+    const monday = new Date(selectedDate);
+    monday.setDate(selectedDate.getDate() + mondayOffset);
 
     const days = [];
     for (let i = 0; i < 5; i++) {
@@ -478,13 +476,14 @@ export function TutorAgendaView() {
     ];
 
     const handleDateClick = (date: Date) => {
+      setSelectedDate(date);
       const dateStr = date.toLocaleDateString('en-CA');
-      const element = document.getElementById(`day-header-${dateStr}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        showToast({ type: 'info', message: `Nenhum horário listado para ${date.toLocaleDateString('pt-BR')}` });
-      }
+      setTimeout(() => {
+        const element = document.getElementById(`day-header-${dateStr}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     };
 
     return (
@@ -521,6 +520,7 @@ export function TutorAgendaView() {
                 
                 const dateStr = date.toLocaleDateString('en-CA');
                 const isToday = dateStr === new Date().toLocaleDateString('en-CA');
+                const isSelected = dateStr === selectedDate.toLocaleDateString('en-CA');
                 
                 const dayBookings = bookings.filter(b => b.date === dateStr);
                 const hasConfirmed = dayBookings.some(b => b.status === 'confirmed');
@@ -533,6 +533,8 @@ export function TutorAgendaView() {
                     className={`h-7 w-7 rounded-full flex flex-col items-center justify-center text-xs relative font-semibold transition-all ${
                       isToday 
                         ? 'bg-blue-600 text-white font-bold' 
+                        : isSelected
+                        ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-500 font-bold dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-500/60'
                         : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-200'
                     }`}
                   >
@@ -625,7 +627,10 @@ export function TutorAgendaView() {
           {/* Action Button Group */}
           <div className="flex flex-col gap-2.5">
             <button
-              onClick={() => setBookingModalOpen(true)}
+              onClick={() => {
+                setManualDate(selectedDate.toLocaleDateString('en-CA'));
+                setBookingModalOpen(true);
+              }}
               className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-500/10 uppercase tracking-wider"
             >
               <FaRegCalendarPlus size={13} />
@@ -706,28 +711,71 @@ export function TutorAgendaView() {
         {/* MAIN TIMELINE STREAM */}
         <div className="flex-1 space-y-6">
           
-          {/* Tabs */}
-          <div className="flex border-b border-gray-200 dark:border-slate-700">
-            <button
-              onClick={() => setActiveTab('schedule')}
-              className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
-                activeTab === 'schedule'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Seu Cronograma
-            </button>
-            <button
-              onClick={() => setActiveTab('open')}
-              className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
-                activeTab === 'open'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Horários Disponíveis ({availableSlots.length})
-            </button>
+          {/* Tabs & Week Navigation */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 dark:border-slate-700 pb-2">
+            <div className="flex border-b border-transparent">
+              <button
+                onClick={() => setActiveTab('schedule')}
+                className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                  activeTab === 'schedule'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Seu Cronograma
+              </button>
+              <button
+                onClick={() => setActiveTab('open')}
+                className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                  activeTab === 'open'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Horários Disponíveis ({availableSlots.length})
+              </button>
+            </div>
+
+            {activeTab === 'schedule' && (
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl border border-gray-200/50 dark:border-slate-700/50 self-stretch sm:self-auto justify-between sm:justify-start">
+                <button
+                  onClick={() => {
+                    const prev = new Date(selectedDate);
+                    prev.setDate(selectedDate.getDate() - 7);
+                    setSelectedDate(prev);
+                    setCurrentDate(prev);
+                  }}
+                  className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"
+                >
+                  ◀ Sem. Ant.
+                </button>
+                <button
+                  onClick={() => {
+                    const now = new Date();
+                    setSelectedDate(now);
+                    setCurrentDate(now);
+                  }}
+                  className={`px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                    selectedDate.toDateString() === new Date().toDateString()
+                      ? 'bg-blue-600 text-white shadow-sm font-black'
+                      : 'text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700'
+                  }`}
+                >
+                  Hoje
+                </button>
+                <button
+                  onClick={() => {
+                    const next = new Date(selectedDate);
+                    next.setDate(selectedDate.getDate() + 7);
+                    setSelectedDate(next);
+                    setCurrentDate(next);
+                  }}
+                  className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"
+                >
+                  Próx. Sem. ▶
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Loader */}

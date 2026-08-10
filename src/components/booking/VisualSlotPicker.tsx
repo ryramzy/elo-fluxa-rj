@@ -46,11 +46,13 @@ interface VisualSlotPickerProps {
 
 // In-memory cache to make calendar navigation and remounts instantaneous
 const bookingsCache: Record<number, { data: Booking[]; timestamp: number }> = {};
+const slotsCache: Record<number, { data: any[]; timestamp: number }> = {};
 
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   onSlotSelect
 }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
   const [cancelling, setCancelling] = useState(false);
@@ -184,11 +186,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   const loadWeekBookings = async (force = false) => {
     // Check in-memory cache first to make it load instantly
-    const cached = bookingsCache[selectedWeek];
+    const cachedBookings = bookingsCache[selectedWeek];
+    const cachedSlots = slotsCache[selectedWeek];
     const now = Date.now();
     
-    if (!force && cached && (now - cached.timestamp < 15000)) {
-      setBookings(cached.data);
+    if (!force && cachedBookings && cachedSlots && (now - cachedBookings.timestamp < 15000)) {
+      setBookings(cachedBookings.data);
+      setAvailableSlots(cachedSlots.data);
       setLoading(false);
       return;
     }
@@ -218,10 +222,34 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         id: doc.id,
         ...doc.data()
       } as Booking));
+
+      // Query available slots for the selected tutor
+      const dateStartObj = new Date(weekDates[0]);
+      dateStartObj.setDate(dateStartObj.getDate() - 2);
+      const queryStartStr = dateStartObj.toLocaleDateString('en-CA');
+
+      const dateEndObj = new Date(weekDates[4]);
+      dateEndObj.setDate(dateEndObj.getDate() + 2);
+      const queryEndStr = dateEndObj.toLocaleDateString('en-CA');
+
+      const slotsQuery = query(
+        collection(db, 'availableSlots'),
+        where('date', '>=', queryStartStr),
+        where('date', '<=', queryEndStr),
+        where('tutorId', '==', selectedTutor.id)
+      );
+
+      const slotsSnapshot = await getDocs(slotsQuery);
+      const slotsData = slotsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       
       // Save to cache
       bookingsCache[selectedWeek] = { data: bookingsData, timestamp: Date.now() };
+      slotsCache[selectedWeek] = { data: slotsData, timestamp: Date.now() };
       setBookings(bookingsData);
+      setAvailableSlots(slotsData);
     } catch (err) {
       logError(err, { action: 'loadWeekBookings', selectedWeek });
       showToast('Failed to load availability.', 'error');
@@ -624,10 +652,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           {timeSlots.map((time) => {
             const date = weekDates[activeMobileDay];
             const dateStr = date.toLocaleDateString('en-CA');
+            const { date: mattDate, time: mattTime } = getMattLocalStrings(dateStr, time);
             const existingBooking = getBooking(dateStr, time);
             const past = isPast(dateStr, time);
-            const working = isMattWorking(dateStr, time);
-            const showAsUnavailable = past || !working;
+            const isAvailableInDb = availableSlots.some(s => s.date === mattDate && s.time === mattTime);
+            const showAsUnavailable = past || !isAvailableInDb;
             
             let slotState = 'available';
             if (existingBooking) {
@@ -715,10 +744,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   {/* Slots for each day */}
                   {weekDates.map((date) => {
                     const dateStr = date.toLocaleDateString('en-CA');
+                    const { date: mattDate, time: mattTime } = getMattLocalStrings(dateStr, time);
                     const existingBooking = getBooking(dateStr, time);
                     const past = isPast(dateStr, time);
-                    const working = isMattWorking(dateStr, time);
-                    const showAsUnavailable = past || !working;
+                    const isAvailableInDb = availableSlots.some(s => s.date === mattDate && s.time === mattTime);
+                    const showAsUnavailable = past || !isAvailableInDb;
                     
                     let slotState = 'available';
                     if (existingBooking) {

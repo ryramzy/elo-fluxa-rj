@@ -300,7 +300,7 @@ async function handleB2BReport(req: VercelRequest, res: VercelResponse) {
     const { data, error } = await resend.emails.send({
       from: 'Elo! Corporate Reports <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
-      to: ['mramsao@gmail.com'],
+      to: ['mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'],
       subject: `Relatório de Performance B2B - Elo!`,
       html: emailHtml
     });

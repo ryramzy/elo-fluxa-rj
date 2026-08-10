@@ -8,7 +8,7 @@ const runE2EBookingTest = async () => {
   // Test settings
   const studentName = 'Fake Test Student';
   const studentEmail = 'fake_test_student_elo@mailinator.com'; // Easy to check on mailinator
-  const adminEmail = 'mramsao@gmail.com';
+  const adminEmail = 'mramsay0@gmail.com';
   
   // Find next Monday's date for a clean slot test
   const today = new Date();

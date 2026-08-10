@@ -38,10 +38,11 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
         weekday: 'long', day: 'numeric', month: 'long'
       });
 
+    const toEmails = [attendeeEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
     const { error } = await resend.emails.send({
       from: 'Elo! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
-      to: [attendeeEmail, 'mramsao@gmail.com'],
+      to: toEmails,
       subject: `Sua aula está confirmada - ${formattedDate}`,
       html: `
         <div style="font-family:sans-serif;max-width:520px;
@@ -575,10 +576,11 @@ async function handleBookingCancellation(req: VercelRequest, res: VercelResponse
       </div>
     `;
 
+    const toEmails = [attendeeEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
     const { error } = await resend.emails.send({
       from: 'Elo! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
-      to: [attendeeEmail, 'mramsao@gmail.com'],
+      to: toEmails,
       subject: emailSubject,
       html: htmlContent,
     });
