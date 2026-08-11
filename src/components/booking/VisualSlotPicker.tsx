@@ -680,7 +680,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
-                      className={`absolute inset-0 w-full h-full rounded-xl transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'}`}
+                      className={`absolute inset-0 w-full h-full rounded-xl transition-all duration-300 flex items-center justify-center font-bold text-xs uppercase tracking-wider active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 active:bg-emerald-700'}`}
                     >
                       {currentSlotLoading === 'booking' ? (
                         <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
@@ -694,7 +694,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleCancelBooking(existingBooking!.id)}
                       disabled={isAnySlotBooking || cancelling}
-                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_12px_rgba(59,130,246,0.1)]"
+                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-500/25 hover:bg-red-650 hover:shadow-red-600/20"
                     >
                       Sua Aula (Cancelar)
                     </button>

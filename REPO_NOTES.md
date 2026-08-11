@@ -1172,5 +1172,9 @@ The Agenda page already exceeded requirements with:
    - **Pattern**: Switched the TypeScript compilation target module in `api/tsconfig.json` from `"CommonJS"` to `"ESNext"` and added explicit `.js` extensions to all relative imports inside the `api/` folder.
    - **Rationale**: Aligns backend transpilation outputs with Vercel's Node.js ES Modules serverless runtime environment, resolving the `ReferenceError: exports is not defined` and `ERR_MODULE_NOT_FOUND` deployment crashes.
 
+5. **Mobile Spacing & Padding Optimizations**:
+   - **Pattern**: Reduced root layout, outer tab cards, selector headers, and agenda item card paddings (reclaiming up to 40px of width) on mobile screen sizes.
+   - **Rationale**: Removes cramped layout boundaries on phones, letting buttons, day selector tabs, and slot grids expand naturally and breathe on mobile viewports.
+
 
 

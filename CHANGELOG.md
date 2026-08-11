@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive dark mode CSS styling for all components
 
 ### Fixed
+- Optimized spacing, paddings, and margins across Dashboard, VisualSlotPicker, and TutorAgendaView on mobile viewports to let layouts float naturally.
 - Decoupled admin CRM page loading hooks `loadUsers()` and `loadEnrollments()` from active scheduling calendar week shifts to prevent redundant database queries.
 - Added default plan fallback safeguards (`(user.plan || 'free').toUpperCase()`) to prevent admin CRM page crashes on newly registered user accounts without assigned plans.
 - Re-architected tutor agenda and student scheduling slot queries to query by `tutorId` directly in Firestore and date-slice documents in memory, avoiding composite index dependencies and resolving calendar loading lag.
