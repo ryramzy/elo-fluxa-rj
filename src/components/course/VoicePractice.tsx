@@ -262,7 +262,7 @@ export const VoicePractice: React.FC<VoicePracticeProps> = ({
   };
 
   return (
-    <div className="w-full bg-slate-900/60 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col items-center">
+    <div className="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col items-center">
       <h3 className="text-sm font-bold tracking-wider text-slate-400 uppercase mb-4">
         Prática de Fala / Speak Practice
       </h3>

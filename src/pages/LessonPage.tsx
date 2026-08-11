@@ -356,7 +356,7 @@ const LessonPage: React.FC = () => {
           spokenText: isQuiz ? '' : body,
           type: type,
           content: (
-            <div className={`p-6 md:p-8 rounded-3xl border backdrop-blur-md transition-all ${borderGlowClass} flex flex-col h-full space-y-4`}>
+            <div className={`p-4 md:p-8 rounded-2xl md:rounded-3xl border backdrop-blur-md transition-all ${borderGlowClass} flex flex-col h-full space-y-4`}>
               {typeLabel && (
                 <span className={`text-[10px] font-extrabold tracking-widest uppercase ${
                   type === 'VOCAB' ? 'text-amber-400' :

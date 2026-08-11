@@ -264,7 +264,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
         </div>
 
         {/* Segmented Progress Bar */}
-        <div className="flex gap-1 w-full max-w-3xl mx-auto">
+        <div className="flex gap-1 w-full max-w-4xl mx-auto">
           {slides.map((_, idx) => (
             <div 
               key={idx} 
@@ -302,7 +302,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({ slides, initialSlide =
             
             {/* Centered Layout */}
             <div 
-              className="relative z-10 max-w-3xl mx-auto w-full flex flex-col justify-center text-left"
+              className="relative z-10 max-w-4xl mx-auto w-full flex flex-col justify-center text-left"
               style={{ 
                 paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))',
                 paddingTop: 'calc(4.5rem + env(safe-area-inset-top))'
