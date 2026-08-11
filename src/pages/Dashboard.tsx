@@ -249,7 +249,7 @@ const DashboardWorking: React.FC = () => {
         {activeTab === 'overview' ? (
           <>
             {/* Prominent Booking CTA */}
-            <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
+            <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
               <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
               <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">Ready for your next lesson?</h2>
@@ -373,7 +373,7 @@ const DashboardWorking: React.FC = () => {
             </WidgetErrorBoundary>
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-750/50">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-750/50">
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
@@ -420,7 +420,7 @@ const DashboardWorking: React.FC = () => {
                 </div>
 
                 {/* Referred Users Table */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-750/50 p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-750/50 p-4 sm:p-6">
                   <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-50 dark:border-slate-700/50">
                     Seus Amigos Indicados ({referredUsers.length})
                   </h3>
@@ -471,7 +471,7 @@ const DashboardWorking: React.FC = () => {
 
               {/* Right Column: Benefits Overview */}
               <div className="space-y-6">
-                <div className="bg-slate-50 dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <div className="bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
                   <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/80">
                     Benefícios Acumulados
                   </h3>
@@ -491,7 +491,7 @@ const DashboardWorking: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 bg-slate-955 border border-slate-800 rounded-2xl space-y-3">
+                <div className="p-4 sm:p-6 bg-slate-955 border border-slate-800 rounded-2xl space-y-3">
                   <span className="text-xl">🏆</span>
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">Campanha Especial</h4>
                   <p className="text-[11px] text-slate-400 leading-relaxed">

@@ -341,7 +341,7 @@ const CoursePage: React.FC = () => {
 
               {/* TABS VIEWS */}
               {activeTab === 'lessons' && (
-                <div className="p-6">
+                <div className="p-3 sm:p-6">
                   
                   {/* VERTICAL QUEST MAP LIST */}
                   <div className="space-y-4">
@@ -429,7 +429,7 @@ const CoursePage: React.FC = () => {
 
               {/* ABOUT TAB VIEW */}
               {activeTab === 'about' && (
-                <div className="p-6 space-y-6">
+                <div className="p-3 sm:p-6 space-y-6">
                   <div>
                     <h3 className="text-base font-bold text-slate-100 mb-2">Sobre este curso</h3>
                     <p className="text-slate-450 text-xs sm:text-sm leading-relaxed">{course.aboutText || course.description}</p>
