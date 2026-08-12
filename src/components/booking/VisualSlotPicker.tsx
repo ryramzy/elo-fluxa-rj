@@ -51,8 +51,10 @@ const slotsCache: Record<number, { data: any[]; timestamp: number }> = {};
 
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   onSlotSelect,
-  onBack
+  onBack,
+  showTitle = true
 }) => {
+  const [successBooking, setSuccessBooking] = useState<{ date: string; time: string; tutorName: string; meetLink: string } | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -88,6 +90,27 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const isAnySlotBooking = Object.values(slotLoadingMap).some(status => status === 'booking');
   
   const [toast, setToast] = useState<{message: string, type: 'error'|'success'} | null>(null);
+
+  // Prefilled client-side Google Calendar template URL generator
+  const getGoogleCalendarLink = (booking: { date: string; time: string; tutorName?: string; meetLink?: string }) => {
+    const [year, mMonth, mDay] = booking.date.split('-').map(Number);
+    const [mHour, mMinute] = booking.time.split(':').map(Number);
+    
+    // America/Sao_Paulo offset is UTC-3. Shift hours to get standard UTC ISO format.
+    const localDate = new Date(Date.UTC(year, mMonth - 1, mDay, mHour + 3, mMinute, 0));
+    const endDate = new Date(localDate.getTime() + 60 * 60 * 1000); // 1 hr session
+    
+    const toUtcFormat = (d: Date) => {
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+    
+    const dates = `${toUtcFormat(localDate)}/${toUtcFormat(endDate)}`;
+    const title = encodeURIComponent(`Aula de Inglês Elo com ${booking.tutorName || 'Professor'}`);
+    const details = encodeURIComponent(`Sua aula de conversação em inglês com a Elo Speak.\nSala do Jitsi/Google Meet: ${booking.meetLink || ''}`);
+    const location = encodeURIComponent(booking.meetLink || '');
+    
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+  };
 
   const showToast = (message: string, type: 'error' | 'success') => {
     setToast({ message, type });
@@ -386,9 +409,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       
       showToast('Aula agendada com sucesso!', 'success');
       
-      if (onSlotSelect) {
-        onSlotSelect(date, time);
-      }
+      setSuccessBooking({
+        date: date,
+        time: time,
+        tutorName: selectedTutor.name,
+        meetLink: meetLink || ''
+      });
     } catch (err: any) {
       logError(err, { action: 'bookSlot', date, time });
       
@@ -844,6 +870,68 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         </div>
       </div>
+      {successBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm px-4">
+          <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative text-center">
+            <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+              <span className="text-2xl">🎉</span>
+            </div>
+            
+            <h3 className="text-xl font-bold text-white tracking-tight">
+              Aula Reservada!
+            </h3>
+            <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
+              Sua aula particular de inglês com o professor <strong>{successBooking.tutorName}</strong> foi confirmada.
+            </p>
+            
+            <div className="my-5 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500 font-medium">Data:</span>
+                <span className="text-slate-200 font-bold">{successBooking.date.split('-').reverse().join('/')}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500 font-medium">Horário:</span>
+                <span className="text-slate-200 font-bold">{successBooking.time}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500 font-medium">Sala de Aula:</span>
+                <a 
+                  href={successBooking.meetLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-400 font-bold hover:underline truncate max-w-[180px]"
+                >
+                  Entrar na Sala →
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <a 
+                href={getGoogleCalendarLink(successBooking)}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20"
+              >
+                📅 Adicionar ao Google Agenda
+              </a>
+              
+              <button
+                onClick={() => {
+                  const bookingData = successBooking;
+                  setSuccessBooking(null);
+                  if (onSlotSelect) {
+                    onSlotSelect(bookingData.date, bookingData.time);
+                  }
+                }}
+                className="w-full py-2.5 bg-slate-850 hover:bg-slate-800 active:scale-95 text-slate-300 rounded-xl text-xs font-bold transition-all border border-slate-700/50"
+              >
+                Concluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

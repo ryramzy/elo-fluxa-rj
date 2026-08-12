@@ -349,6 +349,7 @@ const DashboardWorking: React.FC = () => {
         ) : activeTab === 'booking' ? (
           <WidgetErrorBoundary widgetName="Agenda de Aulas">
             <VisualSlotPicker 
+              showTitle={false}
               onBack={() => setActiveTab('overview')}
               onSlotSelect={() => {
                 setActiveTab('overview');
