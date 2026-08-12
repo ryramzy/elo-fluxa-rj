@@ -354,7 +354,7 @@ export default function TutorAgendaView() {
                       <button
                         key={didx}
                         onClick={() => setSelectedDate(day)}
-                        className={`h-9 w-9 mx-auto rounded-full flex flex-col items-center justify-center text-xs relative font-bold transition-all ${
+                        className={`h-11 w-11 md:h-9 md:w-9 mx-auto rounded-full flex flex-col items-center justify-center text-xs relative font-bold transition-all -webkit-tap-highlight-color-transparent select-none ${
                           isToday 
                             ? 'bg-blue-600 text-white' 
                             : isSelected
@@ -417,28 +417,28 @@ export default function TutorAgendaView() {
                 setManualDate(selectedDateStr);
                 setBookingModalOpen(true);
               }}
-              className="py-2.5 px-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 shadow-lg shadow-blue-600/10"
+              className="py-2.5 px-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 shadow-lg shadow-blue-600/10 -webkit-tap-highlight-color-transparent select-none min-h-[44px] md:min-h-[38px]"
             >
               <FaRegCalendarPlus size={14} />
               <span>Agendar Aula</span>
             </button>
             <button
               onClick={() => setPasteModalOpen(true)}
-              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50"
+              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px] md:min-h-[38px]"
             >
               <FaFileAlt size={14} />
               <span>Colar Horários</span>
             </button>
             <button
               onClick={() => setTemplateModalOpen(true)}
-              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50"
+              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px] md:min-h-[38px]"
             >
               <FaSlidersH size={14} />
               <span>Editar Modelo</span>
             </button>
             <button
               onClick={copyBookingLink}
-              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50"
+              className="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px] md:min-h-[38px]"
             >
               <FaLink size={14} />
               <span>Copiar Link</span>
@@ -557,10 +557,9 @@ export default function TutorAgendaView() {
         </div>
       </div>
 
-      {/* MODAL 1: Create Manual Booking */}
-      {bookingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4">
-          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      {/* MODAL 1:       {bookingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">
+          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-slate-200 mb-4">Agendar Aula Particular</h3>
             <form onSubmit={handleCreateManualBooking} className="space-y-4 text-xs font-bold text-slate-400">
               <div>
@@ -569,7 +568,7 @@ export default function TutorAgendaView() {
                   value={selectedStudentUid}
                   onChange={(e) => setSelectedStudentUid(e.target.value)}
                   required
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
                 >
                   <option value="">-- Selecione o Aluno --</option>
                   {users.map(u => (
@@ -586,7 +585,7 @@ export default function TutorAgendaView() {
                     value={manualDate}
                     onChange={(e) => setManualDate(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
                   />
                 </div>
                 <div>
@@ -596,7 +595,7 @@ export default function TutorAgendaView() {
                     value={manualTime}
                     onChange={(e) => setManualTime(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
                   />
                 </div>
               </div>
@@ -605,14 +604,14 @@ export default function TutorAgendaView() {
                 <button
                   type="button"
                   onClick={() => setBookingModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-350 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors"
+                  className="px-4 py-3 bg-slate-850 hover:bg-slate-800 text-slate-350 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors min-h-[44px] flex items-center justify-center"
                 >
                   Voltar
                 </button>
                 <button
                   type="submit"
                   disabled={savingManualBooking}
-                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md min-h-[44px] flex items-center justify-center"
                 >
                   {savingManualBooking ? 'Gravando...' : 'Confirmar Reserva'}
                 </button>
@@ -624,8 +623,8 @@ export default function TutorAgendaView() {
 
       {/* MODAL 2: Paste slots availability */}
       {pasteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4">
-          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">
+          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-slate-200 mb-2">Colar Disponibilidade</h3>
             <p className="text-[10px] text-slate-500 mb-4">Insira datas por linha no formato: <b>AAAA-MM-DD HH:MM</b> (Ex: 2026-07-08 14:00)</p>
             <form onSubmit={handlePasteAvailability} className="space-y-4 text-xs font-bold text-slate-400">
@@ -635,20 +634,20 @@ export default function TutorAgendaView() {
                 placeholder="2026-07-08 14:00&#10;2026-07-08 15:00"
                 rows={6}
                 required
-                className="w-full font-mono bg-slate-955 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                className="w-full font-mono bg-slate-955 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
               />
               <div className="flex gap-3 justify-end pt-2">
                 <button
                   type="button"
                   onClick={() => setPasteModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-350 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors"
+                  className="px-4 py-3 bg-slate-850 hover:bg-slate-800 text-slate-355 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors min-h-[44px] flex items-center justify-center"
                 >
                   Voltar
                 </button>
                 <button
                   type="submit"
                   disabled={savingPaste}
-                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md min-h-[44px] flex items-center justify-center"
                 >
                   {savingPaste ? 'Processando...' : 'Gravar Slots'}
                 </button>
@@ -660,8 +659,8 @@ export default function TutorAgendaView() {
 
       {/* MODAL 3: Weekly Default Template */}
       {templateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4">
-          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">
+          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-slate-200 mb-2">Editar Modelo de Horários</h3>
             <p className="text-[10px] text-slate-500 mb-4">Gere slots livres para a semana atual nos dias selecionados.</p>
             <form onSubmit={handleSaveTemplate} className="space-y-4 text-xs font-bold text-slate-400">
@@ -678,7 +677,7 @@ export default function TutorAgendaView() {
                           if (active) setSelectedDays(prev => prev.filter(d => d !== idx));
                           else setSelectedDays(prev => [...prev, idx]);
                         }}
-                        className={`px-3 py-2 rounded-lg border font-bold text-[10px] uppercase transition-all min-h-[36px] ${
+                        className={`px-3 py-2 rounded-lg border font-bold text-[10px] uppercase transition-all min-h-[44px] sm:min-h-[36px] flex items-center justify-center ${
                           active
                             ? 'bg-blue-600 border-blue-500 text-white shadow-sm'
                             : 'bg-slate-955 border-slate-800 text-slate-400'
@@ -700,7 +699,7 @@ export default function TutorAgendaView() {
                     value={startHour}
                     onChange={(e) => setStartHour(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
                   />
                 </div>
                 <div>
@@ -711,7 +710,7 @@ export default function TutorAgendaView() {
                     value={endHour}
                     onChange={(e) => setEndHour(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base md:text-xs"
                   />
                 </div>
               </div>
@@ -720,14 +719,14 @@ export default function TutorAgendaView() {
                 <button
                   type="button"
                   onClick={() => setTemplateModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-355 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors"
+                  className="px-4 py-3 bg-slate-850 hover:bg-slate-800 text-slate-355 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors min-h-[44px] flex items-center justify-center"
                 >
                   Voltar
                 </button>
                 <button
                   type="submit"
                   disabled={savingTemplate}
-                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md min-h-[44px] flex items-center justify-center"
                 >
                   {savingTemplate ? 'Gerando...' : 'Aplicar Modelo'}
                 </button>

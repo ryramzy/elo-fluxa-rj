@@ -296,7 +296,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             {onBack && (
               <button
                 onClick={onBack}
-                className="px-4 py-2.5 min-h-[38px] text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors bg-slate-900/50 hover:bg-slate-800 rounded-xl border border-slate-800 flex items-center justify-center gap-1.5"
+                className="-webkit-tap-highlight-color-transparent select-none px-4 py-2.5 min-h-[44px] md:min-h-[38px] text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors bg-slate-900/50 hover:bg-slate-800 rounded-xl border border-slate-800 flex items-center justify-center gap-1.5"
               >
                 ← Painel
               </button>
@@ -304,13 +304,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             <div className="flex items-center justify-between sm:justify-start gap-2 p-1 bg-slate-900/50 rounded-xl border border-slate-800/80 flex-1 sm:flex-initial">
               <button
                 onClick={() => setSelectedWeek(selectedWeek - 1)}
-                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold text-slate-400 hover:text-white bg-transparent rounded-lg transition-all min-h-[36px]"
+                className="-webkit-tap-highlight-color-transparent select-none flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold text-slate-400 hover:text-white bg-transparent rounded-lg transition-all min-h-[44px] md:min-h-[36px]"
               >
                 Anterior
               </button>
               <button
                 onClick={() => setSelectedWeek(0)}
-                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all min-h-[36px] ${
+                className={`-webkit-tap-highlight-color-transparent select-none flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all min-h-[44px] md:min-h-[36px] ${
                   selectedWeek === 0 
                     ? 'bg-blue-600 text-white shadow-md' 
                     : 'text-slate-400 hover:text-white'
@@ -320,7 +320,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               </button>
               <button
                 onClick={() => setSelectedWeek(selectedWeek + 1)}
-                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold text-slate-400 hover:text-white bg-transparent rounded-lg transition-all min-h-[36px]"
+                className="-webkit-tap-highlight-color-transparent select-none flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold text-slate-400 hover:text-white bg-transparent rounded-lg transition-all min-h-[44px] md:min-h-[36px]"
               >
                 Próxima
               </button>
@@ -328,7 +328,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         </div>
       </div>
-
+      
       {/* Tutor Selector Carousel */}
       {tutors.length > 1 && (
         <div className="px-4 sm:px-8 pt-4 pb-3 border-b border-slate-800/80 bg-slate-900/10">
@@ -385,7 +385,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => setActiveMobileDay(idx)}
-                className={`flex-1 min-w-[58px] flex flex-col items-center py-2 px-1 rounded-xl border transition-all duration-300 ${
+                className={`-webkit-tap-highlight-color-transparent select-none flex-1 min-w-[58px] flex flex-col items-center py-2 px-1 rounded-xl border transition-all duration-300 ${
                   isActive
                     ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20'
                     : isToday
@@ -416,10 +416,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             return (
               <div key={time} className="flex items-center justify-between bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/80">
                 <span className="text-slate-200 text-xs font-black shrink-0">{time}</span>
-                <div className="flex-1 max-w-[200px] h-9 relative">
+                <div className="flex-1 max-w-[200px] h-11 relative">
                   {!isAvailable ? (
                     <div className="absolute inset-0 rounded-lg bg-slate-950/30 border border-slate-900 flex items-center justify-center">
-                      <span className="text-[11px] text-slate-600 font-bold">— Indisponível</span>
+                      <span className="text-[11px] text-slate-650 font-bold">— Indisponível</span>
                     </div>
                   ) : isBookedByMe ? (
                     <div className="absolute inset-0 rounded-lg bg-blue-950/20 border border-blue-900/30 text-blue-400 text-[11px] font-bold flex items-center justify-center">
@@ -433,7 +433,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isCreditLocked}
-                      className={`absolute inset-0 w-full h-full rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                      className={`-webkit-tap-highlight-color-transparent select-none absolute inset-0 w-full h-full rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center ${
                         isCreditLocked 
                           ? 'bg-slate-950/30 border border-slate-900 text-slate-500' 
                           : 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95'
@@ -519,11 +519,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         </div>
       </div>
-
       {/* Success Booking Popup Modal */}
       {successBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4">
-          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl p-6 shadow-2xl relative text-center">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">
+          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative text-center">
             <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
               <span className="text-2xl">🎉</span>
             </div>
@@ -533,7 +532,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             <p className="text-slate-400 text-xs mt-1.5 leading-relaxed font-medium">
               Sua solicitação de aula com o professor <strong>{successBooking.tutorName}</strong> está aguardando confirmação.
             </p>
-            <div className="my-5 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2">
+            <div className="my-5 bg-slate-955/60 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2">
               <div className="flex justify-between text-xs">
                 <span className="text-slate-500 font-medium">Data:</span>
                 <span className="text-slate-200 font-bold">{successBooking.date.split('-').reverse().join('/')}</span>
@@ -559,7 +558,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 href={getGoogleCalendarLink(successBooking)}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20"
+                className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
               >
                 📅 Adicionar ao Google Agenda
               </a>
@@ -571,7 +570,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     onSlotSelect(bookingData.date, bookingData.time);
                   }
                 }}
-                className="w-full py-2.5 bg-slate-850 hover:bg-slate-800 active:scale-95 text-slate-300 rounded-xl text-xs font-bold transition-all border border-slate-700/50"
+                className="w-full py-3 bg-slate-850 hover:bg-slate-800 active:scale-95 text-slate-350 rounded-xl text-xs font-bold transition-all border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
               >
                 Concluir
               </button>
