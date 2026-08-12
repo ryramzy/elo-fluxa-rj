@@ -30,7 +30,8 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
   try {
     const {
       attendeeName, attendeeEmail,
-      date, time, durationMinutes, meetLink, notes
+      date, time, durationMinutes, meetLink, notes,
+      tutorName, tutorEmail
     } = req.body;
 
     const formattedDate = new Date(date + 'T00:00:00')
@@ -38,7 +39,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
         weekday: 'long', day: 'numeric', month: 'long'
       });
 
-    const toEmails = [attendeeEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
+    const toEmails = Array.from(new Set([attendeeEmail, tutorEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'])).filter(Boolean);
     const { error } = await resend.emails.send({
       from: 'Elo! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
@@ -60,7 +61,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
             <p style="margin:0;font-size:15px;line-height:1.5">
               <strong>${formattedDate}</strong> às ${time}<br/>
               Duração: ${durationMinutes} minutos<br/>
-              Professor: Matt
+              Professor: ${tutorName || 'Matt'}
             </p>
             ${notes ? `<p style="margin:8px 0 0 0;font-size:14px;color:#64748b">
               <strong>Notas:</strong> ${notes}

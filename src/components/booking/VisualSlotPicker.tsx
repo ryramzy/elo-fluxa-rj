@@ -29,6 +29,15 @@ interface Booking {
   status?: string;
 }
 
+interface Tutor {
+  id: string;
+  name: string;
+  email: string;
+  calendarId: string;
+  bio: string;
+  photoUrl: string;
+}
+
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   onSlotSelect,
   onBack,
@@ -51,17 +60,50 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const corporateCredits = profile?.corporateCredits ?? null;
   const isCreditLocked = corporateCredits === 0;
 
-  // 1. Load data
+  const [tutors, setTutors] = useState<Tutor[]>([]);
+  const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
+
+  // 1. Fetch tutor roster from database
   useEffect(() => {
+    const fetchTutors = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'tutors'));
+        if (!snapshot.empty) {
+          const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Tutor));
+          setTutors(list);
+          setSelectedTutor(list[0]);
+        } else {
+          // Roster fallback
+          const fallback: Tutor = {
+            id: 'matthew',
+            name: 'Matthew (Matt)',
+            email: 'matt@elospeak.com.br',
+            calendarId: 'matt@elospeak.com.br',
+            bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
+            photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+          };
+          setTutors([fallback]);
+          setSelectedTutor(fallback);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch tutors, using Matthew default:', e);
+      }
+    };
+    fetchTutors();
+  }, []);
+
+  // 2. Load availableSlots and bookings relative to selectedTutor
+  useEffect(() => {
+    if (!selectedTutor) return;
     setLoading(true);
-    const bQuery = query(collection(db, 'bookings'), where('tutorId', '==', 'matthew'));
+    const bQuery = query(collection(db, 'bookings'), where('tutorId', '==', selectedTutor.id));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
       setBookings(list);
       setLoading(false);
     }, () => setLoading(false));
 
-    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', '==', 'matthew'));
+    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', '==', selectedTutor.id));
     const unsubscribeSlots = onSnapshot(sQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setAvailableSlots(list);
@@ -71,7 +113,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       unsubscribeBookings();
       unsubscribeSlots();
     };
-  }, []);
+  }, [selectedTutor]);
 
   // 2. Dates calculations
   const getWeekDates = () => {
@@ -107,6 +149,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
     setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
 
+    const activeTutor = selectedTutor || {
+      id: 'matthew',
+      name: 'Matthew (Matt)',
+      email: 'matt@elospeak.com.br',
+      calendarId: 'matt@elospeak.com.br'
+    };
+
     try {
       const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
       const studentEmail = user?.email || 'estudante@elo.com';
@@ -122,12 +171,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
         const calRes = await createCalendarEvent({
           summary: `Aula de Inglês Elo: ${studentName}`,
-          description: `Sua aula de conversação em inglês com Matthew.`,
+          description: `Sua aula de conversação em inglês com ${activeTutor.name}.`,
           startDateTime,
           endDateTime,
           attendeeEmail: studentEmail,
           attendeeName: studentName,
-          tutorCalendarId: 'matthew'
+          tutorCalendarId: activeTutor.calendarId
         });
         eventId = calRes.eventId;
         meetLink = calRes.meetLink;
@@ -147,8 +196,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         '',
         eventId,
         meetLink,
-        'matthew',
-        'Matthew'
+        activeTutor.id,
+        activeTutor.name
       );
 
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
@@ -157,9 +206,31 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       setSuccessBooking({
         date,
         time,
-        tutorName: 'Matthew',
+        tutorName: activeTutor.name,
         meetLink: meetLink || ''
       });
+
+      // Send email payload containing tutor details dynamically
+      fetch('/api/email/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attendeeName: studentName,
+          attendeeEmail: studentEmail,
+          date,
+          time,
+          durationMinutes: 60,
+          meetLink,
+          notes: '',
+          tutorName: activeTutor.name,
+          tutorEmail: activeTutor.email
+        })
+      }).catch(emailErr => {
+        console.error('Failed to send email confirmation in background:', emailErr);
+      });
+
     } catch (err: any) {
       showToast(err.message || 'Erro ao agendar aula.', 'error');
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));
@@ -257,6 +328,41 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Tutor Selector Carousel */}
+      {tutors.length > 1 && (
+        <div className="px-4 sm:px-8 pt-4 pb-3 border-b border-slate-800/80 bg-slate-900/10">
+          <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">
+            Escolha seu Professor
+          </label>
+          <div className="flex gap-3 overflow-x-auto pb-1.5 scrollbar-none">
+            {tutors.map((t) => {
+              const isActive = selectedTutor?.id === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setSelectedTutor(t)}
+                  className={`flex items-center gap-3 p-2.5 rounded-2xl border text-left shrink-0 transition-all active:scale-95 ${
+                    isActive
+                      ? 'bg-blue-600/10 border-blue-500/80 text-white shadow-lg shadow-blue-500/5'
+                      : 'bg-slate-950/60 border-slate-850 text-slate-400 hover:border-slate-800'
+                  }`}
+                >
+                  <img
+                    src={t.photoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'}
+                    alt={t.name}
+                    className="w-10 h-10 rounded-xl object-cover border border-white/10"
+                  />
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-bold text-white truncate">{t.name}</h4>
+                    <p className="text-[9px] text-slate-500 mt-0.5 truncate max-w-[150px]">{t.bio}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Grid container */}
       <div className="relative p-0 sm:p-6 md:p-8 bg-transparent min-h-[400px]">
