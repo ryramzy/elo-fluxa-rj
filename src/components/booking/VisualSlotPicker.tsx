@@ -518,7 +518,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-transparent sm:bg-[#0f172a]/80 rounded-xl sm:rounded-3xl shadow-none sm:shadow-2xl border-0 sm:border border-white/10 overflow-hidden relative">
+    <div className="w-full max-w-7xl mx-auto bg-transparent sm:bg-slate-900/40 sm:backdrop-blur-md border-0 sm:border border-slate-800/80 rounded-xl sm:rounded-2xl shadow-none sm:shadow-xl overflow-hidden relative">
       
       {/* Toast Notification */}
       {toast && (
@@ -534,27 +534,43 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                Agende sua Aula
-              </h2>
+              {!showTitle ? (
+                <span className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                  Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
+                </span>
+              ) : (
+                <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                  Agende sua Aula
+                </h2>
+              )}
               {corporateCredits !== null && (
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-500/20' : 'text-slate-300'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-500/20' : 'text-slate-350'}`}>
                   Créditos: {corporateCredits}
                 </span>
               )}
             </div>
-             <p className="text-slate-400 mt-1 text-sm md:text-base font-normal flex flex-wrap items-center gap-2">
-              Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
-              <span className="text-[10px] text-slate-400 bg-slate-900/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
-                🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}
-              </span>
-            </p>
+            {showTitle && (
+              <p className="text-slate-400 mt-1 text-sm md:text-base font-normal flex flex-wrap items-center gap-2">
+                Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
+                <span className="text-[10px] text-slate-400 bg-slate-900/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
+                  🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}
+                </span>
+              </p>
+            )}
+            {!showTitle && (
+              <p className="text-slate-400 mt-1 text-xs font-normal flex items-center gap-2">
+                <span className="text-[10px] text-slate-400 bg-slate-900/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
+                  🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}
+                </span>
+              </p>
+            )}
             {corporateCredits === 0 && (
               <p className="text-rose-400 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
                 Você consumiu todos os seus créditos corporativos do mês. Entre em contato com seu gestor de RH.
               </p>
             )}
           </div>
+          
           
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             {onBack && (
