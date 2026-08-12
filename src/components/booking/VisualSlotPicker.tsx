@@ -42,6 +42,7 @@ const DEFAULT_TUTORS: Tutor[] = [
 interface VisualSlotPickerProps {
   onSlotSelect?: (date: string, time: string) => void;
   selectedDate?: string;
+  onBack?: () => void;
 }
 
 // In-memory cache to make calendar navigation and remounts instantaneous
@@ -49,7 +50,8 @@ const bookingsCache: Record<number, { data: Booking[]; timestamp: number }> = {}
 const slotsCache: Record<number, { data: any[]; timestamp: number }> = {};
 
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
-  onSlotSelect
+  onSlotSelect,
+  onBack
 }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
@@ -554,34 +556,44 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             )}
           </div>
           
-          <div className="flex items-center justify-between sm:justify-start gap-2 p-1 bg-slate-900/50 rounded-xl border border-white/5 w-full sm:w-auto">
-            <button
-              onClick={() => setSelectedWeek(selectedWeek - 1)}
-              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => setSelectedWeek(0)}
-              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center ${
-                selectedWeek === 0 
-                  ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              Hoje
-            </button>
-            <button
-              onClick={() => setSelectedWeek(selectedWeek + 1)}
-              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
-            >
-              Próxima
-            </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="px-4 py-2.5 min-h-[38px] text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-white transition-colors bg-slate-900/50 hover:bg-slate-800 rounded-xl border border-white/5 flex items-center justify-center gap-1.5"
+              >
+                ← Painel
+              </button>
+            )}
+            <div className="flex items-center justify-between sm:justify-start gap-2 p-1 bg-slate-900/50 rounded-xl border border-white/5 flex-1 sm:flex-initial">
+              <button
+                onClick={() => setSelectedWeek(selectedWeek - 1)}
+                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setSelectedWeek(0)}
+                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center ${
+                  selectedWeek === 0 
+                    ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Hoje
+              </button>
+              <button
+                onClick={() => setSelectedWeek(selectedWeek + 1)}
+                className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
+              >
+                Próxima
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/5">
+        <div className="hidden sm:flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/5">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
             <span className="text-xs font-medium text-slate-300">Disponível</span>
@@ -602,7 +614,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             <img src={selectedTutor.photoUrl} alt={selectedTutor.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
             <div className="flex-1 text-left">
               <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block">Seu Professor: {selectedTutor.name}</span>
-              <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">{selectedTutor.bio}</p>
+              <p className="text-xs text-slate-300 mt-0.5 leading-relaxed hidden sm:block">{selectedTutor.bio}</p>
             </div>
           </div>
         </div>

@@ -347,29 +347,15 @@ const DashboardWorking: React.FC = () => {
             </div>
           </>
         ) : activeTab === 'booking' ? (
-          <div className="bg-[#020617] rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-8 shadow-2xl border border-slate-800/80 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-[#020617] to-[#020617]">
-            <div className="mb-6 flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">
-                  Agendar Sessão
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">Selecione um horário disponível abaixo para reservar sua aula de 1 hora.</p>
-              </div>
-              <button
-                onClick={() => setActiveTab('overview')}
-                className="text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition-colors bg-slate-800 px-4 py-2 rounded-lg border border-slate-700/50"
-              >
-                Voltar ao Painel
-              </button>
-            </div>
-            
-            <WidgetErrorBoundary widgetName="Agenda de Aulas">
-              <VisualSlotPicker onSlotSelect={() => {
+          <WidgetErrorBoundary widgetName="Agenda de Aulas">
+            <VisualSlotPicker 
+              onBack={() => setActiveTab('overview')}
+              onSlotSelect={() => {
                 setActiveTab('overview');
                 showToast({ type: 'success', message: 'Sua aula foi agendada e está disponível no seu painel.' });
-              }} />
-            </WidgetErrorBoundary>
-          </div>
+              }} 
+            />
+          </WidgetErrorBoundary>
         ) : (
           <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-750/50">
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
