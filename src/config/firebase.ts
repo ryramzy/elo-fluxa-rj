@@ -36,12 +36,4 @@ export const firebaseConfig = missingVars.length > 0 ? {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Debug logging for deployment verification
-console.log("Firebase Config Check:", {
-  projectId: firebaseConfig.projectId,
-  hasApiKey: !!firebaseConfig.apiKey,
-  authDomain: firebaseConfig.authDomain,
-  appId: firebaseConfig.appId,
-  isDemoMode: missingVars.length > 0,
-  missingVars: missingVars
-});
+

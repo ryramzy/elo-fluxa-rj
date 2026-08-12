@@ -104,9 +104,7 @@ const DashboardWorking: React.FC = () => {
   
   useDocumentTitle('Dashboard');
 
-  console.log('DashboardWorking - user:', user?.email);
-  console.log('DashboardWorking - profile:', profile?.displayName, 'role:', profile?.role);
-  console.log('DashboardWorking - loading:', loading);
+
 
   const getWeeklyBookingsCount = (userBookings: any[]) => {
     const today = new Date();
@@ -158,7 +156,7 @@ const DashboardWorking: React.FC = () => {
 
   const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || isAuthorizedEmail || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
 
-  console.log('[Dashboard] VIEW DECISION:', { isAdminView, isTutorOrAdmin, willRenderAdmin: isTutorOrAdmin && isAdminView, userEmail, profileRole: profile?.role });
+
   
   if (isTutorOrAdmin && isAdminView) {
     return <Admin />;
