@@ -141,6 +141,12 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isTutor();
     }
+
+    // Tutors collection rules
+    match /tutors/{tutorId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
     
     // Enrollments collection rules (root enrollments)
     match /enrollments/{enrollmentId} {

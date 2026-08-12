@@ -87,6 +87,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         }
       } catch (e) {
         console.warn('Failed to fetch tutors, using Matthew default:', e);
+        const fallback: Tutor = {
+          id: 'matthew',
+          name: 'Matthew (Matt)',
+          email: 'matt@elospeak.com.br',
+          calendarId: 'matt@elospeak.com.br',
+          bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
+          photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+        };
+        setTutors([fallback]);
+        setSelectedTutor(fallback);
       }
     };
     fetchTutors();
