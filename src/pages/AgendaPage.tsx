@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { TutorAgendaView } from '@/components/booking/TutorAgendaView';
+import TutorAgendaView from '@/components/booking/TutorAgendaView';
 import { Navigate } from 'react-router-dom';
 
 export default function AgendaPage() {
