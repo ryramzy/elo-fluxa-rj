@@ -830,7 +830,8 @@ export async function bookSlot(
   googleEventId?: string | null,
   meetLink?: string | null,
   tutorId: string = 'matthew',
-  tutorName: string = 'Matthew'
+  tutorName: string = 'Matthew',
+  status: 'confirmed' | 'pending' = 'pending'
 ): Promise<string> {
   if (userId === 'guest_user') {
     throw new Error('Guests cannot book sessions.');
@@ -892,7 +893,7 @@ export async function bookSlot(
         tutorId,
         tutorName,
         duration: 60,
-        status: 'confirmed',
+        status,
         googleEventId: googleEventId || null,
         meetLink: meetLink || null,
         notes: notes || '',
@@ -901,8 +902,23 @@ export async function bookSlot(
       });
 
       transaction.set(notifRef, {
-        title: 'Aula agendada! 🗓️',
-        message: `Sua aula de inglês para o dia ${date} às ${time} foi agendada.`,
+        title: status === 'confirmed' ? 'Aula agendada! 🗓️' : 'Solicitação enviada! ⏳',
+        message: status === 'confirmed' 
+          ? `Sua aula de inglês para o dia ${date.split('-').reverse().join('/')} às ${time} foi agendada.`
+          : `Sua solicitação de aula para o dia ${date.split('-').reverse().join('/')} às ${time} está aguardando confirmação.`,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+
+      // Notify the tutor in real time via their own notifications subcollection
+      const tutorNotifId = `tutor_notif_${Date.now()}`;
+      const tutorNotifRef = doc(db, 'users', tutorId, 'notifications', tutorNotifId);
+      transaction.set(tutorNotifRef, {
+        id: tutorNotifId,
+        title: 'Nova Solicitação de Aula 📅',
+        message: `${userName} solicitou uma aula para o dia ${date.split('-').reverse().join('/')} às ${time}.`,
+        type: 'booking_request',
+        bookingId,
         read: false,
         createdAt: serverTimestamp()
       });

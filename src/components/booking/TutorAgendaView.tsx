@@ -112,8 +112,32 @@ export default function TutorAgendaView() {
   // 2. Helper Actions
   const handleAcceptRequest = async (id: string) => {
     try {
+      const booking = bookings.find(b => b.id === id);
+      if (!booking) throw new Error('Agendamento não encontrado');
+
       await updateDoc(doc(db, 'bookings', id), { status: 'confirmed' });
       showToast('Aula aceita com sucesso!', 'success');
+
+      // Trigger booking confirmation email to student
+      fetch('/api/email/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attendeeName: booking.userName || booking.studentName,
+          attendeeEmail: booking.userEmail || booking.studentEmail,
+          date: booking.date,
+          time: booking.time,
+          durationMinutes: 60,
+          meetLink: booking.meetLink || '',
+          notes: '',
+          tutorName: profile?.displayName || 'Matthew',
+          tutorEmail: user?.email || 'matt@elospeak.com.br'
+        })
+      }).catch(err => {
+        console.error('Failed to trigger confirmation email on acceptance:', err);
+      });
     } catch (e: any) {
       showToast(e.message || 'Erro ao aceitar aula', 'error');
     }
@@ -157,7 +181,8 @@ export default function TutorAgendaView() {
         null,
         meetLink,
         'matthew',
-        'Matthew'
+        'Matthew',
+        'confirmed'
       );
       showToast('Aula agendada com sucesso!', 'success');
       setBookingModalOpen(false);

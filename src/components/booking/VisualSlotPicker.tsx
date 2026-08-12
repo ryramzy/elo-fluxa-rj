@@ -201,7 +201,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       );
 
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-      showToast('Aula agendada com sucesso!', 'success');
+      showToast('Solicitação de aula enviada!', 'success');
 
       setSuccessBooking({
         date,
@@ -210,8 +210,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         meetLink: meetLink || ''
       });
 
-      // Send email payload containing tutor details dynamically
-      fetch('/api/email/booking-confirmation', {
+      // Send email payload containing tutor details dynamically to booking-request
+      fetch('/api/email/booking-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -528,10 +528,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               <span className="text-2xl">🎉</span>
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">
-              Aula Reservada!
+              Solicitação Enviada! ⏳
             </h3>
-            <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
-              Sua aula particular de inglês com o professor <strong>{successBooking.tutorName}</strong> foi confirmada.
+            <p className="text-slate-400 text-xs mt-1.5 leading-relaxed font-medium">
+              Sua solicitação de aula com o professor <strong>{successBooking.tutorName}</strong> está aguardando confirmação.
             </p>
             <div className="my-5 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2">
               <div className="flex justify-between text-xs">

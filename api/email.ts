@@ -10,6 +10,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if ((path.endsWith('/email/booking-confirmation') || path === '/api/email/booking-confirmation') && req.method === 'POST') {
     return handleBookingConfirmation(req, res);
   }
+  if ((path.endsWith('/email/booking-request') || path === '/api/email/booking-request') && req.method === 'POST') {
+    return handleBookingRequest(req, res);
+  }
   if ((path.endsWith('/email/booking-cancellation') || path === '/api/email/booking-cancellation') && req.method === 'POST') {
     return handleBookingCancellation(req, res);
   }
@@ -24,6 +27,86 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   return res.status(404).json({ error: `Not found: ${path}` });
+}
+
+async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
+  try {
+    const {
+      attendeeName, attendeeEmail,
+      date, time, durationMinutes, meetLink, notes,
+      tutorName, tutorEmail
+    } = req.body;
+
+    const formattedDate = new Date(date + 'T00:00:00')
+      .toLocaleDateString('pt-BR', {
+        weekday: 'long', day: 'numeric', month: 'long'
+      });
+
+    // 1. Send notice to Tutor
+    const tutorEmails = [tutorEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
+    const tutorTo = Array.from(new Set(tutorEmails));
+    await resend.emails.send({
+      from: 'Elo! <noreply@elospeak.com.br>',
+      replyTo: 'matt@elospeak.com.br',
+      to: tutorTo,
+      subject: `Nova solicitação de aula de ${attendeeName} - ${formattedDate}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
+          <h2 style="color:#2563eb;margin-bottom:8px">Elo! Agenda</h2>
+          <p style="margin:0 0 24px 0;font-size:16px">
+            Olá, <strong>${tutorName || 'Professor'}</strong>!
+          </p>
+          <p style="margin:0 0 20px 0">
+            Você recebeu uma nova solicitação de aula. Acesse seu painel para confirmar ou recusar.
+          </p>
+          <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:16px;border-radius:4px;margin:20px 0">
+            <p style="margin:0;font-size:15px;line-height:1.5">
+              <strong>Estudante:</strong> ${attendeeName} (${attendeeEmail})<br/>
+              <strong>Data:</strong> ${formattedDate} às ${time}<br/>
+              <strong>Duração:</strong> ${durationMinutes} minutos
+            </p>
+          </div>
+          <a href="https://elo-fluxa-rj.vercel.app/agenda" 
+             style="display:inline-block;background:#2563eb;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;margin:16px 0">
+            Ver solicitações na Agenda
+          </a>
+        </div>
+      `
+    });
+
+    // 2. Send notice to Student
+    await resend.emails.send({
+      from: 'Elo! <noreply@elospeak.com.br>',
+      replyTo: 'matt@elospeak.com.br',
+      to: attendeeEmail,
+      subject: `Solicitação de aula enviada - ${formattedDate}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
+          <h2 style="color:#2563eb;margin-bottom:8px">Elo!</h2>
+          <p style="margin:0 0 24px 0;font-size:16px">
+            Olá, <strong>${attendeeName}</strong>!
+          </p>
+          <p style="margin:0 0 20px 0">
+            Sua solicitação de aula com o professor <strong>${tutorName || 'Matt'}</strong> foi enviada e está aguardando confirmação.
+          </p>
+          <div style="background:#f8fafc;border-left:4px solid #94a3b8;padding:16px;border-radius:4px;margin:20px 0">
+            <p style="margin:0;font-size:15px;line-height:1.5">
+              <strong>Data/Hora sugerida:</strong> ${formattedDate} às ${time}<br/>
+              <strong>Duração:</strong> ${durationMinutes} minutos
+            </p>
+          </div>
+          <p style="font-size:13px;color:#64748b;margin:16px 0">
+            Você receberá um email de confirmação com o link do Google Meet assim que o professor aceitar.
+          </p>
+        </div>
+      `
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (err: any) {
+    console.error('Error handling booking request:', err);
+    return res.status(500).json({ error: err.message || err });
+  }
 }
 
 async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse) {
