@@ -516,11 +516,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-[#0f172a]/80 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative">
+    <div className="w-full max-w-7xl mx-auto backdrop-blur-xl bg-transparent sm:bg-[#0f172a]/80 rounded-xl sm:rounded-3xl shadow-none sm:shadow-2xl border-0 sm:border border-white/10 overflow-hidden relative">
       
       {/* Toast Notification */}
       {toast && (
-        <div className={`absolute top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg backdrop-blur-md border animate-in slide-in-from-top-4 fade-in duration-300 ${
+        <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 px-4 py-2.5 rounded-xl shadow-lg backdrop-blur-md border animate-in slide-in-from-top-4 fade-in duration-300 text-center sm:text-left text-xs ${
           toast.type === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-100' : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-100'
         }`}>
           {toast.message}
@@ -528,7 +528,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       )}
 
       {/* Header */}
-      <div className="p-4 md:p-8 border-b border-white/5 bg-white/5">
+      <div className="p-3 sm:p-6 md:p-8 border-b border-white/5 bg-white/5">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -536,7 +536,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 Agende sua Aula
               </h2>
               {corporateCredits !== null && (
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-550/20' : 'text-slate-350'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-slate-900/60 border-slate-800 ${corporateCredits === 0 ? 'text-rose-400 border-rose-500/20' : 'text-slate-300'}`}>
                   Créditos: {corporateCredits}
                 </span>
               )}
@@ -548,7 +548,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               </span>
             </p>
             {corporateCredits === 0 && (
-              <p className="text-rose-455 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
+              <p className="text-rose-400 text-xs mt-2 font-semibold bg-rose-500/5 border border-rose-500/10 px-3 py-1.5 rounded-xl inline-block">
                 Você consumiu todos os seus créditos corporativos do mês. Entre em contato com seu gestor de RH.
               </p>
             )}
@@ -557,13 +557,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="flex items-center justify-between sm:justify-start gap-2 p-1 bg-slate-900/50 rounded-xl border border-white/5 w-full sm:w-auto">
             <button
               onClick={() => setSelectedWeek(selectedWeek - 1)}
-              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all"
+              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
             >
               Anterior
             </button>
             <button
               onClick={() => setSelectedWeek(0)}
-              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center ${
                 selectedWeek === 0 
                   ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]' 
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -573,7 +573,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             </button>
             <button
               onClick={() => setSelectedWeek(selectedWeek + 1)}
-              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all"
+              className="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 min-h-[38px] text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-transparent hover:bg-white/5 rounded-lg transition-all flex items-center justify-center"
             >
               Próxima
             </button>
@@ -597,12 +597,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         </div>
 
         {/* Tutor Profile (Boutique Model) */}
-        <div className="mt-6 pt-6 border-t border-white/5">
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col md:flex-row gap-4 items-center">
-            <img src={selectedTutor.photoUrl} alt={selectedTutor.name} className="w-12 h-12 rounded-full object-cover border border-white/10" />
-            <div className="flex-1">
-              <span className="text-[10px] font-black text-blue-450 uppercase tracking-widest block">Seu Professor: {selectedTutor.name}</span>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">{selectedTutor.bio}</p>
+        <div className="mt-4 pt-4 border-t border-white/5">
+          <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex flex-row gap-3 items-center">
+            <img src={selectedTutor.photoUrl} alt={selectedTutor.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+            <div className="flex-1 text-left">
+              <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block">Seu Professor: {selectedTutor.name}</span>
+              <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">{selectedTutor.bio}</p>
             </div>
           </div>
         </div>
@@ -618,7 +618,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         ) : null}
 
         {/* 1. Mobile Day Selector (Tabs) - Visible only on mobile */}
-        <div className="md:hidden sticky top-0 z-20 bg-[#0f172a] flex overflow-x-auto gap-2.5 pb-4 mb-4 border-b border-white/5 scrollbar-none px-2 pt-4">
+        <div className="md:hidden sticky top-0 z-20 bg-[#0f172a] flex overflow-x-auto gap-1.5 pb-3 mb-3 border-b border-white/5 scrollbar-none px-2 pt-3">
           {weekDates.map((date, idx) => {
             const dateStr = date.toLocaleDateString('en-CA');
             const isToday = dateStr === new Date().toLocaleDateString('en-CA');
@@ -629,7 +629,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => setActiveMobileDay(idx)}
-                className={`flex-1 min-w-[70px] flex flex-col items-center py-2.5 px-3 rounded-2xl border transition-all duration-300 ${
+                className={`flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 rounded-xl border transition-all duration-300 ${
                   isActive
                     ? 'bg-blue-600 border-blue-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
                     : isToday
@@ -669,18 +669,18 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             const currentSlotLoading = slotLoadingMap[slotKey];
 
             return (
-              <div key={`${dateStr}-${time}`} className="flex items-center justify-between bg-slate-900/40 p-4 rounded-2xl border border-white/5">
+              <div key={`${dateStr}-${time}`} className="flex items-center justify-between bg-slate-900/40 p-2.5 rounded-xl border border-white/5">
                 <span className="text-slate-200 text-sm font-extrabold shrink-0">{time}</span>
-                <div className="flex-1 max-w-[200px] h-12 relative">
+                <div className="flex-1 max-w-[200px] h-9 relative">
                   {showAsUnavailable ? (
-                    <div className="absolute inset-0 rounded-xl bg-slate-950/20 border border-slate-850 flex items-center justify-center">
-                      <span className="text-xs text-slate-650 font-medium">— Indisponível</span>
+                    <div className="absolute inset-0 rounded-lg bg-slate-950/20 border border-slate-800 flex items-center justify-center">
+                      <span className="text-[11px] text-slate-500 font-medium">— Indisponível</span>
                     </div>
                   ) : slotState === 'available' ? (
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isAnySlotBooking || cancelling || currentSlotLoading === 'booking' || isCreditLocked}
-                      className={`absolute inset-0 w-full h-full rounded-xl transition-all duration-300 flex items-center justify-center font-bold text-xs uppercase tracking-wider active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 active:bg-emerald-700'}`}
+                      className={`absolute inset-0 w-full h-full rounded-lg transition-all duration-300 flex items-center justify-center font-bold text-xs uppercase tracking-wider active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${isCreditLocked ? 'bg-slate-900/10 border border-slate-800 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 active:bg-emerald-700'}`}
                     >
                       {currentSlotLoading === 'booking' ? (
                         <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
@@ -694,12 +694,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleCancelBooking(existingBooking!.id)}
                       disabled={isAnySlotBooking || cancelling}
-                      className="absolute inset-0 w-full h-full rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-500/25 hover:bg-red-650 hover:shadow-red-600/20"
+                      className="absolute inset-0 w-full h-full rounded-lg bg-blue-600 text-white font-bold text-[11px] uppercase tracking-wider transition-all duration-300 flex items-center justify-center active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-500/25 hover:bg-red-600 hover:shadow-red-650/20"
                     >
                       Sua Aula (Cancelar)
                     </button>
                   ) : (
-                    <div className="absolute inset-0 rounded-xl bg-red-950/20 border border-red-900/20 text-red-400 text-xs font-bold flex items-center justify-center cursor-not-allowed opacity-60">
+                    <div className="absolute inset-0 rounded-lg bg-red-950/20 border border-red-900/20 text-red-400 text-xs font-bold flex items-center justify-center cursor-not-allowed opacity-60">
                       Ocupado ❌
                     </div>
                   )}
@@ -714,7 +714,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           <div className="min-w-[800px]">
             {/* Days Header */}
             <div className="grid grid-cols-6 gap-4 mb-4">
-              <div className="text-right pr-4 text-slate-550 text-xs font-bold uppercase tracking-wider pt-2">
+              <div className="text-right pr-4 text-slate-500 text-xs font-bold uppercase tracking-wider pt-2">
                 Horário
               </div>
               {weekDates.map((date, i) => {
@@ -738,7 +738,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               {timeSlots.map((time) => (
                 <div key={time} className="grid grid-cols-6 gap-4 group">
                   {/* Time Label */}
-                  <div className="text-right pr-4 py-3 text-slate-455 text-sm font-extrabold flex items-center justify-end transform -translate-y-0.5">
+                  <div className="text-right pr-4 py-3 text-slate-400 text-sm font-extrabold flex items-center justify-end transform -translate-y-0.5">
                     {time}
                   </div>
                   
@@ -765,7 +765,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                         {showAsUnavailable ? (
                           // Unavailable slot
                           <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-                            <span className="text-xs text-slate-650 font-medium">—</span>
+                            <span className="text-xs text-slate-500 font-medium">—</span>
                           </div>
                         ) : slotState === 'available' ? (
                           // Available slot
@@ -779,9 +779,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                                  <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
                                  <span className="text-[9px] text-emerald-400/80 mt-1 uppercase tracking-wider">Agendando...</span>
                                </div>
-                             ) : isCreditLocked ? (
+                              ) : isCreditLocked ? (
                                <>
-                                 <span className="text-sm font-bold tracking-wide text-slate-550">Bloqueado</span>
+                                 <span className="text-sm font-bold tracking-wide text-slate-400">Bloqueado</span>
                                  <span className="text-[9px] text-slate-600 uppercase tracking-wider mt-0.5">Sem Créditos</span>
                                </>
                              ) : (

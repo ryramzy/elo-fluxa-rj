@@ -15,8 +15,6 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { 
-  FaCalendarAlt, 
-  FaCalendarCheck, 
   FaCheck, 
   FaTimes, 
   FaLink, 
@@ -487,7 +485,7 @@ export function TutorAgendaView() {
     };
 
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100/80 dark:border-slate-750 p-2.5 md:p-4 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100/80 dark:border-slate-700 p-2.5 md:p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-slate-200">
             {monthNames[month]} {year}
@@ -530,12 +528,12 @@ export function TutorAgendaView() {
                   <button
                     key={didx}
                     onClick={() => handleDateClick(date)}
-                    className={`h-9 w-9 md:h-7 md:w-7 rounded-full flex flex-col items-center justify-center text-xs relative font-semibold transition-all ${
+                    className={`h-9 w-9 md:h-7 md:w-7 mx-auto rounded-full flex flex-col items-center justify-center text-xs relative font-semibold transition-all ${
                       isToday 
                         ? 'bg-blue-600 text-white font-bold' 
                         : isSelected
                         ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-500 font-bold dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-500/60'
-                        : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-200'
+                        : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-250'
                     }`}
                   >
                     <span>{date.getDate()}</span>
@@ -577,7 +575,7 @@ export function TutorAgendaView() {
         <div className="w-full md:w-80 flex-shrink-0 space-y-3 md:space-y-6">
           
           {/* Pending Requests Component */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-750 p-3 md:p-5 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 p-3 md:p-5 shadow-sm">
             <div className="flex justify-between items-center pb-3 border-b border-gray-50 dark:border-slate-700/50 mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Solicitações de Reserva</h3>
               {pendingRequests.length > 0 && (
@@ -592,7 +590,7 @@ export function TutorAgendaView() {
             ) : (
               <div className="space-y-3">
                 {pendingRequests.map(req => (
-                  <div key={req.id} className="bg-orange-50/50 dark:bg-orange-950/10 border border-orange-150/50 dark:border-orange-900/30 p-3 rounded-xl flex flex-col gap-2">
+                  <div key={req.id} className="bg-orange-50/50 dark:bg-orange-950/10 border border-orange-200/50 dark:border-orange-900/30 p-3 rounded-xl flex flex-col gap-2">
                     <div>
                       <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">{req.studentName}</h4>
                       <p className="text-[10px] text-gray-500 mt-0.5">
@@ -602,17 +600,17 @@ export function TutorAgendaView() {
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => handleAcceptRequest(req.id)}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white p-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white w-9 h-9 p-0 rounded-lg text-xs font-bold flex items-center justify-center shadow-sm active:scale-95 transition-all"
                         title="Aceitar Solicitação"
                       >
-                        <FaCheck size={9} />
+                        <FaCheck size={11} />
                       </button>
                       <button
                         onClick={() => handleDeclineRequest(req.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                        className="bg-red-500 hover:bg-red-600 text-white w-9 h-9 p-0 rounded-lg text-xs font-bold flex items-center justify-center shadow-sm active:scale-95 transition-all"
                         title="Recusar Solicitação"
                       >
-                        <FaTimes size={9} />
+                        <FaTimes size={11} />
                       </button>
                     </div>
                   </div>
@@ -631,26 +629,29 @@ export function TutorAgendaView() {
                 setManualDate(selectedDate.toLocaleDateString('en-CA'));
                 setBookingModalOpen(true);
               }}
-              className="w-full py-2.5 md:py-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all shadow-md shadow-blue-500/10 uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all shadow-md shadow-blue-500/10 uppercase tracking-wider"
             >
               <FaRegCalendarPlus size={13} />
-              Agendar Aula Particular
+              <span className="hidden sm:inline">Agendar Aula Particular</span>
+              <span className="sm:hidden">Agendar Aula</span>
             </button>
             
             <button
               onClick={() => setPasteModalOpen(true)}
-              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaFileAlt size={13} />
-              Colar Disponibilidade
+              <span className="hidden sm:inline">Colar Disponibilidade</span>
+              <span className="sm:hidden">Colar Horários</span>
             </button>
 
             <button
               onClick={() => setTemplateModalOpen(true)}
-              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaSlidersH size={13} />
-              Editar Modelo de Horários
+              <span className="hidden sm:inline">Editar Modelo de Horários</span>
+              <span className="sm:hidden">Editar Modelo</span>
             </button>
 
             <button
@@ -658,12 +659,13 @@ export function TutorAgendaView() {
               className="w-full py-2.5 md:py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaLink size={13} />
-              Copiar Link de Agendamento
+              <span className="hidden sm:inline">Copiar Link de Agendamento</span>
+              <span className="sm:hidden">Copiar Link</span>
             </button>
           </div>
 
           {/* Display Filters */}
-          <div className="hidden md:block bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
+          <div className="hidden md:block bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-4 sm:p-5 shadow-sm">
             <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-4 pb-2 border-b border-gray-50 dark:border-slate-700/50">
               Exibir no Calendário
             </h3>
@@ -745,7 +747,7 @@ export function TutorAgendaView() {
                     setSelectedDate(prev);
                     setCurrentDate(prev);
                   }}
-                  className="flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
+                  className="flex-1 md:flex-none px-2 py-2 md:px-2.5 md:py-1.5 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
                 >
                   ◀ Sem. Ant.
                 </button>
@@ -755,10 +757,10 @@ export function TutorAgendaView() {
                     setSelectedDate(now);
                     setCurrentDate(now);
                   }}
-                  className={`flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-center ${
+                  className={`flex-1 md:flex-none px-2 py-2 md:px-2.5 md:py-1.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg transition-all text-center ${
                     selectedDate.toDateString() === new Date().toDateString()
                       ? 'bg-blue-600 text-white shadow-sm font-black'
-                      : 'text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700'
+                      : 'text-gray-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'
                   }`}
                 >
                   Hoje
@@ -770,7 +772,7 @@ export function TutorAgendaView() {
                     setSelectedDate(next);
                     setCurrentDate(next);
                   }}
-                  className="flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
+                  className="flex-1 md:flex-none px-2 py-2 md:px-2.5 md:py-1.5 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
                 >
                   Próx. Sem. ▶
                 </button>
@@ -780,7 +782,7 @@ export function TutorAgendaView() {
 
           {/* Loader */}
           {loading ? (
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-12 text-center shadow-sm">
+            <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 p-12 text-center shadow-sm">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-3"></div>
               <p className="text-xs text-gray-500">Carregando cronograma...</p>
             </div>
@@ -805,12 +807,12 @@ export function TutorAgendaView() {
                             item.type === 'confirmed'
                               ? 'bg-emerald-50/40 border-emerald-100 dark:bg-emerald-950/10 dark:border-emerald-900/30'
                               : item.type === 'pending'
-                              ? 'bg-orange-50/40 border-orange-150 dark:bg-orange-950/10 dark:border-orange-900/30'
+                              ? 'bg-orange-50/40 border-orange-200 dark:bg-orange-950/10 dark:border-orange-900/30'
                               : 'bg-blue-50/20 border-blue-100 dark:bg-blue-950/10 dark:border-blue-900/30'
                           }`}
                         >
                           <div className="flex items-center gap-4">
-                            <span className="text-sm font-extrabold text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl shadow-xs border border-gray-100/50 dark:border-slate-700">
+                            <span className="text-sm font-extrabold text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl shadow-sm border border-gray-100/50 dark:border-slate-700">
                               {item.time}
                             </span>
                             <div>
@@ -819,18 +821,18 @@ export function TutorAgendaView() {
                                   <h4 className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
                                     {item.booking.studentName}
                                   </h4>
-                                  <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">Aula Particular Confirmada • {item.booking.studentEmail}</p>
+                                  <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 truncate max-w-[150px] sm:max-w-none">Aula Particular Confirmada • {item.booking.studentEmail}</p>
                                 </>
                               )}
                               {item.type === 'pending' && (
                                 <>
-                                  <h4 className="text-xs font-bold text-orange-850 dark:text-orange-300">Solicitação - {item.booking.studentName}</h4>
-                                  <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">Aguardando Confirmação • {item.booking.studentEmail}</p>
+                                  <h4 className="text-xs font-bold text-orange-800 dark:text-orange-300">Solicitação - {item.booking.studentName}</h4>
+                                  <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 truncate max-w-[150px] sm:max-w-none">Aguardando Confirmação • {item.booking.studentEmail}</p>
                                 </>
                               )}
                               {item.type === 'available' && (
                                 <>
-                                  <h4 className="text-xs font-bold text-blue-750 dark:text-blue-400">Disponível</h4>
+                                  <h4 className="text-xs font-bold text-blue-800 dark:text-blue-400">Disponível</h4>
                                   <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">Disponível para reservas (Garantia de 15min)</p>
                                 </>
                               )}
@@ -845,14 +847,14 @@ export function TutorAgendaView() {
                                     href={item.booking.meetLink}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
+                                    className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center"
                                   >
                                     Entrar
                                   </a>
                                 )}
                                 <button
                                   onClick={() => handleCancelBookingTutor(item.booking.id)}
-                                  className="px-3 py-1.5 bg-red-50/50 hover:bg-red-50 text-red-600 border border-red-200/50 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all dark:bg-red-950/20 dark:border-red-900/50 dark:text-red-400"
+                                  className="px-3.5 py-2 bg-red-50/50 hover:bg-red-50 text-red-600 border border-red-200/50 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all dark:bg-red-950/20 dark:border-red-900/50 dark:text-red-400 min-h-[36px]"
                                 >
                                   Cancelar
                                 </button>
@@ -863,13 +865,13 @@ export function TutorAgendaView() {
                               <>
                                 <button
                                   onClick={() => handleAcceptRequest(item.booking.id)}
-                                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow-sm"
+                                  className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow-sm min-h-[36px]"
                                 >
                                   Aceitar
                                 </button>
                                 <button
                                   onClick={() => handleDeclineRequest(item.booking.id)}
-                                  className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow-sm"
+                                  className="px-3.5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow-sm min-h-[36px]"
                                 >
                                   Recusar
                                 </button>
@@ -884,7 +886,7 @@ export function TutorAgendaView() {
                                     showToast({ type: 'success', message: 'Horário bloqueado/removido.' });
                                   }
                                 }}
-                                className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200 dark:border-slate-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
+                                className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200 dark:border-slate-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px]"
                               >
                                 Bloquear
                               </button>
@@ -905,7 +907,7 @@ export function TutorAgendaView() {
               </div>
 
               {availableSlots.length === 0 ? (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-8 text-center shadow-sm">
+                <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 p-8 text-center shadow-sm">
                   <p className="text-xs text-gray-500">Nenhum horário aberto no momento. Use as ações rápidas ao lado para colar horários ou carregar o modelo semanal.</p>
                 </div>
               ) : (
@@ -913,7 +915,7 @@ export function TutorAgendaView() {
                   {availableSlots.map(slot => (
                     <div 
                       key={slot.id} 
-                      className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 p-3.5 rounded-xl shadow-xs flex items-center justify-between group"
+                      className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 p-3.5 rounded-xl shadow-sm flex items-center justify-between group"
                     >
                       <div className="flex flex-col">
                         <span className="text-[10px] font-bold text-gray-400">{slot.date.split('-').reverse().slice(0, 2).join('/')}</span>
@@ -926,7 +928,7 @@ export function TutorAgendaView() {
                             showToast({ type: 'success', message: 'Horário disponível removido.' });
                           }
                         }}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all active:scale-95"
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all active:scale-95"
                       >
                         <FaTimes size={10} />
                       </button>
@@ -943,8 +945,8 @@ export function TutorAgendaView() {
 
       {/* MODAL 1: Schedule Private Lesson */}
       {bookingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs px-4">
-          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-750 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-700 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 dark:text-white mb-4">Agendar Aula Particular</h3>
             
             <form onSubmit={handleCreateManualBooking} className="space-y-4 text-xs font-bold text-gray-600 dark:text-slate-350">
@@ -955,7 +957,7 @@ export function TutorAgendaView() {
                   onChange={(e) => setSelectedStudentUid(e.target.value)}
                   required
                   disabled={usersLoading}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white disabled:opacity-50"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white disabled:opacity-50"
                 >
                   <option value="">{usersLoading ? 'Carregando lista de alunos...' : '-- Selecione o Aluno --'}</option>
                   {users.map(u => (
@@ -972,7 +974,7 @@ export function TutorAgendaView() {
                     value={manualDate}
                     onChange={(e) => setManualDate(e.target.value)}
                     required
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
                   />
                 </div>
                 <div>
@@ -982,7 +984,7 @@ export function TutorAgendaView() {
                     value={manualTime}
                     onChange={(e) => setManualTime(e.target.value)}
                     required
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
                   />
                 </div>
               </div>
@@ -1010,8 +1012,8 @@ export function TutorAgendaView() {
 
       {/* MODAL 2: Paste Weekly Availability */}
       {pasteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs px-4">
-          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-750 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-700 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 dark:text-white mb-2">Colar Disponibilidade Semanal</h3>
             <p className="text-[10px] text-gray-500 mb-4">Insira um horário por linha no formato:<br/><b>AAAA-MM-DD HH:MM</b> (Ex: 2026-07-08 14:00)</p>
 
@@ -1022,7 +1024,7 @@ export function TutorAgendaView() {
                 placeholder="2026-07-08 14:00&#10;2026-07-08 15:00&#10;2026-07-09 10:00"
                 rows={6}
                 required
-                className="w-full font-mono bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white text-xs"
+                className="w-full font-mono bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white text-xs"
               />
 
               <div className="flex gap-3 justify-end pt-2">
@@ -1048,8 +1050,8 @@ export function TutorAgendaView() {
 
       {/* MODAL 3: Edit Weekly Template */}
       {templateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs px-4">
-          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-750 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-slate-800 max-w-md w-full rounded-2xl p-6 border border-gray-100 dark:border-slate-700 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 dark:text-white mb-2">Editar Modelo de Horários</h3>
             <p className="text-[10px] text-gray-500 mb-4">Gere slots livres para a semana atual nos dias selecionados.</p>
 
@@ -1067,10 +1069,10 @@ export function TutorAgendaView() {
                           if (active) setSelectedDays(prev => prev.filter(d => d !== idx));
                           else setSelectedDays(prev => [...prev, idx]);
                         }}
-                        className={`px-3 py-1.5 rounded-lg border font-bold text-[10px] uppercase transition-all ${
+                        className={`px-3 py-2 rounded-lg border font-bold text-[10px] uppercase transition-all min-h-[36px] ${
                           active
                             ? 'bg-blue-600 border-blue-500 text-white shadow-sm'
-                            : 'bg-slate-50 border-gray-150 text-gray-600 dark:bg-slate-900 dark:border-slate-700'
+                            : 'bg-slate-50 border-gray-200 text-gray-600 dark:bg-slate-900 dark:border-slate-700'
                         }`}
                       >
                         {day}
@@ -1089,7 +1091,7 @@ export function TutorAgendaView() {
                     value={startHour}
                     onChange={(e) => setStartHour(e.target.value)}
                     required
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
                   />
                 </div>
                 <div>
@@ -1100,7 +1102,7 @@ export function TutorAgendaView() {
                     value={endHour}
                     onChange={(e) => setEndHour(e.target.value)}
                     required
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-white"
                   />
                 </div>
               </div>
