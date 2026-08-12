@@ -1176,5 +1176,19 @@ The Agenda page already exceeded requirements with:
    - **Pattern**: Reduced root layout, outer tab cards, selector headers, and agenda item card paddings (reclaiming up to 40px of width) on mobile screen sizes.
    - **Rationale**: Removes cramped layout boundaries on phones, letting buttons, day selector tabs, and slot grids expand naturally and breathe on mobile viewports.
 
+## [August 12, 2026 - Sprint 34] — Mobile Booking Overhaul, Direct Google Calendar Integration & Unified Dashboard Layouts
+**Status:** ✅ COMPLETED
 
-
+### Architectural Principles & Fixes
+1. **Lightweight Google Calendar Integration (Client-Side Link Pre-filling)**:
+   - **Pattern**: Implemented a fail-safe client-side URL prefiller (`getGoogleCalendarLink`) that translates booking timestamps into UTC ISO strings compliant with standard Google Calendar TEMPLATE URL arguments.
+   - **Rationale**: Eliminates dependencies on synchronous serverless API roundtrips which can time out on mobile networks. Provides students a direct, fail-safe 1-tap button to add lessons to their personal agendas.
+2. **Interactive Success Dialog Modal**:
+   - **Pattern**: Replaced instant dashboard state redirects with a dedicated feedback modal inside `VisualSlotPicker`.
+   - **Behavior**: Halts navigation to display lesson confirmation details, Jitsi meet room URLs, and the calendar sync button, allowing students to confirm and transition when ready.
+3. **Molded Dashboard Widget Containers**:
+   - **Pattern**: Removed nested card wrapper dividers and double paddings in `Dashboard.tsx` for the booking tab. Aligned container styles inside `VisualSlotPicker` to match standard dashboard widget selectors (`bg-slate-900/40 border border-slate-800/80 rounded-2xl`).
+   - **Rationale**: Completely resolves margins misalignment, outer page boundary clips, and "double border" layering bugs.
+4. **Header and Metadata Compacting**:
+   - **Pattern**: Suppressed duplicate heading text when slot picker is rendered inside the dashboard view (`showTitle={false}`). Hided tutor biography text (`hidden sm:block`) and index legends (`hidden sm:flex`) on mobile devices.
+   - **Rationale**: Drastically reduces viewport usage, pulling booking slots above the fold on mobile screens.
