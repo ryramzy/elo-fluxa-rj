@@ -487,7 +487,7 @@ export function TutorAgendaView() {
     };
 
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100/80 dark:border-slate-750 p-2.5 md:p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-slate-200">
             {monthNames[month]} {year}
@@ -530,7 +530,7 @@ export function TutorAgendaView() {
                   <button
                     key={didx}
                     onClick={() => handleDateClick(date)}
-                    className={`h-7 w-7 rounded-full flex flex-col items-center justify-center text-xs relative font-semibold transition-all ${
+                    className={`h-9 w-9 md:h-7 md:w-7 rounded-full flex flex-col items-center justify-center text-xs relative font-semibold transition-all ${
                       isToday 
                         ? 'bg-blue-600 text-white font-bold' 
                         : isSelected
@@ -558,7 +558,7 @@ export function TutorAgendaView() {
   return (
     <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-8">
       {/* Header */}
-      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-4 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
             Painel de Agendamento 👑
@@ -571,13 +571,13 @@ export function TutorAgendaView() {
 
       </div>
 
-      <div className="flex flex-col-reverse md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-6">
         
         {/* SIDEBAR */}
-        <div className="w-full md:w-80 flex-shrink-0 space-y-6">
+        <div className="w-full md:w-80 flex-shrink-0 space-y-3 md:space-y-6">
           
           {/* Pending Requests Component */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-750 p-3 md:p-5 shadow-sm">
             <div className="flex justify-between items-center pb-3 border-b border-gray-50 dark:border-slate-700/50 mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Solicitações de Reserva</h3>
               {pendingRequests.length > 0 && (
@@ -625,13 +625,13 @@ export function TutorAgendaView() {
           {renderMiniMonth()}
 
           {/* Action Button Group */}
-          <div className="flex flex-col gap-2.5">
+          <div className="grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-2.5">
             <button
               onClick={() => {
                 setManualDate(selectedDate.toLocaleDateString('en-CA'));
                 setBookingModalOpen(true);
               }}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-500/10 uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all shadow-md shadow-blue-500/10 uppercase tracking-wider"
             >
               <FaRegCalendarPlus size={13} />
               Agendar Aula Particular
@@ -639,7 +639,7 @@ export function TutorAgendaView() {
             
             <button
               onClick={() => setPasteModalOpen(true)}
-              className="w-full py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaFileAlt size={13} />
               Colar Disponibilidade
@@ -647,7 +647,7 @@ export function TutorAgendaView() {
 
             <button
               onClick={() => setTemplateModalOpen(true)}
-              className="w-full py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-200 border border-gray-150 dark:border-slate-700 rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaSlidersH size={13} />
               Editar Modelo de Horários
@@ -655,7 +655,7 @@ export function TutorAgendaView() {
 
             <button
               onClick={copyBookingLink}
-              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all uppercase tracking-wider"
+              className="w-full py-2.5 md:py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg md:rounded-xl text-[10px] md:text-xs font-extrabold flex items-center justify-center gap-1.5 md:gap-2 transition-all uppercase tracking-wider"
             >
               <FaLink size={13} />
               Copiar Link de Agendamento
@@ -663,7 +663,7 @@ export function TutorAgendaView() {
           </div>
 
           {/* Display Filters */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
+          <div className="hidden md:block bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-4 sm:p-5 shadow-sm">
             <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-4 pb-2 border-b border-gray-50 dark:border-slate-700/50">
               Exibir no Calendário
             </h3>
@@ -709,14 +709,14 @@ export function TutorAgendaView() {
         </div>
 
         {/* MAIN TIMELINE STREAM */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-4 md:space-y-6">
           
           {/* Tabs & Week Navigation */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 dark:border-slate-700 pb-2">
             <div className="flex border-b border-transparent">
               <button
                 onClick={() => setActiveTab('schedule')}
-                className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                className={`pb-2 px-3 md:pb-3 md:px-6 text-[11px] md:text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
                   activeTab === 'schedule'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -726,7 +726,7 @@ export function TutorAgendaView() {
               </button>
               <button
                 onClick={() => setActiveTab('open')}
-                className={`pb-3 px-6 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                className={`pb-2 px-3 md:pb-3 md:px-6 text-[11px] md:text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
                   activeTab === 'open'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -745,7 +745,7 @@ export function TutorAgendaView() {
                     setSelectedDate(prev);
                     setCurrentDate(prev);
                   }}
-                  className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"
+                  className="flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
                 >
                   ◀ Sem. Ant.
                 </button>
@@ -755,7 +755,7 @@ export function TutorAgendaView() {
                     setSelectedDate(now);
                     setCurrentDate(now);
                   }}
-                  className={`px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                  className={`flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-center ${
                     selectedDate.toDateString() === new Date().toDateString()
                       ? 'bg-blue-600 text-white shadow-sm font-black'
                       : 'text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700'
@@ -770,7 +770,7 @@ export function TutorAgendaView() {
                     setSelectedDate(next);
                     setCurrentDate(next);
                   }}
-                  className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"
+                  className="flex-1 md:flex-none px-3 py-2 md:px-2.5 md:py-1.5 text-[11px] md:text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-slate-350 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-center"
                 >
                   Próx. Sem. ▶
                 </button>
@@ -801,7 +801,7 @@ export function TutorAgendaView() {
                       {day.items.map((item, idx) => (
                         <div
                           key={idx}
-                          className={`p-3 sm:p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 sm:items-center justify-between transition-all shadow-sm ${
+                          className={`p-2.5 sm:p-4 rounded-xl md:rounded-2xl border flex flex-col sm:flex-row gap-3 md:gap-4 sm:items-center justify-between transition-all shadow-sm ${
                             item.type === 'confirmed'
                               ? 'bg-emerald-50/40 border-emerald-100 dark:bg-emerald-950/10 dark:border-emerald-900/30'
                               : item.type === 'pending'
