@@ -19,6 +19,7 @@
 - [FIXED] Mobile SlideViewer safe-area cutoffs and hyper-sensitive swiping
 - [FIXED] Vercel Hobby Plan 12-function limit (consolidated all api/ routes to <= 5 consolidated files using background rewrites)
 - [FIXED] Added booking analytics dashboard for Matt
+- [FIXED] Add timezone handling for international users (Sprint 12)
 
 ## LOW - BACKLOG
-- [OPEN] Add timezone handling for international users
+- None outstanding!
