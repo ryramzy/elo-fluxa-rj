@@ -240,12 +240,16 @@ function AppShell() {
 }
 
 export default function App() {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   return (
     <GlobalErrorBoundary>
-      <GoogleOAuthProvider clientId={clientId}>
+      {clientId ? (
+        <GoogleOAuthProvider clientId={clientId}>
+          <AppShell />
+        </GoogleOAuthProvider>
+      ) : (
         <AppShell />
-      </GoogleOAuthProvider>
+      )}
     </GlobalErrorBoundary>
   );
 }
