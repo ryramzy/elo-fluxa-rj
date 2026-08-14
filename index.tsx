@@ -7,7 +7,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
-import './src/index.css';
 // Global error handling guards to prevent silent promise failures
 if (typeof window !== 'undefined') {
   window.addEventListener('unhandledrejection', (event) => {
