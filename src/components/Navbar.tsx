@@ -9,6 +9,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { BRAND_NAME, WHATSAPP_NUMBER, WHATSAPP_MESSAGE, getWhatsAppLink } from '../../constants.ts';
 import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
+import { DesktopDownloadModal } from './profile/DesktopDownloadModal';
 import { NotificationDropdown } from './navigation/NotificationDropdown';
 import { setAdminViewMode } from '../utils/adminView';
 
@@ -20,6 +21,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [desktopModalOpen, setDesktopModalOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -158,6 +160,14 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 >
                   Para Empresas 💼
                 </a>
+                {isAuthorizedEmail && (
+                  <button
+                    onClick={() => setDesktopModalOpen(true)}
+                    className="text-blue-400 hover:text-blue-300 transition-colors font-bold flex items-center gap-1"
+                  >
+                    💻 App Desktop
+                  </button>
+                )}
                 <a
                   href="/profile"
                   onClick={(e) => handleLinkClick(e, 'profile')}
@@ -455,6 +465,12 @@ export default function Navbar({ onNavClick }: NavbarProps) {
         isOpen={loginModalOpen}
         onClose={handleLoginModalClose}
         onSignIn={handleSignIn}
+      />
+
+      {/* Tutor Desktop App Download Modal */}
+      <DesktopDownloadModal
+        isOpen={desktopModalOpen}
+        onClose={() => setDesktopModalOpen(false)}
       />
     </>
   );
