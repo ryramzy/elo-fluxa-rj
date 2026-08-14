@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { LuCheck, LuCopy, LuTriangleAlert, LuQrCode, LuCreditCard } from 'react-icons/lu';
+import { getWhatsAppLink } from '../../constants';
 
 interface CheckoutFormProps {
   plan: 'starter' | 'pro' | 'elite';
@@ -283,9 +284,20 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
             </div>
 
             {/* Waiting indicators */}
-            <div className="flex items-center justify-center gap-2 text-xs text-blue-400 animate-pulse bg-blue-500/5 border border-blue-500/10 py-2.5 rounded-xl">
+            <div className="flex items-center justify-center gap-2 text-xs text-blue-400 animate-pulse bg-blue-500/5 border border-blue-500/10 py-2.5 rounded-xl mb-4">
               <span className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></span>
               Aguardando confirmação do pagamento...
+            </div>
+
+            <div className="text-center">
+              <a
+                href={getWhatsAppLink('subscription')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1.5"
+              >
+                💬 Dúvidas sobre o Pix? Falar com Matt no WhatsApp
+              </a>
             </div>
           </>
         )}
