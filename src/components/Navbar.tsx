@@ -402,7 +402,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
             {!user ? (
               <button 
                 onClick={handleLoginModalOpen}
-                className="border border-slate-800 text-slate-800 px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-slate-800 hover:text-white transition-colors rounded-lg"
+                className="border border-blue-500 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 transition-all rounded-xl shadow-md active:scale-95"
                 style={{ width: '100%', maxWidth: '300px' }}
               >
                 Entrar
