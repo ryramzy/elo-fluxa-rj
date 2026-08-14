@@ -76,7 +76,17 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
           submittedAt: Timestamp.now()
         }
       });
-      showToast({ type: 'success', message: 'Feedback salvo com sucesso!' });
+      showToast({ type: 'success', message: 'Feedback salvo no Firestore!' });
+
+      // Automatically construct WhatsApp Feedback summary for Matt to send to student with 1 tap
+      const waText = `Oi ${booking.userName}! Segue o feedback da nossa aula de hoje no Elo!:\n\n` +
+        `🗣️ Pronúncia: ${pronunciation || 'Muito boa!'}\n` +
+        `📚 Novo Vocabulário: ${vocabulary || 'Praticamos expressões nativas'}\n` +
+        `📝 Tarefa/Homework: ${homework || 'Praticar conversação'}\n\n` +
+        `Nos vemos na próxima aula! 🚀`;
+      
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+      window.open(waUrl, '_blank');
       onClose();
     } catch (error: any) {
       console.error('Error saving class feedback:', error);

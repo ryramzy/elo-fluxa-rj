@@ -514,6 +514,15 @@ export default function TutorAgendaView() {
                       >
                         📹 Zoom
                       </a>
+                      <a
+                        href="/courses/beginner/lessons/be-dl-01"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
+                        title="Abrir Deck de Apresentação de Aulas"
+                      >
+                        🖥️ Deck
+                      </a>
                       {booking.meetLink && (
                         <a
                           href={booking.meetLink}
