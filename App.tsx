@@ -11,6 +11,7 @@ import { BottomNav } from './src/components/navigation/BottomNav';
 import { useAuth } from './src/hooks/useAuth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GuestBanner } from './src/components/GuestBanner';
+import { GlobalErrorBoundary } from './src/components/GlobalErrorBoundary';
 
 // Lazy-loaded page components — each becomes its own chunk
 const Dashboard = React.lazy(() => import('./src/pages/Dashboard'));
@@ -241,8 +242,10 @@ function AppShell() {
 export default function App() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
   return (
-    <GoogleOAuthProvider clientId={clientId}>
-      <AppShell />
-    </GoogleOAuthProvider>
+    <GlobalErrorBoundary>
+      <GoogleOAuthProvider clientId={clientId}>
+        <AppShell />
+      </GoogleOAuthProvider>
+    </GlobalErrorBoundary>
   );
 }

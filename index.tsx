@@ -7,9 +7,19 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
-// Register service worker for PWA offline features
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+// Global error handling guards to prevent silent promise failures
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    console.warn('[GlobalAsyncErrorGuard] Unhandled promise rejection caught:', event.reason);
+  });
+
+  window.addEventListener('error', (event) => {
+    console.warn('[GlobalErrorGuard] Window error caught:', event.error || event.message);
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
 }
 
 const rootElement = document.getElementById('root');
