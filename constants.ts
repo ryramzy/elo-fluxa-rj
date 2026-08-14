@@ -9,20 +9,34 @@ export const STUDENT_COUNT = 54;
 export const WHATSAPP_NUMBER = "5522992322566";
 export const WHATSAPP_MESSAGE = "Oi Matt! Vi seu site e quero começar a aprender inglês americano";
 export const BRAND_NAME = "Elo!";
+export const MATT_EMAIL = "mramsay0@gmail.com";
+export const ZOOM_MEETING_URL = "https://zoom.us/j/mramsay0";
 
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {
-  landing: "Oi%20Matt!%20Vi%20seu%20site%20e%20quero%20saber%20mais%20sobre%20as%20aulas",
-  lessonPaywall: "Oi%20Matt!%20Acabei%20de%20fazer%20a%20aula%20gr%C3%A1tis%20e%20quero%20continuar",
-  subscription: "Oi%20Matt!%20Quero%20assinar%20o%20plano%20Pro",
-  booking: "Oi%20Matt!%20Quero%20agendar%20uma%20aula",
-  onboarding: "Oi%20Matt!%20Acabei%20de%20criar%20minha%20conta%20no%20Elo%21",
-  general: "Oi%20Matt!%20Preciso%20de%20ajuda",
-  corporate: "Oi%20Matt!%20Quero%20saber%20mais%20sobre%20os%20planos%20corporativos%20da%20Elo%20para%20minha%20empresa"
+  landing: "Oi Matt! Vi seu site e quero saber mais sobre as aulas ao vivo no Zoom!",
+  lessonPaywall: "Oi Matt! Vi o Elo! e quero começar minhas aulas de conversação no Zoom!",
+  subscription: "Oi Matt! Quero tirar dúvidas sobre a assinatura dos planos de aula",
+  booking: "Oi Matt! Quero agendar minha aula de conversação no Zoom",
+  onboarding: "Oi Matt! Acabei de me cadastrar no Elo! Quero combinar meu horário de aula no Zoom",
+  general: "Oi Matt! Preciso de ajuda com minha conta no Elo!",
+  corporate: "Oi Matt! Quero saber mais sobre os planos corporativos da Elo para minha empresa",
+  upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
 };
 
-export const getWhatsAppLink = (context: keyof typeof WHATSAPP_MESSAGES) => {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGES[context]}`;
+export const getWhatsAppLink = (
+  context: keyof typeof WHATSAPP_MESSAGES, 
+  customDetails?: { studentName?: string; date?: string; time?: string }
+) => {
+  let baseMsg = WHATSAPP_MESSAGES[context] || WHATSAPP_MESSAGES.general;
+  if (customDetails?.studentName) {
+    baseMsg = `Oi Matt! Sou o(a) ${customDetails.studentName}. ` + (
+      customDetails.date && customDetails.time 
+        ? `Tenho aula agendada para ${customDetails.date} às ${customDetails.time} no Zoom.` 
+        : baseMsg
+    );
+  }
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(baseMsg)}`;
 };
 
 export const MATTHEW_BIO = {

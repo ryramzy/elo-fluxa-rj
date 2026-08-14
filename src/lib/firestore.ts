@@ -34,7 +34,7 @@ export interface UserProfile {
   lastActiveDate: Timestamp;
   badgesEarned: string[];
   createdAt: Timestamp;
-  plan: 'free' | 'pro' | 'elite';
+  plan: 'free' | 'pro' | 'elite' | 'corporate';
   planActivatedAt: Timestamp | null;
   bookingsThisMonth: number;
   bookingLimit: number;
@@ -268,7 +268,7 @@ export async function updateLessonProgress(
 
         if (!exists) {
           if (queue.length >= 50) {
-            addGlobalToast('Limite de salvamento offline atingido. Conecte-se para salvar novos progressos.', 'warning');
+            addGlobalToast('Limite de salvamento offline atingido. Conecte-se para salvar novos progressos.', 'info');
             console.warn('[Offline Queue] Progress queue limit (50) exceeded. Discarding new item.');
           } else {
             queue.push({ uid, courseId, lessonId, slideIndex, isCompleted, attempts: 0 });
@@ -587,13 +587,14 @@ export async function bookAvailableSlot(slotId: string, uid: string): Promise<vo
 }
 
 // Plan management functions
-export async function updateUserPlan(uid: string, plan: 'free' | 'pro' | 'elite'): Promise<void> {
+export async function updateUserPlan(uid: string, plan: 'free' | 'pro' | 'elite' | 'corporate'): Promise<void> {
   try {
     const userRef = doc(collection(db, 'users'), uid);
     const bookingLimits = {
       free: 1,
       pro: 4,
-      elite: 12
+      elite: 12,
+      corporate: 99
     };
     
     await updateDoc(userRef, {
@@ -1066,6 +1067,71 @@ export async function createNotification(
     });
   } catch (error) {
     console.error('Error creating notification:', error);
+  }
+}
+
+// Tutor Roster & Zoom Room Management
+export async function getTutors(): Promise<any[]> {
+  try {
+    const snap = await getDocs(collection(db, 'tutors'));
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (list.length === 0) {
+      return [{
+        id: 'matt_ramsay',
+        name: 'Matthew Ramsay',
+        email: 'mramsay0@gmail.com',
+        zoomUrl: 'https://zoom.us/j/mramsay0',
+        active: true,
+        bio: 'Native English Teacher from Boston, MA'
+      }];
+    }
+    return list;
+  } catch (error) {
+    console.error('Error fetching tutors roster:', error);
+    return [{
+      id: 'matt_ramsay',
+      name: 'Matthew Ramsay',
+      email: 'mramsay0@gmail.com',
+      zoomUrl: 'https://zoom.us/j/mramsay0',
+      active: true,
+      bio: 'Native English Teacher from Boston, MA'
+    }];
+  }
+}
+
+export async function saveTutor(tutorData: {
+  id?: string;
+  name: string;
+  email: string;
+  zoomUrl: string;
+  bio?: string;
+  active: boolean;
+}): Promise<void> {
+  try {
+    const tutorId = tutorData.id || tutorData.email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const tutorRef = doc(db, 'tutors', tutorId);
+    await setDoc(tutorRef, {
+      ...tutorData,
+      id: tutorId,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error saving tutor:', error);
+    throw error;
+  }
+}
+
+// GCP / Firebase Analytics Event Tracker
+export async function trackAnalyticsEvent(eventType: string, payload: Record<string, any> = {}): Promise<void> {
+  try {
+    const eventRef = doc(collection(db, 'analytics_events'));
+    await setDoc(eventRef, {
+      eventType,
+      ...payload,
+      createdAt: serverTimestamp()
+    });
+  } catch (error) {
+    console.warn('Analytics event record error:', error);
   }
 }
 

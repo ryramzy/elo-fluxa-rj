@@ -32,6 +32,7 @@ interface Booking {
   userId?: string;
   uid?: string;
   userName: string;
+  userEmail?: string;
   studentName?: string;
   studentEmail?: string;
   status?: 'confirmed' | 'pending' | 'cancelled_by_tutor' | 'cancelled_by_student';
@@ -503,20 +504,30 @@ export default function TutorAgendaView() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-1.5 flex-shrink-0">
+                      <a
+                        href="https://zoom.us/j/mramsay0"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
+                        title="Iniciar Sala do Zoom (mramsay0@gmail.com)"
+                      >
+                        📹 Zoom
+                      </a>
                       {booking.meetLink && (
                         <a
                           href={booking.meetLink}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center"
+                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-700/50 min-h-[36px] flex items-center justify-center"
+                          title="Abrir sala alternativa do Google Meet / Jitsi"
                         >
-                          Entrar
+                          Meet
                         </a>
                       )}
                       <button
                         onClick={() => handleCancelBookingTutor(booking.id)}
-                        className="px-3 py-1.5 bg-slate-850 hover:bg-slate-800 text-slate-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-700/50 min-h-[36px]"
+                        className="px-2.5 py-1.5 bg-slate-850 hover:bg-slate-800 text-slate-400 hover:text-rose-400 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-700/50 min-h-[36px]"
                       >
                         Cancelar
                       </button>

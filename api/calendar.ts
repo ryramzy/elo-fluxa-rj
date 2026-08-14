@@ -67,6 +67,7 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
       const mockResponse = {
         eventId: `fallback_event_${Date.now()}`,
         meetLink: `https://meet.jit.si/${fallbackMeetingId}`,
+        zoomLink: `https://zoom.us/j/mramsay0`,
         htmlLink: `https://meet.jit.si/${fallbackMeetingId}`,
         isFallback: true
       };
@@ -125,6 +126,7 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
       const response = {
         eventId: createdEvent.id,
         meetLink: createdEvent.hangoutLink || createdEvent.conferenceData?.entryPoints?.[0]?.uri || `https://meet.google.com/elo-${Date.now()}`,
+        zoomLink: `https://zoom.us/j/mramsay0`,
         htmlLink: createdEvent.htmlLink || `https://calendar.google.com`,
       };
 

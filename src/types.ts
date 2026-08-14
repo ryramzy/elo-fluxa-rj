@@ -26,6 +26,10 @@ export interface Booking {
   time: string;
   duration: number;
   status: 'confirmed' | 'cancelled' | 'completed';
+  tutorId?: string;
+  tutorName?: string;
+  uid?: string;
+  organizationId?: string;
   googleEventId?: string; // placeholder for tonight
   meetLink?: string;      // placeholder for tonight
   notes?: string;
@@ -34,7 +38,24 @@ export interface Booking {
     pronunciation: string;
     vocabulary: string;
     homework: string;
-    submittedAt: Timestamp;
+    summary?: string;
+    studentRating?: number;
+    nextGoal?: string;
+    attendance?: 'present' | 'absent';
+    submittedAt: any;
   };
   datetime?: Timestamp;   // UTC Timestamp for timezone sync
+  zoomLink?: string;
+}
+
+export interface Tutor {
+  id: string;
+  name: string;
+  email: string;
+  zoomUrl: string;
+  photoURL?: string;
+  bio?: string;
+  specialties?: string[];
+  active: boolean;
+  createdAt?: any;
 }
