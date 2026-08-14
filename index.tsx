@@ -22,16 +22,26 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
-}
+const mountApp = () => {
+  let rootElement = document.getElementById('root');
+  if (!rootElement) {
+    rootElement = document.createElement('div');
+    rootElement.id = 'root';
+    document.body.appendChild(rootElement);
+  }
 
-const root = createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+  const root = createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', mountApp);
+} else {
+  mountApp();
+}
