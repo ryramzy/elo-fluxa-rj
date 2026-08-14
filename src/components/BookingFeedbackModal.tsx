@@ -14,10 +14,10 @@ interface Booking {
     pronunciation: string;
     vocabulary: string;
     homework: string;
-    summary: string;
-    studentRating: number;
-    nextGoal: string;
-    attendance: 'present' | 'absent';
+    summary?: string;
+    studentRating?: number;
+    nextGoal?: string;
+    attendance?: 'present' | 'absent';
     submittedAt: any;
   };
 }

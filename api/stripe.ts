@@ -189,7 +189,7 @@ async function handleWebhook(req: VercelRequest, res: VercelResponse) {
     if (!firebaseUid && customerId && typeof customerId === 'string') {
       const customer = await stripe.customers.retrieve(customerId);
       if (customer && !customer.deleted) {
-        firebaseUid = customer.metadata?.firebaseUid;
+        firebaseUid = (customer as any).metadata?.firebaseUid;
       }
     }
 

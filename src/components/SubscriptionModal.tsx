@@ -12,7 +12,7 @@ interface SubscriptionModalProps {
 
 export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: SubscriptionModalProps) {
   const { user } = useAuth();
-  const { addToast } = useToast();
+  const { showToast } = useToast();
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'pro' | 'elite' | null>(null);
   const [stripeLoading, setStripeLoading] = useState<'pro' | 'elite' | null>(null);
 
@@ -29,7 +29,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
 
   const handleStripeCheckout = async (plan: 'pro' | 'elite') => {
     if (!user) {
-      addToast('Por favor, faça login para assinar um plano.', 'warning');
+      showToast('Por favor, faça login para assinar um plano.', 'info');
       return;
     }
 
@@ -63,7 +63,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
       }
     } catch (err: any) {
       console.error('[Stripe Checkout Error]:', err);
-      addToast(err.message || 'Erro ao processar transação no cartão. Tente novamente.', 'error');
+      showToast(err.message || 'Erro ao processar transação no cartão. Tente novamente.', 'error');
     } finally {
       setStripeLoading(null);
     }

@@ -151,22 +151,20 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
             </p>` : ''}
           </div>
 
-          ${meetLink ? `
-          <a href="${meetLink}" 
-             style="display:inline-block;background:#22c55e;color:white;
-                    padding:12px 24px;border-radius:6px;
-                    text-decoration:none;font-weight:bold;margin:16px 0">
-            Entrar no Google Meet
-          </a>
-          <p style="font-size:13px;color:#64748b;margin:8px 0">
-            Link também será enviado 1 hora antes da aula
-          </p>` : `
-          <div style="background:#fef3c7;border:1px solid #f59e0b;
-                      padding:12px;border-radius:4px;margin:16px 0">
-            <p style="margin:0;font-size:14px;color:#92400e">
-              Link do Google Meet será enviado em breve
-            </p>
-          </div>`}
+          <div style="margin:20px 0;text-align:center">
+            <a href="https://zoom.us/j/mramsay0" 
+               style="display:inline-block;background:#2563eb;color:white;
+                      padding:14px 28px;border-radius:12px;
+                      text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
+              📹 Entrar na Aula no Zoom com Matt
+            </a>
+            ${meetLink ? `
+            <div style="margin-top:6px">
+              <a href="${meetLink}" style="color:#64748b;font-size:13px;text-decoration:underline">
+                Link alternativo (Google Meet / Jitsi)
+              </a>
+            </div>` : ''}
+          </div>
 
           <div style="background:#f8fafc;border:1px solid #e2e8f0;
                       padding:16px;border-radius:4px;margin:20px 0">
@@ -500,19 +498,20 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
                   </p>` : ''}
                 </div>
 
-                ${meetLink ? `
-                <a href="${meetLink}" 
-                   style="display:inline-block;background:#22c55e;color:white;
-                          padding:12px 24px;border-radius:6px;
-                          text-decoration:none;font-weight:bold;margin:16px 0">
-                  Entrar no Google Meet
-                </a>` : `
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;
-                            padding:12px;border-radius:4px;margin:16px 0">
-                  <p style="margin:0;font-size:14px;color:#64748b">
-                    Link do Google Meet será enviado 1 hora antes
-                  </p>
-                </div>`}
+                <div style="margin:20px 0;text-align:center">
+                  <a href="https://zoom.us/j/mramsay0" 
+                     style="display:inline-block;background:#2563eb;color:white;
+                            padding:14px 28px;border-radius:12px;
+                            text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
+                    📹 Entrar na Aula no Zoom com Matt
+                  </a>
+                  ${meetLink ? `
+                  <div style="margin-top:6px">
+                    <a href="${meetLink}" style="color:#64748b;font-size:13px;text-decoration:underline">
+                      Link alternativo (Google Meet / Jitsi)
+                    </a>
+                  </div>` : ''}
+                </div>
 
                 <div style="background:#f0f9ff;border:1px solid #3b82f6;
                             padding:12px;border-radius:4px;margin:20px 0">

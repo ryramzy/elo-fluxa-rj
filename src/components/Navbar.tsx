@@ -144,18 +144,11 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   Painel
                 </a>
                 <a
-                  href="/courses"
-                  onClick={(e) => handleLinkClick(e, 'courses')}
-                  className={getLinkClasses('courses')}
-                >
-                  Cursos
-                </a>
-                <a
                   href="/dashboard"
                   onClick={(e) => handleLinkClick(e, 'agenda')}
                   className={getLinkClasses('agenda')}
                 >
-                  Agenda
+                  Agenda & Aulas
                 </a>
                 <a
                   href={getWhatsAppLink('corporate')}
@@ -181,13 +174,6 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   className={getLinkClasses('sobre')}
                 >
                   Sobre
-                </a>
-                <a
-                  href="/courses"
-                  onClick={(e) => { e.preventDefault(); navigate('/courses'); }}
-                  className={getLinkClasses('courses')}
-                >
-                  Cursos
                 </a>
                 <a
                   href={getWhatsAppLink('corporate')}

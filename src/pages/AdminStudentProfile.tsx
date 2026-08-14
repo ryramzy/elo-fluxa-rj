@@ -18,7 +18,7 @@ interface StudentProfile {
   lastActiveDate: any;
   badgesEarned: string[];
   createdAt: any;
-  plan: 'free' | 'pro' | 'elite';
+  plan: 'free' | 'pro' | 'elite' | 'corporate';
   planActivatedAt: any;
   bookingsThisMonth: number;
   bookingLimit: number;
@@ -61,7 +61,7 @@ const AdminStudentProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
   const [xpAmount, setXpAmount] = useState('');
-  const [selectedPlan, setSelectedPlan] = useState<'free' | 'pro' | 'elite'>('free');
+  const [selectedPlan, setSelectedPlan] = useState<'free' | 'pro' | 'elite' | 'corporate'>('free');
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
 
   // B2B States

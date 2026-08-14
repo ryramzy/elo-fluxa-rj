@@ -12,7 +12,7 @@ import Hero from './Hero';
 
 export default function About() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signInAsGuest } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
   const [linkCopied, setLinkCopied] = useState(false);
 

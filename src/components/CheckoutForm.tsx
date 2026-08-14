@@ -52,7 +52,7 @@ const generateUUID = (): string => {
 };
 
 export default function CheckoutForm({ plan, price, onSuccess, onCancel }: CheckoutFormProps) {
-  const { addToast } = useToast();
+  const { showToast } = useToast();
   const { user } = useAuth();
   
   const [cpf, setCpf] = useState('');
@@ -84,14 +84,14 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         const data = snapshot.data();
         if (data.plan === plan) {
           setPaymentComplete(true);
-          addToast('Pagamento confirmado! Sua assinatura foi liberada.', 'success');
+          showToast('Pagamento confirmado! Sua assinatura foi liberada.', 'success');
           if (onSuccess) onSuccess();
         }
       }
     });
 
     return () => unsubscribe();
-  }, [user, pixPayload, plan, onSuccess, addToast]);
+  }, [user, pixPayload, plan, onSuccess, showToast]);
 
   // Expiration countdown timer
   useEffect(() => {
@@ -137,7 +137,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
   const handleCopyKey = () => {
     if (pixPayload) {
       navigator.clipboard.writeText(pixPayload.copyPasteKey);
-      addToast('Chave Pix copiada para a área de transferência!', 'info');
+      showToast('Chave Pix copiada para a área de transferência!', 'info');
     }
   };
 
@@ -146,7 +146,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     setLoading(true);
 
     if (!name || !email || !cpf) {
-      addToast('Por favor, preencha todos os campos obrigatórios.', 'warning');
+      showToast('Por favor, preencha todos os campos obrigatórios.', 'info');
       setLoading(false);
       return;
     }
@@ -155,7 +155,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     const isCpfValid = validateCPF(cleanCpf);
 
     if (!isCpfValid) {
-      addToast('CPF inválido! Por favor verifique os dígitos digitados.', 'error');
+      showToast('CPF inválido! Por favor verifique os dígitos digitados.', 'error');
       setLoading(false);
       return;
     }
@@ -192,11 +192,11 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         expirationTime: data.expirationTime
       });
       setIsExpired(false);
-      addToast('Pix gerado com sucesso! Aguardando pagamento.', 'success');
+      showToast('Pix gerado com sucesso! Aguardando pagamento.', 'success');
 
     } catch (err: any) {
       console.error('[Checkout Form Error]:', err);
-      addToast(err.message || 'Erro ao processar transação Pix. Tente novamente.', 'error');
+      showToast(err.message || 'Erro ao processar transação Pix. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }

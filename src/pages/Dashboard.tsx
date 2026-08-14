@@ -276,40 +276,6 @@ const DashboardWorking: React.FC = () => {
                   <TutorNotesWidget bookings={bookings || []} />
                 </WidgetErrorBoundary>
 
-                <WidgetErrorBoundary widgetName="Grade de Cursos">
-                  <div className="tour-step-courses">
-                    <CoursesGrid
-                      courses={courses}
-                      enrollments={enrollments || []}
-                      onEnroll={async (courseId) => {
-                        if (!user) return;
-                        const course = courses.find(c => c.id === courseId);
-                        if (!course) return;
-                        try {
-                          trackEvent('course_enroll', { courseId });
-                          await enrollUserInCourse(user.uid, courseId, course.lessons.length);
-                          navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
-                        } catch (err) {
-                          console.error('Failed to enroll:', err);
-                          showToast({ type: 'error', message: 'Não foi possível se matricular no curso. Verifique sua conexão e tente novamente.' });
-                          navigate(`/courses/${courseId}`);
-                        }
-                      }}
-                      onContinue={(courseId) => {
-                        const course = courses.find(c => c.id === courseId);
-                        const enrollment = enrollments?.find(e => e.courseId === courseId);
-                        if (enrollment?.activeLessonId) {
-                          navigate(`/courses/${courseId}/lessons/${enrollment.activeLessonId}`);
-                        } else if (course?.lessons[0]) {
-                          navigate(`/courses/${courseId}/lessons/${course.lessons[0].id}`);
-                        } else {
-                          navigate(`/courses/${courseId}`);
-                        }
-                      }}
-                    />
-                  </div>
-                </WidgetErrorBoundary>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <WidgetErrorBoundary widgetName="Dicionário">
                     <DictionaryWidget />

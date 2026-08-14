@@ -7,7 +7,7 @@ let memoryToasts: Toast[] = [];
 
 interface UseToastReturn {
   toasts: Toast[];
-  showToast: (toastOrMessage: Omit<Toast, 'id'> | string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+  showToast: (toastOrMessage: Omit<Toast, 'id'> | string, type?: 'success' | 'error' | 'info' | 'xp') => void;
   removeToast: (id: string) => void;
 }
 
@@ -23,7 +23,7 @@ export const useToast = (): UseToastReturn => {
     };
   }, []);
 
-  const showToast = useCallback((toastOrMessage: Omit<Toast, 'id'> | string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+  const showToast = useCallback((toastOrMessage: Omit<Toast, 'id'> | string, type: 'success' | 'error' | 'info' | 'xp' = 'info') => {
     const id = Math.random().toString(36).substring(2, 11);
     let newToast: Toast;
     if (typeof toastOrMessage === 'string') {
@@ -48,7 +48,7 @@ export const useToast = (): UseToastReturn => {
   };
 };
 
-export const addGlobalToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+export const addGlobalToast = (message: string, type: 'success' | 'error' | 'info' | 'xp' = 'info') => {
   const id = Math.random().toString(36).substring(2, 11);
   const newToast: Toast = { message, type, id };
   

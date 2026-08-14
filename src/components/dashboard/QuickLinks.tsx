@@ -1,4 +1,5 @@
 import React from 'react';
+import { WHATSAPP_NUMBER } from '../../../constants';
 
 interface QuickLinksProps {
   onNavigateToAgenda: () => void;
@@ -24,8 +25,8 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({
           onClick={onNavigateToCourses}
           className="w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
         >
-          <span className="text-lg">📚</span>
-          <span className="text-slate-900 dark:text-white">Todos os Cursos</span>
+          <span className="text-lg">💳</span>
+          <span className="text-slate-900 dark:text-white font-medium">Plano de Assinatura</span>
         </button>
         <a
           href={`https://wa.me/${WHATSAPP_NUMBER}`}

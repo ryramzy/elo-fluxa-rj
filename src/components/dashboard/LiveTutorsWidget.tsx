@@ -44,18 +44,13 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
     }
 
     setConnecting(true);
-    trackEvent('live_call_connect', { tutorId: 'matt' });
-    showToast({ type: 'success', message: 'Conectando chamada ao vivo com Matt...' });
+    trackEvent('live_call_connect_zoom', { tutorId: 'matt' });
+    showToast({ type: 'success', message: 'Abrindo sala do Zoom com Matt...' });
 
     setTimeout(() => {
-      let room = sessionStorage.getItem('elo_active_tutor_room');
-      if (!room) {
-        const idSuffix = Date.now().toString().slice(-4);
-        room = `elo-live-call-matt-${idSuffix}`;
-        sessionStorage.setItem('elo_active_tutor_room', room);
-      }
-      navigate(`/video-call/${room}`);
-    }, 1200);
+      window.open('https://zoom.us/j/mramsay0', '_blank');
+      setConnecting(false);
+    }, 800);
   };
 
   return (
@@ -121,14 +116,14 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
 
         {/* Buttons Section */}
         <div className="grid grid-cols-2 gap-3 mt-1">
-          {/* Ligar Button */}
+          {/* Entrar no Zoom Button */}
           <button
             disabled={connecting || loadingPresence || !tutorOnline}
             onClick={handleConnectCall}
-            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:opacity-40 disabled:text-slate-500 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 shadow-emerald-700/20"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:opacity-40 disabled:text-slate-500 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 shadow-blue-700/20"
           >
             <FaPhoneAlt size={10} className={tutorOnline ? "animate-bounce" : ""} />
-            Ligar Agora
+            Entrar no Zoom
           </button>
 
           {/* Agendar Button */}
@@ -143,7 +138,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
       </div>
 
       <div className="text-[9px] text-slate-550 text-center font-medium">
-        * As chamadas utilizam conexões de áudio e vídeo encriptadas via Jitsi Meet.
+        * As aulas ao vivo são transmitidas via Zoom com o professor nativo Matt.
       </div>
 
       <TutorProfileModal

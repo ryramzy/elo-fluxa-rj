@@ -8,6 +8,7 @@ import { db } from '../lib/firestore';
 import { useToast } from '../hooks/useToast';
 import { BookingFeedbackModal } from '../components/BookingFeedbackModal';
 import { setAdminViewMode } from '../utils/adminView';
+import { TutorManagementPanel } from '../components/admin/TutorManagementPanel';
 
 interface Booking {
   id: string;
@@ -18,10 +19,15 @@ interface Booking {
   userEmail?: string;
   status: string;
   createdAt?: any;
+  uid?: string;
   tutorNotes?: {
     pronunciation: string;
     vocabulary: string;
     homework: string;
+    summary?: string;
+    studentRating?: number;
+    nextGoal?: string;
+    attendance?: 'present' | 'absent';
     submittedAt: any;
   };
 }
@@ -30,7 +36,7 @@ interface User {
   uid: string;
   displayName: string;
   email: string;
-  plan: 'free' | 'pro' | 'elite';
+  plan: 'free' | 'pro' | 'elite' | 'corporate';
   createdAt: any;
   lastActiveDate?: any;
   streakDays?: number;
@@ -38,6 +44,7 @@ interface User {
   xp?: number;
   organizationId?: string;
   corporateCredits?: number;
+  paymentPastDue?: boolean;
 }
 
 // Admin is always controlled via the setAdminViewMode event bus
@@ -71,14 +78,8 @@ const TimezoneSyncPanel: React.FC = () => {
   };
 
   useEffect(() => {
-    loadTutorPresence();
+    loadBookings();
   }, []);
-
-  useEffect(() => {
-    if (activeTab === 'utilities') {
-      loadBookings();
-    }
-  }, [activeTab]);
 
   const downloadBackup = async () => {
     setLoading(true);
@@ -262,7 +263,7 @@ const Admin: React.FC<AdminProps> = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'crm' | 'enrollments' | 'b2b' | 'utilities' | 'analytics'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'users' | 'revenue' | 'crm' | 'enrollments' | 'b2b' | 'tutors' | 'utilities' | 'analytics'>('bookings');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] = useState<Booking | null>(null);
   const [cacInput, setCacInput] = useState<number>(30);
@@ -331,6 +332,10 @@ const Admin: React.FC<AdminProps> = () => {
       loadAnalyticsData();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    loadTutorPresence();
+  }, []);
 
   // B2B states
   const [selectedUserUid, setSelectedUserUid] = useState('');
@@ -801,6 +806,16 @@ const Admin: React.FC<AdminProps> = () => {
               }`}
             >
               Timezone Sync
+            </button>
+            <button
+              onClick={() => setActiveTab('tutors')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'tutors'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              📹 Tutores & Zoom
             </button>
             <button
               onClick={() => setActiveTab('analytics')}
@@ -1388,6 +1403,10 @@ const Admin: React.FC<AdminProps> = () => {
 
         {activeTab === 'utilities' && (
           <TimezoneSyncPanel />
+        )}
+
+        {activeTab === 'tutors' && (
+          <TutorManagementPanel />
         )}
 
         {activeTab === 'analytics' && (

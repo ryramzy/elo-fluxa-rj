@@ -100,7 +100,7 @@ export async function awardXP(uid: string, amount: number, reason: string, txId?
         // Prevent duplicate queueing
         if (!queue.some(item => item.txId === activeTxId)) {
           if (queue.length >= 50) {
-            addGlobalToast('Limite de salvamento offline atingido. Conecte-se para salvar novos prêmios de XP.', 'warning');
+            addGlobalToast('Limite de salvamento offline atingido. Conecte-se para salvar novos prêmios de XP.', 'info');
             console.warn('[Offline Queue] XP queue limit (50) exceeded. Discarding new item.');
           } else {
             queue.push({ uid, amount, reason, txId: activeTxId, attempts: 0 });

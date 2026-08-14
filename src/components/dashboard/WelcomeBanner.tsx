@@ -1,5 +1,7 @@
 import React from 'react';
 import { getXPProgress } from '../../utils/xpUtils';
+import { getWhatsAppLink } from '../../../constants';
+import { trackEvent } from '../../utils/analytics';
 
 interface WelcomeBannerProps {
   profile: any;
@@ -44,6 +46,18 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="hidden sm:flex items-center shrink-0">
+            <a
+              href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
+            >
+              <span>💬</span> Falar com Matt no WhatsApp
+            </a>
           </div>
         </div>
       </div>
