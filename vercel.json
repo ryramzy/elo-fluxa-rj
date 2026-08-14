@@ -41,10 +41,6 @@
       "destination": "/api/health.ts"
     },
     {
-      "source": "/api/ai-coach-evaluate",
-      "destination": "/api/ai-coach-evaluate.ts"
-    },
-    {
       "source": "/api/whatsapp",
       "destination": "/api/whatsapp.ts"
     },
