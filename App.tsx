@@ -1,5 +1,4 @@
 import React, { useEffect, Suspense } from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './src/components/Navbar.tsx';
 import Footer from './src/components/Footer';
@@ -240,16 +239,9 @@ function AppShell() {
 }
 
 export default function App() {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   return (
     <GlobalErrorBoundary>
-      {clientId ? (
-        <GoogleOAuthProvider clientId={clientId}>
-          <AppShell />
-        </GoogleOAuthProvider>
-      ) : (
-        <AppShell />
-      )}
+      <AppShell />
     </GlobalErrorBoundary>
   );
 }
