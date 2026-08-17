@@ -8,615 +8,489 @@ import { useNavigate } from 'react-router-dom';
 import { courses } from '@/data/courses';
 import { useAuth } from '@/hooks/useAuth';
 import { useEnrollments } from '@/hooks/useEnrollments';
+import { 
+  BRAND_NAME, 
+  DOMAIN_NAME, 
+  STUDENT_COUNT, 
+  WHATSAPP_NUMBER, 
+  ZOOM_MEETING_URL, 
+  getWhatsAppLink, 
+  TESTIMONIALS,
+  MATTHEW_BIO
+} from '../../constants';
 import Hero from './Hero';
+import LoginModal from './LoginModal';
+import { FaCheckCircle, FaCalendarAlt, FaVideo, FaComments, FaStar, FaChevronDown, FaChevronUp, FaWhatsapp, FaBolt, FaArrowRight } from 'react-icons/fa';
 
 export default function About() {
   const navigate = useNavigate();
   const { user, signInAsGuest } = useAuth();
   const { enrollments } = useEnrollments(user?.uid || '');
-  const [linkCopied, setLinkCopied] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'quarterly'>('monthly');
 
-  // Redirect logged-in full users to dashboard (allow guests & unauthenticated to explore)
+  // Redirect authenticated full users directly to their dashboard
   useEffect(() => {
     if (user && !user.isGuest) {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
 
-  const handleShareClick = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+  const handleStartAuth = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      setLoginModalOpen(true);
+    }
   };
 
-  const handleEnrollClick = (courseId: string) => {
-    navigate(`/courses/${courseId}`);
+  const handleDemoLesson = (courseId = 'basic-english-daily-life', lessonId = 'be-dl-01') => {
+    signInAsGuest();
+    navigate(`/courses/${courseId}/lessons/${lessonId}`);
   };
+
+  const faqs = [
+    {
+      q: "Preciso ter conta no Zoom para entrar na aula com o Matt?",
+      a: "Não! Você só precisa clicar no botão 'Entrar no Zoom' na plataforma. O link (zoom.us/j/mramsay0) abre diretamente no seu navegador ou aplicativo, sem necessidade de cadastro ou pagamento de licença."
+    },
+    {
+      q: "Como funciona o agendamento de aulas?",
+      a: "É no estilo do Cambly: você acessa nosso calendário visual, escolhe os dias e horários livres que melhor se encaixam na sua rotina e confirma com 1 clique."
+    },
+    {
+      q: "E se eu for iniciante e tiver vergonha de falar?",
+      a: "O Matt mora no Rio de Janeiro há mais de 6 anos e é fluente em português. Ele entende exatamente as dificuldades e os vícios de pronúncia dos brasileiros, criando um ambiente 100% acolhedor e focado em destravar sua fala."
+    },
+    {
+      q: "Como funcionam os planos de assinatura?",
+      a: "Você tem acesso ilimitado à biblioteca completa de cursos e decks interativos do ELO!, além do seu pacote mensal de aulas ao vivo 1:1 no Zoom com o Matt. Sem fidelidade forçada, podendo pausar quando quiser."
+    },
+    {
+      q: "Posso pagar com Pix ou Cartão de Crédito?",
+      a: "Sim! Aceitamos pagamento instantâneo via Pix (Mercado Pago) e Cartão de Crédito internacional/nacional via Stripe."
+    }
+  ];
 
   return (
-    <div className="animate-fade-in-up space-y-6">
-      
-      {/* Hero Banner for Visitors & Guest Users */}
-      {(!user || user.isGuest) && (
-        <Hero onEnter={() => navigate('/login')} />
-      )}
-      
-      {/* Social Proof Bar */}
-      <section className="bg-white py-8 px-6 border-b border-slate-200">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-wrap justify-center items-center gap-4">
-            <div className="bg-blue-50 border border-blue-200 px-4 py-2 rounded-full">
-              <span className="text-sm font-medium text-blue-700">Professor nativo americano</span>
-            </div>
-            <div className="bg-green-50 border border-green-200 px-4 py-2 rounded-full">
-              <span className="text-sm font-medium text-green-700">Morando no Rio de Janeiro</span>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 px-4 py-2 rounded-full">
-              <span className="text-sm font-medium text-purple-700">InglÃªs real nÃ£o de livro</span>
-            </div>
-            <div className="bg-orange-50 border border-orange-200 px-4 py-2 rounded-full">
-              <span className="text-sm font-medium text-orange-700">Aulas ao vivo + cursos online</span>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="space-y-12 pb-16">
+      <LoginModal 
+        isOpen={loginModalOpen} 
+        onClose={() => setLoginModalOpen(false)} 
+        onSignIn={() => navigate('/dashboard')} 
+      />
 
-      {/* Pain-Benefit Section */}
-      {!user && (
-      <section className="py-20 px-6 bg-slate-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">VocÃª se identifica com algum desses?</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-600 font-medium">Estudo hÃ¡ anos mas trava na hora de falar</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-600 font-medium">Entendo inglÃªs mas nÃ£o consigo me expressar</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-600 font-medium">Fico nervoso quando preciso falar com americano</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-600 font-medium">Aprendo no app mas esqueÃ§o tudo logo depois</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-600 font-medium">NÃ£o tenho tempo para curso presencial</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-green-600 font-medium">Aqui vocÃª fala desde a primeira aula</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-green-600 font-medium">Aulas de conversaÃ§Ã£o real com nativo</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-green-600 font-medium">ConfianÃ§a que vem de praticar de verdade</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-green-600 font-medium">MÃ©todo com contexto cultural cola na memÃ³ria</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-green-600 font-medium">Aulas ao vivo online + cursos no seu ritmo</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <p className="text-lg text-slate-700 font-medium mb-6">
-              Isso Ã© o que os meus alunos vivem. Vem viver tambÃ©m.
-            </p>
-            <button
-              onClick={() => {
-                signInAsGuest();
-                navigate('/courses/basic-english-daily-life/lessons/be-dl-01');
-              }}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl transition-all shadow-lg text-sm uppercase tracking-wider hover:scale-105 border border-blue-400/40"
-            >
-              <span>âš¡</span> Experimentar Aula GrÃ¡tis (Sem Cadastro)
-            </button>
-          </div>
-        </div>
-      </section>
-      )}
+      {/* 1. HERO SECTION */}
+      <Hero onEnter={handleStartAuth} />
 
-      {/* Course Showcase */}
-      <section className="py-20 px-6 bg-slate-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">O que vocÃª vai aprender</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Escolha seu caminho e comece sua jornada de fluÃªncia em inglÃªs americano
-            </p>
-          </div>
-          
-          {/* Course Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course) => {
-              const isEnrolled = enrollments.some(e => e.courseId === course.id);
-              
-              return (
-                <div
-                  key={course.id}
-                  className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-                  onClick={() => handleEnrollClick(course.id)}
-                >
-                  {/* Photo Banner with Colored Overlay */}
-                  <div className="relative h-52 overflow-hidden">
-                    <img
-                      src={course.imageUrl}
-                      alt={course.title}
-                      className="w-full h-full object-cover"
-                      onLoad={(e) => {
-                        console.log('Image loaded successfully:', course.imageUrl);
-                      }}
-                      onError={(e) => {
-                        console.error('Image failed to load:', course.imageUrl, e);
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                    <div 
-                      className="absolute inset-0 z-10"
-                      style={{ backgroundColor: course.accentColor + '40' }}
-                    />
-                    {/* Emoji */}
-                    <div className="absolute bottom-4 left-4 text-4xl">
-                      {course.emoji}
-                    </div>
-                    {/* Tag Badge */}
-                    <div className="absolute top-4 right-4">
-                      <span 
-                        className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                        style={{ backgroundColor: course.accentColor }}
-                      >
-                        {course.tag}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="p-6">
-                    <h3 className="font-bold text-slate-900 mb-2 text-lg">
-                      {course.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
-                        {course.audience}
-                      </span>
-                      <span 
-                        className="text-sm font-semibold"
-                        style={{ color: course.accentColor }}
-                      >
-                        +{course.totalXpReward} XP
-                      </span>
-                    </div>
-
-                    {/* Lesson Count */}
-                    <div className="text-sm text-slate-500 mb-4">
-                      {course.lessons.length} aulas Â· Professor
-                    </div>
-
-                    {/* CTA Button */}
-                    {user ? (
-                      // Authenticated users - go to LMS
-                      <button
-                        className="w-full py-3 rounded-lg font-medium transition-colors text-white"
-                        style={{ backgroundColor: course.accentColor }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = course.accentColor + 'DD';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = course.accentColor;
-                        }}
-                      >
-                        {isEnrolled ? 'Continuar' : 'Ver curso'}
-                      </button>
-                    ) : (
-                      // Anonymous users - High Converting Interactive Trial CTA
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => {
-                            signInAsGuest();
-                            const firstLessonId = course.lessons[0]?.id || 'be-dl-01';
-                            navigate(`/courses/${course.id}/lessons/${firstLessonId}`);
-                          }}
-                          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-xs uppercase tracking-wider border border-blue-400/40 hover:scale-102"
-                        >
-                          âš¡ Experimentar 1Âª Aula GrÃ¡tis
-                        </button>
-                        <button 
-                          onClick={() => handleEnrollClick(course.id)}
-                          className="w-full text-slate-600 hover:text-slate-900 font-semibold py-1 text-xs transition-colors"
-                        >
-                          Ver Detalhes do Curso
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          <div className="text-center mt-8">
-            <p className="text-sm text-slate-600">
-              Comece grÃ¡tis - sem cartÃ£o de crÃ©dito
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Why This Works Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Por que funciona?</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-full"></div>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4">Professor nativo, nÃ£o roteiro</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Nossos professores sÃ£o nativos americanos. Eles nÃ£o seguem um script - ensinam do jeito que os americanos realmente falam.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="flex items-center justify-center">
-                  <div className="w-4 h-4 bg-green-600 rounded-full"></div>
-                  <div className="w-4 h-4 bg-green-600 rounded-full ml-2"></div>
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4">Contexto cultural primeiro</h3>
-              <p className="text-slate-600 leading-relaxed">
-                InglÃªs sem cultura Ã© vocabulÃ¡rio solto. Aqui vocÃª aprende o idioma dentro da cultura: esportes, trabalho, mÃºsica, vida real.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-8 h-8 bg-purple-600 rounded-lg"></div>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4">VocÃª fala. Desde o dia 1.</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Chega de esperar 'estar pronto para falar'. VocÃª pratica conversaÃ§Ã£o desde a primeira aula, com feedback de um nativo.
-              </p>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <p className="text-sm text-slate-500 font-medium mb-6 max-w-2xl mx-auto">
-              Professores nativos americanos especializados em inglÃªs para profissionais, estudantes e apaixonados por cultura americana.
-            </p>
-            <button 
-              onClick={() => navigate('/sobre')}
-              className="px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded-lg transition-colors"
-            >
-              Conhecer nossos professores
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Como funciona</h2>
-            <p className="text-lg text-slate-600">TrÃªs passos simples para dominar o inglÃªs americano</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Escolha seu curso</h3>
-              <p className="text-slate-600">Selecione o curso que melhor se adapta aos seus objetivos profissionais ou pessoais</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">2</span>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Aprenda com professores nativos</h3>
-              <p className="text-slate-600">Aulas ao vivo com professores nativos, material autÃªntico e feedback personalizado</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">3</span>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Agende suas aulas</h3>
-              <p className="text-slate-600">Pratique conversaÃ§Ã£o ao vivo quando estiver pronto, nos horÃ¡rios que funcionam para vocÃª</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Transformation Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">TransformaÃ§Ãµes reais</h2>
-            <p className="text-lg text-slate-600">De estudante de inglÃªs para falante confiante</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-red-600">Antes</span>
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic">"Trava em entrevistas em inglÃªs"</p>
-              </div>
-              <div className="border-t border-slate-200 pt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-green-600">Depois</span>
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic font-medium">"Conseguiu o emprego dos sonhos"</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-red-600">Antes</span>
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic">"NÃ£o entende filmes sem legenda"</p>
-              </div>
-              <div className="border-t border-slate-200 pt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-green-600">Depois</span>
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic font-medium">"Assiste NBA ao vivo sem esforÃ§o"</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg border border-slate-200 p-6">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-red-600">Antes</span>
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic">"Medo de falar com americanos"</p>
-              </div>
-              <div className="border-t border-slate-200 pt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-green-600">Depois</span>
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 italic font-medium">"Faz networking em conferÃªncias"</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">O que nossos alunos dizem</h2>
-            <p className="text-lg text-slate-600">HistÃ³rias reais de sucesso</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
-                  <p className="text-sm text-slate-500 italic">Primeiro aluno</p>
-                </div>
-              </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-slate-600 italic text-sm">
-                "Depoimento em breve - nossos primeiros alunos estÃ£o comeÃ§ando agora."
-              </p>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
-                  <p className="text-sm text-slate-500 italic">Primeira aluna</p>
-                </div>
-              </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-slate-600 italic text-sm">
-                "Depoimento em breve - nossos primeiros alunos estÃ£o comeÃ§ando agora."
-              </p>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-6 opacity-75">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-700">Depoimento em breve</h4>
-                  <p className="text-sm text-slate-500 italic">Primeiro aluno</p>
-                </div>
-              </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-slate-600 italic text-sm">
-                "Depoimento em breve - nossos primeiros alunos estÃ£o comeÃ§ando agora."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Pronto para parar de estudar<br />e comeÃ§ar a falar?
+      {/* 2. HOW IT WORKS (Cambly + Open English Hybrid) */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="text-xs font-black uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-950/60 px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-800">
+            Simples • Sem Burocracia
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
+            Como funciona o {BRAND_NAME}?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Experimente a primeira aula 100% interativa agora.<br />
-            Sem cartÃ£o de crÃ©dito, sem formulÃ¡rio.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <button
-              onClick={() => {
-                signInAsGuest();
-                navigate('/courses/basic-english-daily-life/lessons/be-dl-01');
-              }}
-              className="px-8 py-4 bg-white hover:bg-slate-100 text-blue-600 font-extrabold rounded-2xl transition-all shadow-lg inline-flex items-center justify-center gap-2 uppercase tracking-wider text-xs border-2 border-white hover:scale-105"
-            >
-              <span>âš¡</span> Testar Aula Demonstrativa (GrÃ¡tis)
-            </button>
-            <button 
-              onClick={() => navigate('/login')}
-              className="px-8 py-4 border-2 border-white text-white hover:bg-white/10 font-extrabold rounded-2xl transition-all uppercase tracking-wider text-xs"
-            >
-              Criar Conta GrÃ¡tis
-            </button>
-          </div>
-          <p className="text-sm opacity-80">
-            Vagas limitadas para aulas ao vivo este mÃªs
+          <p className="text-slate-600 dark:text-slate-400 mt-3 text-base md:text-lg">
+            O melhor do modelo Cambly (agendamento flexível) com a praticidade do Open English (aulas 1-click no Zoom).
           </p>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Step 1 */}
+          <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
+            <div className="w-14 h-14 bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-2xl font-black mb-6 group-hover:scale-110 transition-transform">
+              <FaCalendarAlt />
+            </div>
+            <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1">Passo 1</div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Escolha seu Horário</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Consulte os horários abertos no calendário e agende suas sessões 1:1 conforme sua disponibilidade da semana.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
+            <div className="w-14 h-14 bg-emerald-600/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center text-2xl font-black mb-6 group-hover:scale-110 transition-transform">
+              <FaVideo />
+            </div>
+            <div className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-1">Passo 2</div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Entre no Zoom em 1 Clique</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Sem precisar criar conta no Zoom ou instalar softwares pesados. Clique no botão de acesso direto e inicie a aula com o Matt.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
+            <div className="w-14 h-14 bg-purple-600/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center text-2xl font-black mb-6 group-hover:scale-110 transition-transform">
+              <FaComments />
+            </div>
+            <div className="text-xs font-black text-purple-600 uppercase tracking-widest mb-1">Passo 3</div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Pratique & Destrave</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Conversação real com foco em connected speech, expressões nativas e feedback detalhado no WhatsApp pós-aula.
+            </p>
+          </div>
+        </div>
       </section>
+
+      {/* 3. ABOUT MATT RAMSAY */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-3xl p-8 md:p-12 border border-blue-500/20 shadow-2xl text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Matt Avatar / Badge */}
+            <div className="lg:col-span-5 flex flex-col items-center text-center">
+              <div className="relative">
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 shadow-2xl shadow-blue-500/30">
+                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-6xl md:text-7xl font-serif">
+                    ?????
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full border-2 border-slate-900 shadow-md">
+                  ???? Nativo EUA
+                </div>
+              </div>
+
+              <h3 className="text-2xl md:text-3xl font-black mt-4">Matt Ramsay</h3>
+              <p className="text-blue-300 text-sm font-bold">Professor & Fundador • {DOMAIN_NAME}</p>
+              
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
+                  ?? Rio de Janeiro
+                </span>
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
+                  ???? Português Fluente
+                </span>
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
+                  ?? +6 anos no Brasil
+                </span>
+              </div>
+            </div>
+
+            {/* Matt Story & Bio */}
+            <div className="lg:col-span-7 space-y-4 text-slate-300">
+              <h4 className="text-2xl font-black text-white">
+                "O Nativo que fala sua língua no Rio de Janeiro."
+              </h4>
+              <p className="text-sm md:text-base leading-relaxed">
+                {MATTHEW_BIO.intro.text}
+              </p>
+              <p className="text-sm md:text-base leading-relaxed text-slate-400">
+                Com anos de experiência ensinando em grandes plataformas (como Cambly e Open English), desenvolvi o método ELO! especialmente para profissionais, estudantes e entusiastas brasileiros que querem falar com naturalidade, sem o bloqueio da gramática tradicional de livro.
+              </p>
+              
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                <a
+                  href={getWhatsAppLink('landing')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg active:scale-95"
+                >
+                  <FaWhatsapp className="text-base" /> Falar com o Matt no WhatsApp
+                </a>
+                <button
+                  onClick={handleStartAuth}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg active:scale-95 border border-blue-400/40"
+                >
+                  <FaBolt /> Acessar Plataforma
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SUBSCRIPTION PLANS & PAYWALL CARDS */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="text-xs font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-4 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+            Planos de Assinatura
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
+            Invista na sua Fluência Real
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
+            Aulas particulares com Matt no Zoom + acesso ilimitado a todos os módulos de curso.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Monthly Plan */}
+          <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
+                Plano Mensal
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">Conversação Contínua</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Ideal para manter o ritmo semanal</p>
+              
+              <div className="my-6">
+                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 149</span>
+                <span className="text-sm font-semibold text-slate-500"> / mês</span>
+              </div>
+
+              <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com Matt</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Acesso ilimitado a todos os <strong>Cursos ELO!</strong></span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Feedback detalhado de pronúncia por aula</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Suporte direto com Matt no WhatsApp</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={handleStartAuth}
+              className="w-full py-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md active:scale-95"
+            >
+              Começar com Plano Mensal
+            </button>
+          </div>
+
+          {/* Quarterly Plan (Featured) */}
+          <div className="bg-gradient-to-b from-blue-900/30 to-indigo-950/40 dark:from-slate-800 dark:to-slate-850 border-2 border-blue-500 rounded-3xl p-8 shadow-2xl relative flex flex-col justify-between">
+            <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg">
+              ? Mais Popular (Desconto)
+            </div>
+
+            <div>
+              <div className="inline-block bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
+                Plano Trimestral
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">Imersão de Fluência</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Foco e economia garantidos</p>
+
+              <div className="my-6">
+                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 119</span>
+                <span className="text-sm font-semibold text-slate-500"> / mês no plano</span>
+              </div>
+
+              <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span><strong>Pacote completo de aulas 1:1</strong> no Zoom</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Acesso VIP antecipado a novos módulos</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Plano de estudos personalizado por nível</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
+                  <span>Prioridade de agendamento no calendário</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={handleStartAuth}
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 border border-blue-400/40"
+            >
+              Assinar Plano Trimestral
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. INTERACTIVE LMS COURSE SHOWCASE */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="text-xs font-black uppercase tracking-widest text-purple-600 bg-purple-50 dark:bg-purple-950/60 px-4 py-1.5 rounded-full border border-purple-200 dark:border-purple-800">
+            Currículo Completo
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
+            Cursos Interativos ELO!
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
+            De conversação do dia a dia a Business English para tecnologia e reuniões internacionais.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:scale-[1.01] flex flex-col justify-between"
+            >
+              <div className="relative h-44 overflow-hidden">
+                <img
+                  src={course.imageUrl}
+                  alt={course.title}
+                  className="w-full h-full object-cover"
+                />
+                <div 
+                  className="absolute inset-0 z-10"
+                  style={{ backgroundColor: course.accentColor + '30' }}
+                />
+                <div className="absolute bottom-3 left-3 text-3xl">
+                  {course.emoji}
+                </div>
+                <div className="absolute top-3 right-3">
+                  <span 
+                    className="px-3 py-1 rounded-full text-[11px] font-black text-white shadow-md"
+                    style={{ backgroundColor: course.accentColor }}
+                  >
+                    {course.tag}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+                    {course.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500">
+                    {course.lessons.length} aulas • Prática interativa
+                  </span>
+                  <button
+                    onClick={() => handleDemoLesson(course.id, course.lessons[0]?.id)}
+                    className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-extrabold text-xs rounded-lg transition-colors flex items-center gap-1"
+                  >
+                    Testar <FaArrowRight size={10} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. REAL STUDENT TESTIMONIALS */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="text-xs font-black uppercase tracking-widest text-amber-500 bg-amber-50 dark:bg-amber-950/60 px-4 py-1.5 rounded-full border border-amber-200 dark:border-amber-800">
+            Resultados Comprovados
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
+            O que nossos alunos dizem
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
+            Alunos do Rio de Janeiro e de todo o Brasil aprendendo com Matt Ramsay.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {TESTIMONIALS.slice(0, 3).map((t, idx) => (
+            <div 
+              key={idx} 
+              className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex gap-1 text-amber-400 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} size={14} />
+                  ))}
+                </div>
+                <p className="text-sm text-slate-700 dark:text-slate-300 italic leading-relaxed">
+                  "{t.content}"
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 font-black flex items-center justify-center text-sm">
+                  {t.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t.name}</h4>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold">{t.location} • Verificado</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 7. FAQ ACCORDION */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+            Dúvidas Frequentes
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm">
+            Tudo o que você precisa saber sobre as aulas e a plataforma {BRAND_NAME}.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div 
+                key={idx} 
+                className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-all"
+              >
+                <button
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full p-5 text-left font-bold text-slate-900 dark:text-white flex items-center justify-between gap-4 text-sm md:text-base hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors"
+                >
+                  <span>{faq.q}</span>
+                  {isOpen ? <FaChevronUp className="text-blue-500 flex-shrink-0" /> : <FaChevronDown className="text-slate-400 flex-shrink-0" />}
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/50 pt-3">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 8. FINAL CONVERSION BANNER */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl space-y-6">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+            Pronto para falar inglês de verdade?
+          </h2>
+          <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto">
+            Junte-se a mais de {STUDENT_COUNT} alunos e comece hoje mesmo sua jornada de conversação com o Matt.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
+            <button
+              onClick={handleStartAuth}
+              className="w-full sm:w-auto px-8 py-4 bg-white text-slate-950 hover:bg-slate-100 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+            >
+              <FaBolt className="text-blue-600" /> Criar Conta Grátis
+            </button>
+            <a
+              href={getWhatsAppLink('landing')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+            >
+              <FaWhatsapp className="text-base" /> Falar com Matt no WhatsApp
+            </a>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
