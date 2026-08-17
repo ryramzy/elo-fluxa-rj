@@ -54,165 +54,24 @@
     // fbq('init', 'YOUR_PIXEL_ID_HERE');
     // fbq('track', 'PageView');
   </script>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 80px;
-      overscroll-behavior: none;
-      touch-action: pan-x pan-y;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background-color: #F8F9FA;
-      color: #1A1A1A;
-      overscroll-behavior: none;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    .font-serif {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    /* Prevent iOS Safari auto-zoom on input focus */
-    @media screen and (max-width: 767px) {
-      input[type="text"],
-      input[type="number"],
-      input[type="email"],
-      input[type="password"],
-      input[type="tel"],
-      select,
-      textarea {
-        font-size: 16px !important;
-      }
-    }
-
-    /* Safe area utility classes for notched phones */
-    .pt-safe { padding-top: env(safe-area-inset-top); }
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-    .pl-safe { padding-left: env(safe-area-inset-left); }
-    .pr-safe { padding-right: env(safe-area-inset-right); }
-
-    @keyframes fade-in-up {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes shimmer {
-      0% {
-        transform: translateX(-100%) rotate(45deg);
-      }
-
-      100% {
-        transform: translateX(100%) rotate(45deg);
-      }
-    }
-
-    .animate-fade-in-up {
-      animation: fade-in-up 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-    }
-
-    .shimmer-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to right,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.4) 50%,
-          rgba(255, 255, 255, 0) 100%);
-      animation: shimmer 3s infinite linear;
-    }
-
-    .animate-delay-200 {
-      animation-delay: 0.2s;
-    }
-
-    .animate-delay-400 {
-      animation-delay: 0.4s;
-    }
-
-    /* Toast Animations */
-    @keyframes slide-in-right {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes slide-out-right {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-    }
-
-    .animate-slide-in-right {
-      animation: slide-in-right 0.3s ease-out;
-    }
-
-    .animate-slide-out-right {
-      animation: slide-out-right 0.3s ease-out;
-    }
-
-    .dark {
-      color-scheme: dark;
-    }
-    
-    @media (max-height: 680px) {
-      .short-viewport-hide {
-        display: none !important;
-      }
-      .short-viewport-shrink {
-        height: 70px !important;
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
-      }
-      .short-portrait-avatar {
-        width: 48px !important;
-        height: 48px !important;
-        border-width: 2px !important;
-      }
-    }
-  </style>
 </head>
 
 <body>
   <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1" /></noscript>
-  <div id="root"></div>
+  <div id="root">
+    <div style="min-height: 100vh; background-color: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #ffffff; margin: 0; padding: 20px; box-sizing: border-box;">
+      <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #2563eb, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);">
+        E!
+      </div>
+      <div style="font-size: 24px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em;">ELO!</div>
+      <div style="font-size: 13px; color: #94a3b8; margin-bottom: 24px;">Inglês de verdade com Matt no Rio</div>
+      <div style="width: 36px; height: 36px; border: 3px solid rgba(59, 130, 246, 0.2); border-top-color: #3b82f6; border-radius: 50%; animation: eloSpin 0.8s linear infinite;"></div>
+      <style>
+        @keyframes eloSpin { to { transform: rotate(360deg); } }
+      </style>
+    </div>
+  </div>
   <script type="module" src="/index.tsx"></script>
 </body>
 
