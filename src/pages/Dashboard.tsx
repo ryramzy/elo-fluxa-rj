@@ -21,7 +21,6 @@ import { courses } from '../data/courses';
 import { OnboardingTour } from '../components/dashboard/OnboardingTour';
 import { enrollUserInCourse } from '../lib/firestore';
 import { VisualSlotPicker } from '../components/booking/VisualSlotPicker';
-import Admin from './Admin';
 import { FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
 import { DictionaryWidget } from '../components/dashboard/DictionaryWidget';
 import { TriviaWidget } from '../components/dashboard/TriviaWidget';
@@ -31,8 +30,6 @@ import { LuTriangleAlert } from 'react-icons/lu';
 
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firestore';
-
-import { getAdminViewMode, setAdminViewMode } from '../utils/adminView';
 import { WidgetErrorBoundary } from '../components/dashboard/WidgetErrorBoundary';
 
 const DashboardWorking: React.FC = () => {
@@ -52,20 +49,6 @@ const DashboardWorking: React.FC = () => {
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [referralsLoading, setReferralsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isAdminView, setIsAdminView] = useState(() => getAdminViewMode());
-
-  useEffect(() => {
-    const handleViewChange = (e: any) => {
-      if (typeof e.detail === 'boolean') {
-        setIsAdminView(e.detail);
-      } else {
-        setIsAdminView(getAdminViewMode());
-      }
-    };
-
-    window.addEventListener('elo_admin_view_changed' as any, handleViewChange);
-    return () => window.removeEventListener('elo_admin_view_changed' as any, handleViewChange);
-  }, []);
 
   useEffect(() => {
     const stateTab = (location.state as any)?.tab;
@@ -93,18 +76,10 @@ const DashboardWorking: React.FC = () => {
 
     fetchReferrals();
   }, [user?.uid, activeTab]);
-
-  const toggleViewMode = () => {
-    const next = !isAdminView;
-    setIsAdminView(next);
-    setAdminViewMode(next);
-  };
   
   const loading = profileLoading || enrollmentsLoading || bookingsLoading;
   
   useDocumentTitle('Dashboard');
-
-
 
   const getWeeklyBookingsCount = (userBookings: any[]) => {
     const today = new Date();
@@ -144,37 +119,8 @@ const DashboardWorking: React.FC = () => {
     return null;
   }
 
-  // Unified Ecosystem: Render Tutor Dashboard if user has tutor or admin role
-  const adminUid = import.meta.env.VITE_ADMIN_UID;
-  const userEmail = (user?.email || profile?.email || '').toLowerCase().trim();
-  const isAuthorizedEmail = 
-    userEmail === 'mramsayo@gmail.com' ||
-    userEmail === 'mramsay0@gmail.com' ||
-    userEmail === 'erneleducation@gmail.com' ||
-    userEmail.endsWith('@elospeak.com.br') ||
-    userEmail.endsWith('@elospeak.com');
-
-  const isTutorOrAdmin = profile?.role === 'tutor' || profile?.role === 'admin' || isAuthorizedEmail || (user?.uid && adminUid && user.uid.trim() === adminUid.trim());
-
-
-  
-  if (isTutorOrAdmin && isAdminView) {
-    return <Admin />;
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {isTutorOrAdmin && (
-        <div className="w-full bg-blue-600 text-white text-center py-2.5 px-4 font-bold text-xs tracking-wider uppercase shadow-md flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-          <span>Você está no modo de visualização de aluno.</span>
-          <button 
-            onClick={toggleViewMode}
-            className="bg-white text-blue-600 px-4 py-1.5 rounded-lg font-extrabold hover:bg-slate-100 transition-colors shadow-sm text-xs"
-          >
-            Voltar para o Painel Admin
-          </button>
-        </div>
-      )}
       <OnboardingTour 
         hasSeenOnboarding={profile?.hasSeenOnboarding || false} 
         profileLoaded={!profileLoading && !!profile} 

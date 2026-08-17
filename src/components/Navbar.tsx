@@ -11,7 +11,6 @@ import { useAuth } from '../hooks/useAuth.ts';
 import LoginModal from './LoginModal.tsx';
 import { DesktopDownloadModal } from './profile/DesktopDownloadModal';
 import { NotificationDropdown } from './navigation/NotificationDropdown';
-import { setAdminViewMode } from '../utils/adminView';
 
 interface NavbarProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
@@ -250,28 +249,15 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   {userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 py-2 z-50 divide-y divide-slate-750">
                       {isAuthorizedEmail && (
-                        <>
-                          <button
-                            onClick={() => {
-                              setUserDropdownOpen(false);
-                              setAdminViewMode(true);
-                              navigate('/dashboard');
-                            }}
-                            className="block w-full text-left px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-blue-400 hover:bg-slate-700 transition-colors"
-                          >
-                            👑 Painel Admin
-                          </button>
-                          <button
-                            onClick={() => {
-                              setUserDropdownOpen(false);
-                              setAdminViewMode(false);
-                              navigate('/dashboard');
-                            }}
-                            className="block w-full text-left px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-emerald-400 hover:bg-slate-700 transition-colors"
-                          >
-                            🎓 Modo Aluno
-                          </button>
-                        </>
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            navigate('/agenda');
+                          }}
+                          className="block w-full text-left px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-blue-400 hover:bg-slate-700 transition-colors"
+                        >
+                          📅 Minha Agenda
+                        </button>
                       )}
                       <a
                         href="/dashboard"
@@ -413,30 +399,16 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   {user.displayName || user.email}
                 </div>
                 {isAuthorizedEmail && (
-                  <>
-                    <button 
-                      onClick={() => {
-                        setAdminViewMode(true);
-                        navigate('/dashboard');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg flex items-center justify-center gap-2"
-                      style={{ width: '100%', maxWidth: '300px' }}
-                    >
-                      👑 Painel Admin
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setAdminViewMode(false);
-                        navigate('/dashboard');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="bg-emerald-600 border border-emerald-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:bg-emerald-700 transition-colors rounded-lg flex items-center justify-center gap-2"
-                      style={{ width: '100%', maxWidth: '300px' }}
-                    >
-                      🎓 Modo Aluno
-                    </button>
-                  </>
+                  <button 
+                    onClick={() => {
+                      navigate('/agenda');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white px-8 py-4 text-sm uppercase tracking-widest font-sans font-bold mt-2 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg flex items-center justify-center gap-2"
+                    style={{ width: '100%', maxWidth: '300px' }}
+                  >
+                    📅 Minha Agenda
+                  </button>
                 )}
                 <button 
                   onClick={() => {

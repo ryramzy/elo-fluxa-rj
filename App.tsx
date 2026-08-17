@@ -14,15 +14,12 @@ import { GlobalErrorBoundary } from './src/components/GlobalErrorBoundary';
 
 // Lazy-loaded page components — each becomes its own chunk
 const Dashboard = React.lazy(() => import('./src/pages/Dashboard'));
-const Admin = React.lazy(() => import('./src/pages/Admin'));
 const CoursePage = React.lazy(() => import('./src/pages/CoursePage'));
 const CoursesPage = React.lazy(() => import('./src/pages/CoursesPage'));
 const LessonPage = React.lazy(() => import('./src/pages/LessonPage'));
-const AdminStudentProfile = React.lazy(() => import('./src/pages/AdminStudentProfile'));
 const AgendaPage = React.lazy(() => import('./src/pages/AgendaPage'));
 const ProfilePage = React.lazy(() => import('./src/pages/ProfilePage'));
 const VideoCallPage = React.lazy(() => import('./src/pages/VideoCallPage'));
-const OrgAdminDashboard = React.lazy(() => import('./src/pages/OrgAdminDashboard'));
 const NotFound = React.lazy(() => import('./src/pages/NotFound'));
 
 // Landing page components — also lazy since most users go straight to /dashboard
@@ -191,33 +188,6 @@ function AppShell() {
                 </ProtectedRoute>
               } />
 
-
-              {/* Admin-only routes */}
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <Admin />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/students/:uid" element={
-                <ProtectedRoute>
-                  <AdminStudentProfile />
-                </ProtectedRoute>
-              } />
-          <Route path="/admin/announcements" element={
-            <ProtectedRoute>
-              <div className="max-w-4xl mx-auto p-6">
-                <h1 className="text-2xl font-bold mb-4">Announcements</h1>
-                <p className="text-slate-600">Announcement management - coming soon</p>
-              </div>
-            </ProtectedRoute>
-          } />
-
-              {/* B2B Org Admin route */}
-              <Route path="/org-admin" element={
-                <ProtectedRoute>
-                  <OrgAdminDashboard />
-                </ProtectedRoute>
-              } />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />
