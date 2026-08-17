@@ -46,7 +46,7 @@ async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
     const tutorEmails = [tutorEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
     const tutorTo = Array.from(new Set(tutorEmails));
     await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: tutorTo,
       subject: `Nova solicitação de aula de ${attendeeName} - ${formattedDate}`,
@@ -76,7 +76,7 @@ async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
 
     // 2. Send notice to Student
     await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: attendeeEmail,
       subject: `Solicitação de aula enviada - ${formattedDate}`,
@@ -124,7 +124,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
 
     const toEmails = Array.from(new Set([attendeeEmail, tutorEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'])).filter(Boolean);
     const { error } = await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: toEmails,
       subject: `Sua aula está confirmada - ${formattedDate}`,
@@ -220,7 +220,7 @@ async function handleEnrollmentConfirmation(req: VercelRequest, res: VercelRespo
     });
 
     const { error } = await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: studentEmail,
       subject: `You're enrolled in ${courseName}!`,
@@ -284,7 +284,7 @@ async function handleWelcome(req: VercelRequest, res: VercelResponse) {
     const { name, email } = req.body;
 
     const { error } = await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: email,
       subject: `Bem-vindo ao Elo!, ${name}!`,
@@ -471,7 +471,7 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
             });
 
           const { error } = await resend.emails.send({
-            from: 'Elo! <noreply@elospeak.com.br>',
+            from: 'ELO! <noreply@elospeak.com.br>',
             replyTo: 'matt@elospeak.com.br',
             to: userEmail,
             subject: `Lembrete: Sua aula é amanhã - ${formattedDate}`,
@@ -661,7 +661,7 @@ async function handleBookingCancellation(req: VercelRequest, res: VercelResponse
 
     const toEmails = [attendeeEmail, 'mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'].filter(Boolean);
     const { error } = await resend.emails.send({
-      from: 'Elo! <noreply@elospeak.com.br>',
+      from: 'ELO! <noreply@elospeak.com.br>',
       replyTo: 'matt@elospeak.com.br',
       to: toEmails,
       subject: emailSubject,

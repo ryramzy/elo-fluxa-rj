@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Elo! Inglês Americano",
-  "short_name": "Elo!",
-  "description": "Aprenda inglês americano de verdade no Rio de Janeiro",
+  "name": "ELO! — Inglês com Matt",
+  "short_name": "ELO!",
+  "description": "Inglês americano de verdade com Matt Ramsay no Rio de Janeiro (eloingles.com.br)",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

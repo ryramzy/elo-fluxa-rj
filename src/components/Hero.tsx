@@ -57,7 +57,7 @@ export default function Hero({ onEnter }: HeroProps) {
             </div>
 
             <h2 className="text-5xl md:text-7xl font-black text-white mb-2 tracking-tight">
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Elo!</span>
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ELO!</span>
             </h2>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-bold tracking-wide bg-emerald-950/40 px-4 py-1.5 rounded-full border border-emerald-500/30">
               <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>

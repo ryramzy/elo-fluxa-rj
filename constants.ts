@@ -7,20 +7,21 @@ import { Product, Testimonial } from './types.ts';
 
 export const STUDENT_COUNT = 54;
 export const WHATSAPP_NUMBER = "5522992322566";
-export const WHATSAPP_MESSAGE = "Oi Matt! Vi seu site e quero começar a aprender inglês americano";
-export const BRAND_NAME = "Elo!";
+export const WHATSAPP_MESSAGE = "Oi Matt! Vi o ELO! (eloingles.com.br) e quero começar a aprender inglês americano";
+export const BRAND_NAME = "ELO!";
+export const DOMAIN_NAME = "eloingles.com.br";
 export const MATT_EMAIL = "mramsay0@gmail.com";
 export const ZOOM_MEETING_URL = "https://zoom.us/j/mramsay0";
 
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {
-  landing: "Oi Matt! Vi seu site e quero saber mais sobre as aulas ao vivo no Zoom!",
-  lessonPaywall: "Oi Matt! Vi o Elo! e quero começar minhas aulas de conversação no Zoom!",
-  subscription: "Oi Matt! Quero tirar dúvidas sobre a assinatura dos planos de aula",
-  booking: "Oi Matt! Quero agendar minha aula de conversação no Zoom",
-  onboarding: "Oi Matt! Acabei de me cadastrar no Elo! Quero combinar meu horário de aula no Zoom",
-  general: "Oi Matt! Preciso de ajuda com minha conta no Elo!",
-  corporate: "Oi Matt! Quero saber mais sobre os planos corporativos da Elo para minha empresa",
+  landing: "Oi Matt! Vi o ELO! e quero agendar minha aula ao vivo com você no Zoom!",
+  lessonPaywall: "Oi Matt! Quero assinar o ELO! e começar minhas aulas de conversação no Zoom!",
+  subscription: "Oi Matt! Quero tirar dúvidas sobre os planos de aula do ELO!",
+  booking: "Oi Matt! Quero agendar minha aula particular no Zoom pelo ELO!",
+  onboarding: "Oi Matt! Acabei de me cadastrar no ELO! Quero combinar meu horário de aula no Zoom",
+  general: "Oi Matt! Preciso de ajuda com minha conta no ELO!",
+  corporate: "Oi Matt! Quero saber mais sobre os planos corporativos do ELO! para minha empresa",
   upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
 };
 

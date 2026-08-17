@@ -1,6 +1,5 @@
 {
   "appId": "com.elospeak.app",
   "appName": "ELO! Live English",
-  "webDir": "dist",
-  "bundledWebRuntime": false
+  "webDir": "dist"
 }
