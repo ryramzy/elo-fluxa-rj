@@ -160,7 +160,7 @@ const Signup = () => {
              <span className="text-blue-500">Elo!</span>
           </Link>
           <h2 className="text-2xl font-bold text-white mb-2">Criar Conta</h2>
-          <p className="text-slate-400 text-sm font-light">Pratique conversação e domine o inglês com Matthew Ramsay</p>
+          <p className="text-slate-400 text-sm font-light">Pratique conversação e domine o inglês com professores nativos</p>
         </div>
 
         {error && (

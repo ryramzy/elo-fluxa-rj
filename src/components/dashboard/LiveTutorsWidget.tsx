@@ -20,7 +20,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
   const [tutorModalOpen, setTutorModalOpen] = useState(false);
 
   useEffect(() => {
-    // Setup real-time presence subscription to Matt's online status
+    // Setup real-time presence subscription to Professor's online status
     const docRef = doc(db, 'settings', 'tutor_presence');
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -39,13 +39,13 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
 
   const handleConnectCall = () => {
     if (!tutorOnline) {
-      showToast({ type: 'error', message: 'Matt está offline no momento. Agende uma aula abaixo!' });
+      showToast({ type: 'error', message: 'Professor está offline no momento. Agende uma aula abaixo!' });
       return;
     }
 
     setConnecting(true);
-    trackEvent('live_call_connect_zoom', { tutorId: 'matt' });
-    showToast({ type: 'success', message: 'Abrindo sala do Zoom com Matt...' });
+    trackEvent('live_call_connect_zoom', { tutorId: 'Professor' });
+    showToast({ type: 'success', message: 'Abrindo sala do Zoom com Professor...' });
 
     setTimeout(() => {
       window.open('https://zoom.us/j/mramsay0', '_blank');
@@ -65,7 +65,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
             <FaGlobeAmericas className="text-emerald-400" /> Plantão de Conversação 🇺🇸
           </h3>
           <p className="text-[10px] text-emerald-400 font-bold mt-0.5 uppercase tracking-wide">
-            Fale com Matt ao vivo
+            Fale com Professor ao vivo
           </p>
         </div>
         
@@ -77,7 +77,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25 animate-pulse' 
               : 'bg-slate-950/80 text-slate-500 border-white/5'
           }`}>
-            <FaDotCircle size={8} /> {tutorOnline ? 'Matt Online' : 'Matt Offline'}
+            <FaDotCircle size={8} /> {tutorOnline ? 'Professor Online' : 'Professor Offline'}
           </span>
         )}
       </div>
@@ -86,7 +86,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
         Pratique conversação real com seu professor particular em tempo real. Sem burocracias, direto ao ponto quando disponível.
       </p>
 
-      {/* Matthew Ramsay Profile Widget card */}
+      {/* Professor Nativo Profile Widget card */}
       <div className="relative z-10 mb-4 bg-slate-950/60 border border-white/5 rounded-2xl p-4 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
               )}
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-105">Matthew Ramsay</h4>
+              <h4 className="text-xs font-bold text-slate-105">Professor Nativo</h4>
               <p className="text-[9px] text-slate-450 mt-0.5">Boston, MA • Sotaque Americano Nativo</p>
             </div>
           </div>
@@ -138,7 +138,7 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
       </div>
 
       <div className="text-[9px] text-slate-550 text-center font-medium">
-        * As aulas ao vivo são transmitidas via Zoom com o professor nativo Matt.
+        * As aulas ao vivo são transmitidas via Zoom com o Professor Nativo.
       </div>
 
       <TutorProfileModal

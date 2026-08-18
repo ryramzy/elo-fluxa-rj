@@ -33,7 +33,7 @@ export default function Hero({ onEnter }: HeroProps) {
     tag: 'O Nativo que fala sua língua',
     subtitle: 'Aulas com professor nativo americano, foco total em conversação real.',
     subtitleEn: '',
-    cta1: 'Falar com Matt',
+    cta1: 'Falar com Professor',
     cta2: 'Testar Aula Demonstrativa',
     socialProof: `Ajudando ${STUDENT_COUNT}+ alunos a alcançarem a fluência este mês.`
   };
@@ -53,7 +53,7 @@ export default function Hero({ onEnter }: HeroProps) {
               <span className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
                 🇺🇸
               </span>
-              <span>Professor Nativo • Matt Ramsay</span>
+              <span>Professor Nativo • Professor Nativo</span>
             </div>
 
             <h2 className="text-5xl md:text-7xl font-black text-white mb-2 tracking-tight">
@@ -76,7 +76,7 @@ export default function Hero({ onEnter }: HeroProps) {
 
           <div className="max-w-[650px] mx-auto">
             <p className="text-base md:text-lg text-slate-300 font-normal leading-relaxed">
-              Esqueça gramática decorada. Aprenda connected speech, expressões das ruas dos EUA e agende suas aulas 1-on-1 com o Matt no Rio.
+              Esqueça gramática decorada. Aprenda connected speech, expressões das ruas dos EUA e agende suas aulas 1-on-1 com o Professor no Rio.
             </p>
           </div>
           

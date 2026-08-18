@@ -459,7 +459,7 @@ const CoursePage: React.FC = () => {
                         M
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-200 text-sm">Matt</h4>
+                        <h4 className="font-bold text-slate-200 text-sm">Professor</h4>
                         <p className="text-slate-400 text-xs mt-0.5">
                           Native speaker de Nova York. Especialista em destravar a fala de profissionais brasileiros.
                         </p>

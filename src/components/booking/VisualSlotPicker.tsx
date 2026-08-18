@@ -76,7 +76,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           // Roster fallback
           const fallback: Tutor = {
             id: 'matthew',
-            name: 'Matthew (Matt)',
+            name: 'Professor Nativo',
             email: 'matt@elospeak.com.br',
             calendarId: 'matt@elospeak.com.br',
             bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
@@ -89,7 +89,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         console.warn('Failed to fetch tutors, using Matthew default:', e);
         const fallback: Tutor = {
           id: 'matthew',
-          name: 'Matthew (Matt)',
+          name: 'Professor Nativo',
           email: 'matt@elospeak.com.br',
           calendarId: 'matt@elospeak.com.br',
           bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
@@ -161,7 +161,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
     const activeTutor = selectedTutor || {
       id: 'matthew',
-      name: 'Matthew (Matt)',
+      name: 'Professor Nativo',
       email: 'matt@elospeak.com.br',
       calendarId: 'matt@elospeak.com.br'
     };

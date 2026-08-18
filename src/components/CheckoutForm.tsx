@@ -296,7 +296,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
                 rel="noopener noreferrer"
                 className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1.5"
               >
-                💬 Dúvidas sobre o Pix? Falar com Matt no WhatsApp
+                💬 Dúvidas sobre o Pix? Falar com o suporte no WhatsApp
               </a>
             </div>
           </>

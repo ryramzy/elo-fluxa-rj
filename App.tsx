@@ -30,6 +30,8 @@ const Login = React.lazy(() => import('./src/components/Auth/Login'));
 const Signup = React.lazy(() => import('./src/components/Auth/Signup'));
 const Sobre = React.lazy(() => import('./src/pages/Sobre'));
 const Dicas = React.lazy(() => import('./src/pages/Dicas'));
+const ApplyTutor = React.lazy(() => import('./src/pages/ApplyTutor'));
+const Admin = React.lazy(() => import('./src/pages/Admin'));
 
 
 
@@ -150,11 +152,18 @@ function AppShell() {
               <Route path="/courses" element={<CoursesPage />} />
               <Route path="/reviews" element={<Testimonials />} />
               <Route path="/dicas" element={<Dicas />} />
+              <Route path="/seja-tutor" element={<ApplyTutor />} />
+              <Route path="/apply" element={<ApplyTutor />} />
 
               {/* Auth-required routes */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <Admin />
                 </ProtectedRoute>
               } />
               <Route path="/courses/:courseId" element={

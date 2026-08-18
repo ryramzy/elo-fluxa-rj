@@ -34,7 +34,7 @@ const Dicas: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4">English Tips & Tricks</h1>
           <p className="text-xl opacity-90 mb-8">
-            Real American English insights from Matt's experience teaching Brazilians
+            Real American English insights from do Professor experience teaching Brazilians
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
@@ -49,7 +49,7 @@ const Dicas: React.FC = () => {
               rel="noopener noreferrer"
               className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
             >
-              Ask Matt a Question
+              Faça uma pergunta ao Professor
             </a>
           </div>
         </div>
@@ -120,7 +120,7 @@ const Dicas: React.FC = () => {
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition-colors"
                     >
-                      Ask Matt
+                      Pergunte ao Professor
                     </a>
                   )}
                 </div>
@@ -137,11 +137,11 @@ const Dicas: React.FC = () => {
             Get Personalized English Tips
           </h2>
           <p className="text-xl opacity-90 mb-8">
-            Receive weekly tips and practice directly with Matt on WhatsApp
+            Receive weekly tips and practice diretamente com o Professor on WhatsApp
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href={`${getWhatsAppLink('general')}&text=Hi%20Matt!%20I%20want%20to%20receive%20weekly%20English%20tips`}
+              href={`${getWhatsAppLink('general')}&text=Olá%20Professor!%20I%20want%20to%20receive%20weekly%20English%20tips`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-white text-green-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"

@@ -7,22 +7,22 @@ import { Product, Testimonial } from './types.ts';
 
 export const STUDENT_COUNT = 54;
 export const WHATSAPP_NUMBER = "5522992322566";
-export const WHATSAPP_MESSAGE = "Oi Matt! Vi o ELO! (eloingles.com.br) e quero começar a aprender inglês americano";
+export const WHATSAPP_MESSAGE = "Ol�! Vi o ELO! (eloingles.com.br) e quero começar a aprender inglês americano";
 export const BRAND_NAME = "ELO!";
 export const DOMAIN_NAME = "eloingles.com.br";
-export const MATT_EMAIL = "mramsay0@gmail.com";
+export const Professor_EMAIL = "mramsay0@gmail.com";
 export const ZOOM_MEETING_URL = "https://zoom.us/j/mramsay0";
 
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {
-  landing: "Oi Matt! Vi o ELO! e quero agendar minha aula ao vivo com você no Zoom!",
-  lessonPaywall: "Oi Matt! Quero assinar o ELO! e começar minhas aulas de conversação no Zoom!",
-  subscription: "Oi Matt! Quero tirar dúvidas sobre os planos de aula do ELO!",
-  booking: "Oi Matt! Quero agendar minha aula particular no Zoom pelo ELO!",
-  onboarding: "Oi Matt! Acabei de me cadastrar no ELO! Quero combinar meu horário de aula no Zoom",
-  general: "Oi Matt! Preciso de ajuda com minha conta no ELO!",
-  corporate: "Oi Matt! Quero saber mais sobre os planos corporativos do ELO! para minha empresa",
-  upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
+  landing: "Ol�! Vi o ELO! e quero agendar minha aula ao vivo com você no Zoom!",
+  lessonPaywall: "Ol�! Quero assinar o ELO! e começar minhas aulas de conversação no Zoom!",
+  subscription: "Ol�! Quero tirar dúvidas sobre os planos de aula do ELO!",
+  booking: "Ol�! Quero agendar minha aula particular no Zoom pelo ELO!",
+  onboarding: "Ol�! Acabei de me cadastrar no ELO! Quero combinar meu horário de aula no Zoom",
+  general: "Ol�! Preciso de ajuda com minha conta no ELO!",
+  corporate: "Ol�! Quero saber mais sobre os planos corporativos do ELO! para minha empresa",
+  upcomingClass: "Ol�! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
 };
 
 export const getWhatsAppLink = (
@@ -31,7 +31,7 @@ export const getWhatsAppLink = (
 ) => {
   let baseMsg = WHATSAPP_MESSAGES[context] || WHATSAPP_MESSAGES.general;
   if (customDetails?.studentName) {
-    baseMsg = `Oi Matt! Sou o(a) ${customDetails.studentName}. ` + (
+    baseMsg = `Ol�! Sou o(a) ${customDetails.studentName}. ` + (
       customDetails.date && customDetails.time 
         ? `Tenho aula agendada para ${customDetails.date} às ${customDetails.time} no Zoom.` 
         : baseMsg
@@ -40,7 +40,7 @@ export const getWhatsAppLink = (
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(baseMsg)}`;
 };
 
-export const MATTHEW_BIO = {
+export const TUTOR_BIO = {
   intro: {
     title: "Welcome! It’s great to meet you 😊",
     text: "Whether your goal is fluent conversation, sharper grammar, or speaking confidently about technology, work, and ideas, I’m here to help. My lessons are practical, engaging, and tailored to real life—so you leave each session feeling more confident and clearer in how you express yourself. Let’s make learning effective, relevant, and enjoyable 🚀"
@@ -48,7 +48,7 @@ export const MATTHEW_BIO = {
   aboutMe: {
     title: "About Me",
     icon: "👋",
-    text: "🌍 Curious mind. Global perspective. I’ve traveled to 13 countries, lived in three, and explored diverse regions of the U.S. Along the way, I’ve developed a deep appreciation for culture, communication, and how ideas move across borders. Professionally and personally, I’m passionate about: Technology & innovation (Generative AI, AI agents, cloud architecture, AWS, S3) Education & communication Philosophy (Stoicism, ethics, critical thinking, systems thinking) Public policy, globalization, and society. I enjoy helping students talk comfortably about modern topics—from AI and tech careers to philosophy, culture, and everyday life—while also improving pronunciation, clarity, and confidence. Outside the classroom, I stay active 💪 (gym, hiking, beach days 🏖️) and believe learning should feel dynamic and human, not rigid or robotic. Whether you want: Natural conversation practice, Professional or tech-focused English, or Thoughtful discussions about ideas, work, or the world—I’ll meet you where you are and help you level up. Book a lesson, and let’s build skills that actually matter 🌍✨"
+    text: "🌍 Curious mind. Global perspective. I’ve traveled to 13 countries, lived in three, and explored diverse regions of the U.S. Along the way, I’ve developed a deep appreciation for culture, communication, and how ideas move across borders. Professionally and personally, I’m passionate about: Technology & innovation (Generative AI, AI agents, cloud architecture, AWS, S3) Education & communication Philosophy (Stoicism, ethics, critical thinking, systems thinking) Public policy, globalization, and society. I enjoy helping students talk comfortably about modern topics—from AI and tech careers to philosophy, culture, and everyday life—while also improving pronunciation, clarity, and confidence. Outside the classroom, I stay active 💪 (gym, hiking, beach days 🏖️) and believe learning should feel dynamic and human, not rigid or robotic. Whether you want: Natural conversation practice, Professional or tech-focused English, or Thoughtful discussions about ideas, work, or the world—I’ll meet you where you are and help you level up. Book a lesson, and let’s build skills that actually Professorer 🌍✨"
   },
   languages: [
     { name: "English", level: "Native: USA Accent", icon: "🇺🇸" },
@@ -94,7 +94,7 @@ export const MATTHEW_BIO = {
       description: "Applying ancient philosophy to the high-pressure environment of the technology sector."
     },
     {
-      title: "Linguistic Patina: Why Native Nuance Matters",
+      title: "Linguistic Patina: Why Native Nuance Professorers",
       year: "2024",
       publisher: "Elo! Editorial",
       description: "An exploration of how cultural context shapes professional communication."
@@ -171,7 +171,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: 'Rio de Janeiro (Tech Lead)',
     locationCode: 'BR',
     date: 'Jan 2025',
-    content: 'Preparei minha entrevista para o visto com o Matthew e passei de primeira. Ele entende as pegadinhas que nós brasileiros caímos.',
+    content: 'Preparei minha entrevista para o visto com o Professorhew e passei de primeira. Ele entende as pegadinhas que nós brasileiros caímos.',
     isFeatured: true,
     portugueseSpeaker: true,
     language: 'pt'
