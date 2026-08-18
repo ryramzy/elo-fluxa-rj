@@ -67,6 +67,7 @@ export function useUserProfile(uid: string) {
             createdAt: data?.createdAt || null,
             hasSeenOnboarding: !!data?.hasSeenOnboarding,
             role,
+            plan: data?.plan || 'free',
             bio: data?.bio || '',
             targetGoal: data?.targetGoal || '',
           });
@@ -89,6 +90,7 @@ export function useUserProfile(uid: string) {
                 createdAt: new Date(),
                 role: 'student',
                 hasSeenOnboarding: false,
+                plan: 'free',
                 bio: '',
                 targetGoal: '',
               });

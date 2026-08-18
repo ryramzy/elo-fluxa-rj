@@ -48,7 +48,16 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center shrink-0">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <a
+              href="https://zoom.us/j/mramsay0"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-blue-400/30"
+            >
+              <span>📹</span> Entrar no Zoom (Aula ao Vivo)
+            </a>
             <a
               href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
               target="_blank"
@@ -56,7 +65,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
             >
-              <span>💬</span> Falar com Matt no WhatsApp
+              <span>💬</span> Falar com Matt
             </a>
           </div>
         </div>

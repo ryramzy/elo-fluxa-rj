@@ -104,8 +104,11 @@ const DashboardWorking: React.FC = () => {
   useEffect(() => {
     if (!profileLoading && !user) {
       navigate('/login');
+    } else if (!profileLoading && profile && profile.plan === 'free' && profile.role !== 'admin' && !profile.isGuest) {
+      // Auto-open paywall for unsubscribed students
+      setSubscriptionModalOpen(true);
     }
-  }, [user, profileLoading, navigate]);
+  }, [user, profileLoading, profile, navigate]);
 
   if (profileLoading) {
     return (

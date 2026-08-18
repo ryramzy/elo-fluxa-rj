@@ -43,7 +43,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
         },
         body: JSON.stringify({
           plan,
-          price: plan === 'pro' ? 97 : 197,
+          price: plan === 'pro' ? 149 : 119,
           email: user.email || '',
           userId: user.uid
         })
@@ -98,7 +98,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
           
           <CheckoutForm 
             plan={selectedPlanForCheckout} 
-            price={selectedPlanForCheckout === 'pro' ? 97 : 197} 
+            price={selectedPlanForCheckout === 'pro' ? 149 : 357} 
             onSuccess={handleCheckoutSuccess}
             onCancel={() => setSelectedPlanForCheckout(null)}
           />
@@ -193,26 +193,26 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               <div>
                 <div className="text-center mb-6 mt-2">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded">
-                    Fluente
+                    Plano Mensal
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
-                    R$97 <span className="text-xs font-normal text-slate-500">/ mês</span>
+                    R$149 <span className="text-xs font-normal text-slate-500">/ mês</span>
                   </div>
-                  <p className="text-xs text-slate-455">Para quem quer resultados práticos acelerados</p>
+                  <p className="text-xs text-slate-455">Conversação Contínua</p>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>Todos os cursos 100% desbloqueados</strong>
+                    <strong>Acesso ilimitado a todos os Cursos ELO!</strong>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>4 aulas ao vivo de 30min com nativo/mês</span>
+                    <span>Aulas 1:1 particulares no Zoom com Matt</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Suporte VIP e dicas via WhatsApp</span>
+                    <span>Feedback detalhado de pronúncia por aula</span>
                   </li>
                 </ul>
               </div>
@@ -244,27 +244,27 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
             <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-6 hover:border-slate-800 transition-all flex flex-col justify-between">
               <div>
                 <div className="text-center mb-6">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-purple-400 px-2 py-0.5 bg-purple-500/10 border border-purple-500/20 rounded">
-                    Imersão Total
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
+                    Plano Trimestral
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
-                    R$197 <span className="text-xs font-normal text-slate-500">/ mês</span>
+                    R$119 <span className="text-xs font-normal text-slate-500">/ mês</span>
                   </div>
-                  <p className="text-xs text-slate-455">Para prazos reais e progresso diário intenso</p>
+                  <p className="text-xs text-slate-455">Imersão de Fluência</p>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-purple-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>Aulas e simulações ao vivo ilimitadas</strong>
+                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
+                    <strong>Pacote completo de aulas 1:1 no Zoom</strong>
                   </li>
                   <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-purple-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Apoio individualizado de gramática e escrita</span>
+                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Acesso VIP antecipado a novos módulos</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-purple-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Certificados oficiais de conclusão de track</span>
+                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Prioridade de agendamento no calendário</span>
                   </li>
                 </ul>
               </div>
