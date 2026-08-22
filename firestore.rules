@@ -17,6 +17,8 @@ service cloud.firestore {
         request.auth.token.email == 'mramsay0@gmail.com' ||
         request.auth.token.email == 'mramsayo@gmail.com' ||
         request.auth.token.email == 'erneleducation@gmail.com' ||
+        request.auth.token.email.matches('.*@eloingle\\.com\\.br') ||
+        request.auth.token.email.matches('.*@eloingles\\.com\\.br') ||
         request.auth.token.email.matches('.*@elospeak\\.com\\.br') ||
         request.auth.token.email.matches('.*@elospeak\\.com')
       );
@@ -140,6 +142,13 @@ service cloud.firestore {
     match /availableSlots/{slotId} {
       allow read: if isAuthenticated();
       allow write: if isTutor();
+    }
+
+    match /tutor_applications/{appId} {
+      allow create: if isAuthenticated() && request.auth.uid == appId;
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == appId);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Tutors collection rules

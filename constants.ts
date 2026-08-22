@@ -11,7 +11,7 @@ export const WHATSAPP_MESSAGE = "Oi Matt! Vi o ELO! (eloingles.com.br) e quero c
 export const BRAND_NAME = "ELO!";
 export const DOMAIN_NAME = "eloingles.com.br";
 export const MATT_EMAIL = "mramsay0@gmail.com";
-export const ZOOM_MEETING_URL = "https://zoom.us/j/mramsay0";
+export const ZOOM_MEETING_URL = "https://zoom.us/j/professor0";
 
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {
@@ -99,92 +99,26 @@ export const MATTHEW_BIO = {
       publisher: "Elo! Editorial",
       description: "An exploration of how cultural context shapes professional communication."
     }
-  ],
-  education: [
-    {
-      degree: "Google Cloud Architect Certification",
-      school: "Google Cloud",
-      focus: "Entrepreneurship • Technology • Internet. Training in cloud architecture, infrastructure design, scalability, security, and modern technologies including data systems and distributed applications."
-    },
-    {
-      degree: "Graduate Studies in Economics",
-      school: "University of Sydney",
-      focus: "Finance and Banking. Advanced coursework in economic theory, development, and global markets, with an international perspective shaped by studying and living abroad."
-    },
-    {
-      degree: "Bachelor of Arts (BA)",
-      school: "Law • Government • Research",
-      focus: "Focused on governance, public policy, international relations, and critical analysis, with strong emphasis on writing, research, and understanding global political systems."
-    },
-    {
-      degree: "TESOL Certification",
-      school: "Teaching English to Speakers of Other Languages",
-      focus: "Specialized training in pedagogical techniques for non-native speakers."
-    }
-  ],
-  experience: [
-    {
-      role: "Sustainability Planner",
-      company: "ECO Action (Atlanta, GA)",
-      desc: "As a sustainability planner, I bring my engineering expertise to drive environmental initiatives. My role involves analyzing, designing, and implementing sustainable solutions."
-    },
-    {
-      role: "Software Programming",
-      company: "Tech Lead / Dev",
-      desc: "Versatile software programmer with a wealth of experience in front-end and back-end development, as well as DevOps. Passionate about crafting innovative digital solutions."
-    },
-    {
-      role: "Research Associate",
-      company: "Legal / Government",
-      desc: "Using case law and case studies performed research to improve government policy in regards to disability under the Americans With Disabilities Act."
-    },
-    {
-      role: "Financial Manager",
-      company: "Asset Management",
-      desc: "Managed portfolios involving Stocks, Forex, and Crypto (BTC & Ethereum)."
-    },
-    {
-      role: "Digital Content Creator",
-      company: "Freelance",
-      desc: "Published several articles while living in Australia from a student's perspective."
-    }
   ]
 };
 
-export const PRODUCTS: Product[] = [];
-
 export const TESTIMONIALS: Testimonial[] = [
   {
-    id: 't1',
-    name: 'Ricardo M.',
-    location: 'Rio de Janeiro (Oil & Gas Executive)',
-    locationCode: 'BR',
-    date: 'Fev 2025',
-    content: 'The specific technical vocabulary for the energy sector was a game changer for my meetings with Houston.',
-    isFeatured: true,
-    portugueseSpeaker: true,
-    language: 'en'
+    name: "Gabriel Santos",
+    location: "Rio de Janeiro, RJ",
+    content: "O Matt é incrível. Estava travado para entrevistas em inglês na área de tecnologia e em 1 mês já me sentia super confiante para falar.",
+    stars: 5
   },
   {
-    id: 't2',
-    name: 'Juliana S.',
-    location: 'Rio de Janeiro (Tech Lead)',
-    locationCode: 'BR',
-    date: 'Jan 2025',
-    content: 'Preparei minha entrevista para o visto com o Matthew e passei de primeira. Ele entende as pegadinhas que nós brasileiros caímos.',
-    isFeatured: true,
-    portugueseSpeaker: true,
-    language: 'pt'
+    name: "Mariana Costa",
+    location: "São Paulo, SP",
+    content: "A melhor experiência que já tive com inglês. As aulas são leves, sem aquela pressão de cursinho tradicional. Recomendo demais!",
+    stars: 5
   },
   {
-    id: 't3',
-    name: 'Marcos V.',
-    location: 'São Paulo',
-    locationCode: 'BR',
-    date: 'Jan 2025',
-    content: 'A experiência de ter um professor que entende de tecnologia facilitou muito. Não precisei explicar o que é AWS ou S3, ele já sabia.',
-    isFeatured: false,
-    portugueseSpeaker: true,
-    language: 'pt'
+    name: "Lucas Oliveira",
+    location: "Niterói, RJ",
+    content: "O método com os decks de slides e a conversa no Zoom é muito dinâmico. Você aprende o inglês real das ruas, não o de livro antigo.",
+    stars: 5
   }
 ];

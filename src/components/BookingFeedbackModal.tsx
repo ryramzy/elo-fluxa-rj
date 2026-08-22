@@ -78,8 +78,8 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
       });
       showToast({ type: 'success', message: 'Feedback salvo no Firestore!' });
 
-      // Automatically construct WhatsApp Feedback summary for Matt to send to student with 1 tap
-      const waText = `Oi ${booking.userName}! Segue o feedback da nossa aula de hoje no ELO! (eloingles.com.br):\n\n` +
+      // Automatically construct WhatsApp Feedback summary for Professor to send to student with 1 tap
+      const waText = `Oi ${booking.userName}! Segue o feedback da nossa aula de hoje no ELO! (eloingle.com.br):\n\n` +
         `🗣️ Pronúncia: ${pronunciation || 'Muito boa!'}\n` +
         `📚 Novo Vocabulário: ${vocabulary || 'Praticamos expressões nativas'}\n` +
         `📝 Tarefa/Homework: ${homework || 'Praticar conversação'}\n\n` +

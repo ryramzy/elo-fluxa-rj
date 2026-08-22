@@ -75,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
     const baseUrl = isLocal 
       ? `http://${host}` 
-      : (process.env.VITE_APP_URL || 'https://elo-fluxa-rj.vercel.app');
+      : (process.env.VITE_APP_URL || 'https://eloingle.com.br');
     const notificationUrl = `${baseUrl}/api/webhooks/mercado-pago`;
 
     const mpBody = {

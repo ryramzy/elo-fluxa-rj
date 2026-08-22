@@ -344,7 +344,10 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
         </button>
         
         <div className="text-xs font-semibold text-slate-400">
-          Use as setas ou barras para navegar no deck
+          <span className="hidden sm:inline">Use as setas ou barras para navegar no deck</span>
+          <span className="sm:hidden bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800 text-[11px] font-mono text-slate-300">
+            {currentIndex + 1} / {slides.length}
+          </span>
         </div>
 
         {currentIndex === slides.length - 1 ? (

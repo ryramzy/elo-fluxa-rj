@@ -59,7 +59,7 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
     }
 
     const credentials = parseServiceAccountCredentials();
-    const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
+    const calendarId = tutorCalendarId || process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@eloingle.com.br';
 
     if (!credentials) {
       console.log('Returning fallback calendar event (No service account key configured)');
@@ -167,7 +167,7 @@ async function handleCancelEvent(req: VercelRequest, res: VercelResponse) {
     }
 
     const credentials = parseServiceAccountCredentials();
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@eloingle.com.br';
 
     if (!credentials) {
       console.log('Mock calendar event cancellation (no service account):', eventId);
@@ -210,7 +210,7 @@ async function handleGetEvents(req: VercelRequest, res: VercelResponse) {
     }
 
     const credentials = parseServiceAccountCredentials();
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@elospeak.com.br';
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || process.env.MATT_EMAIL || 'matt@eloingle.com.br';
 
     if (!credentials) {
       console.log('Returning mock calendar events (no service account)');

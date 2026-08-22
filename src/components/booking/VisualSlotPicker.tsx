@@ -75,25 +75,25 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         } else {
           // Roster fallback
           const fallback: Tutor = {
-            id: 'matthew',
-            name: 'Matthew (Matt)',
-            email: 'matt@elospeak.com.br',
-            calendarId: 'matt@elospeak.com.br',
-            bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
-            photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+            id: 'matt',
+            name: 'Matt Ramsay',
+            email: 'mramsay0@gmail.com',
+            calendarId: 'mramsay0@gmail.com',
+            bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
+            photoUrl: '/matt-profile.jpg'
           };
           setTutors([fallback]);
           setSelectedTutor(fallback);
         }
       } catch (e) {
-        console.warn('Failed to fetch tutors, using Matthew default:', e);
+        console.warn('Failed to fetch tutors, using Matt default:', e);
         const fallback: Tutor = {
-          id: 'matthew',
-          name: 'Matthew (Matt)',
-          email: 'matt@elospeak.com.br',
-          calendarId: 'matt@elospeak.com.br',
-          bio: 'Americano nativo de São Francisco, coach de conversação e especialista em destravar a fala de brasileiros.',
-          photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+          id: 'matt',
+          name: 'Matt Ramsay',
+          email: 'mramsay0@gmail.com',
+          calendarId: 'mramsay0@gmail.com',
+          bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
+          photoUrl: '/matt-profile.jpg'
         };
         setTutors([fallback]);
         setSelectedTutor(fallback);
@@ -161,7 +161,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
     const activeTutor = selectedTutor || {
       id: 'matthew',
-      name: 'Matthew (Matt)',
+      name: 'Professor (Professor)',
       email: 'matt@elospeak.com.br',
       calendarId: 'matt@elospeak.com.br'
     };

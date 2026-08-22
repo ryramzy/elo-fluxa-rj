@@ -133,7 +133,7 @@ export default function TutorAgendaView() {
           durationMinutes: 60,
           meetLink: booking.meetLink || '',
           notes: '',
-          tutorName: profile?.displayName || 'Matthew',
+          tutorName: profile?.displayName || 'Professor',
           tutorEmail: user?.email || 'matt@elospeak.com.br'
         })
       }).catch(err => {
@@ -182,7 +182,7 @@ export default function TutorAgendaView() {
         null,
         meetLink,
         'matthew',
-        'Matthew',
+        'Professor',
         'confirmed'
       );
       showToast('Aula agendada com sucesso!', 'success');
@@ -208,7 +208,7 @@ export default function TutorAgendaView() {
             date,
             time,
             tutorId: 'matthew',
-            tutorName: 'Matthew'
+            tutorName: 'Professor'
           });
         }
       }
@@ -248,7 +248,7 @@ export default function TutorAgendaView() {
             date: dateStr,
             time: timeStr,
             tutorId: 'matthew',
-            tutorName: 'Matthew'
+            tutorName: 'Professor'
           });
         }
       }
@@ -506,11 +506,11 @@ export default function TutorAgendaView() {
                     </div>
                     <div className="flex gap-1.5 flex-shrink-0">
                       <a
-                        href="https://zoom.us/j/mramsay0"
+                        href="https://zoom.us/j/professor0"
                         target="_blank"
                         rel="noreferrer"
                         className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
-                        title="Iniciar Sala do Zoom (mramsay0@gmail.com)"
+                        title="Iniciar Sala do Zoom (professor0@gmail.com)"
                       >
                         📹 Zoom
                       </a>

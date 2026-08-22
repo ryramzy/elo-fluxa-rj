@@ -298,8 +298,8 @@ async function handleB2BReport(req: VercelRequest, res: VercelResponse) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: 'Elo! Corporate Reports <noreply@elospeak.com.br>',
-      replyTo: 'matt@elospeak.com.br',
+      from: process.env.EMAIL_FROM || 'Elo! Corporate Reports <noreply@eloingle.com.br>',
+      replyTo: process.env.EMAIL_REPLY_TO || 'matt@eloingle.com.br',
       to: ['mramsay0@gmail.com', 'erneleducation@gmail.com', 'mramsayo@gmail.com'],
       subject: `Relatório de Performance B2B - Elo!`,
       html: emailHtml

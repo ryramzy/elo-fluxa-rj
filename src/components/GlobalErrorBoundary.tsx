@@ -42,7 +42,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
                 Ops! Algo deu errado no Elo!
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Tivemos uma pequena instabilidade temporária. Clique abaixo para recarregar ou fale com Matt.
+                Tivemos uma pequena instabilidade temporária. Clique abaixo para recarregar ou fale com Professor.
               </p>
             </div>
 
@@ -66,7 +66,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
                 rel="noopener noreferrer"
                 className="block w-full py-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-700"
               >
-                💬 Falar com Matt no WhatsApp
+                💬 Falar com Professor no WhatsApp
               </a>
             </div>
           </div>

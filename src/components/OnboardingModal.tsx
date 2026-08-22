@@ -158,7 +158,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
         <div className="p-6">
           {currentStep === 1 && (
             <div className="text-center py-8">
-              {/* Matt's avatar */}
+              {/* Professor's avatar */}
               <div className="w-24 h-24 bg-amber-500 rounded-full flex items-center justify-center text-white text-4xl font-bold mx-auto mb-6">
                 M
               </div>
@@ -235,10 +235,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 mb-1">
-                      Quando quiser mais, fale com Matt
+                      Quando quiser mais, fale com Professor
                     </h3>
                     <p className="text-slate-600">
-                      Desbloqueie o curso completo conversando diretamente com Matt no WhatsApp
+                      Desbloqueie o curso completo conversando diretamente com Professor no WhatsApp
                     </p>
                   </div>
                 </div>
@@ -252,7 +252,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
                       Agende aulas ao vivo e acelere seu inglês
                     </h3>
                     <p className="text-slate-600">
-                      Pratique conversação com Matt em sessões individuais personalizadas
+                      Pratique conversação com Professor em sessões individuais personalizadas
                     </p>
                   </div>
                 </div>
@@ -263,7 +263,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
                   onClick={handleWhatsAppClick}
                   className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
                 >
-                  Falar com Matt agora
+                  Falar com Professor agora
                 </button>
                 <button
                   onClick={handleFinishOnboarding}

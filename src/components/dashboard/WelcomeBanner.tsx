@@ -46,11 +46,33 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
                 </div>
               </div>
             </div>
+
+            {/* Mobile-only quick action buttons */}
+            <div className="flex sm:hidden items-center gap-2 mt-4 w-full">
+              <a
+                href="https://zoom.us/j/professor0"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30"
+              >
+                <span>📹</span> Entrar no Zoom
+              </a>
+              <a
+                href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-emerald-400/30"
+              >
+                <span>💬</span> WhatsApp
+              </a>
+            </div>
           </div>
 
           <div className="hidden sm:flex items-center gap-3 shrink-0">
             <a
-              href="https://zoom.us/j/mramsay0"
+              href="https://zoom.us/j/professor0"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
@@ -65,7 +87,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
             >
-              <span>💬</span> Falar com Matt
+              <span>💬</span> Falar com Professor
             </a>
           </div>
         </div>

@@ -54,16 +54,16 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                   {formattedDate}
                 </div>
                 <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
-                  👨‍🏫 Tutor: {booking.tutorName || 'Matt Ramsay'} • {booking.duration || 60} min
+                  👨‍🏫 Tutor: {booking.tutorName || 'Professor Nativo'} • {booking.duration || 60} min
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
-                    href="https://zoom.us/j/mramsay0"
+                    href="https://zoom.us/j/professor0"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md hover:scale-105"
                   >
-                    📹 Entrar no Zoom (Matt)
+                    📹 Entrar no Zoom (Professor)
                   </a>
                   <a
                     href={getWhatsAppLink('upcomingClass', { studentName: booking.userName, date: booking.date, time: booking.time })}
@@ -72,7 +72,7 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                     onClick={() => trackEvent('whatsapp_click_upcoming_class', { bookingId: booking.id, time: booking.time })}
                     className="inline-flex items-center gap-1.5 bg-emerald-600/15 hover:bg-emerald-600 border border-emerald-500/30 text-emerald-400 hover:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all hover:scale-105"
                   >
-                    💬 Falar com Matt
+                    💬 Falar com Professor
                   </a>
                 </div>
               </div>

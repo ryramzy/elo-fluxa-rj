@@ -13,6 +13,7 @@ export const BottomNav: React.FC = () => {
 
   const navItems = [
     { name: 'Painel', path: '/dashboard', icon: FaHome, state: { tab: 'overview' }, matchTab: 'overview' },
+    { name: 'Cursos', path: '/courses', icon: FaGraduationCap, state: null, matchTab: null },
     { name: 'Agenda', path: '/dashboard', icon: FaCalendarPlus, state: { tab: 'booking' }, matchTab: 'booking' },
     { name: 'Perfil', path: '/profile', icon: FaUser, state: null, matchTab: null },
   ];

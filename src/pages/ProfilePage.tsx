@@ -436,7 +436,7 @@ const ProfilePage: React.FC = () => {
             <div className="w-14 h-14 rounded-2xl bg-cover bg-center border border-white/10" style={{ backgroundImage: `url('/bobby.jpg')` }} />
             <div className="text-center sm:text-left">
               <h3 className="text-sm font-bold text-white font-serif">Seu Professor Particular</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Matthew Ramsay (Boston, MA) • TEFL Certified</p>
+              <p className="text-xs text-slate-400 mt-0.5">Professor Nativo (Boston, MA) • TEFL Certified</p>
             </div>
           </div>
           <button

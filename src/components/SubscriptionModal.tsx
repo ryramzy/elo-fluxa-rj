@@ -208,7 +208,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Aulas 1:1 particulares no Zoom com Matt</span>
+                    <span>Aulas 1:1 particulares no Zoom com Professor</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-450 mr-2 mt-0.5 shrink-0" size={14} />

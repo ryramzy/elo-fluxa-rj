@@ -53,23 +53,23 @@ export default function About() {
   const faqs = [
     {
       q: "Preciso ter conta no Zoom para entrar na aula com o Matt?",
-      a: "N„o! VocÍ sÛ precisa clicar no bot„o 'Entrar no Zoom' na plataforma. O link (zoom.us/j/mramsay0) abre diretamente no seu navegador ou aplicativo, sem necessidade de cadastro ou pagamento de licenÁa."
+      a: "N√£o! Voc√™ s√≥ precisa clicar no bot√£o 'Entrar no Zoom' na plataforma. O link abre diretamente no seu navegador ou aplicativo, sem necessidade de cadastro pr√©vio ou pagamento de licen√ßa."
     },
     {
       q: "Como funciona o agendamento de aulas?",
-      a: "… no estilo do Cambly: vocÍ acessa nosso calend·rio visual, escolhe os dias e hor·rios livres que melhor se encaixam na sua rotina e confirma com 1 clique."
+      a: "√â no estilo do Cambly: voc√™ acessa nosso calend√°rio visual, escolhe os dias e hor√°rios livres que melhor se encaixam na sua rotina e confirma com 1 clique."
     },
     {
       q: "E se eu for iniciante e tiver vergonha de falar?",
-      a: "O Matt mora no Rio de Janeiro h· mais de 6 anos e È fluente em portuguÍs. Ele entende exatamente as dificuldades e os vÌcios de pron˙ncia dos brasileiros, criando um ambiente 100% acolhedor e focado em destravar sua fala."
+      a: "O Matt mora no Rio de Janeiro h√° mais de 6 anos e √© fluente em portugu√™s. Ele entende exatamente as dificuldades e os v√≠cios de pron√∫ncia dos brasileiros, criando um ambiente 100% acolhedor e focado em destravar sua fala."
     },
     {
       q: "Como funcionam os planos de assinatura?",
-      a: "VocÍ tem acesso ilimitado ‡ biblioteca completa de cursos e decks interativos do ELO!, alÈm do seu pacote mensal de aulas ao vivo 1:1 no Zoom com o Matt. Sem fidelidade forÁada, podendo pausar quando quiser."
+      a: "Voc√™ tem acesso ilimitado √† biblioteca completa de cursos e decks interativos do ELO!, al√©m do seu pacote mensal de aulas ao vivo 1:1 no Zoom com o professor. Sem fidelidade for√ßada, podendo cancelar quando quiser."
     },
     {
-      q: "Posso pagar com Pix ou Cart„o de CrÈdito?",
-      a: "Sim! Aceitamos pagamento instant‚neo via Pix (Mercado Pago) e Cart„o de CrÈdito internacional/nacional via Stripe."
+      q: "Posso pagar com Pix ou Cart√£o de Cr√©dito?",
+      a: "Sim! Aceitamos pagamento instant√¢neo via Pix (Mercado Pago) e Cart√£o de Cr√©dito internacional/nacional via Stripe."
     }
   ];
 
@@ -88,13 +88,13 @@ export default function About() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-black uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-950/60 px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-800">
-            Simples ï Sem Burocracia
+            Simples ‚Ä¢ Sem Burocracia
           </span>
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
             Como funciona o {BRAND_NAME}?
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-3 text-base md:text-lg">
-            O melhor do modelo Cambly (agendamento flexÌvel) com a praticidade do Open English (aulas 1-click no Zoom).
+            O melhor do modelo Cambly (agendamento flex√≠vel) com a praticidade do Open English (aulas 1-click no Zoom).
           </p>
         </div>
 
@@ -105,9 +105,9 @@ export default function About() {
               <FaCalendarAlt />
             </div>
             <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1">Passo 1</div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Escolha seu Hor·rio</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Escolha seu Hor√°rio</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Consulte os hor·rios abertos no calend·rio e agende suas sessıes 1:1 conforme sua disponibilidade da semana.
+              Consulte os hor√°rios abertos no calend√°rio e agende suas sess√µes 1:1 conforme sua disponibilidade da semana.
             </p>
           </div>
 
@@ -119,7 +119,7 @@ export default function About() {
             <div className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-1">Passo 2</div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Entre no Zoom em 1 Clique</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Sem precisar criar conta no Zoom ou instalar softwares pesados. Clique no bot„o de acesso direto e inicie a aula com o Matt.
+              Sem precisar criar conta no Zoom ou instalar programas pesados. Clique no bot√£o de acesso direto e inicie a aula com o professor.
             </p>
           </div>
 
@@ -131,7 +131,7 @@ export default function About() {
             <div className="text-xs font-black text-purple-600 uppercase tracking-widest mb-1">Passo 3</div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Pratique & Destrave</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              ConversaÁ„o real com foco em connected speech, expressıes nativas e feedback detalhado no WhatsApp pÛs-aula.
+              Conversa√ß√£o real com foco em connected speech, express√µes nativas e feedback detalhado no WhatsApp p√≥s-aula.
             </p>
           </div>
         </div>
@@ -142,45 +142,55 @@ export default function About() {
         <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-3xl p-8 md:p-12 border border-blue-500/20 shadow-2xl text-white">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Matt Avatar / Badge */}
+            {/* Professor Avatar / Badge */}
             <div className="lg:col-span-5 flex flex-col items-center text-center">
               <div className="relative">
-                <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 shadow-2xl shadow-blue-500/30">
-                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-6xl md:text-7xl font-serif">
-                    ?????
-                  </div>
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 shadow-2xl shadow-blue-500/30 overflow-hidden">
+                  <img 
+                    src="/matt-profile.jpg" 
+                    alt="Matt Ramsay" 
+                    className="w-full h-full rounded-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.currentTarget;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = '<div class="w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-5xl font-black">MR</div>';
+                      }
+                    }}
+                  />
                 </div>
-                <div className="absolute bottom-2 right-2 bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full border-2 border-slate-900 shadow-md">
-                  ???? Nativo EUA
+                <div className="absolute bottom-2 right-2 bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full border-2 border-slate-900 shadow-md flex items-center gap-1">
+                  <span>üá∫üá∏</span> Nativo EUA
                 </div>
               </div>
 
               <h3 className="text-2xl md:text-3xl font-black mt-4">Matt Ramsay</h3>
-              <p className="text-blue-300 text-sm font-bold">Professor & Fundador ï {DOMAIN_NAME}</p>
+              <p className="text-blue-300 text-sm font-bold">Professor Nativo & Fundador ‚Ä¢ {DOMAIN_NAME}</p>
               
               <div className="flex flex-wrap justify-center gap-2 mt-4">
-                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
-                  ?? Rio de Janeiro
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full flex items-center gap-1">
+                  üìç Rio de Janeiro
                 </span>
-                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
-                  ???? PortuguÍs Fluente
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full flex items-center gap-1">
+                  üáßüá∑ Portugu√™s Fluente
                 </span>
-                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
-                  ?? +6 anos no Brasil
+                <span className="text-[11px] bg-slate-800/80 border border-slate-700 text-slate-300 px-3 py-1 rounded-full flex items-center gap-1">
+                  ‚è≥ +6 anos no Brasil
                 </span>
               </div>
             </div>
 
-            {/* Matt Story & Bio */}
+            {/* Professor Story & Bio */}
             <div className="lg:col-span-7 space-y-4 text-slate-300">
               <h4 className="text-2xl font-black text-white">
-                "O Nativo que fala sua lÌngua no Rio de Janeiro."
+                "O Nativo que fala sua l√≠ngua no Rio de Janeiro."
               </h4>
               <p className="text-sm md:text-base leading-relaxed">
                 {MATTHEW_BIO.intro.text}
               </p>
               <p className="text-sm md:text-base leading-relaxed text-slate-400">
-                Com anos de experiÍncia ensinando em grandes plataformas (como Cambly e Open English), desenvolvi o mÈtodo ELO! especialmente para profissionais, estudantes e entusiastas brasileiros que querem falar com naturalidade, sem o bloqueio da gram·tica tradicional de livro.
+                Com anos de experi√™ncia ensinando em grandes plataformas (como Cambly e Open English), desenvolvi o m√©todo ELO! especialmente para profissionais, estudantes e entusiastas brasileiros que querem falar com naturalidade, sem o bloqueio da gram√°tica tradicional de livro.
               </p>
               
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
@@ -212,10 +222,10 @@ export default function About() {
             Planos de Assinatura
           </span>
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
-            Invista na sua FluÍncia Real
+            Invista na sua Flu√™ncia Real
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
-            Aulas particulares com Matt no Zoom + acesso ilimitado a todos os mÛdulos de curso.
+            Aulas particulares com professores nativos no Zoom + acesso ilimitado a todos os m√≥dulos de curso.
           </p>
         </div>
 
@@ -226,18 +236,18 @@ export default function About() {
               <div className="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
                 Plano Mensal
               </div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white">ConversaÁ„o ContÌnua</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">Conversa√ß√£o Cont√≠nua</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Ideal para manter o ritmo semanal</p>
               
               <div className="my-6">
                 <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 149</span>
-                <span className="text-sm font-semibold text-slate-500"> / mÍs</span>
+                <span className="text-sm font-semibold text-slate-500"> / m√™s</span>
               </div>
 
               <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com Matt</span>
+                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com professor</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
@@ -245,11 +255,11 @@ export default function About() {
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Feedback detalhado de pron˙ncia por aula</span>
+                  <span>Feedback detalhado de pron√∫ncia por aula</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Suporte direto com Matt no WhatsApp</span>
+                  <span>Suporte direto com professor no WhatsApp</span>
                 </li>
               </ul>
             </div>
@@ -258,26 +268,26 @@ export default function About() {
               onClick={handleStartAuth}
               className="w-full py-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md active:scale-95"
             >
-              ComeÁar com Plano Mensal
+              Come√ßar com Plano Mensal
             </button>
           </div>
 
           {/* Quarterly Plan (Featured) */}
           <div className="bg-gradient-to-b from-blue-900/30 to-indigo-950/40 dark:from-slate-800 dark:to-slate-850 border-2 border-blue-500 rounded-3xl p-8 shadow-2xl relative flex flex-col justify-between">
             <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg">
-              ? Mais Popular (Desconto)
+              ‚≠ê Mais Popular (Desconto)
             </div>
 
             <div>
               <div className="inline-block bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
                 Plano Trimestral
               </div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white">Imers„o de FluÍncia</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">Imers√£o de Flu√™ncia</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Foco e economia garantidos</p>
 
               <div className="my-6">
                 <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 119</span>
-                <span className="text-sm font-semibold text-slate-500"> / mÍs no plano</span>
+                <span className="text-sm font-semibold text-slate-500"> / m√™s no plano</span>
               </div>
 
               <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
@@ -287,15 +297,15 @@ export default function About() {
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Acesso VIP antecipado a novos mÛdulos</span>
+                  <span>Acesso VIP antecipado a novos m√≥dulos</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Plano de estudos personalizado por nÌvel</span>
+                  <span>Plano de estudos personalizado por n√≠vel</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Prioridade de agendamento no calend·rio</span>
+                  <span>Prioridade de agendamento no calend√°rio</span>
                 </li>
               </ul>
             </div>
@@ -314,13 +324,13 @@ export default function About() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <span className="text-xs font-black uppercase tracking-widest text-purple-600 bg-purple-50 dark:bg-purple-950/60 px-4 py-1.5 rounded-full border border-purple-200 dark:border-purple-800">
-            CurrÌculo Completo
+            Curr√≠culo Completo
           </span>
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
             Cursos Interativos ELO!
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
-            De conversaÁ„o do dia a dia a Business English para tecnologia e reuniıes internacionais.
+            De conversa√ß√£o do dia a dia a Business English para tecnologia e reuni√µes internacionais.
           </p>
         </div>
 
@@ -365,7 +375,7 @@ export default function About() {
 
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
                   <span className="text-[11px] font-bold text-slate-500">
-                    {course.lessons.length} aulas ï Pr·tica interativa
+                    {course.lessons.length} aulas ‚Ä¢ Pr√°tica interativa
                   </span>
                   <button
                     onClick={() => handleDemoLesson(course.id, course.lessons[0]?.id)}
@@ -390,7 +400,7 @@ export default function About() {
             O que nossos alunos dizem
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
-            Alunos do Rio de Janeiro e de todo o Brasil aprendendo com Matt Ramsay.
+            Alunos do Rio de Janeiro e de todo o Brasil aprendendo com professores nativos.
           </p>
         </div>
 
@@ -417,7 +427,7 @@ export default function About() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t.name}</h4>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">{t.location} ï Verificado</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold">{t.location} ‚Ä¢ Verificado</span>
                 </div>
               </div>
             </div>
@@ -429,10 +439,10 @@ export default function About() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            D˙vidas Frequentes
+            D√∫vidas Frequentes
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm">
-            Tudo o que vocÍ precisa saber sobre as aulas e a plataforma {BRAND_NAME}.
+            Tudo o que voc√™ precisa saber sobre as aulas e a plataforma {BRAND_NAME}.
           </p>
         </div>
 
@@ -466,10 +476,10 @@ export default function About() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
         <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl space-y-6">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight">
-            Pronto para falar inglÍs de verdade?
+            Pronto para falar ingl√™s de verdade?
           </h2>
           <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto">
-            Junte-se a mais de {STUDENT_COUNT} alunos e comece hoje mesmo sua jornada de conversaÁ„o com o Matt.
+            Junte-se a mais de {STUDENT_COUNT} alunos e comece hoje mesmo sua jornada de conversa√ß√£o com o professor.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
@@ -477,7 +487,7 @@ export default function About() {
               onClick={handleStartAuth}
               className="w-full sm:w-auto px-8 py-4 bg-white text-slate-950 hover:bg-slate-100 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
-              <FaBolt className="text-blue-600" /> Criar Conta Gr·tis
+              <FaBolt className="text-blue-600" /> Criar Conta Gr√°tis
             </button>
             <a
               href={getWhatsAppLink('landing')}
@@ -485,7 +495,7 @@ export default function About() {
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
-              <FaWhatsapp className="text-base" /> Falar com Matt no WhatsApp
+              <FaWhatsapp className="text-base" /> Falar com o Matt no WhatsApp
             </a>
           </div>
         </div>

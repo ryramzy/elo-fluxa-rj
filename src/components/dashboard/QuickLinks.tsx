@@ -35,7 +35,7 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({
           className="w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
         >
           <span className="text-lg">💬</span>
-          <span className="text-slate-900 dark:text-white">Falar com Matt</span>
+          <span className="text-slate-900 dark:text-white">Falar com Professor</span>
         </a>
       </div>
     </div>

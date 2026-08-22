@@ -46,16 +46,18 @@ export function useUserProfile(uid: string) {
           const levelInfo = calculateLevel(xp);
           const userEmail = (data?.email || auth.currentUser?.email || '').toLowerCase().trim();
           const isAuthorizedEmail = 
-            userEmail === 'mramsayo@gmail.com' ||
-            userEmail === 'mramsay0@gmail.com' ||
+            userEmail === 'professoro@gmail.com' ||
+            userEmail === 'professor0@gmail.com' ||
             userEmail === 'erneleducation@gmail.com' ||
+            userEmail.endsWith('@eloingle.com.br') ||
+            userEmail.endsWith('@eloingles.com.br') ||
             userEmail.endsWith('@elospeak.com.br') ||
             userEmail.endsWith('@elospeak.com');
 
           const role = isAuthorizedEmail ? 'admin' : (data?.role || 'student');
 
           setProfile({
-            displayName: data?.displayName || auth.currentUser?.displayName || 'Matthew Ramsay',
+            displayName: data?.displayName || auth.currentUser?.displayName || 'Professor Nativo',
             email: data?.email || userEmail,
             photoURL: data?.photoURL || auth.currentUser?.photoURL || '',
             xp,

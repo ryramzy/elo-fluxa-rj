@@ -29,17 +29,17 @@ export const TutorProfileModal: React.FC<TutorProfileModalProps> = ({ isOpen, on
         <div className="p-6 sm:p-8">
           {/* Tutor Info Header */}
           <div className="flex flex-col sm:flex-row items-center gap-5 border-b border-white/5 pb-5 mb-5">
-            <div className="w-20 h-20 rounded-2xl bg-cover bg-center border-2 border-blue-500 shadow-md flex-shrink-0" style={{ backgroundImage: `url('/bobby.jpg')` }} />
+            <div className="w-20 h-20 rounded-2xl bg-cover bg-center border-2 border-blue-500 shadow-md flex-shrink-0" style={{ backgroundImage: `url('/matt-profile.jpg')` }} />
             <div className="text-center sm:text-left">
-              <h3 className="text-lg font-bold text-white font-serif tracking-tight">Matthew Ramsay</h3>
-              <p className="text-xs text-blue-400 font-bold uppercase tracking-wider mt-0.5">Fundador & Tutor Principal</p>
+              <h3 className="text-lg font-bold text-white font-serif tracking-tight">Matt Ramsay</h3>
+              <p className="text-xs text-blue-400 font-bold uppercase tracking-wider mt-0.5">Fundador & Tutor Nativo</p>
               
               <div className="flex flex-wrap justify-center sm:justify-start gap-3 mt-2">
                 <span className="flex items-center gap-1 text-[9px] font-bold text-slate-450 uppercase bg-slate-950 px-2 py-0.5 rounded-md border border-white/5">
                   <FaGraduationCap className="text-blue-500" /> TEFL Certified
                 </span>
                 <span className="flex items-center gap-1 text-[9px] font-bold text-slate-450 uppercase bg-slate-950 px-2 py-0.5 rounded-md border border-white/5">
-                  <FaMicrophone className="text-emerald-500" /> Native Accent
+                  <FaMicrophone className="text-emerald-500" /> Native USA
                 </span>
               </div>
             </div>
@@ -48,7 +48,7 @@ export const TutorProfileModal: React.FC<TutorProfileModalProps> = ({ isOpen, on
           {/* Credentials List */}
           <div className="space-y-4 text-xs text-slate-300 leading-relaxed font-light mb-6">
             <p>
-              <strong>Hi, I'm Matthew Ramsay, founder and lead tutor of ELO!</strong>
+              <strong>Hi, I'm Matt Ramsay, founder and lead tutor of ELO!</strong>
             </p>
             <p>
               Over the past decade, I've helped hundreds of Brazilian executives, developers, and language learners bridge the communication gap and sound natural in English. Having lived in Boston, MA and worked across global teams, my teaching methodology revolves around contextual chunking, business negotiation strategies, and accent expansion.

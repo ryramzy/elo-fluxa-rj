@@ -103,7 +103,7 @@ async function handleCheckout(req: VercelRequest, res: VercelResponse) {
       const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
       const baseUrl = isLocal 
         ? `http://${host}` 
-        : (process.env.VITE_APP_URL || 'https://elo-fluxa-rj.vercel.app');
+        : (process.env.VITE_APP_URL || 'https://eloingle.com.br');
       return res.status(200).json({ url: `${baseUrl}/dashboard?stripe_payment=success` });
     }
 
@@ -115,7 +115,7 @@ async function handleCheckout(req: VercelRequest, res: VercelResponse) {
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
     const baseUrl = isLocal 
       ? `http://${host}` 
-      : (process.env.VITE_APP_URL || 'https://elo-fluxa-rj.vercel.app');
+      : (process.env.VITE_APP_URL || 'https://eloingle.com.br');
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

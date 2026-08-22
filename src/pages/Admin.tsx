@@ -43,24 +43,36 @@ export default function Admin() {
 
   const handleAction = async (appId: string, userId: string, action: 'approve' | 'decline') => {
     try {
-      // Update application status
+      const targetApp = applications.find(a => a.id === appId);
+
       await updateDoc(doc(db, 'tutor_applications', appId), {
         status: action === 'approve' ? 'approved' : 'declined',
         processedAt: new Date().toISOString()
       });
 
-      // Update user role
       await updateDoc(doc(db, 'users', userId), {
         role: action === 'approve' ? 'tutor' : 'student'
       });
 
-      // Simulate sending email (would be a cloud function trigger or API call to Resend)
+      // Send decision email via Resend
+      if (targetApp?.email) {
+        fetch('/api/email/tutor-decision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            displayName: targetApp.displayName || 'Tutor',
+            email: targetApp.email,
+            decision: action === 'approve' ? 'approved' : 'declined'
+          })
+        }).catch(err => console.warn('Decision email error:', err));
+      }
+
       showToast({ 
         type: 'success', 
-        message: action === 'approve' ? 'Tutor aprovado! Email enviado.' : 'Candidatura recusada. Email enviado.' 
+        message: action === 'approve' 
+          ? 'Tutor aprovado com sucesso! Email de boas-vindas enviado.' 
+          : 'Candidatura recusada. Email de notificaÃ§Ã£o enviado.' 
       });
-
-      // Remove from list
       setApplications(prev => prev.filter(app => app.id !== appId));
     } catch (err: any) {
       console.error(err);
@@ -89,9 +101,9 @@ export default function Admin() {
                   <tr>
                     <th className="px-6 py-4">Nome & Email</th>
                     <th className="px-6 py-4">Sotaque</th>
-                    <th className="px-6 py-4">Bio / Experiência</th>
-                    <th className="px-6 py-4">Vídeo</th>
-                    <th className="px-6 py-4 text-right">Ações</th>
+                    <th className="px-6 py-4">Bio / ExperiÃªncia</th>
+                    <th className="px-6 py-4">VÃ­deo</th>
+                    <th className="px-6 py-4 text-right">AÃ§Ãµes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">

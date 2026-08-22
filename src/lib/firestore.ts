@@ -831,7 +831,7 @@ export async function bookSlot(
   googleEventId?: string | null,
   meetLink?: string | null,
   tutorId: string = 'matthew',
-  tutorName: string = 'Matthew',
+  tutorName: string = 'Professor',
   status: 'confirmed' | 'pending' = 'pending'
 ): Promise<string> {
   if (userId === 'guest_user') {
@@ -1078,9 +1078,9 @@ export async function getTutors(): Promise<any[]> {
     if (list.length === 0) {
       return [{
         id: 'matt_ramsay',
-        name: 'Matthew Ramsay',
-        email: 'mramsay0@gmail.com',
-        zoomUrl: 'https://zoom.us/j/mramsay0',
+        name: 'Professor Nativo',
+        email: 'professor0@gmail.com',
+        zoomUrl: 'https://zoom.us/j/professor0',
         active: true,
         bio: 'Native English Teacher from Boston, MA'
       }];
@@ -1090,9 +1090,9 @@ export async function getTutors(): Promise<any[]> {
     console.error('Error fetching tutors roster:', error);
     return [{
       id: 'matt_ramsay',
-      name: 'Matthew Ramsay',
-      email: 'mramsay0@gmail.com',
-      zoomUrl: 'https://zoom.us/j/mramsay0',
+      name: 'Professor Nativo',
+      email: 'professor0@gmail.com',
+      zoomUrl: 'https://zoom.us/j/professor0',
       active: true,
       bio: 'Native English Teacher from Boston, MA'
     }];
