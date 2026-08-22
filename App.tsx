@@ -32,6 +32,9 @@ const Sobre = React.lazy(() => import('./src/pages/Sobre'));
 const Dicas = React.lazy(() => import('./src/pages/Dicas'));
 const ApplyTutor = React.lazy(() => import('./src/pages/ApplyTutor'));
 const Admin = React.lazy(() => import('./src/pages/Admin'));
+const PrivacyPolicy = React.lazy(() => import('./src/pages/PrivacyPolicy'));
+const TermsOfService = React.lazy(() => import('./src/pages/TermsOfService'));
+import { PwaInstallPrompt } from './src/components/navigation/PwaInstallPrompt';
 
 
 
@@ -197,6 +200,9 @@ function AppShell() {
                 </ProtectedRoute>
               } />
 
+              {/* Compliance & Legal Pages */}
+              <Route path="/privacidade" element={<PrivacyPolicy />} />
+              <Route path="/termos" element={<TermsOfService />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />
@@ -209,6 +215,7 @@ function AppShell() {
       {!user && <Footer />}
       
       <BottomNav />
+      <PwaInstallPrompt />
 
       {/* Toast Container */}
         <ToastContainer toasts={toasts} onRemove={removeToast} />

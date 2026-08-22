@@ -65,7 +65,9 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
           <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Plataforma</h4>
           <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
             <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Painel Geral 📊</Link></li>
-            <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós Sobre</Link></li>
+            <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós</Link></li>
+            <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Privacidade (LGPD)</Link></li>
+            <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
           </ul>
         </div>
 
@@ -91,10 +93,13 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
         </div>
       </div>
 
-      <div className="max-w-[1800px] mx-auto mt-20 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] font-bold opacity-40">
-        <p>© 2026 Elo! - Professor de Inglês Nativo no Rio</p>
+      <div className="max-w-[1800px] mx-auto mt-20 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] font-bold opacity-50 gap-3">
+        <p>© 2026 ELO! — Inglês com Professores Nativos no Rio de Janeiro</p>
         <p className="flex items-center gap-4">
-          <span>Conformidade LGPD</span>
+          <Link to="/privacidade" className="hover:text-white">Privacidade</Link>
+          <span>•</span>
+          <Link to="/termos" className="hover:text-white">Termos</Link>
+          <span>•</span>
           <span>Rio de Janeiro, Brasil</span>
         </p>
       </div>
