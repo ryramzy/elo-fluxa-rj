@@ -622,7 +622,7 @@ async function handleBookingCancellation(req: VercelRequest, res: VercelResponse
         </p>
         <p style="margin:0 0 20px 0">
           ${isTutorCancel 
-            ? 'Infelizmente, o professor precisou cancelar a aula agendada abaixo. Pedimos desculpas pelo inconveniente.' 
+            ? 'Infelizmente, o professor Matt precisou cancelar a aula agendada abaixo. Pedimos desculpas pelo inconveniente.' 
             : 'Confirmamos o cancelamento da sua aula abaixo conforme solicitado.'}
         </p>
         

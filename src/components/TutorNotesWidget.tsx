@@ -54,7 +54,7 @@ export const TutorNotesWidget: React.FC<TutorNotesWidgetProps> = ({ bookings }) 
                 Feedback de Conversação
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
-                Enviado pelo professor após sua última aula
+                Enviado por Matt após sua última aula
               </p>
             </div>
           </div>

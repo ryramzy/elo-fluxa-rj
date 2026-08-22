@@ -41,8 +41,8 @@ export default function Hero({ onEnter }: HeroProps) {
   return (
     <section className="relative w-full min-h-[620px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-16 px-6 rounded-3xl shadow-2xl border-2 border-blue-500/30 my-4 backdrop-blur-xl">
       {/* Background Animated Glow Effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -z-0 pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl -z-0 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-blue-600/20 rounded-full blur-3xl -z-0 pointer-events-none animate-pulse"></div>
+      <div className="absolute bottom-0 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-indigo-600/20 rounded-full blur-3xl -z-0 pointer-events-none"></div>
 
       <div className="relative z-10 h-full flex flex-col justify-center items-center text-center max-w-5xl mx-auto">
         <div className="animate-fade-in-up space-y-6">

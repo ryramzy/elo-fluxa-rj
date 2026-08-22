@@ -114,7 +114,7 @@ function AppShell() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-900 font-sans text-[#1A1A1A] dark:text-slate-100 overflow-x-hidden">
         {!isFullscreenPage && <Navbar onNavClick={handleNavClick} />}
 
         <main

@@ -55,7 +55,7 @@ export function useUserProfile(uid: string) {
           const role = isAuthorizedEmail ? 'admin' : (data?.role || 'student');
 
           setProfile({
-            displayName: data?.displayName || auth.currentUser?.displayName || 'Professor Nativo',
+            displayName: data?.displayName || auth.currentUser?.displayName || 'Matthew Ramsay',
             email: data?.email || userEmail,
             photoURL: data?.photoURL || auth.currentUser?.photoURL || '',
             xp,

@@ -40,7 +40,7 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
         <div className="md:col-span-4">
           <h4 className="text-2xl font-serif text-white mb-6">Elo!</h4>
           <p className="max-w-xs font-light leading-relaxed mb-6 text-sm">
-            Aprenda inglês com nossos professores nativos. 
+            Aprenda inglês com Matthew, americano nativo e coach. 
             Do Business English para Oil & Gas à sobrevivência no Rio, destrave sua fala com confiança.
           </p>
           <button 

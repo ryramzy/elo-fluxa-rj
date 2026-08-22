@@ -133,7 +133,7 @@ export default function TutorAgendaView() {
           durationMinutes: 60,
           meetLink: booking.meetLink || '',
           notes: '',
-          tutorName: profile?.displayName || 'Professor Nativo',
+          tutorName: profile?.displayName || 'Matthew',
           tutorEmail: user?.email || 'matt@elospeak.com.br'
         })
       }).catch(err => {
@@ -208,7 +208,7 @@ export default function TutorAgendaView() {
             date,
             time,
             tutorId: 'matthew',
-            tutorName: 'Professor Nativo'
+            tutorName: 'Matthew'
           });
         }
       }
@@ -248,7 +248,7 @@ export default function TutorAgendaView() {
             date: dateStr,
             time: timeStr,
             tutorId: 'matthew',
-            tutorName: 'Professor Nativo'
+            tutorName: 'Matthew'
           });
         }
       }

@@ -65,7 +65,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
             >
-              <span>💬</span> Falar com Professor
+              <span>💬</span> Falar com Matt
             </a>
           </div>
         </div>

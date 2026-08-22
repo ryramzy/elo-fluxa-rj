@@ -16,7 +16,7 @@ import {
   ZOOM_MEETING_URL, 
   getWhatsAppLink, 
   TESTIMONIALS,
-  TUTOR_BIO
+  MATTHEW_BIO
 } from '../../constants';
 import Hero from './Hero';
 import LoginModal from './LoginModal';
@@ -52,7 +52,7 @@ export default function About() {
 
   const faqs = [
     {
-      q: "Preciso ter conta no Zoom para entrar na aula com o professor?",
+      q: "Preciso ter conta no Zoom para entrar na aula com o Matt?",
       a: "Não! Você só precisa clicar no botão 'Entrar no Zoom' na plataforma. O link (zoom.us/j/mramsay0) abre diretamente no seu navegador ou aplicativo, sem necessidade de cadastro ou pagamento de licença."
     },
     {
@@ -61,11 +61,11 @@ export default function About() {
     },
     {
       q: "E se eu for iniciante e tiver vergonha de falar?",
-      a: "o professor mora no Rio de Janeiro há mais de 6 anos e é fluente em português. Ele entende exatamente as dificuldades e os vícios de pronúncia dos brasileiros, criando um ambiente 100% acolhedor e focado em destravar sua fala."
+      a: "O Matt mora no Rio de Janeiro há mais de 6 anos e é fluente em português. Ele entende exatamente as dificuldades e os vícios de pronúncia dos brasileiros, criando um ambiente 100% acolhedor e focado em destravar sua fala."
     },
     {
       q: "Como funcionam os planos de assinatura?",
-      a: "Você tem acesso ilimitado à biblioteca completa de cursos e decks interativos do ELO!, além do seu pacote mensal de aulas ao vivo 1:1 no Zoom com o professor. Sem fidelidade forçada, podendo pausar quando quiser."
+      a: "Você tem acesso ilimitado à biblioteca completa de cursos e decks interativos do ELO!, além do seu pacote mensal de aulas ao vivo 1:1 no Zoom com o Matt. Sem fidelidade forçada, podendo pausar quando quiser."
     },
     {
       q: "Posso pagar com Pix ou Cartão de Crédito?",
@@ -119,7 +119,7 @@ export default function About() {
             <div className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-1">Passo 2</div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Entre no Zoom em 1 Clique</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Sem precisar criar conta no Zoom ou instalar softwares pesados. Clique no botão de acesso direto e inicie a aula com o professor.
+              Sem precisar criar conta no Zoom ou instalar softwares pesados. Clique no botão de acesso direto e inicie a aula com o Matt.
             </p>
           </div>
 
@@ -137,12 +137,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* 3. ABOUT Professor Nativo */}
+      {/* 3. ABOUT MATT RAMSAY */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-3xl p-8 md:p-12 border border-blue-500/20 shadow-2xl text-white">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* professor Avatar / Badge */}
+            {/* Matt Avatar / Badge */}
             <div className="lg:col-span-5 flex flex-col items-center text-center">
               <div className="relative">
                 <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 shadow-2xl shadow-blue-500/30">
@@ -155,7 +155,7 @@ export default function About() {
                 </div>
               </div>
 
-              <h3 className="text-2xl md:text-3xl font-black mt-4">Professor Nativo</h3>
+              <h3 className="text-2xl md:text-3xl font-black mt-4">Matt Ramsay</h3>
               <p className="text-blue-300 text-sm font-bold">Professor & Fundador • {DOMAIN_NAME}</p>
               
               <div className="flex flex-wrap justify-center gap-2 mt-4">
@@ -171,13 +171,13 @@ export default function About() {
               </div>
             </div>
 
-            {/* professor Story & Bio */}
+            {/* Matt Story & Bio */}
             <div className="lg:col-span-7 space-y-4 text-slate-300">
               <h4 className="text-2xl font-black text-white">
                 "O Nativo que fala sua língua no Rio de Janeiro."
               </h4>
               <p className="text-sm md:text-base leading-relaxed">
-                {TUTOR_BIO.intro.text}
+                {MATTHEW_BIO.intro.text}
               </p>
               <p className="text-sm md:text-base leading-relaxed text-slate-400">
                 Com anos de experiência ensinando em grandes plataformas (como Cambly e Open English), desenvolvi o método ELO! especialmente para profissionais, estudantes e entusiastas brasileiros que querem falar com naturalidade, sem o bloqueio da gramática tradicional de livro.
@@ -190,7 +190,7 @@ export default function About() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg active:scale-95"
                 >
-                  <FaWhatsapp className="text-base" /> Falar com o professor no WhatsApp
+                  <FaWhatsapp className="text-base" /> Falar com o Matt no WhatsApp
                 </a>
                 <button
                   onClick={handleStartAuth}
@@ -215,7 +215,7 @@ export default function About() {
             Invista na sua Fluência Real
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
-            Aulas particulares com seu professor no Zoom + acesso ilimitado a todos os módulos de curso.
+            Aulas particulares com Matt no Zoom + acesso ilimitado a todos os módulos de curso.
           </p>
         </div>
 
@@ -237,7 +237,7 @@ export default function About() {
               <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com seu professor</span>
+                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com Matt</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
@@ -249,7 +249,7 @@ export default function About() {
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Suporte direto com seu professor no WhatsApp</span>
+                  <span>Suporte direto com Matt no WhatsApp</span>
                 </li>
               </ul>
             </div>
@@ -390,7 +390,7 @@ export default function About() {
             O que nossos alunos dizem
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
-            Alunos do Rio de Janeiro e de todo o Brasil aprendendo com Professor Nativo.
+            Alunos do Rio de Janeiro e de todo o Brasil aprendendo com Matt Ramsay.
           </p>
         </div>
 
@@ -469,7 +469,7 @@ export default function About() {
             Pronto para falar inglês de verdade?
           </h2>
           <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto">
-            Junte-se a mais de {STUDENT_COUNT} alunos e comece hoje mesmo sua jornada de conversação com o professor.
+            Junte-se a mais de {STUDENT_COUNT} alunos e comece hoje mesmo sua jornada de conversação com o Matt.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
@@ -485,7 +485,7 @@ export default function About() {
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
-              <FaWhatsapp className="text-base" /> Falar com seu professor no WhatsApp
+              <FaWhatsapp className="text-base" /> Falar com Matt no WhatsApp
             </a>
           </div>
         </div>
