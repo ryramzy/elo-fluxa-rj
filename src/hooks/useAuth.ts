@@ -7,35 +7,64 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        setLoading(false);
-      } else {
-        const isGuest = sessionStorage.getItem('elo_guest') === 'true';
-        if (isGuest) {
-          setUser({
-            uid: 'guest_user',
-            displayName: 'Visitante',
-            email: 'guest@elospeak.com.br',
-            isGuest: true
-          } as any);
+    // Safety timeout: If Firebase auth takes longer than 1.5s (e.g. slow mobile connection),
+    // unblock the landing page UI immediately so the user is never stuck on a spinner.
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    let unsubscribe = () => {};
+
+    try {
+      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        clearTimeout(safetyTimer);
+        if (currentUser) {
+          setUser(currentUser);
         } else {
-          setUser(null);
+          let isGuest = false;
+          try {
+            isGuest = typeof window !== 'undefined' && sessionStorage.getItem('elo_guest') === 'true';
+          } catch (e) {
+            // Private mode security error guard
+          }
+
+          if (isGuest) {
+            setUser({
+              uid: 'guest_user',
+              displayName: 'Visitante',
+              email: 'guest@elospeak.com.br',
+              isGuest: true
+            } as any);
+          } else {
+            setUser(null);
+          }
         }
         setLoading(false);
-      }
-    });
+      }, (error) => {
+        console.warn('Auth state error caught:', error);
+        clearTimeout(safetyTimer);
+        setLoading(false);
+      });
+    } catch (e) {
+      console.warn('onAuthStateChanged setup error:', e);
+      clearTimeout(safetyTimer);
+      setLoading(false);
+    }
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimer);
+      unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      sessionStorage.removeItem('elo_guest');
-      sessionStorage.removeItem('elo_guest_time');
-      sessionStorage.removeItem('elo_guest_enrollments');
+      try {
+        sessionStorage.removeItem('elo_guest');
+        sessionStorage.removeItem('elo_guest_time');
+        sessionStorage.removeItem('elo_guest_enrollments');
+      } catch (e) {}
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
@@ -44,8 +73,10 @@ export function useAuth() {
   };
 
   const signInAsGuest = () => {
-    sessionStorage.setItem('elo_guest', 'true');
-    sessionStorage.setItem('elo_guest_time', Date.now().toString());
+    try {
+      sessionStorage.setItem('elo_guest', 'true');
+      sessionStorage.setItem('elo_guest_time', Date.now().toString());
+    } catch (e) {}
     setUser({
       uid: 'guest_user',
       displayName: 'Visitante',
@@ -56,9 +87,11 @@ export function useAuth() {
 
   const signOutUser = async () => {
     try {
-      sessionStorage.removeItem('elo_guest');
-      sessionStorage.removeItem('elo_guest_time');
-      sessionStorage.removeItem('elo_guest_enrollments');
+      try {
+        sessionStorage.removeItem('elo_guest');
+        sessionStorage.removeItem('elo_guest_time');
+        sessionStorage.removeItem('elo_guest_enrollments');
+      } catch (e) {}
       await fbSignOut(auth);
       setUser(null);
     } catch (error) {
@@ -75,4 +108,3 @@ export function useAuth() {
     signOut: signOutUser 
   };
 }
-
