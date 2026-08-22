@@ -5,18 +5,19 @@
 ## Infrastructure Overview
 
 ### Domain
-- **Production**: https://elospeak.com.br
+- **Production**: https://eloingles.com.br
 - **Vercel preview**: elo-fluxa-rj.vercel.app (keep for staging)
 
 ### Email
 - **Provider**: Resend
-- **Domain**: elospeak.com.br (SPF + DKIM + DMARC configured)
-- **From**: noreply@elospeak.com.br
-- **Reply-to**: matt@elospeak.com.br
+- **Domain**: eloingles.com.br (SPF + DKIM + DMARC configured)
+- **From**: ELO! <contato@eloingles.com.br>
+- **Reply-to**: mramsay0@gmail.com
 - **Templates**: /api/email/
-  - booking-confirmation.ts
-  - welcome.ts
-  - lesson-reminder.ts (cron: hourly)
+  - welcome
+  - tutor-application
+  - tutor-decision
+  - app-invite
 
 ### GCP Project
 - **Project**: elo-fluxa-rj
@@ -24,21 +25,21 @@
 - **APIs enabled**: Calendar, Gmail, Meet
 - **OAuth Client**: Elo Matt Web
 
-### Environment Variables (Vercel)
-```
-RESEND_API_KEY=                    # Resend dashboard
-GOOGLE_SERVICE_ACCOUNT_KEY=        # GCP Service Account JSON key
-GOOGLE_CALENDAR_ID=                # matt@elospeak.com.br
-MATT_EMAIL=                        # matt@elospeak.com.br
-VITE_GOOGLE_CLIENT_ID=             # GCP OAuth 2.0 Client
-GOOGLE_CLIENT_SECRET=              # GCP OAuth 2.0 Client
-VITE_FIREBASE_API_KEY=             # Firebase Console
-VITE_FIREBASE_AUTH_DOMAIN=         # elospeak.com.br
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-```
+## [August 22, 2026 - Sprint 17] — App Store Compliance, 4-Step Onboarding, Mobile Resiliency & Privacy
+**Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION
+
+### What changed
+- **4-Step Interactive Onboarding Flow (`InteractiveOnboardingModal.tsx`)**: Created a high-converting click-through onboarding questionnaire for new students. Captures proficiency level, main goal, speaking bottleneck, and study pace, awarding a **+50 XP** welcome bonus with confetti animation and saving responses to Firestore.
+- **Apple App Store & LGPD Compliance**:
+  - **Account Deletion Flow (`ProfilePage.tsx`)**: Added in-app self-service account deletion requiring explicit `EXCLUIR` confirmation, permanently purging Firestore and Auth records (mandatory for Apple Review Guideline 5.1.1(v)).
+  - **Legal URLs**: Created live `/privacidade` (LGPD-compliant Privacy Policy) and `/termos` (Terms of Service) pages with direct links from footer and navigation.
+- **Mobile Safari & WebKit Resiliency**:
+  - Added a 1.5-second safety fallback timer to `useAuth.ts` so slow mobile handshakes never lock the user in a loading spinner.
+  - Streamlined Firestore initialization in `src/lib/firebase.ts` to prevent multi-tab IndexedDB lock contention on iOS Safari.
+  - Wrapped all `localStorage` and `sessionStorage` access in `try/catch` blocks to protect against Private Browsing security exceptions.
+- **Desktop Scrolling Fix**: Cleaned `src/index.css` to eliminate `touch-action` and `overscroll-behavior` locks on `html`, restoring smooth mousewheel and trackpad scrolling across desktop browsers.
+- **Teacher Privacy & Flagship Profile**: Embedded portrait headshot for Professor Matt (`/matt-profile.jpg`) and removed surname references for privacy across all client views, modals, and transactional emails.
+- **PWA Mobile Install Prompt (`PwaInstallPrompt.tsx`)**: Added a smart floating banner for mobile visitors (1-tap native install for Android/Chrome, 3-step visual guide for iOS Safari).
 
 ## [July 21, 2026 - Sprint 16] — Mobile App Store Packaging (Native Wrapping Configurations)
 **Status:** ✅ COMPLETED

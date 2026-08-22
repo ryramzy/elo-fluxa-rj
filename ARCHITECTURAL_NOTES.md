@@ -132,3 +132,30 @@ graph TD
 2. **Immutability & Zero-Downtime Rollbacks**: Deployments use blue-green Edge routing. If an anomaly is detected, instant rollback to previous git commit hashes is executed with 1 click.
 3. **Mobile Build Automation**: Version tag releases (`v1.x.x`) trigger Fastlane CI workflows to package, sign, and push Android AAB and iOS IPA bundles to Google Play and Apple TestFlight automatically.
 
+---
+
+## 6. Error Handling & Mobile Resiliency Guardrails 🛡️
+
+To prevent regressions across mobile devices and desktop browsers, all developers and AI agents must adhere to these defensive patterns:
+
+### A. Auth Timeout Guard Pattern
+On mobile browsers (especially iOS Safari on 4G/5G connections), Firebase Auth `onAuthStateChanged` can take several seconds to complete its initial handshake.
+* **Invariant:** `useAuth.ts` must maintain a `setTimeout(() => setLoading(false), 1500)` fallback timer.
+* If Firebase takes longer than 1.5s, the UI must proceed and render public routes instead of locking the user in a perpetual loading spinner.
+
+### B. Safe Storage Access in Private Browsing
+iOS Safari and in-app webviews (Instagram, WhatsApp, TikTok) throw security exceptions when accessing `sessionStorage` or `localStorage` in restricted modes.
+* **Invariant:** Every `localStorage` and `sessionStorage` read/write must be wrapped in `try/catch` blocks. Never access storage directly in the global scope or in component renders without protection.
+
+### C. Desktop Scroll Container Preservation
+Applying `touch-action: pan-x pan-y`, `overscroll-behavior: none`, or `overflow-x: hidden` to the root `<html>` tag breaks native desktop mousewheel and trackpad scrolling on Chromium and WebKit browsers.
+* **Invariant:** Only apply overflow boundaries to `<body>` (`overflow-x: hidden; position: relative; width: 100%; min-height: 100vh;`) or dedicated inner wrappers. The `<html>` selector must remain clean.
+
+### D. Apple Guideline 5.1.1(v) & LGPD Account Deletion Protocol
+Apple strictly rejects mobile applications with user registration if they lack an in-app account deletion mechanism.
+* **Invariant:** `ProfilePage.tsx` must maintain the **"Excluir Minha Conta"** action. It must delete the Firestore `/users/{uid}` document, call `deleteUser(authUser)`, sign out the session, and redirect to the landing page.
+
+### E. Localized Auth Error Translation
+Firebase Auth throws technical error codes (e.g. `auth/popup-closed-by-user`, `auth/unauthorized-domain`, `auth/email-already-in-use`).
+* **Invariant:** All auth interfaces (`LoginModal.tsx`, `Login.tsx`, `Signup.tsx`) must route error objects through `getAuthErrorMessage(err)` in `src/utils/authErrors.ts` to present user-friendly Portuguese error messages.
+
