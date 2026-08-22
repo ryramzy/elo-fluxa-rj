@@ -7,6 +7,7 @@ import { trackEvent } from '@/utils/analytics';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
+import { getAuthErrorMessage } from '@/utils/authErrors';
 
 interface LoginProps {
   copyVariant?: LoginCopyVariant;
@@ -60,7 +61,8 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
       trackEvent('auth_login', { method: 'email' });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      console.error('Email login error:', err);
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -95,7 +97,8 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
       trackEvent('auth_login', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login with Google');
+      console.error('Google sign in error:', err);
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }

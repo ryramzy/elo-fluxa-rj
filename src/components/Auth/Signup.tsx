@@ -5,6 +5,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { trackEvent } from '@/utils/analytics';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
+import { getAuthErrorMessage } from '@/utils/authErrors';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -80,10 +81,19 @@ const Signup = () => {
 
       sessionStorage.removeItem('elo_guest');
       sessionStorage.removeItem('elo_guest_time');
+
+      // Trigger Resend welcome email
+      fetch('/api/email/welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: user.displayName || 'Estudante', email: user.email })
+      }).catch(e => console.warn('Welcome email error:', e));
+
       trackEvent('auth_signup', { method: 'email' });
       navigate('/dashboard', { state: { tab: 'booking' } });
     } catch (err: any) {
-      setError(err.message || 'Failed to create an account');
+      console.error('Signup error:', err);
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }

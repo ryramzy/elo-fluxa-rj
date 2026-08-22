@@ -28,10 +28,9 @@ export default function Navbar({ onNavClick }: NavbarProps) {
 
   const userEmail = (user?.email || '').toLowerCase().trim();
   const isAuthorizedEmail = 
-    userEmail === 'professoro@gmail.com' ||
-    userEmail === 'professor0@gmail.com' ||
+    userEmail === 'mramsay0@gmail.com' ||
+    userEmail === 'mramsayo@gmail.com' ||
     userEmail === 'erneleducation@gmail.com' ||
-    userEmail.endsWith('@eloingle.com.br') ||
     userEmail.endsWith('@eloingles.com.br') ||
     userEmail.endsWith('@elospeak.com.br') ||
     userEmail.endsWith('@elospeak.com') ||
