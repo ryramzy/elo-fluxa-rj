@@ -7,17 +7,16 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
-  overscroll-behavior: none;
-  touch-action: pan-x pan-y;
-  overflow-x: hidden;
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
   background-color: #F8F9FA;
   color: #1A1A1A;
-  overscroll-behavior: none;
   overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
 }
 
 h1,
