@@ -18,7 +18,7 @@ import { StudentTimeline } from '../components/dashboard/StudentTimeline';
 import { LiveTutorsWidget } from '../components/dashboard/LiveTutorsWidget';
 import { QuickLinks } from '../components/dashboard/QuickLinks';
 import { courses } from '../data/courses';
-import { OnboardingTour } from '../components/dashboard/OnboardingTour';
+import { InteractiveOnboardingModal } from '../components/dashboard/InteractiveOnboardingModal';
 import { enrollUserInCourse } from '../lib/firestore';
 import { VisualSlotPicker } from '../components/booking/VisualSlotPicker';
 import { FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
@@ -122,11 +122,19 @@ const DashboardWorking: React.FC = () => {
     return null;
   }
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user.isGuest) {
+      setShowOnboarding(true);
+    }
+  }, [profile, profileLoading, user]);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <OnboardingTour 
-        hasSeenOnboarding={profile?.hasSeenOnboarding || false} 
-        profileLoaded={!profileLoading && !!profile} 
+      <InteractiveOnboardingModal 
+        isOpen={showOnboarding}
+        onComplete={() => setShowOnboarding(false)}
       />
       <WidgetErrorBoundary widgetName="Boas-vindas">
         <WelcomeBanner profile={profile} streak={streak || 0} />

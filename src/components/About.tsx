@@ -148,14 +148,14 @@ export default function About() {
                 <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 shadow-2xl shadow-blue-500/30 overflow-hidden">
                   <img 
                     src="/matt-profile.jpg" 
-                    alt="Matt Ramsay" 
+                    alt="Professor Matt" 
                     className="w-full h-full rounded-full object-cover"
                     onError={(e) => {
                       // Fallback if image fails to load
                       const target = e.currentTarget;
                       target.style.display = 'none';
                       if (target.parentElement) {
-                        target.parentElement.innerHTML = '<div class="w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-5xl font-black">MR</div>';
+                        target.parentElement.innerHTML = '<div class="w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-5xl font-black">M</div>';
                       }
                     }}
                   />
@@ -165,7 +165,7 @@ export default function About() {
                 </div>
               </div>
 
-              <h3 className="text-2xl md:text-3xl font-black mt-4">Matt Ramsay</h3>
+              <h3 className="text-2xl md:text-3xl font-black mt-4">Professor Matt</h3>
               <p className="text-blue-300 text-sm font-bold">Professor Nativo & Fundador • {DOMAIN_NAME}</p>
               
               <div className="flex flex-wrap justify-center gap-2 mt-4">

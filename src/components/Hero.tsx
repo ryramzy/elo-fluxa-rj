@@ -53,7 +53,7 @@ export default function Hero({ onEnter }: HeroProps) {
               <span className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
                 🇺🇸
               </span>
-              <span>Professor Nativo • Matt Ramsay</span>
+              <span>Professor Nativo • Matt</span>
             </div>
 
             <h2 className="text-5xl md:text-7xl font-black text-white mb-2 tracking-tight">

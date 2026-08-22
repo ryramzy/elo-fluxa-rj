@@ -155,7 +155,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
             <p style="margin:0;font-size:15px;line-height:1.5">
               <strong>${formattedDate}</strong> às ${time}<br/>
               Duração: ${durationMinutes || 60} minutos<br/>
-              Professor: ${tutorName || 'Matt Ramsay'}
+              Professor: ${tutorName || 'Professor Matt'}
             </p>
             ${notes ? `<p style="margin:8px 0 0 0;font-size:14px;color:#64748b">
               <strong>Notas:</strong> ${notes}

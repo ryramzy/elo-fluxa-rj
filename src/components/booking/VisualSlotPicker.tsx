@@ -76,7 +76,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           // Roster fallback
           const fallback: Tutor = {
             id: 'matt',
-            name: 'Matt Ramsay',
+            name: 'Professor Matt',
             email: 'mramsay0@gmail.com',
             calendarId: 'mramsay0@gmail.com',
             bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
@@ -89,7 +89,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         console.warn('Failed to fetch tutors, using Matt default:', e);
         const fallback: Tutor = {
           id: 'matt',
-          name: 'Matt Ramsay',
+          name: 'Professor Matt',
           email: 'mramsay0@gmail.com',
           calendarId: 'mramsay0@gmail.com',
           bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
