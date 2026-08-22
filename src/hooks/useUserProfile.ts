@@ -56,12 +56,13 @@ export function useUserProfile(uid: string) {
           const role = isAuthorizedEmail ? 'admin' : (data?.role || 'student');
 
           setProfile({
+            ...data,
             displayName: data?.displayName || auth.currentUser?.displayName || 'Professor Nativo',
             email: data?.email || userEmail,
             photoURL: data?.photoURL || auth.currentUser?.photoURL || '',
             xp,
-            level: levelInfo.level,
-            levelName: levelInfo.name,
+            level: data?.level || levelInfo.level,
+            levelName: data?.levelName || levelInfo.name,
             streakDays: data?.streakDays || 0,
             lastActiveDate: data?.lastActiveDate || null,
             badgesEarned: data?.badgesEarned || [],
@@ -71,6 +72,8 @@ export function useUserProfile(uid: string) {
             plan: data?.plan || 'free',
             bio: data?.bio || '',
             targetGoal: data?.targetGoal || '',
+            challenge: data?.challenge || '',
+            learningPace: data?.learningPace || '',
           });
           setLoading(false);
         } else {

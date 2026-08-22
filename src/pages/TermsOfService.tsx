@@ -42,7 +42,7 @@ export default function TermsOfService() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>Agendamento:</strong> O aluno pode selecionar horários disponíveis na agenda online.</li>
-              <li><strong>Cancelamento e Remarcação:</strong> Para não perder créditos de aula, cancelamentos ou remarcações devem ser feitos com no mínimo 2 horas de antecedência.</li>
+              <li><strong>Cancelamento e Remarcação:</strong> Para não perder créditos de aula, cancelamentos ou remarcações devem ser feitos com no mínimo 24 horas de antecedência.</li>
               <li><strong>Pontualidade:</strong> O professor aguardará até 10 minutos após o início do horário agendado.</li>
             </ul>
           </section>
