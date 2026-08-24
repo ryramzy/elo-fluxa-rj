@@ -1077,24 +1077,24 @@ export async function getTutors(): Promise<any[]> {
     const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (list.length === 0) {
       return [{
-        id: 'matt_ramsay',
-        name: 'Professor Nativo',
-        email: 'professor0@gmail.com',
-        zoomUrl: 'https://zoom.us/j/professor0',
+        id: 'matt',
+        name: 'Professor Matt',
+        email: 'mramsay0@gmail.com',
+        zoomUrl: 'https://meet.google.com/new',
         active: true,
-        bio: 'Native English Teacher from Boston, MA'
+        bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.'
       }];
     }
     return list;
   } catch (error) {
     console.error('Error fetching tutors roster:', error);
     return [{
-      id: 'matt_ramsay',
-      name: 'Professor Nativo',
-      email: 'professor0@gmail.com',
-      zoomUrl: 'https://zoom.us/j/professor0',
+      id: 'matt',
+      name: 'Professor Matt',
+      email: 'mramsay0@gmail.com',
+      zoomUrl: 'https://meet.google.com/new',
       active: true,
-      bio: 'Native English Teacher from Boston, MA'
+      bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.'
     }];
   }
 }
@@ -1118,6 +1118,130 @@ export async function saveTutor(tutorData: {
   } catch (error) {
     console.error('Error saving tutor:', error);
     throw error;
+  }
+}
+
+// Classroom Live Settings (Zero Downtime)
+export async function getClassroomSettings(): Promise<{ meetingUrl: string; provider: string; title: string }> {
+  try {
+    const docRef = doc(db, 'settings', 'classroom');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as { meetingUrl: string; provider: string; title: string };
+    }
+  } catch (e) {
+    console.warn('Could not read classroom settings, using default:', e);
+  }
+  return {
+    meetingUrl: 'https://meet.google.com/new',
+    provider: 'google_meet',
+    title: 'Sala de Aula Virtual — Professor Matt'
+  };
+}
+
+export async function updateClassroomSettings(meetingUrl: string, provider = 'zoom', title = 'Sala de Aula Virtual — Professor Matt'): Promise<void> {
+  const docRef = doc(db, 'settings', 'classroom');
+  await setDoc(docRef, {
+    meetingUrl: meetingUrl.trim(),
+    provider,
+    title,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+// Slot Blocking System (for Days/Hours Off)
+export async function toggleBlockSlot(date: string, time: string, blocked: boolean, tutorId = 'matt'): Promise<void> {
+  const slotDocId = `${tutorId}_${date}_${time.replace(':', '')}`;
+  const blockRef = doc(db, 'blockedSlots', slotDocId);
+  if (blocked) {
+    await setDoc(blockRef, {
+      tutorId,
+      date,
+      time,
+      blocked: true,
+      createdAt: serverTimestamp()
+    });
+  } else {
+    await deleteDoc(blockRef);
+  }
+}
+
+// Tutor-side Booking Cancellation with Refund and Email Dispatch
+export async function tutorCancelBooking(bookingId: string, reason = 'Necessidade de reagendamento pelo professor'): Promise<void> {
+  const bookingRef = doc(db, 'bookings', bookingId);
+  const bookingSnap = await getDoc(bookingRef);
+  if (!bookingSnap.exists()) return;
+
+  const booking = bookingSnap.data() as Booking;
+  const studentId = booking.userId || booking.uid;
+
+  // 1. Delete booking
+  await deleteDoc(bookingRef);
+
+  // 2. Refund B2B corporate credits if student has plan
+  if (studentId) {
+    try {
+      const userRef = doc(db, 'users', studentId);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists() && userSnap.data()?.plan === 'corporate') {
+        await updateDoc(userRef, {
+          corporateCredits: increment(1)
+        });
+      }
+    } catch (refundErr) {
+      console.warn('Could not refund credit:', refundErr);
+    }
+  }
+
+  // 3. Record cancellation log
+  try {
+    const cancelLogRef = doc(collection(db, 'booking_cancellations'));
+    await setDoc(cancelLogRef, {
+      bookingId,
+      studentId,
+      studentName: booking.studentName || 'Estudante',
+      date: booking.date,
+      time: booking.time,
+      cancelledBy: 'tutor',
+      reason,
+      createdAt: serverTimestamp()
+    });
+  } catch (logErr) {
+    console.warn('Cancellation log error:', logErr);
+  }
+
+  // 4. Send cancellation notification email to student via Resend
+  if (booking.studentEmail) {
+    fetch('/api/email/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentEmail: booking.studentEmail,
+        studentName: booking.studentName || 'Estudante',
+        date: booking.date,
+        time: booking.time,
+        reason
+      })
+    }).catch(e => console.warn('Cancel email dispatch error:', e));
+  }
+}
+
+// Legacy Tutor ID Migration ('matthew' -> 'matt')
+export async function migrateLegacyTutorIds(): Promise<void> {
+  try {
+    const bQuery = query(collection(db, 'bookings'), where('tutorId', '==', 'matthew'));
+    const bSnap = await getDocs(bQuery);
+    for (const d of bSnap.docs) {
+      await updateDoc(doc(db, 'bookings', d.id), { tutorId: 'matt' });
+    }
+
+    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', '==', 'matthew'));
+    const sSnap = await getDocs(sQuery);
+    for (const d of sSnap.docs) {
+      await updateDoc(doc(db, 'availableSlots', d.id), { tutorId: 'matt' });
+    }
+  } catch (e) {
+    console.warn('Tutor ID migration notice:', e);
   }
 }
 

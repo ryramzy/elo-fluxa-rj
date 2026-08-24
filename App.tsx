@@ -34,6 +34,7 @@ const ApplyTutor = React.lazy(() => import('./src/pages/ApplyTutor'));
 const Admin = React.lazy(() => import('./src/pages/Admin'));
 const PrivacyPolicy = React.lazy(() => import('./src/pages/PrivacyPolicy'));
 const TermsOfService = React.lazy(() => import('./src/pages/TermsOfService'));
+const ClassroomPage = React.lazy(() => import('./src/pages/ClassroomPage'));
 import { PwaInstallPrompt } from './src/components/navigation/PwaInstallPrompt';
 
 
@@ -204,7 +205,12 @@ function AppShell() {
               <Route path="/privacidade" element={<PrivacyPolicy />} />
               <Route path="/termos" element={<TermsOfService />} />
 
-          {/* 404 catch-all */}
+              {/* Persistent Live Classroom Hub */}
+              <Route path="/classroom" element={<ClassroomPage />} />
+              <Route path="/sala" element={<ClassroomPage />} />
+              <Route path="/zoom" element={<ClassroomPage />} />
+
+              {/* 404 catch-all */}
           <Route path="*" element={<NotFound />} />
               </Routes>
               </Suspense>

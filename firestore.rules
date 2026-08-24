@@ -154,6 +154,12 @@ service cloud.firestore {
       allow write: if isTutor();
     }
 
+    // Blocked slots collection rules (tutor day/time off)
+    match /blockedSlots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isTutor();
+    }
+
     match /tutor_applications/{appId} {
       allow create: if isAuthenticated() && request.auth.uid == appId;
       allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == appId);

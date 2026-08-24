@@ -11,7 +11,8 @@ export const WHATSAPP_MESSAGE = "Oi Matt! Vi o ELO! (eloingles.com.br) e quero c
 export const BRAND_NAME = "ELO!";
 export const DOMAIN_NAME = "eloingles.com.br";
 export const MATT_EMAIL = "mramsay0@gmail.com";
-export const ZOOM_MEETING_URL = "https://zoom.us/j/professor0";
+export const ZOOM_MEETING_URL = "https://meet.google.com/new";
+export const CLASSROOM_HUB_URL = "/classroom";
 
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {

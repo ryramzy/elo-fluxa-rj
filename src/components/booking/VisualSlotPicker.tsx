@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/useToast';
-import { db, bookSlot } from '@/lib/firestore';
+import { db, bookSlot, getClassroomSettings, migrateLegacyTutorIds } from '@/lib/firestore';
 import { 
   collection, 
   query, 
@@ -50,6 +50,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+  const [blockedSlots, setBlockedSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
 
@@ -63,8 +64,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
 
-  // 1. Fetch tutor roster from database
+  // 1. Fetch tutor roster from database and run legacy migration
   useEffect(() => {
+    migrateLegacyTutorIds().catch(() => {});
     const fetchTutors = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'tutors'));
@@ -102,28 +104,56 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     fetchTutors();
   }, []);
 
-  // 2. Load availableSlots and bookings relative to selectedTutor
+  // 2. Load availableSlots, blockedSlots, and bookings relative to selectedTutor
   useEffect(() => {
     if (!selectedTutor) return;
     setLoading(true);
-    const bQuery = query(collection(db, 'bookings'), where('tutorId', '==', selectedTutor.id));
+    const tutorIds = [selectedTutor.id, 'matt', 'matthew'];
+    
+    const bQuery = query(collection(db, 'bookings'), where('tutorId', 'in', tutorIds));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
       setBookings(list);
       setLoading(false);
     }, () => setLoading(false));
 
-    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', '==', selectedTutor.id));
+    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', 'in', tutorIds));
     const unsubscribeSlots = onSnapshot(sQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setAvailableSlots(list);
     });
 
+    const blockQuery = query(collection(db, 'blockedSlots'), where('tutorId', 'in', tutorIds));
+    const unsubscribeBlocked = onSnapshot(blockQuery, (snapshot) => {
+      const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
+      setBlockedSlots(list);
+    });
+
     return () => {
       unsubscribeBookings();
       unsubscribeSlots();
+      unsubscribeBlocked();
     };
   }, [selectedTutor]);
+
+  // Default Availability Schedule: Mon-Fri 09:00-20:00, Sat 09:00-14:00
+  const isDefaultAvailable = (dateStr: string, time: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
+    const dayOfWeek = d.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    const hour = parseInt(time.split(':')[0], 10);
+
+    // Monday (1) to Friday (5): 09:00 to 20:00
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+      return hour >= 9 && hour <= 20;
+    }
+    // Saturday (6): 09:00 to 14:00
+    if (dayOfWeek === 6) {
+      return hour >= 9 && hour <= 14;
+    }
+    // Sunday (0): Closed
+    return false;
+  };
 
   // 2. Dates calculations
   const getWeekDates = () => {
@@ -158,44 +188,23 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     }
 
     setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
-
     const activeTutor = selectedTutor || {
-      id: 'matthew',
-      name: 'Professor (Professor)',
-      email: 'matt@elospeak.com.br',
-      calendarId: 'matt@elospeak.com.br'
+      id: 'matt',
+      name: 'Professor Matt',
+      email: 'mramsay0@gmail.com',
+      calendarId: 'mramsay0@gmail.com',
+      bio: '',
+      photoUrl: '/matt-profile.jpg'
     };
 
     try {
       const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
       const studentEmail = user?.email || 'estudante@elo.com';
 
-      // 1. Prefill Google Calendar event
-      let eventId: string | null = null;
-      let meetLink: string | null = null;
-
-      try {
-        const startDateTime = `${date}T${time}:00-03:00`;
-        const endHour = parseInt(time.split(':')[0]) + 1;
-        const endDateTime = `${date}T${String(endHour).padStart(2, '0')}:00-03:00`;
-
-        const calRes = await createCalendarEvent({
-          summary: `Aula de Inglês Elo: ${studentName}`,
-          description: `Sua aula de conversação em inglês com ${activeTutor.name}.`,
-          startDateTime,
-          endDateTime,
-          attendeeEmail: studentEmail,
-          attendeeName: studentName,
-          tutorCalendarId: activeTutor.calendarId
-        });
-        eventId = calRes.eventId;
-        meetLink = calRes.meetLink;
-      } catch (calErr) {
-        console.warn('Calendar API fallback to Jitsi:', calErr);
-        const sanitizedName = studentName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-        meetLink = `https://meet.jit.si/elo-class-${sanitizedName}-${Date.now().toString().slice(-4)}`;
-        eventId = `fallback_event_${Date.now()}`;
-      }
+      // 1. Fetch persistent classroom meeting URL
+      const classroomSettings = await getClassroomSettings();
+      const meetLink = classroomSettings.meetingUrl || 'https://meet.google.com/new';
+      const eventId = `elo_class_${Date.now()}`;
 
       await bookSlot(
         date,
@@ -206,47 +215,27 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         '',
         eventId,
         meetLink,
-        activeTutor.id,
-        activeTutor.name
+        activeTutor.id || 'matt',
+        activeTutor.name || 'Professor Matt'
       );
 
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-      showToast('Solicitação de aula enviada!', 'success');
+      showToast('Aula agendada com sucesso!', 'success');
 
       setSuccessBooking({
         date,
         time,
-        tutorName: activeTutor.name,
+        tutorName: activeTutor.name || 'Professor Matt',
         meetLink: meetLink || ''
       });
-
-      // Send email payload containing tutor details dynamically to booking-request
-      fetch('/api/email/booking-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          attendeeName: studentName,
-          attendeeEmail: studentEmail,
-          date,
-          time,
-          durationMinutes: 60,
-          meetLink,
-          notes: '',
-          tutorName: activeTutor.name,
-          tutorEmail: activeTutor.email
-        })
-      }).catch(emailErr => {
-        console.error('Failed to send email confirmation in background:', emailErr);
-      });
-
-    } catch (err: any) {
-      showToast(err.message || 'Erro ao agendar aula.', 'error');
+    } catch (error: any) {
+      console.error('Error booking slot:', error);
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));
+      showToast(error.message || 'Erro ao agendar aula. Tente novamente.', 'error');
     }
   };
 
+  // Helper for Google Calendar export link
   const getGoogleCalendarLink = (booking: { date: string; time: string; tutorName?: string; meetLink?: string }) => {
     const [year, mMonth, mDay] = booking.date.split('-').map(Number);
     const [mHour, mMinute] = booking.time.split(':').map(Number);
@@ -255,9 +244,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     
     const toUtcFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     const dates = `${toUtcFormat(localDate)}/${toUtcFormat(endDate)}`;
-    const title = encodeURIComponent(`Aula de Inglês Elo com ${booking.tutorName || 'Professor'}`);
-    const details = encodeURIComponent(`Sua aula de conversação com a Elo.\nLink da sala: ${booking.meetLink || ''}`);
-    const location = encodeURIComponent(booking.meetLink || '');
+    const title = encodeURIComponent(`Aula de Inglês Elo com ${booking.tutorName || 'Professor Matt'}`);
+    const details = encodeURIComponent(`Sua aula de conversação no ELO!\nLink da sala: ${booking.meetLink || 'https://eloingles.com.br/classroom'}`);
+    const location = encodeURIComponent(booking.meetLink || 'https://eloingles.com.br/classroom');
     
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
   };
@@ -352,20 +341,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 <button
                   key={t.id}
                   onClick={() => setSelectedTutor(t)}
-                  className={`flex items-center gap-3 p-2.5 rounded-2xl border text-left shrink-0 transition-all active:scale-95 ${
-                    isActive
-                      ? 'bg-blue-600/10 border-blue-500/80 text-white shadow-lg shadow-blue-500/5'
-                      : 'bg-slate-950/60 border-slate-850 text-slate-400 hover:border-slate-800'
+                  className={`flex items-center gap-3 p-2 pr-4 rounded-xl border transition-all shrink-0 ${
+                    isActive 
+                      ? 'bg-blue-600/10 border-blue-500 text-white shadow-lg shadow-blue-500/10' 
+                      : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <img
-                    src={t.photoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'}
-                    alt={t.name}
-                    className="w-10 h-10 rounded-xl object-cover border border-white/10"
-                  />
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-white truncate">{t.name}</h4>
-                    <p className="text-[9px] text-slate-500 mt-0.5 truncate max-w-[150px]">{t.bio}</p>
+                  <img src={t.photoUrl || '/matt-profile.jpg'} alt={t.name} className="w-10 h-10 rounded-lg object-cover" />
+                  <div className="text-left">
+                    <p className="text-xs font-bold leading-tight">{t.name}</p>
+                    <p className="text-[10px] text-slate-400">Nativo (USA)</p>
                   </div>
                 </button>
               );
@@ -374,8 +359,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         </div>
       )}
 
-      {/* Grid container */}
-      <div className="relative p-0 sm:p-6 md:p-8 bg-transparent min-h-[400px]">
+      {/* Main interactive grid */}
+      <div className="p-2 sm:p-6 md:p-8 relative min-h-[300px]">
         {loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-xs z-10">
             <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-3" />
@@ -419,9 +404,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           {timeSlots.map((time) => {
             const date = weekDates[activeMobileDay];
             const dateStr = date.toLocaleDateString('en-CA');
-            const isAvailable = availableSlots.some(s => s.date === dateStr && s.time === time);
-            const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId));
-            const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId);
+            
+            const isBlocked = blockedSlots.some(b => b.date === dateStr && b.time === time && b.blocked !== false);
+            const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
+            const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
+
+            const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId) && b.status !== 'cancelled');
+            const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId && b.status !== 'cancelled');
 
             return (
               <div key={time} className="flex items-center justify-between bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/80">
@@ -429,10 +418,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 <div className="flex-1 max-w-[200px] h-11 relative">
                   {!isAvailable ? (
                     <div className="absolute inset-0 rounded-lg bg-slate-950/30 border border-slate-900 flex items-center justify-center">
-                      <span className="text-[11px] text-slate-650 font-bold">— Indisponível</span>
+                      <span className="text-[11px] text-slate-500 font-bold">— Indisponível</span>
                     </div>
                   ) : isBookedByMe ? (
-                    <div className="absolute inset-0 rounded-lg bg-blue-950/20 border border-blue-900/30 text-blue-400 text-[11px] font-bold flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-lg bg-blue-950/40 border border-blue-600/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
                       Sua Aula Confirmada ✅
                     </div>
                   ) : isBookedOther ? (
@@ -443,10 +432,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isCreditLocked}
-                      className={`-webkit-tap-highlight-color-transparent select-none absolute inset-0 w-full h-full rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                      className={`-webkit-tap-highlight-color-transparent select-none absolute inset-0 w-full h-full rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center shadow-md ${
                         isCreditLocked 
                           ? 'bg-slate-950/30 border border-slate-900 text-slate-500' 
-                          : 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95'
+                          : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white active:scale-95'
                       }`}
                     >
                       {isCreditLocked ? 'Sem Créditos' : 'Reservar'}
@@ -489,9 +478,13 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   </div>
                   {weekDates.map((date, i) => {
                     const dateStr = date.toLocaleDateString('en-CA');
-                    const isAvailable = availableSlots.some(s => s.date === dateStr && s.time === time);
-                    const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId));
-                    const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId);
+                    
+                    const isBlocked = blockedSlots.some(b => b.date === dateStr && b.time === time && b.blocked !== false);
+                    const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
+                    const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
+
+                    const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId) && b.status !== 'cancelled');
+                    const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId && b.status !== 'cancelled');
 
                     return (
                       <div key={i} className="relative h-11">
@@ -500,7 +493,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                             <span className="text-xs text-slate-600 font-bold">—</span>
                           </div>
                         ) : isBookedByMe ? (
-                          <div className="absolute inset-0 rounded-xl bg-blue-950/20 border border-blue-900/30 text-blue-400 text-[11px] font-bold flex items-center justify-center">
+                          <div className="absolute inset-0 rounded-xl bg-blue-950/40 border border-blue-600/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
                             Sua Aula ✅
                           </div>
                         ) : isBookedOther ? (
@@ -511,10 +504,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                           <button
                             onClick={() => handleBookSlot(dateStr, time)}
                             disabled={isCreditLocked}
-                            className={`absolute inset-0 w-full rounded-xl text-xs font-bold uppercase transition-all flex flex-col items-center justify-center ${
+                            className={`absolute inset-0 w-full rounded-xl text-xs font-bold uppercase transition-all flex flex-col items-center justify-center shadow-sm ${
                               isCreditLocked 
                                 ? 'bg-slate-900/20 border border-slate-800 text-slate-500' 
-                                : 'bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-600 hover:text-white active:scale-95'
+                                : 'bg-emerald-600/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-600 hover:text-white active:scale-95'
                             }`}
                           >
                             <span>{isCreditLocked ? 'Sem Créditos' : 'Reservar'}</span>

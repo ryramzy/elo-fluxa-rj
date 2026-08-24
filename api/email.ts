@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if ((path.endsWith('/email/booking-request') || path === '/api/email/booking-request') && req.method === 'POST') {
     return handleBookingRequest(req, res);
   }
-  if ((path.endsWith('/email/booking-cancellation') || path === '/api/email/booking-cancellation') && req.method === 'POST') {
+  if ((path.endsWith('/email/booking-cancellation') || path === '/api/email/booking-cancellation' || path.endsWith('/email/cancel') || path === '/api/email/cancel') && req.method === 'POST') {
     return handleBookingCancellation(req, res);
   }
   if ((path.endsWith('/email/enrollment-confirmation') || path === '/api/email/enrollment-confirmation') && req.method === 'POST') {

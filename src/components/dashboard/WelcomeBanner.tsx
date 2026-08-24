@@ -50,13 +50,11 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
             {/* Mobile-only quick action buttons */}
             <div className="flex sm:hidden items-center gap-2 mt-4 w-full">
               <a
-                href="https://zoom.us/j/professor0"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/classroom"
                 onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30"
               >
-                <span>📹</span> Entrar no Zoom
+                <span>📹</span> Entrar na Sala
               </a>
               <a
                 href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
@@ -72,13 +70,11 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
 
           <div className="hidden sm:flex items-center gap-3 shrink-0">
             <a
-              href="https://zoom.us/j/professor0"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/classroom"
               onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-blue-400/30"
             >
-              <span>📹</span> Entrar no Zoom (Aula ao Vivo)
+              <span>📹</span> Entrar na Sala (Aula ao Vivo)
             </a>
             <a
               href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}

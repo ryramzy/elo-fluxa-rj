@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/useToast';
-import { db, cancelBooking, bookSlot } from '@/lib/firestore';
+import { 
+  db, 
+  tutorCancelBooking, 
+  bookSlot, 
+  getClassroomSettings, 
+  updateClassroomSettings, 
+  toggleBlockSlot,
+  migrateLegacyTutorIds 
+} from '@/lib/firestore';
 import { 
   collection, 
   query, 
-  where,
+  where, 
   onSnapshot, 
   doc, 
   updateDoc, 
   deleteDoc, 
-  getDocs,
-  setDoc
+  getDocs, 
+  setDoc 
 } from 'firebase/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -22,7 +30,9 @@ import {
   FaChevronRight, 
   FaRegCalendarPlus,
   FaFileAlt,
-  FaSlidersH
+  FaSlidersH,
+  FaVideo,
+  FaBan
 } from 'react-icons/fa';
 
 interface Booking {
@@ -53,6 +63,7 @@ export default function TutorAgendaView() {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [blockedSlots, setBlockedSlots] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +74,7 @@ export default function TutorAgendaView() {
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [pasteModalOpen, setPasteModalOpen] = useState(false);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [classroomModalOpen, setClassroomModalOpen] = useState(false);
 
   // Forms state
   const [selectedStudentUid, setSelectedStudentUid] = useState('');
@@ -78,11 +90,28 @@ export default function TutorAgendaView() {
   const [endHour, setEndHour] = useState('17:00');
   const [savingTemplate, setSavingTemplate] = useState(false);
 
-  // 1. Firebase Listeners
+  // Classroom Live Link state
+  const [classroomMeetingUrl, setClassroomMeetingUrl] = useState('');
+  const [classroomProvider, setClassroomProvider] = useState('zoom');
+  const [savingClassroomSettings, setSavingClassroomSettings] = useState(false);
+
+  // 1. Firebase Listeners & Migration
   useEffect(() => {
+    migrateLegacyTutorIds().catch(() => {});
+    
+    // Fetch live classroom settings
+    getClassroomSettings().then(settings => {
+      if (settings?.meetingUrl) {
+        setClassroomMeetingUrl(settings.meetingUrl);
+        setClassroomProvider(settings.provider || 'zoom');
+      }
+    });
+
     setLoading(true);
+    const tutorIds = ['matt', 'matthew'];
+
     // Realtime bookings listener
-    const bQuery = query(collection(db, 'bookings'), where('tutorId', '==', 'matthew'));
+    const bQuery = query(collection(db, 'bookings'), where('tutorId', 'in', tutorIds));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
       setBookings(list);
@@ -90,10 +119,17 @@ export default function TutorAgendaView() {
     }, () => setLoading(false));
 
     // Realtime available slots listener
-    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', '==', 'matthew'));
+    const sQuery = query(collection(db, 'availableSlots'), where('tutorId', 'in', tutorIds));
     const unsubscribeSlots = onSnapshot(sQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as AvailableSlot));
       setAvailableSlots(list);
+    });
+
+    // Realtime blocked slots listener
+    const blockQuery = query(collection(db, 'blockedSlots'), where('tutorId', 'in', tutorIds));
+    const unsubscribeBlocked = onSnapshot(blockQuery, (snapshot) => {
+      const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
+      setBlockedSlots(list);
     });
 
     // Realtime students listener
@@ -106,6 +142,7 @@ export default function TutorAgendaView() {
     return () => {
       unsubscribeBookings();
       unsubscribeSlots();
+      unsubscribeBlocked();
       unsubscribeUsers();
     };
   }, []);
@@ -131,10 +168,10 @@ export default function TutorAgendaView() {
           date: booking.date,
           time: booking.time,
           durationMinutes: 60,
-          meetLink: booking.meetLink || '',
+          meetLink: booking.meetLink || classroomMeetingUrl || 'https://eloingles.com.br/classroom',
           notes: '',
-          tutorName: profile?.displayName || 'Professor',
-          tutorEmail: user?.email || 'matt@elospeak.com.br'
+          tutorName: profile?.displayName || 'Professor Matt',
+          tutorEmail: user?.email || 'mramsay0@gmail.com'
         })
       }).catch(err => {
         console.error('Failed to trigger confirmation email on acceptance:', err);
@@ -154,12 +191,37 @@ export default function TutorAgendaView() {
   };
 
   const handleCancelBookingTutor = async (id: string) => {
-    if (!window.confirm('Tem certeza de que deseja cancelar esta aula?')) return;
+    const reason = window.prompt('Motivo do cancelamento (opcional):', 'Necessidade de reagendamento pelo professor');
+    if (reason === null) return;
     try {
-      await cancelBooking(id);
-      showToast('Aula cancelada.', 'success');
+      await tutorCancelBooking(id, reason);
+      showToast('Aula cancelada e crédito reembolsado ao estudante.', 'success');
     } catch (e: any) {
       showToast(e.message || 'Erro ao cancelar aula', 'error');
+    }
+  };
+
+  const handleToggleBlock = async (dateStr: string, timeStr: string, currentlyBlocked: boolean) => {
+    try {
+      await toggleBlockSlot(dateStr, timeStr, !currentlyBlocked, 'matt');
+      showToast(currentlyBlocked ? `Horário ${timeStr} desbloqueado!` : `Horário ${timeStr} bloqueado.`, 'success');
+    } catch (e: any) {
+      showToast('Erro ao atualizar bloqueio do horário.', 'error');
+    }
+  };
+
+  const handleSaveClassroomSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!classroomMeetingUrl) return;
+    setSavingClassroomSettings(true);
+    try {
+      await updateClassroomSettings(classroomMeetingUrl, classroomProvider);
+      showToast('Link da Sala de Aula Virtual atualizado com sucesso!', 'success');
+      setClassroomModalOpen(false);
+    } catch (e: any) {
+      showToast('Erro ao salvar link da sala.', 'error');
+    } finally {
+      setSavingClassroomSettings(false);
     }
   };
 
@@ -412,7 +474,7 @@ export default function TutorAgendaView() {
           )}
 
           {/* Action Grid Buttons */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <button
               onClick={() => {
                 setManualDate(selectedDateStr);
@@ -422,6 +484,13 @@ export default function TutorAgendaView() {
             >
               <FaRegCalendarPlus size={14} />
               <span>Agendar Aula</span>
+            </button>
+            <button
+              onClick={() => setClassroomModalOpen(true)}
+              className="py-2.5 px-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 shadow-md -webkit-tap-highlight-color-transparent select-none min-h-[44px] md:min-h-[38px]"
+            >
+              <FaVideo size={14} />
+              <span>Configurar Sala</span>
             </button>
             <button
               onClick={() => setPasteModalOpen(true)}
@@ -470,10 +539,10 @@ export default function TutorAgendaView() {
                   : 'border-transparent text-slate-500 hover:text-slate-350'
               }`}
             >
-              Slots Livres ({filteredSlots.length})
+              Horários & Bloqueios
             </button>
 
-            <span className="ml-auto text-[10px] font-bold text-slate-550 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
+            <span className="ml-auto text-[10px] font-bold text-slate-400 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
               📅 {selectedDate.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}
             </span>
           </div>
@@ -506,13 +575,13 @@ export default function TutorAgendaView() {
                     </div>
                     <div className="flex gap-1.5 flex-shrink-0">
                       <a
-                        href="https://zoom.us/j/professor0"
+                        href={classroomMeetingUrl || '/classroom'}
                         target="_blank"
                         rel="noreferrer"
                         className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
-                        title="Iniciar Sala do Zoom (professor0@gmail.com)"
+                        title="Iniciar Sala ao Vivo"
                       >
-                        📹 Zoom
+                        📹 Sala ao Vivo
                       </a>
                       <a
                         href="/courses/beginner/lessons/be-dl-01"
@@ -523,17 +592,6 @@ export default function TutorAgendaView() {
                       >
                         🖥️ Deck
                       </a>
-                      {booking.meetLink && (
-                        <a
-                          href={booking.meetLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-700/50 min-h-[36px] flex items-center justify-center"
-                          title="Abrir sala alternativa do Google Meet / Jitsi"
-                        >
-                          Meet
-                        </a>
-                      )}
                       <button
                         onClick={() => handleCancelBookingTutor(booking.id)}
                         className="px-2.5 py-1.5 bg-slate-850 hover:bg-slate-800 text-slate-400 hover:text-rose-400 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-700/50 min-h-[36px]"
@@ -546,36 +604,124 @@ export default function TutorAgendaView() {
               )}
             </div>
           ) : (
-            // Slots Tab Stream
+            // Slots & Blocking Stream
             <div className="space-y-2.5">
-              {filteredSlots.length === 0 ? (
-                <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/80 rounded-2xl p-8 text-center text-xs text-slate-500">
-                  Nenhum slot aberto para este dia. Use as ações rápidas para adicionar.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {filteredSlots.sort((a,b) => a.time.localeCompare(b.time)).map(slot => (
-                    <div key={slot.id} className="bg-slate-900/40 backdrop-blur-md border border-slate-800/80 p-3 rounded-xl flex items-center justify-between gap-2 shadow-xl">
-                      <span className="text-xs font-black text-slate-200">{slot.time}</span>
-                      <button
-                        onClick={async () => {
-                          if (window.confirm(`Deseja remover o horário disponível ${slot.time}?`)) {
-                            await deleteDoc(doc(db, 'availableSlots', slot.id));
-                            showToast('Slot removido.', 'success');
-                          }
-                        }}
-                        className="w-7 h-7 bg-slate-800 hover:bg-red-950/40 text-slate-400 hover:text-red-400 rounded-lg flex items-center justify-center border border-slate-700/50 transition-all active:scale-95"
-                      >
-                        <FaTimes size={10} />
-                      </button>
+              <p className="text-xs text-slate-400 mb-2">
+                Clique em um horário para bloquear (folga, compromisso) ou desbloquear para os alunos:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                {Array.from({ length: 13 }, (_, i) => `${String(8 + i).padStart(2, '0')}:00`).map((timeStr) => {
+                  const isBlocked = blockedSlots.some(b => b.date === selectedDateStr && b.time === timeStr && b.blocked !== false);
+                  const isBooked = bookings.some(b => b.date === selectedDateStr && b.time === timeStr && b.status !== 'cancelled');
+
+                  return (
+                    <div 
+                      key={timeStr} 
+                      className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-2 shadow-md ${
+                        isBooked
+                          ? 'bg-blue-950/20 border-blue-800/40 text-blue-300'
+                          : isBlocked 
+                          ? 'bg-rose-955/20 border-rose-900/30 text-rose-400' 
+                          : 'bg-slate-900/40 border-slate-800 text-slate-200'
+                      }`}
+                    >
+                      <div>
+                        <span className="text-xs font-black block">{timeStr}</span>
+                        <span className="text-[9px] font-semibold block mt-0.5 opacity-80">
+                          {isBooked ? 'Agendado 👤' : isBlocked ? 'Bloqueado 🚫' : 'Disponível ✅'}
+                        </span>
+                      </div>
+                      {!isBooked && (
+                        <button
+                          onClick={() => handleToggleBlock(selectedDateStr, timeStr, isBlocked)}
+                          className={`px-2 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 ${
+                            isBlocked
+                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                              : 'bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700'
+                          }`}
+                          title={isBlocked ? 'Desbloquear horário' : 'Bloquear horário'}
+                        >
+                          {isBlocked ? 'Liberar' : 'Bloquear'}
+                        </button>
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* MODAL 0: Classroom Live Settings Modal */}
+      {classroomModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">
+          <div className="bg-slate-900 border border-slate-800 max-w-md w-full rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-black uppercase tracking-wider text-slate-200 mb-2">Configurar Sala ao Vivo</h3>
+            <p className="text-[10px] text-slate-400 mb-4">
+              Defina o link persistente do Zoom ou Google Meet que todos os alunos e botões <b>"Entrar na Sala"</b> abrirão automaticamente.
+            </p>
+            <form onSubmit={handleSaveClassroomSettings} className="space-y-4 text-xs font-bold text-slate-400">
+              <div>
+                <label className="block mb-1.5 uppercase tracking-wider">Provedor</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setClassroomProvider('zoom')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all ${
+                      classroomProvider === 'zoom' 
+                        ? 'bg-blue-600 border-blue-500 text-white shadow-md' 
+                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  >
+                    📹 Zoom
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClassroomProvider('google_meet')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all ${
+                      classroomProvider === 'google_meet' 
+                        ? 'bg-emerald-600 border-emerald-500 text-white shadow-md' 
+                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  >
+                    📞 Google Meet
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-1.5 uppercase tracking-wider">Link da Reunião (URL)</label>
+                <input
+                  type="url"
+                  placeholder="https://zoom.us/j/123456789 ou https://meet.google.com/..."
+                  value={classroomMeetingUrl}
+                  onChange={(e) => setClassroomMeetingUrl(e.target.value)}
+                  required
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-3">
+                <button
+                  type="button"
+                  onClick={() => setClassroomModalOpen(false)}
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl uppercase tracking-wider text-[10px] font-bold border border-slate-700/50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingClassroomSettings}
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl uppercase tracking-wider text-[10px] font-bold transition-colors shadow-md flex items-center justify-center gap-2"
+                >
+                  {savingClassroomSettings ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* MODAL 1:       {bookingModalOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-955/80 backdrop-blur-sm px-4 pb-[env(safe-area-inset-bottom)] sm:pb-0">

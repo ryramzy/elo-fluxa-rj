@@ -58,12 +58,12 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
-                    href="https://zoom.us/j/professor0"
+                    href={booking.meetLink || '/classroom'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md hover:scale-105"
                   >
-                    📹 Entrar no Zoom (Professor)
+                    📹 Entrar na Sala ({booking.tutorName || 'Professor Matt'})
                   </a>
                   <a
                     href={getWhatsAppLink('upcomingClass', { studentName: booking.userName, date: booking.date, time: booking.time })}

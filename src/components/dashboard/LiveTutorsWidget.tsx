@@ -45,12 +45,12 @@ export const LiveTutorsWidget: React.FC<LiveTutorsWidgetProps> = ({ onNavigateTo
 
     setConnecting(true);
     trackEvent('live_call_connect_zoom', { tutorId: 'matt' });
-    showToast({ type: 'success', message: 'Abrindo sala do Zoom com Professor...' });
+    showToast({ type: 'success', message: 'Abrindo Sala de Aula ao Vivo...' });
 
     setTimeout(() => {
-      window.open('https://zoom.us/j/professor0', '_blank');
+      window.location.href = '/classroom';
       setConnecting(false);
-    }, 800);
+    }, 400);
   };
 
   return (

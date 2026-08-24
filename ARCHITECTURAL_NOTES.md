@@ -180,4 +180,21 @@ When users complete a multi-step modal (such as `InteractiveOnboardingModal.tsx`
   3. Guard the parent component's mounting `useEffect` with a local `hasDismissed` state so stale real-time snapshots cannot re-trigger the modal before the server responds.
   4. Defer downstream modals (e.g. subscription paywalls) until onboarding has been dismissed.
 
+### I. Intelligent Default Availability with Defensive Slot Blocking
+* **Invariant:** In `VisualSlotPicker.tsx`, the platform provides a base operating schedule for Professor Matt (Mon-Fri 09:00-20:00, Sat 09:00-14:00) so that students never encounter empty 100% "— Indisponível" calendars.
+* **Slot Blocking:** Matt can block time off, holidays, or individual hours via `TutorAgendaView.tsx`. Blocked hours are stored in the Firestore `blockedSlots` collection (`{ tutorId: 'matt', date: 'YYYY-MM-DD', time: 'HH:00', blocked: true }`) and override the default availability.
+
+### J. Dynamic Persistent Classroom Gateway (`settings/classroom`)
+* **Invariant:** Live meeting URLs (Zoom PMI or Google Meet) must never be hardcoded into static HTML/components.
+* The system reads from Firestore `settings/classroom` with fallback to `ZOOM_MEETING_URL`.
+* Matt can update the live classroom link in real-time from `TutorAgendaView.tsx` with zero redeploys and zero downtime.
+* Students and teachers access the call via `/classroom` (`ClassroomPage.tsx`).
+
+### K. Tutor-Side Cancellation & B2B Credit Reconciliation
+* **Invariant:** When a teacher cancels a student booking from `TutorAgendaView.tsx` via `tutorCancelBooking()`:
+  1. The booking record is deleted/updated to status `'cancelled'`.
+  2. If the student holds a B2B corporate credit plan, 1 credit is automatically refunded to their profile.
+  3. An automated cancellation notification with reschedule link is dispatched via Resend to the student's email.
+
+
 
