@@ -172,3 +172,12 @@ React requires that every hook (`useState`, `useEffect`, `useMemo`, `useCallback
 * **Violation Result:** On initial render (`loading === true`), React registers $N$ hooks. When loading completes (`loading === false`), the component executes the rest of the hooks, causing React to throw `Rendered more hooks than during the previous render`, triggering the global `<ErrorBoundary>` crash screen (*"Something went wrong"*).
 * All hooks MUST be declared at the top of the component function before any return statements.
 
+### H. Optimistic Completion & Session Dismissal Guard (Onboarding Invariant)
+When users complete a multi-step modal (such as `InteractiveOnboardingModal.tsx`), asynchronous database writes may experience network latency.
+* **Invariant:** All modal completion actions must:
+  1. Cache completion client-side immediately in `localStorage` (`elo_onboarding_completed_<uid> = 'true'`).
+  2. Guard the database update with a 2-second timeout (`Promise.race`) so slow network connections never freeze UI buttons in a pending state (`"⚡ SALVANDO..."`).
+  3. Guard the parent component's mounting `useEffect` with a local `hasDismissed` state so stale real-time snapshots cannot re-trigger the modal before the server responds.
+  4. Defer downstream modals (e.g. subscription paywalls) until onboarding has been dismissed.
+
+

@@ -101,22 +101,39 @@ const DashboardWorking: React.FC = () => {
     }).length;
   };
 
-  useEffect(() => {
-    if (!profileLoading && !user) {
-      navigate('/login');
-    } else if (!profileLoading && profile && profile.plan === 'free' && profile.role !== 'admin' && !profile.isGuest) {
-      // Auto-open paywall for unsubscribed students
-      setSubscriptionModalOpen(true);
+  const [hasDismissedOnboarding, setHasDismissedOnboarding] = useState(() => {
+    try {
+      return !!user?.uid && localStorage.getItem(`elo_onboarding_completed_${user.uid}`) === 'true';
+    } catch (e) {
+      return false;
     }
-  }, [user, profileLoading, profile, navigate]);
-
+  });
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user?.isGuest) {
+    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user?.isGuest && !hasDismissedOnboarding) {
       setShowOnboarding(true);
+    } else if (profile?.hasSeenOnboarding || hasDismissedOnboarding) {
+      setShowOnboarding(false);
     }
-  }, [profile, profileLoading, user]);
+  }, [profile, profileLoading, user, hasDismissedOnboarding]);
+
+  useEffect(() => {
+    if (!profileLoading && !user) {
+      navigate('/login');
+    } else if (
+      !profileLoading && 
+      profile && 
+      profile.plan === 'free' && 
+      profile.role !== 'admin' && 
+      !profile.isGuest &&
+      (profile.hasSeenOnboarding || hasDismissedOnboarding) &&
+      !showOnboarding
+    ) {
+      // Auto-open paywall for unsubscribed students only after onboarding is done
+      setSubscriptionModalOpen(true);
+    }
+  }, [user, profileLoading, profile, navigate, showOnboarding, hasDismissedOnboarding]);
 
   if (profileLoading) {
     return (
@@ -134,7 +151,15 @@ const DashboardWorking: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <InteractiveOnboardingModal 
         isOpen={showOnboarding}
-        onComplete={() => setShowOnboarding(false)}
+        onComplete={() => {
+          setHasDismissedOnboarding(true);
+          setShowOnboarding(false);
+          if (user?.uid) {
+            try {
+              localStorage.setItem(`elo_onboarding_completed_${user.uid}`, 'true');
+            } catch (e) {}
+          }
+        }}
       />
       <WidgetErrorBoundary widgetName="Boas-vindas">
         <WelcomeBanner profile={profile} streak={streak || 0} />

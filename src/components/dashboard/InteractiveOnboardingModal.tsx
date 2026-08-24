@@ -161,12 +161,21 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
 
   const handleFinish = async () => {
     setSaving(true);
+
+    // Immediately cache in localStorage so Dashboard never re-opens onboarding
+    if (user?.uid) {
+      try {
+        localStorage.setItem(`elo_onboarding_completed_${user.uid}`, 'true');
+      } catch (e) {}
+    }
+
     try {
       if (user && user.uid !== 'guest_user') {
         const userRef = doc(db, 'users', user.uid);
         const selectedLevelObj = levels.find(l => l.id === level) || levels[1];
         
-        await updateDoc(userRef, {
+        // Execute update with a 2-second timeout guard
+        const updateTask = updateDoc(userRef, {
           hasSeenOnboarding: true,
           level: selectedLevelObj.starterLevel,
           levelName: selectedLevelObj.title,
@@ -177,6 +186,9 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
           lastActiveDate: new Date()
         });
 
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+        await Promise.race([updateTask, timeoutPromise]);
+
         trackEvent('onboarding_completed', {
           level,
           goal,
@@ -184,12 +196,11 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
           pace
         });
       }
-      onComplete();
     } catch (err) {
-      console.error('Error saving onboarding data:', err);
-      onComplete();
+      console.warn('Onboarding save warning (proceeding optimistically):', err);
     } finally {
       setSaving(false);
+      onComplete();
     }
   };
 
