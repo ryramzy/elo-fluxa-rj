@@ -86,12 +86,22 @@ service cloud.firestore {
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'uid', 'email'])
         ) ||
         (
-          isOwner(userId) && 
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'plan', 'bookingLimit', 'organizationId', 'corporateCredits'])
+          isOwner(userId) && (
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'plan', 'bookingLimit', 'organizationId', 'corporateCredits']) ||
+            (
+              request.resource.data.role == resource.data.role &&
+              request.resource.data.plan == resource.data.plan &&
+              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['bookingLimit', 'organizationId', 'corporateCredits'])
+            )
+          )
         )
       );
       
-      allow delete: if request.auth.uid == 'QI3mgrlplVSNPER0VxuZIPSlo2B3' || isAdmin();
+      allow delete: if isAuthenticated() && (
+        isOwner(userId) ||
+        isAdmin() ||
+        request.auth.uid == 'QI3mgrlplVSNPER0VxuZIPSlo2B3'
+      );
       
       // User enrollments sub-collection (legacy but still active)
       match /courses/{courseId} {

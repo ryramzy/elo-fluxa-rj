@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, googleProvider, db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { getAuthErrorMessage } from '@/utils/authErrors';
@@ -45,26 +45,34 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
           }
         }
 
-        // Create initial Firestore user document
-        const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, {
-          displayName: name.trim() || 'Estudante',
-          email: user.email || email.trim(),
-          photoURL: user.photoURL || '',
-          xp: 0,
-          level: 1,
-          streakDays: 1,
-          lastActiveDate: new Date(),
-          badgesEarned: [],
-          createdAt: new Date(),
-          role: 'student',
-          hasSeenOnboarding: false,
-          plan: 'free',
-          bio: '',
-          targetGoal: '',
-        }, { merge: true });
+        // Create initial Firestore user document safely
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              displayName: name.trim() || 'Estudante',
+              email: user.email || email.trim(),
+              photoURL: user.photoURL || '',
+              xp: 0,
+              level: 1,
+              streakDays: 1,
+              lastActiveDate: new Date(),
+              badgesEarned: [],
+              createdAt: new Date(),
+              role: 'student',
+              hasSeenOnboarding: false,
+              plan: 'free',
+              bio: '',
+              targetGoal: '',
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
+            });
+          }
+        } catch (dbErr) {
+          console.warn('Profile doc init error (handled by snapshot listener):', dbErr);
+        }
 
-        // Trigger Resend welcome email
+        // Trigger Resend welcome email (async non-blocking)
         fetch('/api/email/welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -89,36 +97,56 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
     setLoading(true);
 
     try {
-      sessionStorage.removeItem('elo_guest');
-      sessionStorage.removeItem('elo_guest_time');
+      try {
+        sessionStorage.removeItem('elo_guest');
+        sessionStorage.removeItem('elo_guest_time');
+      } catch (e) {}
+
       const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
 
-      // Ensure user profile in Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        displayName: user.displayName || 'Estudante',
-        email: user.email || '',
-        photoURL: user.photoURL || '',
-        xp: 0,
-        level: 1,
-        streakDays: 1,
-        lastActiveDate: new Date(),
-        badgesEarned: [],
-        createdAt: new Date(),
-        role: 'student',
-        hasSeenOnboarding: false,
-        plan: 'free',
-        bio: '',
-        targetGoal: '',
-      }, { merge: true });
+      // Safely ensure or update user profile in Firestore
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
 
-      // Trigger Resend welcome email
-      fetch('/api/email/welcome', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: user.displayName || 'Estudante', email: user.email })
-      }).catch(e => console.warn('Welcome email error:', e));
+        if (!userSnap.exists()) {
+          // Brand new user: initialize full profile
+          await setDoc(userRef, {
+            displayName: user.displayName || 'Estudante',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            xp: 0,
+            level: 1,
+            streakDays: 1,
+            lastActiveDate: new Date(),
+            badgesEarned: [],
+            createdAt: new Date(),
+            role: 'student',
+            hasSeenOnboarding: false,
+            plan: 'free',
+            bio: '',
+            targetGoal: '',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
+          });
+
+          // Trigger Resend welcome email on new Google registration
+          fetch('/api/email/welcome', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: user.displayName || 'Estudante', email: user.email })
+          }).catch(e => console.warn('Welcome email error:', e));
+        } else {
+          // Existing user: only update non-restricted fields
+          await updateDoc(userRef, {
+            lastActiveDate: new Date(),
+            photoURL: user.photoURL || userSnap.data()?.photoURL || '',
+            displayName: user.displayName || userSnap.data()?.displayName || 'Estudante',
+          });
+        }
+      } catch (dbErr) {
+        console.warn('Google sign-in profile sync handled gracefully:', dbErr);
+      }
 
       trackEvent('auth_login', { method: 'google' });
       onClose();

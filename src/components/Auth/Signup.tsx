@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { trackEvent } from '@/utils/analytics';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
 import { getAuthErrorMessage } from '@/utils/authErrors';
 
@@ -108,24 +108,46 @@ const Signup = () => {
       const guestXp = parseInt(localStorage.getItem('elo_user_xp') || '0', 10);
 
       // Safely ensure user profile document in Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        displayName: user.displayName || 'Estudante',
-        email: user.email || '',
-        photoURL: user.photoURL || '',
-        xp: guestXp > 0 ? guestXp : 0,
-        level: guestXp > 100 ? Math.floor(guestXp / 100) + 1 : 1,
-        streakDays: 1,
-        lastActiveDate: new Date(),
-        badgesEarned: [],
-        createdAt: new Date(),
-        role: 'student',
-        hasSeenOnboarding: false,
-        bio: '',
-        targetGoal: '',
-        referredBy: referrerId || null,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
-      }, { merge: true });
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            displayName: user.displayName || 'Estudante',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            xp: guestXp > 0 ? guestXp : 0,
+            level: guestXp > 100 ? Math.floor(guestXp / 100) + 1 : 1,
+            streakDays: 1,
+            lastActiveDate: new Date(),
+            badgesEarned: [],
+            createdAt: new Date(),
+            role: 'student',
+            hasSeenOnboarding: false,
+            plan: 'free',
+            bio: '',
+            targetGoal: '',
+            referredBy: referrerId || null,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
+          });
+
+          // Trigger Resend welcome email on new registration
+          fetch('/api/email/welcome', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: user.displayName || 'Estudante', email: user.email })
+          }).catch(e => console.warn('Welcome email error:', e));
+        } else {
+          await updateDoc(userRef, {
+            lastActiveDate: new Date(),
+            photoURL: user.photoURL || userSnap.data()?.photoURL || '',
+            displayName: user.displayName || userSnap.data()?.displayName || 'Estudante',
+          });
+        }
+      } catch (dbErr) {
+        console.warn('Google sign-up profile sync warning:', dbErr);
+      }
 
       // Migrate guest enrollments to Firestore
       const guestEnrollmentsStr = sessionStorage.getItem('elo_guest_enrollments');
@@ -149,14 +171,17 @@ const Signup = () => {
           console.error('Failed to migrate guest enrollments:', migrationErr);
         }
       }
-      sessionStorage.removeItem('elo_guest_enrollments');
+      try {
+        sessionStorage.removeItem('elo_guest_enrollments');
+        sessionStorage.removeItem('elo_guest');
+        sessionStorage.removeItem('elo_guest_time');
+      } catch (e) {}
 
-      sessionStorage.removeItem('elo_guest');
-      sessionStorage.removeItem('elo_guest_time');
       trackEvent('auth_signup', { method: 'google' });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to sign up with Google');
+      console.error('Signup with Google error:', err);
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }

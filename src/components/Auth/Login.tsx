@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { LOGIN_COPY_VARIANTS, DEFAULT_LOGIN_VARIANT, LoginCopyVariant } from '@/constants/loginCopy';
 import { trackEvent } from '@/utils/analytics';
 import { useAuth } from '@/hooks/useAuth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firestore';
 import { getAuthErrorMessage } from '@/utils/authErrors';
 
@@ -76,23 +76,44 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
       const user = userCredential.user;
 
       // Safely ensure user profile document in Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        displayName: user.displayName || 'Estudante',
-        email: user.email || '',
-        photoURL: user.photoURL || '',
-        xp: 0,
-        level: 1,
-        streakDays: 0,
-        lastActiveDate: new Date(),
-        badgesEarned: [],
-        createdAt: new Date(),
-        role: 'student',
-        hasSeenOnboarding: false,
-        bio: '',
-        targetGoal: '',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
-      }, { merge: true });
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            displayName: user.displayName || 'Estudante',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            xp: 0,
+            level: 1,
+            streakDays: 0,
+            lastActiveDate: new Date(),
+            badgesEarned: [],
+            createdAt: new Date(),
+            role: 'student',
+            hasSeenOnboarding: false,
+            plan: 'free',
+            bio: '',
+            targetGoal: '',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
+          });
+
+          fetch('/api/email/welcome', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: user.displayName || 'Estudante', email: user.email })
+          }).catch(e => console.warn('Welcome email error:', e));
+        } else {
+          await updateDoc(userRef, {
+            lastActiveDate: new Date(),
+            photoURL: user.photoURL || userSnap.data()?.photoURL || '',
+            displayName: user.displayName || userSnap.data()?.displayName || 'Estudante',
+          });
+        }
+      } catch (dbErr) {
+        console.warn('Google sign-in profile sync warning:', dbErr);
+      }
 
       trackEvent('auth_login', { method: 'google' });
       navigate('/dashboard');
