@@ -166,3 +166,9 @@ When users log in via Google SSO or Email, attempting an unconditional `setDoc(u
   * **Existing Users (`userSnap.exists()`):** Execute `updateDoc` updating ONLY non-restricted fields (`lastActiveDate`, `photoURL`, `displayName`).
 * **Invariant (Firestore Rules):** `allow update` in `firestore.rules` must verify `request.resource.data.role == resource.data.role` so that identity writes where the role remains unchanged are never blocked.
 
+### G. Strict React Rule of Hooks Invariant (No Conditional Returns Before Hooks)
+React requires that every hook (`useState`, `useEffect`, `useMemo`, `useCallback`) executes in the exact same sequence on every single render.
+* **Invariant:** Never place `if (loading) return ...` or `if (!user) return ...` early returns ABOVE any `useState` or `useEffect` hooks in a component (e.g. `Dashboard.tsx`).
+* **Violation Result:** On initial render (`loading === true`), React registers $N$ hooks. When loading completes (`loading === false`), the component executes the rest of the hooks, causing React to throw `Rendered more hooks than during the previous render`, triggering the global `<ErrorBoundary>` crash screen (*"Something went wrong"*).
+* All hooks MUST be declared at the top of the component function before any return statements.
+
