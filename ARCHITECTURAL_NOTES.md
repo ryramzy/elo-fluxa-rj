@@ -159,3 +159,10 @@ Apple strictly rejects mobile applications with user registration if they lack a
 Firebase Auth throws technical error codes (e.g. `auth/popup-closed-by-user`, `auth/unauthorized-domain`, `auth/email-already-in-use`).
 * **Invariant:** All auth interfaces (`LoginModal.tsx`, `Login.tsx`, `Signup.tsx`) must route error objects through `getAuthErrorMessage(err)` in `src/utils/authErrors.ts` to present user-friendly Portuguese error messages.
 
+### F. Post-Auth Document Provisioning (Existence-Guarded Invariant)
+When users log in via Google SSO or Email, attempting an unconditional `setDoc(userRef, { role: 'student', plan: 'free', ... }, { merge: true })` on an existing document triggers Firestore Security Rules `allow update` validation. Because regular users are forbidden from modifying their `role` or `plan`, Firestore throws `Missing or insufficient permissions`.
+* **Invariant:** All auth flows must first perform `const userSnap = await getDoc(userRef)`.
+  * **New Users (`!userSnap.exists()`):** Execute `setDoc` with initial `role: 'student'`, `plan: 'free'`, `xp: 0`, and `hasSeenOnboarding: false`.
+  * **Existing Users (`userSnap.exists()`):** Execute `updateDoc` updating ONLY non-restricted fields (`lastActiveDate`, `photoURL`, `displayName`).
+* **Invariant (Firestore Rules):** `allow update` in `firestore.rules` must verify `request.resource.data.role == resource.data.role` so that identity writes where the role remains unchanged are never blocked.
+
