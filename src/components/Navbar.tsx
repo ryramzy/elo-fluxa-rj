@@ -71,14 +71,9 @@ export default function Navbar({ onNavClick }: NavbarProps) {
     }
   };
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      setLoginModalOpen(false);
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
+  const handleSignIn = () => {
+    setLoginModalOpen(false);
+    navigate('/dashboard');
   };
 
   const handleLoginModalOpen = () => {

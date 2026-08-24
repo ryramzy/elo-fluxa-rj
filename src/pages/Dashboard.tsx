@@ -110,6 +110,14 @@ const DashboardWorking: React.FC = () => {
     }
   }, [user, profileLoading, profile, navigate]);
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user?.isGuest) {
+      setShowOnboarding(true);
+    }
+  }, [profile, profileLoading, user]);
+
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -121,14 +129,6 @@ const DashboardWorking: React.FC = () => {
   if (!user) {
     return null;
   }
-
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  useEffect(() => {
-    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user.isGuest) {
-      setShowOnboarding(true);
-    }
-  }, [profile, profileLoading, user]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
