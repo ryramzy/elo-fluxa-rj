@@ -369,7 +369,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         )}
 
         {/* 1. Mobile Week Selector */}
-        <div className="md:hidden sticky top-0 z-20 bg-[#020617]/90 backdrop-blur-md flex overflow-x-auto gap-1.5 pb-3 mb-3 border-b border-slate-800/50 scrollbar-none px-2 pt-3">
+        <div className="md:hidden relative flex overflow-x-auto gap-1.5 pb-3 mb-3 border-b border-slate-800/50 scrollbar-none px-1 pt-1">
           {weekDates.map((date, idx) => {
             const dateStr = date.toLocaleDateString('en-CA');
             const isToday = dateStr === new Date().toLocaleDateString('en-CA');
