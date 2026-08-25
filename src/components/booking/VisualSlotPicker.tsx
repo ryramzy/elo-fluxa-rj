@@ -46,6 +46,15 @@ interface Tutor {
   photoUrl: string;
 }
 
+const DEFAULT_MATT_TUTOR: Tutor = {
+  id: 'matt',
+  name: 'Professor Matt',
+  email: 'mramsay0@gmail.com',
+  calendarId: 'mramsay0@gmail.com',
+  bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
+  photoUrl: '/matt-profile.jpg'
+};
+
 export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   onSlotSelect,
   onBack,
@@ -56,10 +65,18 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const { profile } = useUserProfile(currentUserId);
   const { showToast } = useToast();
 
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>(() => {
+    try {
+      if (typeof window !== 'undefined' && currentUserId) {
+        const raw = localStorage.getItem(`elo_cached_bookings_${currentUserId}`);
+        return raw ? JSON.parse(raw) : [];
+      }
+    } catch (e) {}
+    return [];
+  });
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [blockedSlots, setBlockedSlots] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
   const [optimisticBookedKeys, setOptimisticBookedKeys] = useState<string[]>(() => {
     try {
@@ -79,13 +96,17 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const corporateCredits = profile?.corporateCredits ?? null;
   const isCreditLocked = corporateCredits === 0;
 
-  const [tutors, setTutors] = useState<Tutor[]>([]);
-  const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
+  const [tutors, setTutors] = useState<Tutor[]>([DEFAULT_MATT_TUTOR]);
+  const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(DEFAULT_MATT_TUTOR);
 
-  // 1. Fetch tutor roster from database and run legacy migrations
+  // 1. Fetch tutor roster from database and run legacy migrations in background
   useEffect(() => {
-    migrateLegacyTutorIds().catch(() => {});
-    migrateBookingStatus().catch(() => {});
+    // Run migrations non-blockingly
+    setTimeout(() => {
+      migrateLegacyTutorIds().catch(() => {});
+      migrateBookingStatus().catch(() => {});
+    }, 0);
+
     const fetchTutors = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'tutors'));
@@ -93,31 +114,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Tutor));
           setTutors(list);
           setSelectedTutor(list[0]);
-        } else {
-          // Roster fallback
-          const fallback: Tutor = {
-            id: 'matt',
-            name: 'Professor Matt',
-            email: 'mramsay0@gmail.com',
-            calendarId: 'mramsay0@gmail.com',
-            bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
-            photoUrl: '/matt-profile.jpg'
-          };
-          setTutors([fallback]);
-          setSelectedTutor(fallback);
         }
       } catch (e) {
-        console.warn('Failed to fetch tutors, using Matt default:', e);
-        const fallback: Tutor = {
-          id: 'matt',
-          name: 'Professor Matt',
-          email: 'mramsay0@gmail.com',
-          calendarId: 'mramsay0@gmail.com',
-          bio: 'Professor nativo americano no Rio de Janeiro, especialista em conversação e fluência prática.',
-          photoUrl: '/matt-profile.jpg'
-        };
-        setTutors([fallback]);
-        setSelectedTutor(fallback);
+        console.warn('Tutors fetch notice:', e);
       }
     };
     fetchTutors();
@@ -125,8 +124,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   // 2. Load availableSlots, blockedSlots, and bookings in real-time
   useEffect(() => {
-    setLoading(true);
-    
     // Listen to all bookings
     const bQuery = query(collection(db, 'bookings'));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
@@ -370,21 +367,22 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 </span>
               )}
             </div>
-            {showTitle && (
-              <p className="text-slate-400 mt-1 text-sm md:text-base font-normal flex flex-wrap items-center gap-2">
-                Semana de {weekDates[0].toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' })}
-                <span className="text-[10px] text-slate-400 bg-slate-950/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
-                  🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'São Paulo'}
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-[10px] text-slate-400 bg-slate-950/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
+                🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'São Paulo'}
+              </span>
+              {loading ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
+                  Sincronizando agenda...
                 </span>
-              </p>
-            )}
-            {!showTitle && (
-              <p className="text-slate-400 mt-1 text-xs font-normal flex items-center gap-2">
-                <span className="text-[10px] text-slate-400 bg-slate-950/60 border border-slate-800 px-2 py-0.5 rounded-md font-mono">
-                  🌐 {profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'São Paulo'}
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Agenda Ao Vivo • Professor Matt
                 </span>
-              </p>
-            )}
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
@@ -457,12 +455,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
       {/* Main interactive grid */}
       <div className="p-2 sm:p-6 md:p-8 relative min-h-[300px]">
-        {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-xs z-10">
-            <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-3" />
-            <p className="text-xs text-slate-500">Carregando horários...</p>
-          </div>
-        )}
 
         {/* 1. Mobile Week Selector */}
         <div className="md:hidden relative flex overflow-x-auto gap-1.5 pb-3 mb-3 border-b border-slate-800/50 scrollbar-none px-1 pt-1">
