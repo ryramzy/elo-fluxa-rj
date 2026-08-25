@@ -99,7 +99,26 @@ export function useBookings(uid: string, userEmail?: string) {
       }
     };
 
-    // 2. Listen for cross-tab storage changes
+    // 2. Listen for booking cancellation custom events
+    const handleBookingCancelled = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id?: string; date?: string; time?: string }>;
+      if (customEvent.detail) {
+        const { id, date, time } = customEvent.detail;
+        setBookings(prev => {
+          const filtered = prev.filter(b => {
+            if (id && b.id === id) return false;
+            if (date && time && b.date === date && (b.time || '').slice(0, 5) === time.slice(0, 5)) return false;
+            return true;
+          });
+          try {
+            localStorage.setItem(`elo_cached_bookings_${uid}`, JSON.stringify(filtered));
+          } catch (err) {}
+          return filtered;
+        });
+      }
+    };
+
+    // 3. Listen for cross-tab storage changes
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === `elo_cached_bookings_${uid}`) {
         const cached = getCachedBookingsWithTTL(uid, userEmail);
@@ -116,9 +135,10 @@ export function useBookings(uid: string, userEmail?: string) {
     };
 
     window.addEventListener('elo_booking_created', handleBookingCreated);
+    window.addEventListener('elo_booking_cancelled', handleBookingCancelled);
     window.addEventListener('storage', handleStorageChange);
 
-    // 3. Universal real-time listener for Firestore bookings collection
+    // 4. Universal real-time listener for Firestore bookings collection
     const bQuery = query(collection(db, 'bookings'));
     const unsubscribeFirestore = onSnapshot(
       bQuery,
@@ -177,6 +197,7 @@ export function useBookings(uid: string, userEmail?: string) {
     // Cleanup all listeners on unmount
     return () => {
       window.removeEventListener('elo_booking_created', handleBookingCreated);
+      window.removeEventListener('elo_booking_cancelled', handleBookingCancelled);
       window.removeEventListener('storage', handleStorageChange);
       unsubscribeFirestore();
     };

@@ -14,7 +14,7 @@ import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { CoursesGrid } from '../components/dashboard/CoursesGrid';
 import { UpcomingClasses } from '../components/dashboard/UpcomingClasses';
 import { StudentTimeline } from '../components/dashboard/StudentTimeline';
-import { LiveTutorsWidget } from '../components/dashboard/LiveTutorsWidget';
+import { PushNotificationPrompt } from '../components/dashboard/PushNotificationPrompt';
 import { QuickLinks } from '../components/dashboard/QuickLinks';
 import { courses } from '../data/courses';
 import { InteractiveOnboardingModal } from '../components/dashboard/InteractiveOnboardingModal';
@@ -336,6 +336,8 @@ const DashboardWorking: React.FC = () => {
               </div>
             )}
 
+            <PushNotificationPrompt userId={user?.uid} />
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
                 <WidgetErrorBoundary widgetName="Notas do Professor">
@@ -353,9 +355,6 @@ const DashboardWorking: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <WidgetErrorBoundary widgetName="Professores Ao Vivo">
-                  <LiveTutorsWidget onNavigateToAgenda={() => setActiveTab('booking')} />
-                </WidgetErrorBoundary>
                 <WidgetErrorBoundary widgetName="Linha do Tempo">
                   <StudentTimeline
                     bookings={bookings || []}
@@ -385,7 +384,6 @@ const DashboardWorking: React.FC = () => {
               onBack={() => setActiveTab('overview')}
               onSlotSelect={() => {
                 setActiveTab('overview');
-                showToast({ type: 'success', message: 'Sua aula foi agendada e está disponível no seu painel.' });
               }} 
             />
           </WidgetErrorBoundary>

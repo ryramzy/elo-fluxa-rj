@@ -103,6 +103,8 @@ export const StudentTimeline: React.FC<StudentTimelineProps> = ({ bookings, xp, 
     },
   ];
 
+  const completedCount = steps.filter(s => s.completed).length;
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-750 p-6 shadow-sm">
       <h3 className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-6 pb-2 border-b border-gray-50 dark:border-slate-700/50">
