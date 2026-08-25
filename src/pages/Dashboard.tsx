@@ -101,39 +101,44 @@ const DashboardWorking: React.FC = () => {
     }).length;
   };
 
-  const [hasDismissedOnboarding, setHasDismissedOnboarding] = useState(() => {
-    try {
-      return !!user?.uid && localStorage.getItem(`elo_onboarding_completed_${user.uid}`) === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
+  const [hasDismissedOnboarding, setHasDismissedOnboarding] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (!profileLoading && profile && !profile.hasSeenOnboarding && !user?.isGuest && !hasDismissedOnboarding) {
-      setShowOnboarding(true);
-    } else if (profile?.hasSeenOnboarding || hasDismissedOnboarding) {
+    if (!user?.uid || profileLoading || !profile) return;
+
+    // Privileged accounts, tutors, admins never see onboarding
+    const isPrivileged = profile.role === 'admin' || profile.role === 'tutor' || 
+                         user.email === 'mramsay0@gmail.com' || user.email === 'mramsayo@gmail.com' || user.email === 'erneleducation@gmail.com';
+    if (isPrivileged || user.isGuest) {
       setShowOnboarding(false);
+      return;
     }
-  }, [profile, profileLoading, user, hasDismissedOnboarding]);
+
+    // Check localStorage cache
+    let localSeen = false;
+    try {
+      localSeen = localStorage.getItem(`elo_onboarding_completed_${user.uid}`) === 'true';
+    } catch (e) {}
+
+    const alreadyDone = profile.hasSeenOnboarding || localSeen || (profile.xp && profile.xp > 0) || !!profile.learningGoal;
+
+    if (alreadyDone) {
+      setHasDismissedOnboarding(true);
+      setShowOnboarding(false);
+      try {
+        localStorage.setItem(`elo_onboarding_completed_${user.uid}`, 'true');
+      } catch (e) {}
+    } else {
+      setShowOnboarding(true);
+    }
+  }, [user, profile, profileLoading]);
 
   useEffect(() => {
     if (!profileLoading && !user) {
       navigate('/login');
-    } else if (
-      !profileLoading && 
-      profile && 
-      profile.plan === 'free' && 
-      profile.role !== 'admin' && 
-      !profile.isGuest &&
-      (profile.hasSeenOnboarding || hasDismissedOnboarding) &&
-      !showOnboarding
-    ) {
-      // Auto-open paywall for unsubscribed students only after onboarding is done
-      setSubscriptionModalOpen(true);
     }
-  }, [user, profileLoading, profile, navigate, showOnboarding, hasDismissedOnboarding]);
+  }, [user, profileLoading, navigate]);
 
   if (profileLoading) {
     return (

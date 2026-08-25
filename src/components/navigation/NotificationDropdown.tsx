@@ -22,13 +22,19 @@ export const NotificationDropdown: React.FC = () => {
   useEffect(() => {
     if (!user?.uid) return;
 
+    // Request browser notification permission once per session
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      try {
+        Notification.requestPermission().catch(() => {});
+      } catch (e) {}
+    }
+
     if (user.uid === 'guest_user') {
-      // Return a single mock notification for guest
       setNotifications([
         {
           id: 'guest_welcome',
-          title: 'Welcome to Elo! 👋',
-          message: 'Explore courses, practice with AI Tutor, and try the culture trivia!',
+          title: 'Bem-vindo ao ELO! 👋',
+          message: 'Explore os cursos de conversação e agende sua aula particular!',
           read: false,
           createdAt: new Date()
         }
@@ -37,22 +43,53 @@ export const NotificationDropdown: React.FC = () => {
       return;
     }
 
-    const q = query(
-      collection(db, 'users', user.uid, 'notifications'),
-      orderBy('createdAt', 'desc'),
-      limit(10)
-    );
+    let unsubscribe: () => void = () => {};
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Notification));
-      setNotifications(list);
-      setUnreadCount(list.filter(n => !n.read).length);
-    }, (error) => {
-      console.warn('Notifications permission error or index missing:', error);
-    });
+    try {
+      const q = query(
+        collection(db, 'users', user.uid, 'notifications'),
+        orderBy('createdAt', 'desc'),
+        limit(15)
+      );
+
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const list = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Notification));
+        
+        // Trigger browser push notification for new unread items
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              const data = change.doc.data();
+              if (!data.read) {
+                try {
+                  new Notification(data.title || 'ELO! Notificação', {
+                    body: data.message || 'Você tem uma nova atualização da sua aula.',
+                    icon: '/favicon.ico'
+                  });
+                } catch (e) {}
+              }
+            }
+          });
+        }
+
+        setNotifications(list);
+        setUnreadCount(list.filter(n => !n.read).length);
+      }, (error) => {
+        console.warn('Fallback: query without index:', error);
+        // Fallback without orderBy if composite index is generating
+        const fallbackQ = query(collection(db, 'users', user.uid, 'notifications'), limit(15));
+        unsubscribe = onSnapshot(fallbackQ, (snap) => {
+          const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Notification));
+          setNotifications(list);
+          setUnreadCount(list.filter(n => !n.read).length);
+        });
+      });
+    } catch (e) {
+      console.warn('Notification listener error:', e);
+    }
 
     return () => unsubscribe();
   }, [user?.uid]);

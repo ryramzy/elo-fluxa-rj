@@ -47,21 +47,27 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               </div>
             </div>
 
-            {/* Mobile-only quick action buttons */}
-            <div className="flex sm:hidden items-center gap-2 mt-4 w-full">
+            {/* Mobile-only quick action buttons (3 Core Actions) */}
+            <div className="grid grid-cols-3 gap-2 mt-4 w-full sm:hidden">
+              <a
+                href="/agenda"
+                className="inline-flex items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-emerald-400/30 text-center"
+              >
+                <span>🗓️</span> Agendar
+              </a>
               <a
                 href="/classroom"
                 onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30"
+                className="inline-flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30 text-center"
               >
-                <span>📹</span> Entrar na Sala
+                <span>📹</span> Sala de Aula
               </a>
               <a
                 href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-emerald-400/30"
+                className="inline-flex items-center justify-center gap-1 bg-slate-700 hover:bg-slate-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-slate-600 text-center"
               >
                 <span>💬</span> WhatsApp
               </a>
@@ -70,20 +76,26 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
 
           <div className="hidden sm:flex items-center gap-3 shrink-0">
             <a
+              href="/agenda"
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
+            >
+              <span>🗓️</span> Agendar Aula com Matt
+            </a>
+            <a
               href="/classroom"
               onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-blue-400/30"
             >
-              <span>📹</span> Entrar na Sala (Aula ao Vivo)
+              <span>📹</span> Entrar na Sala
             </a>
             <a
               href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
+              className="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-slate-600"
             >
-              <span>💬</span> Falar com Professor
+              <span>💬</span> WhatsApp
             </a>
           </div>
         </div>
