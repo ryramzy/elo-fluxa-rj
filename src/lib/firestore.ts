@@ -851,82 +851,56 @@ export async function bookSlot(
   let plan = 'free';
 
   try {
-    await runTransaction(db, async (transaction) => {
-      const bookingDoc = await transaction.get(bookingRef);
-      if (bookingDoc.exists()) {
-        throw new Error('This slot is already booked by someone else.');
-      }
+    const bookingDoc = await getDoc(bookingRef);
+    if (bookingDoc.exists() && bookingDoc.data()?.status !== 'cancelled') {
+      throw new Error('Este horário já está reservado por outro aluno.');
+    }
 
+    // Ensure student profile exists
+    try {
       const userRef = doc(db, 'users', userId);
-      const userDoc = await transaction.get(userRef);
-      let userData = userDoc.exists() ? userDoc.data() : null;
+      await setDoc(userRef, {
+        displayName: userName || 'Estudante',
+        email: userEmail,
+        lastActiveDate: serverTimestamp(),
+        bookingsThisMonth: increment(1)
+      }, { merge: true });
+    } catch (uErr) {
+      console.warn('Profile sync warning:', uErr);
+    }
 
-      if (!userData) {
-        userData = {
-          displayName: userName || 'Estudante',
-          email: userEmail,
-          photoURL: '',
-          xp: 0,
-          level: 1,
-          role: 'student',
-          hasSeenOnboarding: true,
-          plan: 'free',
-          bookingsThisMonth: 0
-        };
-        transaction.set(userRef, userData, { merge: true });
-      }
+    // Write booking document
+    await setDoc(bookingRef, {
+      userId,
+      userName,
+      userEmail,
+      uid: userId,             // Legacy compatibility
+      studentName: userName,   // Legacy compatibility
+      studentEmail: userEmail, // Legacy compatibility
+      date,
+      time,
+      tutorId,
+      tutorName,
+      duration: 60,
+      status,
+      googleEventId: googleEventId || null,
+      meetLink: meetLink || null,
+      notes: notes || '',
+      createdAt: serverTimestamp(),
+      datetime: datetimeTimestamp
+    }, { merge: true });
 
-      const userRole = userData.role || 'student';
-      const isPrivileged = userRole === 'admin' || userRole === 'tutor' || 
-                           userEmail === 'mramsay0@gmail.com' || userEmail === 'mramsayo@gmail.com' || userEmail === 'erneleducation@gmail.com';
-      
-      isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
-      plan = userData.plan || 'free';
-
-      if (isCorporate && !isPrivileged) {
-        const credits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
-        if (credits <= 0) {
-          throw new Error('Créditos B2B esgotados. Agendamento bloqueado!');
-        }
-        transaction.update(userRef, { corporateCredits: credits - 1 });
-      } else if (!isPrivileged) {
-        const currentCount = userData.bookingsThisMonth || 0;
-        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 99;
-        if (currentCount >= bookingLimit) {
-          throw new Error('Você atingiu o limite de agendamentos para este mês. Atualize seu plano para agendar mais aulas!');
-        }
-        transaction.update(userRef, { bookingsThisMonth: currentCount + 1 });
-      }
-
-      transaction.set(bookingRef, {
-        userId,
-        userName,
-        userEmail,
-        uid: userId,             // Legacy compatibility
-        studentName: userName,   // Legacy compatibility
-        studentEmail: userEmail, // Legacy compatibility
-        date,
-        time,
-        tutorId,
-        tutorName,
-        duration: 60,
-        status,
-        googleEventId: googleEventId || null,
-        meetLink: meetLink || null,
-        notes: notes || '',
-        createdAt: serverTimestamp(),
-        datetime: datetimeTimestamp
-      });
-
-      transaction.set(notifRef, {
+    // Send in-app notification to student
+    try {
+      await setDoc(notifRef, {
         title: status === 'confirmed' ? 'Aula agendada! 🗓️' : 'Solicitação enviada! ⏳',
-        message: status === 'confirmed' 
-          ? `Sua aula de inglês para o dia ${date.split('-').reverse().join('/')} às ${time} foi agendada.`
-          : `Sua solicitação de aula para o dia ${date.split('-').reverse().join('/')} às ${time} está aguardando confirmação.`,
+        message: `Sua aula de inglês para o dia ${date.split('-').reverse().join('/')} às ${time} com o Professor Matt foi confirmada.`,
         read: false,
         createdAt: serverTimestamp()
-      });
-    });
+      }, { merge: true });
+    } catch (nErr) {
+      console.warn('Notification write warning:', nErr);
+    }
 
     // Send confirmation email asynchronously via Resend
     try {
