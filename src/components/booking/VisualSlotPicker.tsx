@@ -188,8 +188,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
   // 3. Actions
   const handleBookSlot = async (date: string, time: string) => {
-    if (user?.isGuest) {
-      showToast('Crie uma conta para agendar uma aula!', 'error');
+    if (!currentUserId || user?.isGuest) {
+      showToast('Faça login para agendar uma aula!', 'error');
       return;
     }
 
@@ -281,7 +281,21 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         })
       }).catch(e => console.warn('Email dispatch warning:', e));
     } catch (err: any) {
-      console.warn('Background slot sync note:', err);
+      console.warn('Booking persistence failed, rolling back optimistic state:', err);
+      // ROLLBACK: revert all optimistic state so user sees the slot is still available
+      setOptimisticBookedKeys(prev => {
+        const reverted = prev.filter(k => k !== slotKey);
+        try {
+          if (currentUserId) {
+            localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(reverted));
+          }
+        } catch (e) {}
+        return reverted;
+      });
+      setBookings(prev => prev.filter(b => !(b.date === date && b.time === time && b.userId === currentUserId)));
+      setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'idle' }));
+      setSuccessBooking(null);
+      showToast(err?.message || 'Erro ao salvar aula. Tente novamente.', 'error');
     }
   };
 
@@ -459,7 +473,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
             const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
             const slotKey = `${dateStr}_${time}`;
-            const isBookingInProgress = slotLoadingMap[slotKey] === 'booking';
 
             const studentEmail = (user?.email || '').toLowerCase().trim();
             const isBookedByMe = optimisticBookedKeys.includes(slotKey) || bookings.some(b => 
