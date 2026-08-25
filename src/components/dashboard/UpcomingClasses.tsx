@@ -45,32 +45,30 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
 
   const handleExecuteCancel = async () => {
     if (!confirmCancelBooking) return;
+    const targetBooking = confirmCancelBooking;
+    
+    // 1. INSTANT ZERO-LATENCY UI UPDATE (0ms)
+    setConfirmCancelBooking(null);
+    window.dispatchEvent(new CustomEvent('elo_booking_cancelled', {
+      detail: {
+        id: targetBooking.id,
+        date: targetBooking.date,
+        time: targetBooking.time
+      }
+    }));
+    showToast('Aula cancelada com sucesso. O horário foi liberado.', 'success');
+
+    trackEvent('student_cancelled_booking', {
+      bookingId: targetBooking.id,
+      date: targetBooking.date,
+      time: targetBooking.time
+    });
+
+    // 2. BACKGROUND RESILIENT SERVER SYNC
     try {
-      setIsCancelling(true);
-      await cancelBooking(confirmCancelBooking.id, confirmCancelBooking.googleEventId);
-      
-      // Dispatch cancellation event for instant local state update
-      window.dispatchEvent(new CustomEvent('elo_booking_cancelled', {
-        detail: {
-          id: confirmCancelBooking.id,
-          date: confirmCancelBooking.date,
-          time: confirmCancelBooking.time
-        }
-      }));
-
-      trackEvent('student_cancelled_booking', {
-        bookingId: confirmCancelBooking.id,
-        date: confirmCancelBooking.date,
-        time: confirmCancelBooking.time
-      });
-
-      showToast('Aula cancelada com sucesso. O horário foi liberado.', 'success');
-      setConfirmCancelBooking(null);
+      await cancelBooking(targetBooking.id, targetBooking.googleEventId, targetBooking);
     } catch (err: any) {
-      console.error('Cancel booking error:', err);
-      showToast(err?.message || 'Erro ao cancelar aula. Tente novamente.', 'error');
-    } finally {
-      setIsCancelling(false);
+      console.warn('Background cancel sync warning (locally cleared):', err);
     }
   };
 
