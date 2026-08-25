@@ -104,4 +104,25 @@ Firestore Root
 ## 🔒 4. Double-Booking Prevention & Concurrency
 
 * **Deterministic Document ID:** Every slot uses `${tutorId}_${date}_${time.replace(':', '')}`.
-* **Firestore Transaction:** `bookSlot()` executes inside a Firestore `runTransaction()` that atomically verifies `!bookingDoc.exists()` before writing. If two students tap the same slot simultaneously, the transaction will fail for the second student and keep the schedule 100% collision-free.
+* **Firestore Transaction / Atomic Write:** `bookSlot()` executes with atomic deduplication. If two students tap the same slot simultaneously, the write verifies slot availability and prevents collisions.
+
+---
+
+## 🎯 5. Dashboard Architecture & Booking CTA Rule (Single Source of Truth)
+
+* **Primary Booking CTA Rule:** The primary booking call-to-action lives in the **Smart Hero Card ONLY** (`Dashboard.tsx`).
+* **No Redundant Booking Buttons:** Sub-widgets (such as `StudentTimeline`, `UpcomingClasses`, `LiveTutorsWidget`, `QuickLinks`) must NOT inject independent booking buttons or redundant KPI counters. Instead, they must render status indicators or direct deep-links (`onNavigateToAgenda`) without creating competing CTAs.
+* **Smart Hero Card 3-State Specification:**
+  1. **State 1: Confirmed Class (`status === 'confirmed'`):**
+     - Title: *"Sua próxima aula está agendada! 🎉"*
+     - Details: Class date, time, and Professor Matt.
+     - Actions: `📹 Entrar na Sala` (Primary) + `📅 Ver Agenda` (Secondary).
+  2. **State 2: Pending Class (`status === 'pending'`):**
+     - Title: *"⏳ Aula Aguardando Confirmação"*
+     - Subtitle: *"Professor Matt entrará em contato em breve para confirmar seu horário."*
+     - Actions: `💬 Falar no WhatsApp` (Primary) + `📅 Ver Agenda` (Secondary).
+  3. **State 3: No Upcoming Class:**
+     - Title: *"Pronto para sua próxima aula de conversação?"*
+     - Subtitle: *"Agende uma sessão individual com o Professor Matt e destrave sua fluência."*
+     - Action: `🗓️ Escolher Horário` (Single high-contrast CTA).
+

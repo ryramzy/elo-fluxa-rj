@@ -11,7 +11,6 @@ import { trackEvent } from '../utils/analytics';
 
 // Import components that we know work
 import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
-import { KpiCards } from '../components/dashboard/KpiCards';
 import { CoursesGrid } from '../components/dashboard/CoursesGrid';
 import { UpcomingClasses } from '../components/dashboard/UpcomingClasses';
 import { StudentTimeline } from '../components/dashboard/StudentTimeline';
@@ -250,8 +249,9 @@ const DashboardWorking: React.FC = () => {
 
         {activeTab === 'overview' ? (
           <>
-            {/* Dynamic Class Banner */}
-            {nextActiveBooking ? (
+            {/* Smart Hero Card (3-State Architecture) */}
+            {nextActiveBooking && nextActiveBooking.status === 'confirmed' ? (
+              /* State 1: Confirmed Upcoming Class */
               <div className="mb-8 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden border border-blue-400/20">
                 <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="relative z-10 text-center md:text-left mb-6 md:mb-0 space-y-2">
@@ -259,7 +259,7 @@ const DashboardWorking: React.FC = () => {
                     <span>🎉</span> Aula Confirmada
                   </div>
                   <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black tracking-tight">
-                    Sua próxima aula está agendada!
+                    Sua próxima aula está confirmada!
                   </h2>
                   <p className="text-blue-100/90 text-xs sm:text-sm max-w-lg font-medium">
                     Com o <strong>{nextActiveBooking.tutorName || 'Professor Matt'}</strong> no dia <strong>{nextActiveBooking.date.split('-').reverse().join('/')}</strong> às <strong>{nextActiveBooking.time}</strong>.
@@ -282,30 +282,61 @@ const DashboardWorking: React.FC = () => {
                   </button>
                 </div>
               </div>
+            ) : nextActiveBooking && nextActiveBooking.status === 'pending' ? (
+              /* State 2: Pending Class Confirmation */
+              <div className="mb-8 bg-gradient-to-r from-amber-700 via-orange-700 to-amber-800 rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden border border-amber-400/20">
+                <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0 space-y-2">
+                  <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-300/30 text-amber-200 text-xs font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    <span>⏳</span> Aguardando Confirmação
+                  </div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black tracking-tight">
+                    Solicitação em processamento
+                  </h2>
+                  <p className="text-amber-100/90 text-xs sm:text-sm max-w-lg font-medium">
+                    Horário solicitado: <strong>{nextActiveBooking.date.split('-').reverse().join('/')}</strong> às <strong>{nextActiveBooking.time}</strong> com o Professor Matt.
+                  </p>
+                </div>
+                <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  <a 
+                    href="https://wa.me/5521995719878?text=Ol%C3%A1%20Professor%20Matt%2C%20gostaria%20de%20confirmar%20meu%20hor%C3%A1rio%20de%20aula%20no%20ELO!"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 text-center"
+                  >
+                    💬 Falar no WhatsApp
+                  </a>
+                  <button 
+                    onClick={() => setActiveTab('booking')}
+                    className="w-full sm:w-auto bg-amber-900/40 hover:bg-amber-900/60 border border-white/20 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    📅 Ver Agenda
+                  </button>
+                </div>
+              </div>
             ) : (
-              <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
-                <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
-                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
-                  <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">Ready for your next lesson?</h2>
-                  <p className="text-blue-100 max-w-md">Book a 1-on-1 session with Elo and level up your English today.</p>
+              /* State 3: No Upcoming Class Booked */
+              <div className="mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-2xl shadow-lg p-5 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden border border-blue-400/20 tour-step-agenda">
+                <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0 space-y-2">
+                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-blue-100 text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider">
+                    <span>⚡</span> Prática Individual
+                  </div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black tracking-tight">
+                    Pronto para sua próxima aula?
+                  </h2>
+                  <p className="text-blue-100/90 text-xs sm:text-sm max-w-md font-medium">
+                    Agende uma sessão individual com o Professor Matt e acelere sua fluência no inglês.
+                  </p>
                 </div>
                 <button 
                   onClick={() => setActiveTab('booking')}
-                  className="relative z-10 w-full md:w-auto bg-white text-blue-600 font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all"
+                  className="relative z-10 w-full md:w-auto bg-white hover:bg-slate-50 text-blue-600 font-extrabold uppercase tracking-wider text-xs px-8 py-4 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
                 >
-                  Book a Lesson
+                  🗓️ Escolher Horário
                 </button>
               </div>
             )}
-
-            <WidgetErrorBoundary widgetName="Resumo de Métricas">
-              <KpiCards
-                bookings={bookings || []}
-                enrollments={enrollments || []}
-                profile={profile}
-                weeklyBookingsCount={getWeeklyBookingsCount(bookings || [])}
-              />
-            </WidgetErrorBoundary>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
