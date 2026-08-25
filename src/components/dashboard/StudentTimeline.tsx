@@ -26,12 +26,12 @@ interface StudentTimelineProps {
 }
 
 export const StudentTimeline: React.FC<StudentTimelineProps> = ({ bookings, xp, onBookNextLesson }) => {
-  // 1. Check if they have an upcoming confirmed lesson
+  // 1. Check if they have an upcoming confirmed or pending lesson
   const hasUpcoming = bookings.some(b => {
     const dateLimit = b.datetime?.seconds 
       ? b.datetime.seconds * 1000 
       : new Date(`${b.date}T${b.time || '00:00'}:00-03:00`).getTime();
-    return dateLimit > Date.now() && b.status === 'confirmed';
+    return dateLimit > Date.now() && (b.status === 'confirmed' || b.status === 'pending');
   });
 
   // 2. Check if they have at least one completed lesson

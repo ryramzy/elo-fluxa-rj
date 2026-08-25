@@ -395,7 +395,7 @@ export async function createBooking(uid: string, datetime: Date): Promise<string
       studentName: user.displayName || 'Unknown',
       studentEmail: user.email || 'unknown@example.com',
       datetime: Timestamp.fromDate(datetime),
-      status: 'booked' as const,
+      status: 'confirmed' as const,
       createdAt: serverTimestamp()
     };
 

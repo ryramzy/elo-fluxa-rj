@@ -13,7 +13,7 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
   onNavigateToAgenda 
 }) => {
   const upcomingBookings = (bookings || [])
-    .filter(b => b.status === 'confirmed')
+    .filter(b => b.status === 'confirmed' || b.status === 'pending')
     .sort((a, b) => {
       const [yA, mA, dA] = (a.date || '').split('-').map(Number);
       const [hA, minA] = (a.time || '00:00').split(':').map(Number);
@@ -51,6 +51,8 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
             console.error('Error formatting booking date:', e);
           }
           
+          const isConfirmed = booking.status === 'confirmed';
+
           return (
             <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl gap-3 bg-slate-50/50 dark:bg-slate-900/30">
               <div className="flex-1">
@@ -61,14 +63,16 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                   👨‍🏫 Tutor: {booking.tutorName || 'Professor Nativo'} • {booking.duration || 60} min
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <a
-                    href={booking.meetLink || '/classroom'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md hover:scale-105"
-                  >
-                    📹 Entrar na Sala ({booking.tutorName || 'Professor Matt'})
-                  </a>
+                  {isConfirmed ? (
+                    <a
+                      href={booking.meetLink || '/classroom'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md hover:scale-105"
+                    >
+                      📹 Entrar na Sala ({booking.tutorName || 'Professor Matt'})
+                    </a>
+                  ) : null}
                   <a
                     href={getWhatsAppLink('upcomingClass', { studentName: booking.userName, date: booking.date, time: booking.time })}
                     target="_blank"
@@ -76,17 +80,17 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                     onClick={() => trackEvent('whatsapp_click_upcoming_class', { bookingId: booking.id, time: booking.time })}
                     className="inline-flex items-center gap-1.5 bg-emerald-600/15 hover:bg-emerald-600 border border-emerald-500/30 text-emerald-400 hover:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all hover:scale-105"
                   >
-                    💬 Falar com Professor
+                    💬 Falar no WhatsApp
                   </a>
                 </div>
               </div>
               <div className="flex items-center gap-2 self-start sm:self-auto">
                 <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${
-                  booking.status === 'confirmed' 
+                  isConfirmed 
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                    : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                 }`}>
-                  {booking.status === 'confirmed' ? 'Confirmada' : 'Agendada'}
+                  {isConfirmed ? 'Confirmada' : 'Aguardando'}
                 </span>
               </div>
             </div>

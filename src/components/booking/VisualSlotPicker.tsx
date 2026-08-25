@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { db, bookSlot, getClassroomSettings, migrateLegacyTutorIds } from '@/lib/firestore';
+import { migrateBookingStatus } from '@/utils/migrateBookingStatus';
 import { 
   collection, 
   query, 
@@ -26,7 +27,14 @@ interface Booking {
   time: string;
   userId?: string;
   uid?: string;
+  userName?: string;
+  userEmail?: string;
+  tutorId?: string;
+  tutorName?: string;
+  duration?: number;
   status?: string;
+  meetLink?: string;
+  createdAt?: any;
 }
 
 interface Tutor {
@@ -74,9 +82,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
 
-  // 1. Fetch tutor roster from database and run legacy migration
+  // 1. Fetch tutor roster from database and run legacy migrations
   useEffect(() => {
     migrateLegacyTutorIds().catch(() => {});
+    migrateBookingStatus().catch(() => {});
     const fetchTutors = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'tutors'));
@@ -232,9 +241,22 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       tutorName: activeTutor.name || 'Professor Matt',
       duration: 60,
       status: 'confirmed',
-      meetLink: defaultMeetLink
+      meetLink: defaultMeetLink,
+      createdAt: new Date()
     };
     setBookings(prev => [...prev.filter(b => !(b.date === date && b.time === time)), newBookingObj]);
+
+    // Save full object into optimistic cache with TTL support & dispatch event
+    try {
+      if (currentUserId && typeof window !== 'undefined') {
+        const rawCached = localStorage.getItem(`elo_cached_bookings_${currentUserId}`);
+        const existing: Booking[] = rawCached ? JSON.parse(rawCached) : [];
+        const filtered = existing.filter(b => !(b.date === date && b.time === time));
+        const updated = [...filtered, newBookingObj];
+        localStorage.setItem(`elo_cached_bookings_${currentUserId}`, JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent('elo_booking_created', { detail: newBookingObj }));
+      }
+    } catch (e) {}
 
     // 2. INSTANT CONFIRMATION POPUP MODAL
     setSuccessBooking({
@@ -292,6 +314,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         } catch (e) {}
         return reverted;
       });
+      try {
+        if (currentUserId && typeof window !== 'undefined') {
+          const rawCached = localStorage.getItem(`elo_cached_bookings_${currentUserId}`);
+          if (rawCached) {
+            const existing: Booking[] = JSON.parse(rawCached);
+            const filtered = existing.filter(b => !(b.date === date && b.time === time));
+            localStorage.setItem(`elo_cached_bookings_${currentUserId}`, JSON.stringify(filtered));
+          }
+        }
+      } catch (e) {}
       setBookings(prev => prev.filter(b => !(b.date === date && b.time === time && b.userId === currentUserId)));
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'idle' }));
       setSuccessBooking(null);

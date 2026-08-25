@@ -100,7 +100,7 @@ const DashboardWorking: React.FC = () => {
     }).length;
   };
 
-  // Find next upcoming confirmed booking
+  // Find next upcoming confirmed or pending booking
   const getNextActiveBooking = (userBookings: any[]) => {
     const now = new Date();
     return (userBookings || []).find(b => {
@@ -108,9 +108,9 @@ const DashboardWorking: React.FC = () => {
       const [year, month, day] = (b.date || '').split('-').map(Number);
       const [hour, minute] = (b.time || '00:00').split(':').map(Number);
       if (!year || !month || !day) return false;
-      const bDate = new Date(year, month - 1, day, hour || 0, minute || 0);
+      const bDate = new Date(year, month - 1, day, (hour || 0) + 1, minute || 0);
       return bDate >= now;
-    }) || userBookings[0];
+    }) || (userBookings || []).find(b => b.status !== 'cancelled') || null;
   };
 
   const nextActiveBooking = getNextActiveBooking(bookings || []);
