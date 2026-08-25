@@ -21,8 +21,6 @@ import { InteractiveOnboardingModal } from '../components/dashboard/InteractiveO
 import { enrollUserInCourse } from '../lib/firestore';
 import { VisualSlotPicker } from '../components/booking/VisualSlotPicker';
 import { FaGraduationCap, FaCalendarAlt } from 'react-icons/fa';
-import { DictionaryWidget } from '../components/dashboard/DictionaryWidget';
-import { TriviaWidget } from '../components/dashboard/TriviaWidget';
 import { TutorNotesWidget } from '../components/TutorNotesWidget';
 import SubscriptionModal from '../components/SubscriptionModal';
 import { LuTriangleAlert } from 'react-icons/lu';
@@ -344,14 +342,14 @@ const DashboardWorking: React.FC = () => {
                   <TutorNotesWidget bookings={bookings || []} />
                 </WidgetErrorBoundary>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <WidgetErrorBoundary widgetName="Dicionário">
-                    <DictionaryWidget />
-                  </WidgetErrorBoundary>
-                  <WidgetErrorBoundary widgetName="Trivia">
-                    <TriviaWidget />
-                  </WidgetErrorBoundary>
-                </div>
+                <WidgetErrorBoundary widgetName="Meus Cursos">
+                  <CoursesGrid
+                    courses={courses}
+                    enrollments={enrollments || []}
+                    onEnroll={(courseId) => navigate(`/course/${courseId}`)}
+                    onContinue={(courseId) => navigate(`/course/${courseId}`)}
+                  />
+                </WidgetErrorBoundary>
               </div>
 
               <div className="space-y-6">
