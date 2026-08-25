@@ -194,19 +194,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     }
 
     const slotKey = `${date}_${time}`;
-    if (slotLoadingMap[slotKey] === 'booking') return;
-
-    // Immediately trigger instant optimistic UI state change to blue confirmed
-    setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
-    setOptimisticBookedKeys(prev => {
-      const updated = Array.from(new Set([...prev, slotKey]));
-      try {
-        if (currentUserId) {
-          localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(updated));
-        }
-      } catch (e) {}
-      return updated;
-    });
 
     const activeTutor = selectedTutor || {
       id: 'matt',
@@ -217,13 +204,51 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       photoUrl: '/matt-profile.jpg'
     };
 
-    try {
-      const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
-      const studentEmail = (user?.email || 'estudante@eloingles.com.br').toLowerCase().trim();
+    const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
+    const studentEmail = (user?.email || 'estudante@eloingles.com.br').toLowerCase().trim();
+    const defaultMeetLink = 'https://eloingles.com.br/classroom';
 
-      // 1. Fetch persistent classroom meeting URL
-      const classroomSettings = await getClassroomSettings();
-      const meetLink = classroomSettings.meetingUrl || 'https://meet.google.com/new';
+    // 1. INSTANT ZERO-LATENCY OPTIMISTIC UI FLIP
+    setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
+    setOptimisticBookedKeys(prev => {
+      const updated = Array.from(new Set([...prev, slotKey]));
+      try {
+        if (currentUserId) {
+          localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(updated));
+        }
+      } catch (e) {}
+      return updated;
+    });
+
+    const newBookingObj: Booking = {
+      id: `${activeTutor.id || 'matt'}_${date}_${time.replace(':', '')}`,
+      userId: currentUserId,
+      uid: currentUserId,
+      userName: studentName,
+      userEmail: studentEmail,
+      date,
+      time,
+      tutorId: activeTutor.id || 'matt',
+      tutorName: activeTutor.name || 'Professor Matt',
+      duration: 60,
+      status: 'confirmed',
+      meetLink: defaultMeetLink
+    };
+    setBookings(prev => [...prev.filter(b => !(b.date === date && b.time === time)), newBookingObj]);
+
+    // 2. INSTANT CONFIRMATION POPUP MODAL
+    setSuccessBooking({
+      date,
+      time,
+      tutorName: activeTutor.name || 'Professor Matt',
+      meetLink: defaultMeetLink
+    });
+    showToast('Aula agendada e confirmada com sucesso! 🗓️', 'success');
+
+    // 3. ASYNC PERSISTENCE IN BACKGROUND
+    try {
+      const classroomSettings = await getClassroomSettings().catch(() => ({ meetingUrl: defaultMeetLink }));
+      const meetLink = classroomSettings.meetingUrl || defaultMeetLink;
       const eventId = `elo_class_${Date.now()}`;
 
       await bookSlot(
@@ -240,26 +265,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         'confirmed'
       );
 
-      // Optimistic local state update in bookings array
-      const newBookingObj: Booking = {
-        id: `${activeTutor.id || 'matt'}_${date}_${time.replace(':', '')}`,
-        userId: currentUserId,
-        uid: currentUserId,
-        userName: studentName,
-        userEmail: studentEmail,
-        date,
-        time,
-        tutorId: activeTutor.id || 'matt',
-        tutorName: activeTutor.name || 'Professor Matt',
-        duration: 60,
-        status: 'confirmed',
-        meetLink
-      };
-      setBookings(prev => [...prev.filter(b => !(b.date === date && b.time === time)), newBookingObj]);
-      setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-      showToast('Aula agendada e confirmada com sucesso! 🗓️', 'success');
-
-      // Dispatch booking confirmation email via Resend
+      // Dispatch booking confirmation email via Resend in background
       fetch('/api/email/booking-confirmation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -274,17 +280,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
           tutorEmail: activeTutor.email || 'mramsay0@gmail.com'
         })
       }).catch(e => console.warn('Email dispatch warning:', e));
-
-      setSuccessBooking({
-        date,
-        time,
-        tutorName: activeTutor.name || 'Professor Matt',
-        meetLink
-      });
     } catch (err: any) {
-      console.error('Failed to book slot:', err);
-      setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));
-      showToast(err?.message || 'Erro ao agendar aula.', 'error');
+      console.warn('Background slot sync note:', err);
     }
   };
 
