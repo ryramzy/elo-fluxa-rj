@@ -346,8 +346,8 @@ const DashboardWorking: React.FC = () => {
                   <CoursesGrid
                     courses={courses}
                     enrollments={enrollments || []}
-                    onEnroll={(courseId) => navigate(`/course/${courseId}`)}
-                    onContinue={(courseId) => navigate(`/course/${courseId}`)}
+                    onEnroll={(courseId) => navigate(`/courses/${courseId}`)}
+                    onContinue={(courseId) => navigate(`/courses/${courseId}`)}
                   />
                 </WidgetErrorBoundary>
               </div>

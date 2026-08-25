@@ -153,7 +153,9 @@ function AppShell() {
               {/* Public routes */}
               <Route path="/" element={<About />} />
               <Route path="/sobre" element={<Sobre />} />
+              {/* Course Catalog Routes */}
               <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/cursos" element={<CoursesPage />} />
               <Route path="/reviews" element={<Testimonials />} />
               <Route path="/dicas" element={<Dicas />} />
               <Route path="/seja-tutor" element={<ApplyTutor />} />
@@ -175,7 +177,37 @@ function AppShell() {
                   <CoursePage />
                 </ProtectedRoute>
               } />
+              <Route path="/course/:courseId" element={
+                <ProtectedRoute>
+                  <CoursePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/cursos/:courseId" element={
+                <ProtectedRoute>
+                  <CoursePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/curso/:courseId" element={
+                <ProtectedRoute>
+                  <CoursePage />
+                </ProtectedRoute>
+              } />
               <Route path="/courses/:courseId/lessons/:lessonId" element={
+                <ProtectedRoute>
+                  <LessonPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/courses/:courseId/lesson/:lessonId" element={
+                <ProtectedRoute>
+                  <LessonPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/course/:courseId/lessons/:lessonId" element={
+                <ProtectedRoute>
+                  <LessonPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/course/:courseId/lesson/:lessonId" element={
                 <ProtectedRoute>
                   <LessonPage />
                 </ProtectedRoute>
