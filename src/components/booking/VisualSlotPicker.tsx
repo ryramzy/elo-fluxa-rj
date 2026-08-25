@@ -216,11 +216,45 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         eventId,
         meetLink,
         activeTutor.id || 'matt',
-        activeTutor.name || 'Professor Matt'
+        activeTutor.name || 'Professor Matt',
+        'confirmed'
       );
 
+      // Optimistic local state update so the button immediately switches to confirmed
+      const newBookingObj: Booking = {
+        id: `${activeTutor.id || 'matt'}_${date}_${time.replace(':', '')}`,
+        userId: currentUserId,
+        uid: currentUserId,
+        userName: studentName,
+        userEmail: studentEmail,
+        date,
+        time,
+        tutorId: activeTutor.id || 'matt',
+        tutorName: activeTutor.name || 'Professor Matt',
+        duration: 60,
+        status: 'confirmed',
+        meetLink
+      };
+      setBookings(prev => [...prev.filter(b => !(b.date === date && b.time === time)), newBookingObj]);
+
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-      showToast('Aula agendada com sucesso!', 'success');
+      showToast('Aula agendada e confirmada com sucesso! Email enviado ✉️', 'success');
+
+      // Dispatch booking confirmation email via Resend
+      fetch('/api/email/booking-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          attendeeName: studentName,
+          attendeeEmail: studentEmail,
+          date,
+          time,
+          durationMinutes: 60,
+          meetLink,
+          tutorName: activeTutor.name || 'Professor Matt',
+          tutorEmail: activeTutor.email || 'mramsay0@gmail.com'
+        })
+      }).catch(e => console.warn('Email dispatch warning:', e));
 
       setSuccessBooking({
         date,
@@ -409,8 +443,25 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
             const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
 
-            const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId) && b.status !== 'cancelled');
-            const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId && b.status !== 'cancelled');
+            const studentEmail = (user?.email || '').toLowerCase().trim();
+            const isBookedByMe = bookings.some(b => 
+              b.date === dateStr && 
+              b.time === time && 
+              (
+                (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
+                (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
+              ) && 
+              b.status !== 'cancelled'
+            );
+            const isBookedOther = bookings.some(b => 
+              b.date === dateStr && 
+              b.time === time && 
+              !(
+                (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
+                (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
+              ) && 
+              b.status !== 'cancelled'
+            );
 
             return (
               <div key={time} className="flex items-center justify-between bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/80">
@@ -483,8 +534,25 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
                     const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
 
-                    const isBookedByMe = bookings.some(b => b.date === dateStr && b.time === time && (b.userId === currentUserId || b.uid === currentUserId) && b.status !== 'cancelled');
-                    const isBookedOther = bookings.some(b => b.date === dateStr && b.time === time && b.userId !== currentUserId && b.uid !== currentUserId && b.status !== 'cancelled');
+                    const studentEmail = (user?.email || '').toLowerCase().trim();
+                    const isBookedByMe = bookings.some(b => 
+                      b.date === dateStr && 
+                      b.time === time && 
+                      (
+                        (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
+                        (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
+                      ) && 
+                      b.status !== 'cancelled'
+                    );
+                    const isBookedOther = bookings.some(b => 
+                      b.date === dateStr && 
+                      b.time === time && 
+                      !(
+                        (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
+                        (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
+                      ) && 
+                      b.status !== 'cancelled'
+                    );
 
                     return (
                       <div key={i} className="relative h-11">
@@ -530,10 +598,10 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               <span className="text-2xl">🎉</span>
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">
-              Solicitação Enviada! ⏳
+              Aula Confirmada! 🎉
             </h3>
             <p className="text-slate-400 text-xs mt-1.5 leading-relaxed font-medium">
-              Sua solicitação de aula com o professor <strong>{successBooking.tutorName}</strong> está aguardando confirmação.
+              Sua aula particular com o <strong>{successBooking.tutorName}</strong> foi agendada e confirmada. O link da sala ao vivo já está disponível.
             </p>
             <div className="my-5 bg-slate-955/60 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2">
               <div className="flex justify-between text-xs">

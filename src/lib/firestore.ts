@@ -863,21 +863,26 @@ export async function bookSlot(
         throw new Error('Student profile not found.');
       }
 
-      const userData = userDoc.data();
+      const userData = userDoc.data() || {};
+      const userRole = userData.role || 'student';
+      const isPrivileged = userRole === 'admin' || userRole === 'tutor' || 
+                           userEmail === 'mramsay0@gmail.com' || userEmail === 'mramsayo@gmail.com' || userEmail === 'erneleducation@gmail.com';
+      
       isCorporate = userData.plan === 'corporate' || !!userData.organizationId;
       plan = userData.plan || 'free';
 
-      if (isCorporate) {
+      if (isCorporate && !isPrivileged) {
         const credits = typeof userData.corporateCredits === 'number' ? userData.corporateCredits : 0;
         if (credits <= 0) {
           throw new Error('Créditos B2B esgotados. Agendamento bloqueado!');
         }
         transaction.update(userRef, { corporateCredits: credits - 1 });
-      } else {
+      } else if (!isPrivileged) {
         const currentCount = userData.bookingsThisMonth || 0;
-        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 1;
+        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 
+                             (plan === 'pro' || plan === 'quarterly' || plan === 'monthly') ? 99 : 4;
         if (currentCount >= bookingLimit) {
-          throw new Error('Você atingiu o limite de agendamentos para este mês.');
+          throw new Error('Você atingiu o limite de agendamentos para este mês. Atualize seu plano para agendar mais aulas!');
         }
         transaction.update(userRef, { bookingsThisMonth: currentCount + 1 });
       }
@@ -910,20 +915,27 @@ export async function bookSlot(
         read: false,
         createdAt: serverTimestamp()
       });
-
-      // Notify the tutor in real time via their own notifications subcollection
-      const tutorNotifId = `tutor_notif_${Date.now()}`;
-      const tutorNotifRef = doc(db, 'users', tutorId, 'notifications', tutorNotifId);
-      transaction.set(tutorNotifRef, {
-        id: tutorNotifId,
-        title: 'Nova Solicitação de Aula 📅',
-        message: `${userName} solicitou uma aula para o dia ${date.split('-').reverse().join('/')} às ${time}.`,
-        type: 'booking_request',
-        bookingId,
-        read: false,
-        createdAt: serverTimestamp()
-      });
     });
+
+    // Send confirmation email asynchronously via Resend
+    try {
+      if (typeof window !== 'undefined') {
+        fetch('/api/email/booking-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attendeeName: userName,
+            attendeeEmail: userEmail,
+            date,
+            time,
+            durationMinutes: 60,
+            meetLink: meetLink || 'https://eloingles.com.br/classroom',
+            tutorName,
+            tutorEmail: 'mramsay0@gmail.com'
+          })
+        }).catch(e => console.warn('Async booking email notification error:', e));
+      }
+    } catch (e) {}
 
     await writeAuditLog('student_booked_lesson', userId, bookingId, 'success', {
       date,
