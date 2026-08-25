@@ -53,9 +53,19 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [blockedSlots, setBlockedSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
+  const [optimisticBookedKeys, setOptimisticBookedKeys] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`elo_booked_slots_${currentUserId}`) || '[]');
+    } catch (e) {
+      return [];
+    }
+  });
 
   const [selectedWeek, setSelectedWeek] = useState(0);
-  const [activeMobileDay, setActiveMobileDay] = useState<number>(0);
+  const [activeMobileDay, setActiveMobileDay] = useState<number>(() => {
+    const d = new Date().getDay(); // 0 = Sun, 1 = Mon, 2 = Tue, ...
+    return d === 0 ? 6 : d - 1; // Align Mon=0, Tue=1, Wed=2...
+  });
   const [successBooking, setSuccessBooking] = useState<{ date: string; time: string; tutorName: string; meetLink: string } | null>(null);
 
   const corporateCredits = profile?.corporateCredits ?? null;
@@ -104,30 +114,33 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     fetchTutors();
   }, []);
 
-  // 2. Load availableSlots, blockedSlots, and bookings relative to selectedTutor
+  // 2. Load availableSlots, blockedSlots, and bookings in real-time
   useEffect(() => {
-    if (!selectedTutor) return;
     setLoading(true);
-    const tutorIds = [selectedTutor.id, 'matt', 'matthew'];
     
-    const bQuery = query(collection(db, 'bookings'), where('tutorId', 'in', tutorIds));
+    // Listen to all bookings
+    const bQuery = query(collection(db, 'bookings'));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
       setBookings(list);
       setLoading(false);
-    }, () => setLoading(false));
+    }, (err) => {
+      console.warn('Bookings listener fallback:', err);
+      setLoading(false);
+    });
 
+    const tutorIds = selectedTutor ? [selectedTutor.id, 'matt', 'matthew'] : ['matt', 'matthew'];
     const sQuery = query(collection(db, 'availableSlots'), where('tutorId', 'in', tutorIds));
     const unsubscribeSlots = onSnapshot(sQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setAvailableSlots(list);
-    });
+    }, () => {});
 
     const blockQuery = query(collection(db, 'blockedSlots'), where('tutorId', 'in', tutorIds));
     const unsubscribeBlocked = onSnapshot(blockQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setBlockedSlots(list);
-    });
+    }, () => {});
 
     return () => {
       unsubscribeBookings();
@@ -183,11 +196,18 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
     const slotKey = `${date}_${time}`;
     if (slotLoadingMap[slotKey] === 'booking') return;
 
-    if (!window.confirm(`Deseja agendar sua aula para ${date.split('-').reverse().join('/')} às ${time}?`)) {
-      return;
-    }
-
+    // Immediately trigger instant optimistic UI state change to blue confirmed
     setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'booking' }));
+    setOptimisticBookedKeys(prev => {
+      const updated = Array.from(new Set([...prev, slotKey]));
+      try {
+        if (currentUserId) {
+          localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(updated));
+        }
+      } catch (e) {}
+      return updated;
+    });
+
     const activeTutor = selectedTutor || {
       id: 'matt',
       name: 'Professor Matt',
@@ -199,7 +219,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
     try {
       const studentName = user?.displayName || user?.email?.split('@')[0] || 'Estudante';
-      const studentEmail = user?.email || 'estudante@elo.com';
+      const studentEmail = (user?.email || 'estudante@eloingles.com.br').toLowerCase().trim();
 
       // 1. Fetch persistent classroom meeting URL
       const classroomSettings = await getClassroomSettings();
@@ -220,7 +240,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         'confirmed'
       );
 
-      // Optimistic local state update so the button immediately switches to confirmed
+      // Optimistic local state update in bookings array
       const newBookingObj: Booking = {
         id: `${activeTutor.id || 'matt'}_${date}_${time.replace(':', '')}`,
         userId: currentUserId,
@@ -236,9 +256,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         meetLink
       };
       setBookings(prev => [...prev.filter(b => !(b.date === date && b.time === time)), newBookingObj]);
-
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-      showToast('Aula agendada e confirmada com sucesso! Email enviado ✉️', 'success');
+      showToast('Aula agendada e confirmada com sucesso! 🗓️', 'success');
 
       // Dispatch booking confirmation email via Resend
       fetch('/api/email/booking-confirmation', {
@@ -260,12 +279,12 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         date,
         time,
         tutorName: activeTutor.name || 'Professor Matt',
-        meetLink: meetLink || ''
+        meetLink
       });
-    } catch (error: any) {
-      console.error('Error booking slot:', error);
+    } catch (err: any) {
+      console.error('Failed to book slot:', err);
       setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'error' }));
-      showToast(error.message || 'Erro ao agendar aula. Tente novamente.', 'error');
+      showToast(err?.message || 'Erro ao agendar aula.', 'error');
     }
   };
 
@@ -442,9 +461,11 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
             const isBlocked = blockedSlots.some(b => b.date === dateStr && b.time === time && b.blocked !== false);
             const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
             const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
+            const slotKey = `${dateStr}_${time}`;
+            const isBookingInProgress = slotLoadingMap[slotKey] === 'booking';
 
             const studentEmail = (user?.email || '').toLowerCase().trim();
-            const isBookedByMe = bookings.some(b => 
+            const isBookedByMe = optimisticBookedKeys.includes(slotKey) || bookings.some(b => 
               b.date === dateStr && 
               b.time === time && 
               (
@@ -453,13 +474,9 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               ) && 
               b.status !== 'cancelled'
             );
-            const isBookedOther = bookings.some(b => 
+            const isBookedOther = !isBookedByMe && bookings.some(b => 
               b.date === dateStr && 
               b.time === time && 
-              !(
-                (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
-                (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
-              ) && 
               b.status !== 'cancelled'
             );
 
@@ -467,26 +484,33 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               <div key={time} className="flex items-center justify-between bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/80">
                 <span className="text-slate-200 text-xs font-black shrink-0">{time}</span>
                 <div className="flex-1 max-w-[200px] h-11 relative">
-                  {!isAvailable ? (
+                  {!isAvailable && !isBookedByMe ? (
                     <div className="absolute inset-0 rounded-lg bg-slate-950/30 border border-slate-900 flex items-center justify-center">
                       <span className="text-[11px] text-slate-500 font-bold">— Indisponível</span>
                     </div>
-                  ) : isBookedByMe ? (
-                    <div className="absolute inset-0 rounded-lg bg-blue-950/40 border border-blue-600/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
-                      Sua Aula Confirmada ✅
+                  ) : isBookingInProgress ? (
+                    <div className="absolute inset-0 rounded-lg bg-blue-600 border border-blue-400 text-white text-xs font-bold flex items-center justify-center animate-pulse shadow-md">
+                      Agendando... ⏳
                     </div>
+                  ) : isBookedByMe ? (
+                    <a
+                      href="/classroom"
+                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white text-xs font-black flex items-center justify-center shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition-all text-center px-1"
+                    >
+                      Sua Aula Confirmada ✅
+                    </a>
                   ) : isBookedOther ? (
-                    <div className="absolute inset-0 rounded-lg bg-red-955/20 border border-red-900/20 text-red-500 text-[11px] font-bold flex items-center justify-center cursor-not-allowed">
+                    <div className="absolute inset-0 rounded-lg bg-red-950/40 border border-red-800/40 text-red-400 text-[11px] font-bold flex items-center justify-center cursor-not-allowed">
                       Ocupado ❌
                     </div>
                   ) : (
                     <button
                       onClick={() => handleBookSlot(dateStr, time)}
                       disabled={isCreditLocked}
-                      className={`-webkit-tap-highlight-color-transparent select-none absolute inset-0 w-full h-full rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center shadow-md ${
+                      className={`-webkit-tap-highlight-color-transparent select-none absolute inset-0 w-full h-full rounded-lg text-xs font-black uppercase tracking-wide transition-all flex items-center justify-center shadow-md ${
                         isCreditLocked 
                           ? 'bg-slate-950/30 border border-slate-900 text-slate-500' 
-                          : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white active:scale-95'
+                          : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white active:scale-95 border border-emerald-400/30'
                       }`}
                     >
                       {isCreditLocked ? 'Sem Créditos' : 'Reservar'}
@@ -529,13 +553,15 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   </div>
                   {weekDates.map((date, i) => {
                     const dateStr = date.toLocaleDateString('en-CA');
+                    const slotKey = `${dateStr}_${time}`;
+                    const isBookingInProgress = slotLoadingMap[slotKey] === 'booking';
                     
                     const isBlocked = blockedSlots.some(b => b.date === dateStr && b.time === time && b.blocked !== false);
                     const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
                     const isAvailable = (hasExplicitSlot || isDefaultAvailable(dateStr, time)) && !isBlocked;
 
                     const studentEmail = (user?.email || '').toLowerCase().trim();
-                    const isBookedByMe = bookings.some(b => 
+                    const isBookedByMe = optimisticBookedKeys.includes(slotKey) || bookings.some(b => 
                       b.date === dateStr && 
                       b.time === time && 
                       (
@@ -544,38 +570,41 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                       ) && 
                       b.status !== 'cancelled'
                     );
-                    const isBookedOther = bookings.some(b => 
+                    const isBookedOther = !isBookedByMe && bookings.some(b => 
                       b.date === dateStr && 
                       b.time === time && 
-                      !(
-                        (currentUserId && (b.userId === currentUserId || b.uid === currentUserId)) || 
-                        (studentEmail && ((b as any).studentEmail?.toLowerCase() === studentEmail || (b as any).userEmail?.toLowerCase() === studentEmail))
-                      ) && 
                       b.status !== 'cancelled'
                     );
 
                     return (
                       <div key={i} className="relative h-11">
-                        {!isAvailable ? (
+                        {!isAvailable && !isBookedByMe ? (
                           <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
                             <span className="text-xs text-slate-600 font-bold">—</span>
                           </div>
-                        ) : isBookedByMe ? (
-                          <div className="absolute inset-0 rounded-xl bg-blue-950/40 border border-blue-600/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
-                            Sua Aula ✅
+                        ) : isBookingInProgress ? (
+                          <div className="absolute inset-0 rounded-xl bg-blue-600 border border-blue-400 text-white text-[11px] font-bold flex items-center justify-center animate-pulse">
+                            Agendando...
                           </div>
+                        ) : isBookedByMe ? (
+                          <a
+                            href="/classroom"
+                            className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 text-white text-[11px] font-black flex items-center justify-center shadow-lg shadow-blue-600/30 hover:scale-105 active:scale-95 transition-all text-center px-1"
+                          >
+                            Sua Aula ✅
+                          </a>
                         ) : isBookedOther ? (
-                          <div className="absolute inset-0 rounded-xl bg-red-955/20 border border-red-900/20 text-red-500 text-[11px] font-bold flex items-center justify-center cursor-not-allowed">
+                          <div className="absolute inset-0 rounded-xl bg-red-950/40 border border-red-800/40 text-red-400 text-[11px] font-bold flex items-center justify-center cursor-not-allowed">
                             Ocupado ❌
                           </div>
                         ) : (
                           <button
                             onClick={() => handleBookSlot(dateStr, time)}
                             disabled={isCreditLocked}
-                            className={`absolute inset-0 w-full rounded-xl text-xs font-bold uppercase transition-all flex flex-col items-center justify-center shadow-sm ${
+                            className={`absolute inset-0 w-full rounded-xl text-xs font-black uppercase tracking-wide transition-all flex flex-col items-center justify-center shadow-sm ${
                               isCreditLocked 
                                 ? 'bg-slate-900/20 border border-slate-800 text-slate-500' 
-                                : 'bg-emerald-600/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-600 hover:text-white active:scale-95'
+                                : 'bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600 hover:text-white active:scale-95'
                             }`}
                           >
                             <span>{isCreditLocked ? 'Sem Créditos' : 'Reservar'}</span>

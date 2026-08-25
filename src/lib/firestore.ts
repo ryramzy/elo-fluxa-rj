@@ -859,11 +859,23 @@ export async function bookSlot(
 
       const userRef = doc(db, 'users', userId);
       const userDoc = await transaction.get(userRef);
-      if (!userDoc.exists()) {
-        throw new Error('Student profile not found.');
+      let userData = userDoc.exists() ? userDoc.data() : null;
+
+      if (!userData) {
+        userData = {
+          displayName: userName || 'Estudante',
+          email: userEmail,
+          photoURL: '',
+          xp: 0,
+          level: 1,
+          role: 'student',
+          hasSeenOnboarding: true,
+          plan: 'free',
+          bookingsThisMonth: 0
+        };
+        transaction.set(userRef, userData, { merge: true });
       }
 
-      const userData = userDoc.data() || {};
       const userRole = userData.role || 'student';
       const isPrivileged = userRole === 'admin' || userRole === 'tutor' || 
                            userEmail === 'mramsay0@gmail.com' || userEmail === 'mramsayo@gmail.com' || userEmail === 'erneleducation@gmail.com';
@@ -879,8 +891,7 @@ export async function bookSlot(
         transaction.update(userRef, { corporateCredits: credits - 1 });
       } else if (!isPrivileged) {
         const currentCount = userData.bookingsThisMonth || 0;
-        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 
-                             (plan === 'pro' || plan === 'quarterly' || plan === 'monthly') ? 99 : 4;
+        const bookingLimit = typeof userData.bookingLimit === 'number' ? userData.bookingLimit : 99;
         if (currentCount >= bookingLimit) {
           throw new Error('Você atingiu o limite de agendamentos para este mês. Atualize seu plano para agendar mais aulas!');
         }
