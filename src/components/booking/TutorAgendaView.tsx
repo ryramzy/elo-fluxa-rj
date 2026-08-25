@@ -551,9 +551,13 @@ export default function TutorAgendaView() {
           </div>
 
           {loading ? (
-            <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/80 rounded-2xl p-12 text-center shadow-xl">
-              <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-xs text-slate-500">Carregando cronograma...</p>
+            <div className="space-y-2.5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-slate-900/40 border border-slate-800/80 p-4 rounded-xl flex items-center justify-between animate-pulse">
+                  <div className="h-6 w-16 bg-slate-800 rounded-lg"></div>
+                  <div className="h-6 w-32 bg-slate-800 rounded-lg"></div>
+                </div>
+              ))}
             </div>
           ) : activeTab === 'schedule' ? (
             // Schedule Items Stream
