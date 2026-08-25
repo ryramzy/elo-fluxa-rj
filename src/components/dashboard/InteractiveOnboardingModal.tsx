@@ -174,20 +174,18 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
         const userRef = doc(db, 'users', user.uid);
         const selectedLevelObj = levels.find(l => l.id === level) || levels[1];
         
-        // Execute update with a 2-second timeout guard
-        const updateTask = updateDoc(userRef, {
+        const { setDoc, serverTimestamp, increment } = await import('firebase/firestore');
+        await setDoc(userRef, {
           hasSeenOnboarding: true,
           level: selectedLevelObj.starterLevel,
           levelName: selectedLevelObj.title,
           targetGoal: goal,
+          learningGoal: goal,
           challenge: challenge,
           learningPace: pace,
           xp: increment(50), // 50 XP Welcome Gift
-          lastActiveDate: new Date()
-        });
-
-        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 2000));
-        await Promise.race([updateTask, timeoutPromise]);
+          lastActiveDate: serverTimestamp()
+        }, { merge: true });
 
         trackEvent('onboarding_completed', {
           level,
@@ -197,7 +195,7 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
         });
       }
     } catch (err) {
-      console.warn('Onboarding save warning (proceeding optimistically):', err);
+      console.warn('Onboarding save error:', err);
     } finally {
       setSaving(false);
       onComplete();

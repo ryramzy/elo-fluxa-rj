@@ -54,6 +54,14 @@ export function useUserProfile(uid: string) {
             userEmail.endsWith('@elospeak.com');
 
           const role = isAuthorizedEmail ? 'admin' : (data?.role || 'student');
+          const hasCompletedOnboarding = 
+            isAuthorizedEmail || 
+            role === 'admin' || 
+            role === 'tutor' || 
+            !!data?.hasSeenOnboarding || 
+            xp > 0 || 
+            !!data?.targetGoal || 
+            !!data?.learningGoal;
 
           setProfile({
             ...data,
@@ -67,7 +75,7 @@ export function useUserProfile(uid: string) {
             lastActiveDate: data?.lastActiveDate || null,
             badgesEarned: data?.badgesEarned || [],
             createdAt: data?.createdAt || null,
-            hasSeenOnboarding: !!data?.hasSeenOnboarding,
+            hasSeenOnboarding: hasCompletedOnboarding,
             role,
             plan: data?.plan || 'free',
             bio: data?.bio || '',
@@ -82,22 +90,31 @@ export function useUserProfile(uid: string) {
             const currentUser = auth.currentUser;
             if (currentUser && currentUser.uid === uid) {
               const userRef = doc(db, 'users', uid);
+              const userEmail = (currentUser.email || '').toLowerCase().trim();
+              const isAuthorizedEmail = 
+                userEmail === 'mramsay0@gmail.com' ||
+                userEmail === 'mramsayo@gmail.com' ||
+                userEmail === 'erneleducation@gmail.com' ||
+                userEmail.endsWith('@eloingles.com.br') ||
+                userEmail.endsWith('@elospeak.com.br') ||
+                userEmail.endsWith('@elospeak.com');
+
               await setDoc(userRef, {
-                displayName: currentUser.displayName || 'Estudante',
-                email: currentUser.email || '',
+                displayName: currentUser.displayName || (isAuthorizedEmail ? 'Professor Matt' : 'Estudante'),
+                email: userEmail,
                 photoURL: currentUser.photoURL || '',
-                xp: 0,
+                xp: isAuthorizedEmail ? 1000 : 0,
                 level: 1,
                 streakDays: 0,
                 lastActiveDate: new Date(),
                 badgesEarned: [],
                 createdAt: new Date(),
-                role: 'student',
-                hasSeenOnboarding: false,
-                plan: 'free',
+                role: isAuthorizedEmail ? 'admin' : 'student',
+                hasSeenOnboarding: isAuthorizedEmail,
+                plan: isAuthorizedEmail ? 'unlimited' : 'free',
                 bio: '',
                 targetGoal: '',
-              });
+              }, { merge: true });
               // The onSnapshot listener will be automatically triggered again with the new document.
             } else {
               setError('User profile not found');
