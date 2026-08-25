@@ -5,15 +5,25 @@ import { trackEvent } from '../../utils/analytics';
 
 interface UpcomingClassesProps {
   bookings: Booking[];
-  onNavigateToAgenda: () => void;
+  onNavigateToAgenda?: () => void;
 }
 
 export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({ 
-  bookings, 
-  onNavigateToAgenda 
+  bookings 
 }) => {
-  const upcomingBookings = (bookings || [])
+  // 1. Strict deduplication by composite key date + time
+  const deduplicatedMap = new Map<string, Booking>();
+  (bookings || [])
     .filter(b => b.status === 'confirmed' || b.status === 'pending')
+    .forEach(b => {
+      if (!b.date) return;
+      const key = `${(b.date || '').trim()}_${(b.time || '00:00').slice(0, 5)}`;
+      if (!deduplicatedMap.has(key)) {
+        deduplicatedMap.set(key, b);
+      }
+    });
+
+  const upcomingBookings = Array.from(deduplicatedMap.values())
     .sort((a, b) => {
       const [yA, mA, dA] = (a.date || '').split('-').map(Number);
       const [hA, minA] = (a.time || '00:00').split(':').map(Number);
@@ -28,8 +38,13 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
     .slice(0, 3);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Próximas Aulas</h3>
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 p-5 sm:p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">Próximas Aulas</h3>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-md">
+          {upcomingBookings.length} {upcomingBookings.length === 1 ? 'aula ativa' : 'aulas ativas'}
+        </span>
+      </div>
       <div className="space-y-3">
         {upcomingBookings.map((booking) => {
           let formattedDate = `${booking.date} às ${booking.time || ''}`;
@@ -97,17 +112,11 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
           );
         })}
         {upcomingBookings.length === 0 && (
-          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-            Nenhuma aula agendada
+          <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-xs">
+            Nenhuma aula agendada no momento
           </div>
         )}
       </div>
-      <button
-        onClick={onNavigateToAgenda}
-        className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
-      >
-        Agendar agora
-      </button>
     </div>
   );
 };

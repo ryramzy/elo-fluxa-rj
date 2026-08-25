@@ -80,10 +80,16 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
   const [slotLoadingMap, setSlotLoadingMap] = useState<Record<string, 'idle' | 'booking' | 'success' | 'error'>>({});
   const [optimisticBookedKeys, setOptimisticBookedKeys] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem(`elo_booked_slots_${currentUserId}`) || '[]');
-    } catch (e) {
-      return [];
-    }
+      if (typeof window !== 'undefined' && currentUserId) {
+        localStorage.removeItem(`elo_booked_slots_${currentUserId}`);
+        const raw = localStorage.getItem(`elo_cached_bookings_${currentUserId}`);
+        if (raw) {
+          const list: Booking[] = JSON.parse(raw);
+          return list.map(b => `${b.date}_${b.time}`);
+        }
+      }
+    } catch (e) {}
+    return [];
   });
 
   const [selectedWeek, setSelectedWeek] = useState(0);
@@ -216,15 +222,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
 
     // 1. INSTANT ZERO-LATENCY OPTIMISTIC UI FLIP
     setSlotLoadingMap(prev => ({ ...prev, [slotKey]: 'success' }));
-    setOptimisticBookedKeys(prev => {
-      const updated = Array.from(new Set([...prev, slotKey]));
-      try {
-        if (currentUserId) {
-          localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(updated));
-        }
-      } catch (e) {}
-      return updated;
-    });
+    setOptimisticBookedKeys(prev => Array.from(new Set([...prev, slotKey])));
 
     const newBookingObj: Booking = {
       id: `${activeTutor.id || 'matt'}_${date}_${time.replace(':', '')}`,
@@ -301,16 +299,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       }).catch(e => console.warn('Email dispatch warning:', e));
     } catch (err: any) {
       console.warn('Booking persistence failed, rolling back optimistic state:', err);
-      // ROLLBACK: revert all optimistic state so user sees the slot is still available
-      setOptimisticBookedKeys(prev => {
-        const reverted = prev.filter(k => k !== slotKey);
-        try {
-          if (currentUserId) {
-            localStorage.setItem(`elo_booked_slots_${currentUserId}`, JSON.stringify(reverted));
-          }
-        } catch (e) {}
-        return reverted;
-      });
+      // ROLLBACK: revert optimistic state so user sees the slot is still available
+      setOptimisticBookedKeys(prev => prev.filter(k => k !== slotKey));
       try {
         if (currentUserId && typeof window !== 'undefined') {
           const rawCached = localStorage.getItem(`elo_cached_bookings_${currentUserId}`);

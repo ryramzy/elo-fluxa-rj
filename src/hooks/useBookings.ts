@@ -5,11 +5,15 @@ import { Booking } from '../types';
 
 /**
  * Reads cached bookings for a user from localStorage, filtering out expired past classes (TTL).
+ * Automatically cleans up any obsolete legacy keys.
  */
 function getCachedBookingsWithTTL(uid: string, userEmail?: string): Booking[] {
   if (!uid || typeof window === 'undefined' || uid === 'guest_user') return [];
   
   try {
+    // Purge obsolete legacy string-only array if present
+    localStorage.removeItem(`elo_booked_slots_${uid}`);
+
     const rawCached = localStorage.getItem(`elo_cached_bookings_${uid}`);
     const now = Date.now();
     let validBookings: Booking[] = [];
@@ -31,37 +35,6 @@ function getCachedBookingsWithTTL(uid: string, userEmail?: string): Booking[] {
       }
     }
 
-    // Also check legacy slot keys
-    const rawKeys = localStorage.getItem(`elo_booked_slots_${uid}`);
-    if (rawKeys) {
-      const keys: string[] = JSON.parse(rawKeys);
-      keys.forEach(k => {
-        const [date, time] = k.split('_');
-        if (!validBookings.some(b => b.date === date && b.time === time)) {
-          const [y, m, d] = (date || '').split('-').map(Number);
-          const [h, min] = (time || '00:00').split(':').map(Number);
-          const classTime = new Date(y || 2026, (m || 1) - 1, d || 1, (h || 0) + 2, min || 0).getTime();
-          if (classTime >= now) {
-            validBookings.push({
-              id: `opt_${k}`,
-              userId: uid,
-              uid,
-              userName: 'Estudante',
-              userEmail: userEmail || '',
-              date,
-              time,
-              duration: 60,
-              status: 'confirmed',
-              tutorId: 'matt',
-              tutorName: 'Professor Matt',
-              meetLink: 'https://eloingles.com.br/classroom',
-              createdAt: new Date()
-            } as Booking);
-          }
-        }
-      });
-    }
-
     return validBookings;
   } catch (e) {
     console.warn('Error hydrating cached bookings:', e);
@@ -76,9 +49,12 @@ export function useBookings(uid: string, userEmail?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper to sort bookings by chronological ascending date and time
-  const sortBookings = useCallback((list: Booking[]): Booking[] => {
-    return [...list].sort((a, b) => {
+  // Helper to sort bookings chronologically and strictly deduplicate by date + time
+  const sortAndDeduplicateBookings = useCallback((list: Booking[]): Booking[] => {
+    const seen = new Set<string>();
+    const deduplicated: Booking[] = [];
+
+    const sorted = [...list].sort((a, b) => {
       const [yA, mA, dA] = (a.date || '').split('-').map(Number);
       const [hA, minA] = (a.time || '00:00').split(':').map(Number);
       const timeA = new Date(yA || 2026, (mA || 1) - 1, dA || 1, hA || 0, minA || 0).getTime();
@@ -89,6 +65,17 @@ export function useBookings(uid: string, userEmail?: string) {
 
       return timeA - timeB;
     });
+
+    for (const item of sorted) {
+      if (!item.date) continue;
+      const key = `${item.date.trim()}_${(item.time || '00:00').slice(0, 5)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduplicated.push(item);
+      }
+    }
+
+    return deduplicated;
   }, []);
 
   useEffect(() => {
@@ -106,25 +93,24 @@ export function useBookings(uid: string, userEmail?: string) {
       if (customEvent.detail) {
         const newBooking = customEvent.detail;
         setBookings(prev => {
-          const filtered = prev.filter(b => !(b.date === newBooking.date && b.time === newBooking.time));
-          return sortBookings([...filtered, newBooking]);
+          const filtered = prev.filter(b => !(b.date === newBooking.date && (b.time || '').slice(0, 5) === (newBooking.time || '').slice(0, 5)));
+          return sortAndDeduplicateBookings([...filtered, newBooking]);
         });
       }
     };
 
     // 2. Listen for cross-tab storage changes
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `elo_cached_bookings_${uid}` || e.key === `elo_booked_slots_${uid}`) {
+      if (e.key === `elo_cached_bookings_${uid}`) {
         const cached = getCachedBookingsWithTTL(uid, userEmail);
         setBookings(prev => {
-          // Merge cached with existing
           const merged = [...prev];
           cached.forEach(c => {
-            if (!merged.some(m => m.date === c.date && m.time === c.time)) {
+            if (!merged.some(m => m.date === c.date && (m.time || '').slice(0, 5) === (c.time || '').slice(0, 5))) {
               merged.push(c);
             }
           });
-          return sortBookings(merged);
+          return sortAndDeduplicateBookings(merged);
         });
       }
     };
@@ -140,7 +126,6 @@ export function useBookings(uid: string, userEmail?: string) {
         const firestoreMatched = snapshot.docs
           .map(doc => {
             const data = doc.data();
-            // Normalize legacy 'booked' status to 'confirmed'
             const rawStatus = data.status === 'booked' ? 'confirmed' : (data.status || 'confirmed');
             return {
               id: doc.id,
@@ -166,12 +151,21 @@ export function useBookings(uid: string, userEmail?: string) {
         
         cached.forEach(c => {
           // Add if not present in firestore snapshot yet
-          if (!combined.some(f => f.date === c.date && f.time === c.time)) {
+          if (!combined.some(f => f.date === c.date && (f.time || '').slice(0, 5) === (c.time || '').slice(0, 5))) {
             combined.push(c);
           }
         });
 
-        setBookings(sortBookings(combined));
+        const finalBookings = sortAndDeduplicateBookings(combined);
+        setBookings(finalBookings);
+
+        // Keep localStorage aligned with confirmed bookings
+        try {
+          if (firestoreMatched.length > 0) {
+            localStorage.setItem(`elo_cached_bookings_${uid}`, JSON.stringify(finalBookings));
+          }
+        } catch (e) {}
+
         setLoading(false);
       },
       (err) => {
@@ -186,7 +180,7 @@ export function useBookings(uid: string, userEmail?: string) {
       window.removeEventListener('storage', handleStorageChange);
       unsubscribeFirestore();
     };
-  }, [uid, userEmail, sortBookings]);
+  }, [uid, userEmail, sortAndDeduplicateBookings]);
 
   return { bookings, loading, error };
 }

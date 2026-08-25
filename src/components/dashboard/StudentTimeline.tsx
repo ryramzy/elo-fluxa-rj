@@ -134,20 +134,17 @@ export const StudentTimeline: React.FC<StudentTimelineProps> = ({ bookings, xp, 
         ))}
       </div>
 
-      {/* Book Next Lesson Loop CTA */}
-      <div className="mt-8 pt-4 border-t border-slate-50 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="text-center sm:text-left">
+      {/* Progress Footer Summary (Passive Indicator) */}
+      <div className="mt-8 pt-4 border-t border-slate-50 dark:border-slate-700/50 flex items-center justify-between gap-4">
+        <div>
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Avançar no Inglês</p>
-          <h4 className="text-xs font-bold text-slate-800 dark:text-white mt-0.5">Pratique regularmente para manter a fluência!</h4>
+          <h4 className="text-xs font-bold text-slate-800 dark:text-white mt-0.5">Pratique regularmente para acelerar sua fluência!</h4>
         </div>
-        <button
-          onClick={onBookNextLesson}
-          className="w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 transition-all"
-        >
-          <FaBookOpen size={11} />
-          Agendar Nova Aula
-          <FaArrowRight size={10} />
-        </button>
+        <div className="text-right shrink-0">
+          <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/40 px-3 py-1 rounded-full uppercase tracking-wider">
+            {completedCount}/{steps.length} Concluídos
+          </span>
+        </div>
       </div>
     </div>
   );
