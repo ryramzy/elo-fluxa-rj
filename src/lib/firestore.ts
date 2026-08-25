@@ -830,7 +830,7 @@ export async function bookSlot(
   notes?: string,
   googleEventId?: string | null,
   meetLink?: string | null,
-  tutorId: string = 'matthew',
+  tutorId: string = 'matt',
   tutorName: string = 'Professor',
   status: 'confirmed' | 'pending' = 'pending'
 ): Promise<string> {
@@ -1150,20 +1150,91 @@ export async function updateClassroomSettings(meetingUrl: string, provider = 'zo
 }
 
 // Slot Blocking System (for Days/Hours Off)
-export async function toggleBlockSlot(date: string, time: string, blocked: boolean, tutorId = 'matt'): Promise<void> {
+export interface BlockedSlot {
+  id?: string;
+  tutorId: 'matt' | string;
+  date: string;    // 'YYYY-MM-DD'
+  time: string;    // 'HH:MM'
+  reason?: string; // optional internal note
+  blocked?: boolean;
+  createdAt?: any;
+}
+
+export async function blockSlot(date: string, time: string, reason?: string, tutorId = 'matt'): Promise<void> {
   const slotDocId = `${tutorId}_${date}_${time.replace(':', '')}`;
   const blockRef = doc(db, 'blockedSlots', slotDocId);
-  if (blocked) {
-    await setDoc(blockRef, {
-      tutorId,
-      date,
-      time,
-      blocked: true,
-      createdAt: serverTimestamp()
-    });
-  } else {
-    await deleteDoc(blockRef);
+  await setDoc(blockRef, {
+    tutorId,
+    date,
+    time,
+    reason: reason || 'Bloqueado pelo tutor',
+    blocked: true,
+    createdAt: serverTimestamp()
+  });
+}
+
+export async function unblockSlot(date: string, time: string, tutorId = 'matt'): Promise<void> {
+  const slotDocId = `${tutorId}_${date}_${time.replace(':', '')}`;
+  const blockRef = doc(db, 'blockedSlots', slotDocId);
+  await deleteDoc(blockRef);
+}
+
+export async function getBlockedSlots(weekStart: string, weekEnd: string, tutorId = 'matt'): Promise<BlockedSlot[]> {
+  try {
+    const q = query(
+      collection(db, 'blockedSlots'),
+      where('date', '>=', weekStart),
+      where('date', '<=', weekEnd)
+    );
+    const snap = await getDocs(q);
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() } as BlockedSlot))
+      .filter(s => s.tutorId === tutorId || s.tutorId === 'matt' || s.tutorId === 'matthew');
+  } catch (e) {
+    console.warn('Error fetching blocked slots:', e);
+    return [];
   }
+}
+
+export async function toggleBlockSlot(date: string, time: string, blocked: boolean, tutorId = 'matt', reason?: string): Promise<void> {
+  if (blocked) {
+    await blockSlot(date, time, reason, tutorId);
+  } else {
+    await unblockSlot(date, time, tutorId);
+  }
+}
+
+// Tutor Configuration System (/settings/tutor)
+export interface TutorSettings {
+  notificationEmail: string;
+  displayName: string;
+  meetingUrl: string;
+  updatedAt?: any;
+}
+
+export async function getTutorSettings(): Promise<TutorSettings> {
+  try {
+    const docRef = doc(db, 'settings', 'tutor');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as TutorSettings;
+    }
+  } catch (e) {
+    console.warn('Could not read /settings/tutor:', e);
+  }
+  return {
+    notificationEmail: 'mramsay0@gmail.com',
+    displayName: 'Professor Matt',
+    meetingUrl: 'https://meet.google.com/new'
+  };
+}
+
+export async function updateTutorSettings(settings: Partial<TutorSettings>): Promise<void> {
+  const docRef = doc(db, 'settings', 'tutor');
+  await setDoc(docRef, {
+    ...settings,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
 }
 
 // Tutor-side Booking Cancellation with Refund and Email Dispatch

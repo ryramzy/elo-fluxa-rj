@@ -243,7 +243,7 @@ export default function TutorAgendaView() {
         '',
         null,
         meetLink,
-        'matthew',
+        'matt',
         'Professor',
         'confirmed'
       );
@@ -265,11 +265,11 @@ export default function TutorAgendaView() {
       for (const line of lines) {
         const [date, time] = line.split(' ');
         if (date && time) {
-          const slotId = `matthew_${date}_${time.replace(':', '')}`;
+          const slotId = `matt_${date}_${time.replace(':', '')}`;
           await setDoc(doc(db, 'availableSlots', slotId), {
             date,
             time,
-            tutorId: 'matthew',
+            tutorId: 'matt',
             tutorName: 'Professor'
           });
         }
@@ -305,11 +305,11 @@ export default function TutorAgendaView() {
         
         for (let h = startH; h < endH; h++) {
           const timeStr = `${String(h).padStart(2, '0')}:00`;
-          const slotId = `matthew_${dateStr}_${timeStr.replace(':', '')}`;
+          const slotId = `matt_${dateStr}_${timeStr.replace(':', '')}`;
           await setDoc(doc(db, 'availableSlots', slotId), {
             date: dateStr,
             time: timeStr,
-            tutorId: 'matthew',
+            tutorId: 'matt',
             tutorName: 'Professor'
           });
         }

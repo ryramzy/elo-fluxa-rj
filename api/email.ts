@@ -8,6 +8,10 @@ const REPLY_TO_EMAIL = process.env.EMAIL_REPLY_TO || 'mramsay0@gmail.com';
 const ADMIN_EMAILS = ['mramsay0@gmail.com', 'erneleducation@gmail.com'];
 const APP_URL = process.env.VITE_APP_URL || 'https://eloingles.com.br';
 
+if (!process.env.RESEND_API_KEY) {
+  console.error('[email] MISSING: RESEND_API_KEY not configured');
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const path = req.url?.split('?')[0] ?? '';
 
@@ -163,9 +167,9 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
           </div>
 
           <div style="margin:24px 0;text-align:center">
-            <a href="https://zoom.us/j/professor0" 
+            <a href="${meetLink || `${APP_URL}/classroom`}" 
                style="display:inline-block;background:#2563eb;color:white;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
-              📹 Entrar na Aula no Zoom com Professor
+              📹 Entrar na Sala de Aula ao Vivo
             </a>
             ${meetLink ? `
             <div style="margin-top:6px">
@@ -182,7 +186,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
             <ul style="margin:0;padding-left:16px;font-size:13px;color:#64748b">
               <li>Entre 5 minutos antes para testar microfone</li>
               <li>Use fones de ouvido para melhor clareza sonora</li>
-              <li>Avise com pelo menos 2h de antecedência se precisar remarcar</li>
+              <li>Avise com pelo menos 24h de antecedência se precisar remarcar</li>
             </ul>
           </div>
 
@@ -654,7 +658,7 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
                   <p style="margin:0;font-size:15px;line-height:1.5">
                     <strong>${formattedDate}</strong> às ${time}<br/>
                     Duração: ${duration} minutos<br/>
-                    Professor: Matt Ramsay
+                    Professor: Professor Matt
                   </p>
                   ${notes ? `<p style="margin:8px 0 0 0;font-size:14px;color:#92400e">
                     <strong>Seu tema:</strong> ${notes}
@@ -662,9 +666,9 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
                 </div>
 
                 <div style="margin:20px 0;text-align:center">
-                  <a href="https://zoom.us/j/professor0" 
+                  <a href="${booking.meetLink || `${APP_URL}/classroom`}" 
                      style="display:inline-block;background:#2563eb;color:white;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
-                    📹 Entrar na Aula no Zoom com Professor
+                    📹 Entrar na Sala de Aula ao Vivo
                   </a>
                 </div>
 

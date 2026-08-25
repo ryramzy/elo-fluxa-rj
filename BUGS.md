@@ -1,6 +1,13 @@
 # BUGS.md
 
 ## RESOLVED
+- [FIXED] Standardized canonical tutor ID from legacy 'matthew' to 'matt' across all collections and queries
+- [FIXED] Slot blocking engine and days-off management for Matt via blockedSlots collection and TutorAgendaView
+- [FIXED] Terms of Service (/termos) 2h vs 24h cancellation window mismatch aligned to 24 hours
+- [FIXED] Zoom "Invalid meeting ID (3,000)" error eliminated via dynamic /classroom hub and /settings/classroom
+- [FIXED] Classroom page text contrast boosted to >11:1 for outdoor Android legibility (WCAG AA+)
+- [FIXED] Mobile calendar week selector clipping under sticky navbar fixed in VisualSlotPicker
+- [FIXED] Centralized tutor notification email and meeting room URL in Firestore /settings/tutor with Admin UI
 - [FIXED] React hooks order violation crash on Dashboard loading after profile completes
 - [FIXED] Profile-not-found lockout/redirection blocks via auto-profile initialization on login
 - [FIXED] Guest mode database protections and in-memory sessionStorage fallbacks

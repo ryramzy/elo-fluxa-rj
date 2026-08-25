@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Slot blocking engine with `blockedSlots` Firestore collection, `blockSlot`/`unblockSlot` helpers, and 1-tap blocking UI in `TutorAgendaView.tsx`.
+- Persistent live classroom hub (`ClassroomPage.tsx`) at `/classroom` and `/sala` reading dynamic zero-downtime meeting URLs from `/settings/classroom`.
+- Tutor settings configuration panel in `Admin.tsx` allowing direct editing of notification email and live meeting links in `/settings/tutor`.
+- Resend DNS setup guide in `docs/RESEND_DNS_SETUP.md` and cold-start health logging in `api/email.ts`.
+- One-time migration script at `scripts/migrate-tutor-id.ts` for legacy `'matthew'` $\rightarrow$ `'matt'` tutor ID transition.
+
+### Fixed
+- Standardized canonical tutor ID to `'matt'` across all frontend components, database queries, and WhatsApp notifications.
+- Aligned legal Terms of Service at `/termos` and email cancellation reminders to the strict 24-hour window enforced in `cancelBooking()`.
+- Elevated `ClassroomPage.tsx` text contrast ratios to >11:1 for flawless outdoor sunlight legibility on mid-range Android displays (WCAG AA+).
+- Fixed mobile calendar week selector overflow and clipping in `VisualSlotPicker.tsx`.
 - Redesigned `AgendaPage.tsx` into a modern, role-aware Scheduling Dashboard (Tutor control panel with sidebar controls, JS mini-month calendar, reactive status filters, inline pending requests accept/decline actions, template editor, booking URLs copy actions, and chronological timeline stream; Student schedule list with upcoming confirmed slots and interactive Visual Slot Picker booking overlay).
 - Real-time Firestore presence status listeners (`/settings/tutor_presence`) enabling instant Jitsi Meet calling hooks.
 - Student geolocation coordinates lookups with Nominatim reverse geocoding API integration, browser cookie trackers, and Brazilian LGPD consent gating checks.

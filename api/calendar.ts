@@ -66,8 +66,8 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
       const fallbackMeetingId = `elo-class-${attendeeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
       const mockResponse = {
         eventId: `fallback_event_${Date.now()}`,
-        meetLink: `https://meet.jit.si/${fallbackMeetingId}`,
-        zoomLink: `https://zoom.us/j/mramsay0`,
+        meetLink: `https://eloingles.com.br/classroom`,
+        zoomLink: `https://eloingles.com.br/classroom`,
         htmlLink: `https://meet.jit.si/${fallbackMeetingId}`,
         isFallback: true
       };
@@ -125,8 +125,8 @@ async function handleCreateEvent(req: VercelRequest, res: VercelResponse) {
 
       const response = {
         eventId: createdEvent.id,
-        meetLink: createdEvent.hangoutLink || createdEvent.conferenceData?.entryPoints?.[0]?.uri || `https://meet.google.com/elo-${Date.now()}`,
-        zoomLink: `https://zoom.us/j/mramsay0`,
+        meetLink: createdEvent.hangoutLink || createdEvent.conferenceData?.entryPoints?.[0]?.uri || `https://eloingles.com.br/classroom`,
+        zoomLink: `https://eloingles.com.br/classroom`,
         htmlLink: createdEvent.htmlLink || `https://calendar.google.com`,
       };
 

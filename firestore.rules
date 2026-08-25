@@ -192,7 +192,13 @@ service cloud.firestore {
       allow delete: if isTutor();
     }
 
-    // Settings collection rules (Matt's availability presence status)
+    // Blocked slots collection rules (for Tutor Days/Hours Off)
+    match /blockedSlots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isTutor();
+    }
+
+    // Settings collection rules (Matt's availability presence status, tutor contact, classroom)
     match /settings/{settingId} {
       allow read: if isAuthenticated();
       allow write: if isTutor();

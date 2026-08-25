@@ -12,6 +12,12 @@ export default function Admin() {
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tutorSettings, setTutorSettings] = useState({
+    notificationEmail: 'mramsay0@gmail.com',
+    displayName: 'Professor Matt',
+    meetingUrl: 'https://meet.google.com/new'
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -27,11 +33,42 @@ export default function Admin() {
       const snapshot = await getDocs(q);
       const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setApplications(apps);
+
+      // Load tutor settings
+      const settingsSnap = await getDocs(collection(db, 'settings'));
+      const tutorDoc = settingsSnap.docs.find(d => d.id === 'tutor');
+      if (tutorDoc?.exists()) {
+        setTutorSettings(tutorDoc.data() as any);
+      }
     } catch (err) {
       console.error(err);
-      showToast({ type: 'error', message: 'Erro ao carregar candidaturas' });
+      showToast({ type: 'error', message: 'Erro ao carregar dados' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveTutorSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const { setDoc, doc, serverTimestamp } = await import('firebase/firestore');
+      await setDoc(doc(db, 'settings', 'tutor'), {
+        ...tutorSettings,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      await setDoc(doc(db, 'settings', 'classroom'), {
+        meetingUrl: tutorSettings.meetingUrl,
+        title: `Sala de Aula Virtual — ${tutorSettings.displayName}`,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      showToast({ type: 'success', message: 'Configurações do Tutor salvas com sucesso no Firestore!' });
+    } catch (err: any) {
+      showToast({ type: 'error', message: 'Erro ao salvar: ' + err.message });
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -135,6 +172,63 @@ export default function Admin() {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Tutor Contact & Live Classroom Configuration */}
+        <div className="mt-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+          <div className="border-b border-slate-200 dark:border-slate-700 pb-4 mb-6">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white">Configurações do Tutor (/settings/tutor)</h2>
+            <p className="text-xs text-slate-500 mt-1">Configure o email de notificações de novas aulas e o link da sala de aula ao vivo com zero redeploys.</p>
+          </div>
+
+          <form onSubmit={handleSaveTutorSettings} className="space-y-4 max-w-2xl">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                Nome de Exibição do Professor
+              </label>
+              <input
+                type="text"
+                value={tutorSettings.displayName}
+                onChange={(e) => setTutorSettings({ ...tutorSettings, displayName: e.target.value })}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                placeholder="Ex: Professor Matt"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                Email de Notificação de Agendamento
+              </label>
+              <input
+                type="email"
+                value={tutorSettings.notificationEmail}
+                onChange={(e) => setTutorSettings({ ...tutorSettings, notificationEmail: e.target.value })}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                placeholder="Ex: mramsay0@gmail.com ou contato@eloingles.com.br"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                Link da Sala de Aula ao Vivo (Zoom PMI / Google Meet)
+              </label>
+              <input
+                type="url"
+                value={tutorSettings.meetingUrl}
+                onChange={(e) => setTutorSettings({ ...tutorSettings, meetingUrl: e.target.value })}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 font-mono text-xs"
+                placeholder="https://zoom.us/j/123456789 ou https://meet.google.com/..."
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingSettings}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md disabled:opacity-50"
+            >
+              {savingSettings ? 'Salvando...' : 'Salvar Configurações do Tutor'}
+            </button>
+          </form>
         </div>
       </div>
     </div>

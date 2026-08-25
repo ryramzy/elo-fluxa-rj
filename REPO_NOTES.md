@@ -25,6 +25,16 @@
 - **APIs enabled**: Calendar, Gmail, Meet
 - **OAuth Client**: Elo Matt Web
 
+## [August 24, 2026] — Pre-Sprint 2 Foundation Cleanup & Hardening
+**Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION
+
+### Key Architectural Invariants & Decisions:
+1. **Tutor ID canonical value is `'matt'`** — never use `'matthew'`. Migration script at `scripts/migrate-tutor-id.ts` handles legacy Firestore documents.
+2. **Cancellation policy: 24 hours.** Enforced in `cancelBooking()` in `firestore.ts`. ToS at `/termos` reflects this. Do not change to 2 hours without updating both.
+3. **Tutor contact config lives at Firestore `/settings/tutor`** — notification email and meeting URL. Edit via Admin panel, zero redeploy needed.
+4. **Email domain:** `eloingles.com.br` must be verified in Resend dashboard. See `docs/RESEND_DNS_SETUP.md`. Test delivery to Gmail AND Hotmail before each launch.
+5. **Classroom Gateway & Zero Downtime Settings:** Live meeting URLs read dynamically from `/settings/classroom` with fallback to Google Meet/Zoom PMI. Students enter via `/classroom`.
+
 ## [August 22, 2026 - Sprint 17] — App Store Compliance, 4-Step Onboarding, Mobile Resiliency & Privacy
 **Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION
 

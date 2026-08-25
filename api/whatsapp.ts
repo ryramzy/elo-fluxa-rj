@@ -36,7 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     switch (template) {
       case 'booking_created':
-        messageText = `Olá ${data.studentName}! 🗓️ Sua próxima aula de inglês com o tutor Matthew Ramsay foi agendada com sucesso para o dia *${data.date}* às *${data.time || ''}*.\n\nPrepare seus fones de ouvido e bons estudos! 🚀`;
+        messageText = `Olá ${data.studentName}! 🗓️ Sua próxima aula de inglês com o Professor Matt foi agendada com sucesso para o dia *${data.date}* às *${data.time || ''}*.\n\nPrepare seus fones de ouvido e bons estudos! 🚀`;
         break;
       case 'booking_cancelled':
         messageText = `Olá ${data.studentName}! ⚠️ Sua aula agendada para o dia *${data.date}* às *${data.time || ''}* foi cancelada. Seus créditos de agendamento foram devolvidos ao seu perfil.\n\nQualquer dúvida, entre em contato com nosso suporte.`;
