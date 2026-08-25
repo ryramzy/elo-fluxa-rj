@@ -47,7 +47,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               </div>
             </div>
 
-            {/* Mobile-only quick action buttons (3 Core Actions) */}
+            {/* Mobile-only quick action buttons (3 Core Pillars) */}
             <div className="grid grid-cols-3 gap-2 mt-4 w-full sm:hidden">
               <a
                 href="/agenda"
@@ -63,13 +63,10 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
                 <span>📹</span> Sala de Aula
               </a>
               <a
-                href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
-                className="inline-flex items-center justify-center gap-1 bg-slate-700 hover:bg-slate-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-slate-600 text-center"
+                href="/perfil"
+                className="inline-flex items-center justify-center gap-1 bg-purple-600 hover:bg-purple-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-purple-400/30 text-center"
               >
-                <span>💬</span> WhatsApp
+                <span>📊</span> Progresso
               </a>
             </div>
           </div>
@@ -89,13 +86,10 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak })
               <span>📹</span> Entrar na Sala
             </a>
             <a
-              href={getWhatsAppLink('onboarding', { studentName: profile?.displayName })}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent('whatsapp_click_welcome_banner', { uid: profile?.uid })}
-              className="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-slate-600"
+              href="/perfil"
+              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-purple-400/30"
             >
-              <span>💬</span> WhatsApp
+              <span>📊</span> Meu Progresso & Feedback
             </a>
           </div>
         </div>

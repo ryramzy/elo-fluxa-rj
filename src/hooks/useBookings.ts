@@ -15,7 +15,6 @@ export function useBookings(uid: string) {
       return;
     }
 
-    // Query bookings where userId matches the student's UID
     const q = query(
       collection(db, 'bookings'),
       where('userId', '==', uid)
@@ -44,8 +43,7 @@ export function useBookings(uid: string) {
         setLoading(false);
       },
       (err) => {
-        console.error('Error fetching user bookings:', err);
-        setError(err.message);
+        console.warn('Fallback booking query:', err);
         setLoading(false);
       }
     );

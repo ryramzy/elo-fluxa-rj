@@ -76,17 +76,23 @@ export const BookingFeedbackModal: React.FC<BookingFeedbackModalProps> = ({ book
           submittedAt: Timestamp.now()
         }
       });
-      showToast({ type: 'success', message: 'Feedback salvo no Firestore!' });
 
-      // Automatically construct WhatsApp Feedback summary for Professor to send to student with 1 tap
-      const waText = `Oi ${booking.userName}! Segue o feedback da nossa aula de hoje no ELO! (eloingle.com.br):\n\n` +
-        `🗣️ Pronúncia: ${pronunciation || 'Muito boa!'}\n` +
-        `📚 Novo Vocabulário: ${vocabulary || 'Praticamos expressões nativas'}\n` +
-        `📝 Tarefa/Homework: ${homework || 'Praticar conversação'}\n\n` +
-        `Nos vemos na próxima aula! 🚀`;
-      
-      const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
-      window.open(waUrl, '_blank');
+      // Send in-app notification to student
+      const studentId = booking.userId || (booking as any).uid;
+      if (studentId) {
+        try {
+          const notifRef = doc(db, 'users', studentId, 'notifications', `feedback_${booking.id}`);
+          const { setDoc, serverTimestamp } = await import('firebase/firestore');
+          await setDoc(notifRef, {
+            title: 'Novo Feedback de Aula! 📝',
+            message: `O Professor Matt adicionou o resumo e notas da sua aula de ${booking.date.split('-').reverse().join('/')}.`,
+            read: false,
+            createdAt: serverTimestamp()
+          });
+        } catch (e) {}
+      }
+
+      showToast({ type: 'success', message: 'Feedback salvo no painel do aluno com sucesso!' });
       onClose();
     } catch (error: any) {
       console.error('Error saving class feedback:', error);

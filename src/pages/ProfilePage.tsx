@@ -8,6 +8,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import { deleteUser } from 'firebase/auth';
 import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave, FaGlobe, FaMapMarkerAlt, FaTrashAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { useToast } from '../hooks/useToast';
+import { useBookings } from '../hooks/useBookings';
 import { TutorProfileModal } from '../components/profile/TutorProfileModal';
 import { courses } from '../data/courses';
 
@@ -15,6 +16,7 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { profile, loading } = useUserProfile(user?.uid || '');
+  const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { showToast } = useToast();
   
   useDocumentTitle('Meu Perfil - ELO!');
@@ -372,6 +374,103 @@ const ProfilePage: React.FC = () => {
             );
           })}
         </div>
+      </div>
+
+      {/* Teacher Feedback & Class Notes (3rd Core Pillar) */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-md rounded-3xl p-6 sm:p-8 mt-8">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>📝</span> Notas de Aula & Feedback do Professor Matt
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">Acompanhe seu progresso de conversação, correções de pronúncia e tarefas práticas.</p>
+          </div>
+          <a
+            href="/agenda"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+          >
+            <span>🗓️</span> Agendar Próxima Aula
+          </a>
+        </div>
+
+        {bookings.filter(b => b.status === 'confirmed' || (b as any).tutorNotes).length === 0 ? (
+          <div className="text-center py-8 px-4 bg-slate-50 dark:bg-slate-900/30 rounded-2xl border border-slate-100 dark:border-slate-800/60">
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Nenhum feedback de aula registrado ainda.</p>
+            <p className="text-xs text-slate-500 mt-1">Após sua aula ao vivo no Zoom com o Professor Matt, você receberá aqui suas anotações personalizadas.</p>
+            <a
+              href="/agenda"
+              className="inline-flex items-center gap-1.5 mt-4 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+            >
+              <span>🗓️</span> Agendar Minha Primeira Aula
+            </a>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {bookings
+              .filter(b => b.status === 'confirmed' || (b as any).tutorNotes)
+              .slice(0, 5)
+              .map((b) => {
+                const notes = (b as any).tutorNotes;
+                return (
+                  <div 
+                    key={b.id}
+                    className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 hover:border-blue-500/40 transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-800 pb-3 mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                          Aula de {b.date.split('-').reverse().join('/')} às {b.time}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold">
+                          {b.tutorName || 'Professor Matt'}
+                        </span>
+                      </div>
+                      <a
+                        href="/classroom"
+                        className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>📹</span> Sala de Aula →
+                      </a>
+                    </div>
+
+                    {notes ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        {notes.pronunciation && (
+                          <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+                            <span className="font-bold text-amber-800 dark:text-amber-300 block mb-1">🗣️ Pronúncia & Connected Speech:</span>
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.pronunciation}</p>
+                          </div>
+                        )}
+                        {notes.vocabulary && (
+                          <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                            <span className="font-bold text-blue-800 dark:text-blue-300 block mb-1">📚 Vocabulário & Expressões:</span>
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.vocabulary}</p>
+                          </div>
+                        )}
+                        {notes.homework && (
+                          <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 md:col-span-2">
+                            <span className="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">📝 Tarefa / Prática Recomendada:</span>
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.homework}</p>
+                          </div>
+                        )}
+                        {notes.summary && (
+                          <div className="bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 md:col-span-2">
+                            <span className="font-bold text-purple-800 dark:text-purple-300 block mb-1">💡 Resumo da Conversação:</span>
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.summary}</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 italic">
+                        Aula agendada. As notas e correções do professor estarão visíveis aqui após o término da sessão.
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
 
       {/* Flagship Teacher Section */}
