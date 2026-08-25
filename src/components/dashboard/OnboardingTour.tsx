@@ -15,8 +15,8 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
 
   useEffect(() => {
     // Only run if the profile is loaded and they haven't seen the tour
-    if (profileLoaded && !hasSeenOnboarding && user) {
-      // Small delay to ensure the UI has finished animating/rendering
+    const isPrivileged = user?.email === 'mramsay0@gmail.com' || user?.email === 'mramsayo@gmail.com' || user?.email === 'erneleducation@gmail.com';
+    if (profileLoaded && !hasSeenOnboarding && user && !isPrivileged && user.uid !== 'guest_user') {
       const timer = setTimeout(() => setRun(true), 1500);
       return () => clearTimeout(timer);
     }
@@ -33,11 +33,13 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ hasSeenOnboardin
       if (user && user.uid !== 'guest_user') {
         try {
           const userRef = doc(db, 'users', user.uid);
-          await updateDoc(userRef, {
-            hasSeenOnboarding: true
-          });
+          const { setDoc } = await import('firebase/firestore');
+          await setDoc(userRef, {
+            hasSeenOnboarding: true,
+            hasSeenTour: true
+          }, { merge: true });
         } catch (error) {
-          console.error('Failed to update onboarding status:', error);
+          console.error('Failed to update tour status:', error);
         }
       }
     }

@@ -91,7 +91,7 @@ export async function updateUserProfile(uid: string, updates: Partial<UserProfil
 
   try {
     const userRef = doc(collection(db, 'users'), uid);
-    await updateDoc(userRef, updates as any);
+    await setDoc(userRef, updates as any, { merge: true });
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw error;

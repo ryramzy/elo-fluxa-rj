@@ -109,26 +109,33 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
       try {
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
+        const userEmail = (user.email || '').toLowerCase().trim();
+        const isAuthorizedEmail = 
+          userEmail === 'mramsay0@gmail.com' ||
+          userEmail === 'mramsayo@gmail.com' ||
+          userEmail === 'erneleducation@gmail.com' ||
+          userEmail.endsWith('@eloingles.com.br') ||
+          userEmail.endsWith('@elospeak.com.br') ||
+          userEmail.endsWith('@elospeak.com');
 
         if (!userSnap.exists()) {
-          // Brand new user: initialize full profile
           await setDoc(userRef, {
-            displayName: user.displayName || 'Estudante',
-            email: user.email || '',
+            displayName: user.displayName || (isAuthorizedEmail ? 'Professor Matt' : 'Estudante'),
+            email: userEmail,
             photoURL: user.photoURL || '',
-            xp: 0,
+            xp: isAuthorizedEmail ? 1000 : 0,
             level: 1,
             streakDays: 1,
             lastActiveDate: new Date(),
             badgesEarned: [],
             createdAt: new Date(),
-            role: 'student',
-            hasSeenOnboarding: false,
-            plan: 'free',
+            role: isAuthorizedEmail ? 'admin' : 'student',
+            hasSeenOnboarding: isAuthorizedEmail,
+            plan: isAuthorizedEmail ? 'unlimited' : 'free',
             bio: '',
             targetGoal: '',
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
-          });
+          }, { merge: true });
 
           // Trigger Resend welcome email on new Google registration
           fetch('/api/email/welcome', {
@@ -138,11 +145,12 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
           }).catch(e => console.warn('Welcome email error:', e));
         } else {
           // Existing user: only update non-restricted fields
-          await updateDoc(userRef, {
+          await setDoc(userRef, {
             lastActiveDate: new Date(),
             photoURL: user.photoURL || userSnap.data()?.photoURL || '',
-            displayName: user.displayName || userSnap.data()?.displayName || 'Estudante',
-          });
+            displayName: user.displayName || userSnap.data()?.displayName || (isAuthorizedEmail ? 'Professor Matt' : 'Estudante'),
+            ...(isAuthorizedEmail ? { role: 'admin', hasSeenOnboarding: true } : {})
+          }, { merge: true });
         }
       } catch (dbErr) {
         console.warn('Google sign-in profile sync handled gracefully:', dbErr);
