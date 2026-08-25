@@ -15,10 +15,14 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
   const upcomingBookings = (bookings || [])
     .filter(b => b.status === 'confirmed')
     .sort((a, b) => {
-      const dateA = new Date(a.date || '');
-      const dateB = new Date(b.date || '');
-      const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime();
-      const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime();
+      const [yA, mA, dA] = (a.date || '').split('-').map(Number);
+      const [hA, minA] = (a.time || '00:00').split(':').map(Number);
+      const timeA = new Date(yA || 2026, (mA || 1) - 1, dA || 1, hA || 0, minA || 0).getTime();
+
+      const [yB, mB, dB] = (b.date || '').split('-').map(Number);
+      const [hB, minB] = (b.time || '00:00').split(':').map(Number);
+      const timeB = new Date(yB || 2026, (mB || 1) - 1, dB || 1, hB || 0, minB || 0).getTime();
+
       return timeA - timeB;
     })
     .slice(0, 3);
@@ -30,9 +34,9 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
         {upcomingBookings.map((booking) => {
           let formattedDate = `${booking.date} às ${booking.time || ''}`;
           try {
-            const bookingDate = booking.datetime?.toDate 
-              ? booking.datetime.toDate() 
-              : new Date(`${booking.date}T${booking.time || '00:00'}:00-03:00`);
+            const [year, month, day] = (booking.date || '').split('-').map(Number);
+            const [hour, minute] = (booking.time || '00:00').split(':').map(Number);
+            const bookingDate = new Date(year, (month || 1) - 1, day, hour || 0, minute || 0);
             
             if (!isNaN(bookingDate.getTime())) {
               formattedDate = bookingDate.toLocaleDateString('pt-BR', { 

@@ -21,26 +21,25 @@ export const KpiCards: React.FC<KpiCardsProps> = ({
   // Find the next active confirmed booking
   const getNextBooking = () => {
     const now = new Date();
-    return bookings.find(b => {
-      if (b.status !== 'confirmed') return false;
-      const bDate = new Date(`${b.date}T${b.time}:00-03:00`);
+    return (bookings || []).find(b => {
+      if (b.status === 'cancelled') return false;
+      const [year, month, day] = (b.date || '').split('-').map(Number);
+      const [hour, minute] = (b.time || '00:00').split(':').map(Number);
+      if (!year || !month || !day) return false;
+      
+      const bDate = new Date(year, month - 1, day, hour || 0, minute || 0);
       return bDate >= now;
-    });
+    }) || bookings[0]; // If no future found, show most recent active booking
   };
 
   const nextBooking = getNextBooking();
 
   const getNextBookingText = (booking: Booking) => {
     try {
-      const dateParts = booking.date.split('-');
-      const year = parseInt(dateParts[0]);
-      const month = parseInt(dateParts[1]) - 1;
-      const day = parseInt(dateParts[2]);
-      const timeParts = booking.time.split(':');
-      const hours = parseInt(timeParts[0]);
-      const minutes = parseInt(timeParts[1]);
+      const [year, month, day] = (booking.date || '').split('-').map(Number);
+      const [hours, minutes] = (booking.time || '00:00').split(':').map(Number);
       
-      const dateObj = new Date(year, month, day, hours, minutes);
+      const dateObj = new Date(year, month - 1, day, hours, minutes);
       return dateObj.toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: 'short',

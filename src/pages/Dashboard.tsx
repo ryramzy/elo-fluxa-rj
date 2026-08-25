@@ -37,7 +37,7 @@ const DashboardWorking: React.FC = () => {
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const { enrollments, loading: enrollmentsLoading } = useEnrollments(user?.uid || '');
-  const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
+  const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '', user?.email || '');
   const { streak } = useStreak(user?.uid || '');
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,12 +94,29 @@ const DashboardWorking: React.FC = () => {
     sunday.setDate(monday.getDate() + 6);
     sunday.setHours(23, 59, 59, 999);
 
-    return userBookings.filter(b => {
-      if (b.status !== 'confirmed') return false;
-      const bDate = new Date(`${b.date}T00:00:00`);
+    return (userBookings || []).filter(b => {
+      if (b.status === 'cancelled') return false;
+      const [year, month, day] = (b.date || '').split('-').map(Number);
+      if (!year || !month || !day) return false;
+      const bDate = new Date(year, month - 1, day);
       return bDate >= monday && bDate <= sunday;
     }).length;
   };
+
+  // Find next upcoming confirmed booking
+  const getNextActiveBooking = (userBookings: any[]) => {
+    const now = new Date();
+    return (userBookings || []).find(b => {
+      if (b.status === 'cancelled') return false;
+      const [year, month, day] = (b.date || '').split('-').map(Number);
+      const [hour, minute] = (b.time || '00:00').split(':').map(Number);
+      if (!year || !month || !day) return false;
+      const bDate = new Date(year, month - 1, day, hour || 0, minute || 0);
+      return bDate >= now;
+    }) || userBookings[0];
+  };
+
+  const nextActiveBooking = getNextActiveBooking(bookings || []);
 
   const [hasDismissedOnboarding, setHasDismissedOnboarding] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -233,20 +250,53 @@ const DashboardWorking: React.FC = () => {
 
         {activeTab === 'overview' ? (
           <>
-            {/* Prominent Booking CTA */}
-            <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
-              <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
-              <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
-                <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">Ready for your next lesson?</h2>
-                <p className="text-blue-100 max-w-md">Book a 1-on-1 session with Elo and level up your English today.</p>
+            {/* Dynamic Class Banner */}
+            {nextActiveBooking ? (
+              <div className="mb-8 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden border border-blue-400/20">
+                <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0 space-y-2">
+                  <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    <span>🎉</span> Aula Confirmada
+                  </div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black tracking-tight">
+                    Sua próxima aula está agendada!
+                  </h2>
+                  <p className="text-blue-100/90 text-xs sm:text-sm max-w-lg font-medium">
+                    Com o <strong>{nextActiveBooking.tutorName || 'Professor Matt'}</strong> no dia <strong>{nextActiveBooking.date.split('-').reverse().join('/')}</strong> às <strong>{nextActiveBooking.time}</strong>.
+                  </p>
+                </div>
+                <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  <a 
+                    href={nextActiveBooking.meetLink || '/classroom'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto bg-white hover:bg-slate-100 text-blue-700 font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 text-center"
+                  >
+                    📹 Entrar na Sala
+                  </a>
+                  <button 
+                    onClick={() => setActiveTab('booking')}
+                    className="w-full sm:w-auto bg-blue-900/40 hover:bg-blue-900/60 border border-white/20 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    📅 Ver Agenda
+                  </button>
+                </div>
               </div>
-              <button 
-                onClick={() => setActiveTab('booking')}
-                className="relative z-10 w-full md:w-auto bg-white text-blue-600 font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all"
-              >
-                Book a Lesson
-              </button>
-            </div>
+            ) : (
+              <div className="mb-8 bg-blue-600 rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden tour-step-agenda">
+                <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
+                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">Ready for your next lesson?</h2>
+                  <p className="text-blue-100 max-w-md">Book a 1-on-1 session with Elo and level up your English today.</p>
+                </div>
+                <button 
+                  onClick={() => setActiveTab('booking')}
+                  className="relative z-10 w-full md:w-auto bg-white text-blue-600 font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all"
+                >
+                  Book a Lesson
+                </button>
+              </div>
+            )}
 
             <WidgetErrorBoundary widgetName="Resumo de Métricas">
               <KpiCards
