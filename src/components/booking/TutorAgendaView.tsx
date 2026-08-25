@@ -110,13 +110,16 @@ export default function TutorAgendaView() {
     setLoading(true);
     const tutorIds = ['matt', 'matthew'];
 
-    // Realtime bookings listener
-    const bQuery = query(collection(db, 'bookings'), where('tutorId', 'in', tutorIds));
+    // Realtime bookings listener across all tutors
+    const bQuery = query(collection(db, 'bookings'));
     const unsubscribeBookings = onSnapshot(bQuery, (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Booking));
       setBookings(list);
       setLoading(false);
-    }, () => setLoading(false));
+    }, (err) => {
+      console.warn('Tutor bookings listener error:', err);
+      setLoading(false);
+    });
 
     // Realtime available slots listener
     const sQuery = query(collection(db, 'availableSlots'), where('tutorId', 'in', tutorIds));
