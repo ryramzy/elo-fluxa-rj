@@ -485,10 +485,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     <div className="absolute inset-0 rounded-lg bg-slate-950/30 border border-slate-900 flex items-center justify-center">
                       <span className="text-[11px] text-slate-500 font-bold">— Indisponível</span>
                     </div>
-                  ) : isBookingInProgress ? (
-                    <div className="absolute inset-0 rounded-lg bg-blue-600 border border-blue-400 text-white text-xs font-bold flex items-center justify-center animate-pulse shadow-md">
-                      Agendando... ⏳
-                    </div>
                   ) : isBookedByMe ? (
                     <a
                       href="/classroom"
@@ -551,7 +547,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                   {weekDates.map((date, i) => {
                     const dateStr = date.toLocaleDateString('en-CA');
                     const slotKey = `${dateStr}_${time}`;
-                    const isBookingInProgress = slotLoadingMap[slotKey] === 'booking';
                     
                     const isBlocked = blockedSlots.some(b => b.date === dateStr && b.time === time && b.blocked !== false);
                     const hasExplicitSlot = availableSlots.some(s => s.date === dateStr && s.time === time);
@@ -578,10 +573,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                         {!isAvailable && !isBookedByMe ? (
                           <div className="absolute inset-0 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
                             <span className="text-xs text-slate-600 font-bold">—</span>
-                          </div>
-                        ) : isBookingInProgress ? (
-                          <div className="absolute inset-0 rounded-xl bg-blue-600 border border-blue-400 text-white text-[11px] font-bold flex items-center justify-center animate-pulse">
-                            Agendando...
                           </div>
                         ) : isBookedByMe ? (
                           <a
