@@ -230,24 +230,24 @@ export default function About() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Monthly Plan */}
+          {/* Weekly Plan (1x/week) */}
           <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
             <div>
               <div className="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
-                Plano Mensal
+                Plano Semanal
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">Conversação Contínua</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Ideal para manter o ritmo semanal</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">1 aula particular por semana (4 aulas/mês)</p>
               
               <div className="my-6">
-                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 149</span>
+                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 400</span>
                 <span className="text-sm font-semibold text-slate-500"> / mês</span>
               </div>
 
               <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span><strong>Aulas 1:1 particulares</strong> no Zoom com professor</span>
+                  <span><strong>1 aula 1:1 particular/semana (60 min)</strong> no Zoom</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
@@ -268,53 +268,53 @@ export default function About() {
               onClick={handleStartAuth}
               className="w-full py-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md active:scale-95"
             >
-              Começar com Plano Mensal
+              Começar Plano Semanal
             </button>
           </div>
 
-          {/* Quarterly Plan (Featured) */}
-          <div className="bg-gradient-to-b from-blue-900/30 to-indigo-950/40 dark:from-slate-800 dark:to-slate-850 border-2 border-blue-500 rounded-3xl p-8 shadow-2xl relative flex flex-col justify-between">
-            <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg">
-              ⭐ Mais Popular (Desconto)
+          {/* Bi-Weekly Plan (2x/week) (Featured) */}
+          <div className="bg-gradient-to-b from-blue-900/30 to-indigo-950/40 dark:from-slate-800 dark:to-slate-850 border-2 border-emerald-500 rounded-3xl p-8 shadow-2xl relative flex flex-col justify-between">
+            <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-lg">
+              ⭐ Mais Escolhido (Aceleração)
             </div>
 
             <div>
               <div className="inline-block bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
-                Plano Trimestral
+                Plano Bi-Semanal
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">Imersão de Fluência</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Foco e economia garantidos</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">2 aulas particulares por semana (8 aulas/mês)</p>
 
               <div className="my-6">
-                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 119</span>
-                <span className="text-sm font-semibold text-slate-500"> / mês no plano</span>
+                <span className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white">R$ 700</span>
+                <span className="text-sm font-semibold text-slate-500"> / mês</span>
               </div>
 
               <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300 mb-8">
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span><strong>Pacote completo de aulas 1:1</strong> no Zoom</span>
+                  <span><strong>2 aulas 1:1 particulares/semana (60 min cada)</strong> no Zoom</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Acesso VIP antecipado a novos módulos</span>
+                  <span>Acesso ilimitado a todos os <strong>Cursos ELO!</strong></span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Plano de estudos personalizado por nível</span>
+                  <span>Acompanhamento intensivo de pronúncia e negócios</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <FaCheckCircle className="text-emerald-500 flex-shrink-0" />
-                  <span>Prioridade de agendamento no calendário</span>
+                  <span>Prioridade de agendamento na grade semanal</span>
                 </li>
               </ul>
             </div>
 
             <button
               onClick={handleStartAuth}
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 border border-blue-400/40"
+              className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95 border border-emerald-400/40"
             >
-              Assinar Plano Trimestral
+              Assinar Plano Bi-Semanal
             </button>
           </div>
         </div>

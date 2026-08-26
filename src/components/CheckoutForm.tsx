@@ -7,7 +7,7 @@ import { LuCheck, LuCopy, LuTriangleAlert, LuQrCode, LuCreditCard } from 'react-
 import { getWhatsAppLink } from '../../constants';
 
 interface CheckoutFormProps {
-  plan: 'starter' | 'pro' | 'elite';
+  plan: 'starter' | 'weekly' | 'biweekly' | 'pro' | 'elite' | string;
   price: number;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -311,8 +311,8 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         <LuCreditCard className="text-blue-400" />
         <h3 className="text-lg font-bold text-white">Pagamento Pix Seguro</h3>
       </div>
-      <p className="text-slate-400 text-xs mb-6">
-        Insira seus dados para gerar o código Pix de pagamento do plano <span className="text-sky-400 font-bold capitalize">{plan}</span> (R${price}/mês).
+      <p className="text-slate-400 text-xs mb-6 leading-relaxed">
+        Insira seus dados para gerar o código Pix do plano <strong className="text-sky-400 font-bold">{plan === 'weekly' ? 'Semanal' : plan === 'biweekly' ? 'Bi-Semanal' : plan}</strong> (R$ {price}/mês).
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

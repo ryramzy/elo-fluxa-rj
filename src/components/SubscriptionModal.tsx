@@ -7,27 +7,29 @@ import CheckoutForm from './CheckoutForm';
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onPlanSelect: (plan: 'starter' | 'pro' | 'elite') => void;
+  onPlanSelect: (plan: string) => void;
 }
 
 export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: SubscriptionModalProps) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'pro' | 'elite' | null>(null);
-  const [stripeLoading, setStripeLoading] = useState<'pro' | 'elite' | null>(null);
+  const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'weekly' | 'biweekly' | 'pro' | 'elite' | null>(null);
+  const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(400);
+  const [stripeLoading, setStripeLoading] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handlePlanClick = (plan: 'starter' | 'pro' | 'elite') => {
+  const handlePlanClick = (plan: 'starter' | 'weekly' | 'biweekly', price: number) => {
     if (plan === 'starter') {
       onPlanSelect(plan);
       onClose();
     } else {
       setSelectedPlanForCheckout(plan);
+      setSelectedPlanPrice(price);
     }
   };
 
-  const handleStripeCheckout = async (plan: 'pro' | 'elite') => {
+  const handleStripeCheckout = async (plan: 'weekly' | 'biweekly', price: number) => {
     if (!user) {
       showToast('Por favor, faça login para assinar um plano.', 'info');
       return;
@@ -35,7 +37,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
 
     setStripeLoading(plan);
     try {
-      console.log(`[Stripe Checkout] Requesting checkout url for plan: ${plan}`);
+      console.log(`[Stripe Checkout] Requesting checkout url for plan: ${plan} (R$ ${price})`);
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
@@ -43,20 +45,19 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
         },
         body: JSON.stringify({
           plan,
-          price: plan === 'pro' ? 149 : 119,
+          price,
           email: user.email || '',
           userId: user.uid
         })
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
+        const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.error || 'Erro ao iniciar checkout Stripe.');
       }
 
       const data = await res.json();
       if (data.url) {
-        // Redirect browser to Stripe Hosted Checkout
         window.location.href = data.url;
       } else {
         throw new Error('Nenhuma URL de checkout retornada.');
@@ -98,7 +99,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
           
           <CheckoutForm 
             plan={selectedPlanForCheckout} 
-            price={selectedPlanForCheckout === 'pro' ? 149 : 357} 
+            price={selectedPlanPrice} 
             onSuccess={handleCheckoutSuccess}
             onCancel={() => setSelectedPlanForCheckout(null)}
           />
@@ -134,10 +135,10 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               <LuSparkles size={12} /> Planos de Aprendizado
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-tight">
-              Escolha seu Caminho de Conversação
+              Escolha seu Ritmo de Aulas
             </h2>
             <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
-              Desbloqueie conversas em tempo real com nativos americanos e acelere sua fluência profissional.
+              Aulas particulares 1:1 no Zoom com o Professor Matt + Acesso ilimitado a todos os cursos e materiais.
             </p>
           </div>
 
@@ -148,25 +149,25 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
             <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-6 hover:border-slate-800 transition-all flex flex-col justify-between">
               <div>
                 <div className="text-center mb-6">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-450 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">
                     Explorador
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
                     Grátis <span className="text-xs font-normal text-slate-500">/ para sempre</span>
                   </div>
-                  <p className="text-xs text-slate-450">Experimente o método sem compromisso</p>
+                  <p className="text-xs text-slate-400">Experimente o método sem compromisso</p>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
                     <span>Primeira aula de cada curso 100% aberta</span>
                   </li>
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Acesso ao simulador básico da IA</span>
+                    <span>Acesso a materiais e exercícios interativos</span>
                   </li>
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
                     <span>Sem necessidade de cartão de crédito</span>
                   </li>
@@ -174,62 +175,59 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               </div>
               
               <button
-                onClick={() => handlePlanClick('starter')}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-750 font-semibold"
+                onClick={() => handlePlanClick('starter', 0)}
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-700"
               >
                 Começar de graça
               </button>
             </div>
 
-            {/* Pro Plan */}
-            <div className="bg-slate-950/60 border-2 border-blue-500 rounded-2xl p-6 relative hover:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all flex flex-col justify-between">
-              {/* "Most Popular" badge */}
-              <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-slate-950 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md flex items-center gap-1">
-                  <LuFlame size={12} fill="currentColor" /> Mais Escolhido
-                </span>
-              </div>
-              
+            {/* Weekly Plan (1x/week) */}
+            <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
-                <div className="text-center mb-6 mt-2">
+                <div className="text-center mb-6">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded">
-                    Plano Mensal
+                    Plano Semanal
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
-                    R$149 <span className="text-xs font-normal text-slate-500">/ mês</span>
+                    R$ 400 <span className="text-xs font-normal text-slate-500">/ mês</span>
                   </div>
-                  <p className="text-xs text-slate-455">Conversação Contínua</p>
+                  <p className="text-xs text-slate-400">1 Aula Particular por Semana (4 aulas/mês)</p>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>Acesso ilimitado a todos os Cursos ELO!</strong>
+                    <strong>1 aula individual/semana (60 min)</strong> no Zoom
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Aulas 1:1 particulares no Zoom com Professor</span>
+                    <span>Acesso ilimitado a todos os Cursos ELO!</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
-                    <LuCheck className="text-blue-450 mr-2 mt-0.5 shrink-0" size={14} />
+                    <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
                     <span>Feedback detalhado de pronúncia por aula</span>
+                  </li>
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
+                    <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Suporte contínuo via WhatsApp</span>
                   </li>
                 </ul>
               </div>
               
               <div className="space-y-2">
                 <button
-                  onClick={() => handlePlanClick('pro')}
-                  className="w-full py-2.5 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] flex items-center justify-center gap-1.5 active:scale-97 font-semibold"
+                  onClick={() => handlePlanClick('weekly', 400)}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 active:scale-95"
                 >
                   <LuQrCode size={14} /> Assinar com Pix
                 </button>
                 <button
-                  onClick={() => handleStripeCheckout('pro')}
+                  onClick={() => handleStripeCheckout('weekly', 400)}
                   disabled={stripeLoading !== null}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-650 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-97 disabled:opacity-50 font-semibold"
+                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
                 >
-                  {stripeLoading === 'pro' ? (
+                  {stripeLoading === 'weekly' ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   ) : (
                     <>
@@ -240,48 +238,59 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               </div>
             </div>
 
-            {/* Elite Plan */}
-            <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-6 hover:border-slate-800 transition-all flex flex-col justify-between">
+            {/* Bi-Weekly Plan (2x/week) - Featured */}
+            <div className="bg-slate-950/70 border-2 border-emerald-500 rounded-2xl p-6 relative hover:shadow-[0_0_25px_rgba(16,185,129,0.15)] transition-all flex flex-col justify-between">
+              {/* "Most Popular" badge */}
+              <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2">
+                <span className="bg-emerald-500 text-slate-950 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md flex items-center gap-1">
+                  <LuFlame size={12} fill="currentColor" /> Mais Escolhido
+                </span>
+              </div>
+
               <div>
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 mt-2">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
-                    Plano Trimestral
+                    Plano Bi-Semanal
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
-                    R$119 <span className="text-xs font-normal text-slate-500">/ mês</span>
+                    R$ 700 <span className="text-xs font-normal text-slate-500">/ mês</span>
                   </div>
-                  <p className="text-xs text-slate-455">Imersão de Fluência</p>
+                  <p className="text-xs text-slate-400">2 Aulas Particulares por Semana (8 aulas/mês)</p>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>Pacote completo de aulas 1:1 no Zoom</strong>
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
+                    <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <strong>2 aulas individuais/semana (60 min cada)</strong>
                   </li>
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Acesso VIP antecipado a novos módulos</span>
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
+                    <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Acesso ilimitado a todos os Cursos ELO!</span>
                   </li>
-                  <li className="flex items-start text-xs text-slate-350 leading-relaxed">
-                    <LuCheck className="text-emerald-450 mr-2 mt-0.5 shrink-0" size={14} />
-                    <span>Prioridade de agendamento no calendário</span>
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
+                    <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Acompanhamento intensivo de pronúncia e fluência</span>
+                  </li>
+                  <li className="flex items-start text-xs text-slate-300 leading-relaxed">
+                    <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
+                    <span>Prioridade de agendamento na grade semanal</span>
                   </li>
                 </ul>
               </div>
               
               <div className="space-y-2">
                 <button
-                  onClick={() => handlePlanClick('elite')}
-                  className="w-full py-2.5 bg-purple-650 hover:bg-purple-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-purple-600/30 flex items-center justify-center gap-1.5 active:scale-97 font-semibold"
+                  onClick={() => handlePlanClick('biweekly', 700)}
+                  className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Adquirir com Pix
+                  <LuQrCode size={14} /> Assinar com Pix
                 </button>
                 <button
-                  onClick={() => handleStripeCheckout('elite')}
+                  onClick={() => handleStripeCheckout('biweekly', 700)}
                   disabled={stripeLoading !== null}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-650 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-97 disabled:opacity-50 font-semibold"
+                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
                 >
-                  {stripeLoading === 'elite' ? (
+                  {stripeLoading === 'biweekly' ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   ) : (
                     <>

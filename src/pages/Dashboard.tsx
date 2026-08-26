@@ -371,7 +371,8 @@ const DashboardWorking: React.FC = () => {
                 <WidgetErrorBoundary widgetName="Links Rápidos">
                   <QuickLinks
                     onNavigateToAgenda={() => setActiveTab('booking')}
-                    onNavigateToCourses={() => navigate('/courses')}
+                    onOpenSubscription={() => setSubscriptionModalOpen(true)}
+                    studentName={user?.displayName || ''}
                   />
                 </WidgetErrorBoundary>
               </div>
