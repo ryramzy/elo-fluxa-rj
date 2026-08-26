@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode, LuCreditCard } from 'react-icons/lu';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -16,6 +16,17 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'weekly' | 'biweekly' | 'pro' | 'elite' | null>(null);
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(400);
   const [stripeLoading, setStripeLoading] = useState<string | null>(null);
+
+  // Prevent background scrolling on mobile iOS / Android while modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -82,11 +93,12 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
   if (selectedPlanForCheckout) {
     return (
       <div 
-        className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] overflow-y-auto overscroll-contain p-3 sm:p-6 flex items-start sm:items-center justify-center"
+        style={{ WebkitOverflowScrolling: 'touch' }}
         onClick={onClose}
       >
         <div 
-          className="bg-slate-900/95 border border-slate-800 rounded-3xl shadow-2xl shadow-blue-500/5 max-w-md w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
+          className="bg-slate-900/95 border border-slate-800 rounded-3xl shadow-2xl shadow-blue-500/5 max-w-md w-full p-5 sm:p-8 relative my-4 sm:my-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 pb-8"
           onClick={(e) => e.stopPropagation()}
         >
           <button
@@ -112,32 +124,33 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
     <>
       {/* Backdrop overlay */}
       <div 
-        className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] overflow-y-auto overscroll-contain p-3 sm:p-6 flex items-start sm:items-center justify-center"
+        style={{ WebkitOverflowScrolling: 'touch' }}
         onClick={onClose}
       >
         {/* Modal content */}
         <div 
-          className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl shadow-blue-500/5 max-w-5xl w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
+          className="bg-slate-900/95 border border-slate-800 rounded-3xl shadow-2xl shadow-blue-500/5 max-w-5xl w-full p-5 sm:p-8 relative my-4 sm:my-auto backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 pb-12 sm:pb-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800/40 hover:bg-slate-800 border border-slate-800 rounded-xl transition-all"
+            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-800 rounded-xl transition-all z-10"
             aria-label="Close"
           >
             <LuX size={18} />
           </button>
 
           {/* Modal header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 pt-2 sm:pt-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-semibold mb-3">
               <LuSparkles size={12} /> Planos de Aprendizado
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-tight">
               Escolha seu Ritmo de Aulas
             </h2>
-            <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
               Aulas particulares 1:1 no Zoom com o Professor Matt + Acesso ilimitado a todos os cursos e materiais.
             </p>
           </div>
@@ -146,7 +159,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             
             {/* Starter Plan */}
-            <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-6 hover:border-slate-800 transition-all flex flex-col justify-between">
+            <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-5 sm:p-6 hover:border-slate-800 transition-all flex flex-col justify-between">
               <div>
                 <div className="text-center mb-6">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">
@@ -176,14 +189,14 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
               
               <button
                 onClick={() => handlePlanClick('starter', 0)}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-700"
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all border border-slate-700 active:scale-95"
               >
                 Começar de graça
               </button>
             </div>
 
             {/* Weekly Plan (1x/week) */}
-            <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-5 sm:p-6 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="text-center mb-6">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded">
@@ -198,7 +211,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>1 aula individual/semana (60 min)</strong> no Zoom
+                    <span><strong>1 aula individual/semana (60 min)</strong> no Zoom</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-blue-400 mr-2 mt-0.5 shrink-0" size={14} />
@@ -239,7 +252,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
             </div>
 
             {/* Bi-Weekly Plan (2x/week) - Featured */}
-            <div className="bg-slate-950/70 border-2 border-emerald-500 rounded-2xl p-6 relative hover:shadow-[0_0_25px_rgba(16,185,129,0.15)] transition-all flex flex-col justify-between">
+            <div className="bg-slate-950/70 border-2 border-emerald-500 rounded-2xl p-5 sm:p-6 relative hover:shadow-[0_0_25px_rgba(16,185,129,0.15)] transition-all flex flex-col justify-between">
               {/* "Most Popular" badge */}
               <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2">
                 <span className="bg-emerald-500 text-slate-950 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md flex items-center gap-1">
@@ -261,7 +274,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
-                    <strong>2 aulas individuais/semana (60 min cada)</strong>
+                    <span><strong>2 aulas individuais/semana (60 min cada)</strong> no Zoom</span>
                   </li>
                   <li className="flex items-start text-xs text-slate-300 leading-relaxed">
                     <LuCheck className="text-emerald-400 mr-2 mt-0.5 shrink-0" size={14} />
