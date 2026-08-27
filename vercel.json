@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "ignoreCommand": "node -e \"const ref = process.env.VERCEL_GIT_COMMIT_REF || ''; process.exit(ref.startsWith('dependabot/') ? 0 : 1)\"",
   "headers": [
     {
       "source": "/(.*)",
