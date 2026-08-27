@@ -29,6 +29,8 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 import { WidgetErrorBoundary } from '../components/dashboard/WidgetErrorBoundary';
 
+import { isPWAStandalone, requestPushPermission } from '../utils/pushNotifications';
+
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile(user?.uid || '');
@@ -46,6 +48,16 @@ const DashboardWorking: React.FC = () => {
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [referralsLoading, setReferralsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // After booking confirmed, prompt for push (non-blocking in PWA standalone mode)
+  useEffect(() => {
+    if (user?.uid && user.uid !== 'guest_user' && bookings.length > 0 && isPWAStandalone()) {
+      const timer = setTimeout(() => {
+        requestPushPermission(user.uid);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [bookings.length, user?.uid]);
 
   useEffect(() => {
     const stateTab = (location.state as any)?.tab;

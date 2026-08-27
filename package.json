@@ -24,7 +24,8 @@
     "remark-gfm": "^4.0.1",
     "resend": "^6.10.0",
     "stripe": "^17.0.0",
-    "swiper": "^12.1.4"
+    "swiper": "^12.1.4",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@capacitor/android": "^6.2.0",
@@ -33,6 +34,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.14.0",
+    "@types/web-push": "^3.6.4",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.5.4",
     "postcss": "^8.5.26",

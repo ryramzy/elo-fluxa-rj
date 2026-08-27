@@ -1334,5 +1334,69 @@ export async function trackAnalyticsEvent(eventType: string, payload: Record<str
   }
 }
 
+// In-App Notification System (/users/{uid}/notifications)
+export interface AppNotification {
+  id?: string;
+  type?: 'booking_confirmed' | 'booking_cancelled' | 'class_reminder' | 'tutor_note' | 'welcome' | string;
+  title: string;           // "Aula Confirmada! 🎉"
+  body?: string;           // "Sua aula está marcada para Seg 25/08 às 14:00"
+  message?: string;        // Compatibility fallback
+  read: boolean;           // false on creation
+  createdAt: any;
+  actionUrl?: string;      // '/classroom' for booking notifications
+  metadata?: {
+    bookingId?: string;
+    date?: string;
+    time?: string;
+  };
+}
+
+export async function writeAppNotification(
+  userId: string,
+  notification: Omit<AppNotification, 'id' | 'createdAt' | 'read'> & { id?: string }
+): Promise<void> {
+  try {
+    const notifRef = notification.id 
+      ? doc(db, 'users', userId, 'notifications', notification.id)
+      : doc(collection(db, 'users', userId, 'notifications'));
+      
+    await setDoc(notifRef, {
+      ...notification,
+      id: notifRef.id,
+      title: notification.title,
+      body: notification.body || notification.message || '',
+      message: notification.message || notification.body || '',
+      read: false,
+      createdAt: serverTimestamp(),
+    }, { merge: true });
+  } catch (err) {
+    console.warn('Failed to write app notification:', err);
+  }
+}
+
+export async function markNotificationRead(userId: string, notifId: string): Promise<void> {
+  try {
+    await updateDoc(doc(db, 'users', userId, 'notifications', notifId), { read: true });
+  } catch (err) {
+    console.warn('Failed to mark notification read:', err);
+  }
+}
+
+export async function getUnreadNotificationCount(userId: string): Promise<number> {
+  try {
+    const snapshot = await getDocs(
+      query(
+        collection(db, 'users', userId, 'notifications'),
+        where('read', '==', false)
+      )
+    );
+    return snapshot.size;
+  } catch (err) {
+    console.warn('Failed to get unread count:', err);
+    return 0;
+  }
+}
+
 // Export db for use in hooks
 export { db };
+

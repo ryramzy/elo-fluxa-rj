@@ -13,17 +13,27 @@
 - **Domain**: eloingles.com.br (SPF + DKIM + DMARC configured)
 - **From**: ELO! <contato@eloingles.com.br>
 - **Reply-to**: mramsay0@gmail.com
-- **Templates**: /api/email/
-  - welcome
-  - tutor-application
-  - tutor-decision
-  - app-invite
+### Push & Notifications Architecture
+- **In-App Notifications**: `/users/{uid}/notifications/{notifId}` with unread count and `actionUrl` navigation.
+- **Web Push (PWA)**: VAPID keys configured in `.env.example` and Vercel. Push subscriptions stored at `/users/{uid}/pushSubscriptions/primary`.
+- **Serverless Endpoints**: Total 7 functions (calendar, email, checkout, stripe, health, whatsapp, push).
+- **VAPID Public Key**: `BBItwOdVjqMMfgkAb0vXcYuEoIoQlkGdxwlzfbu5hQy9BOKlmI56Szq9DNjUBKb3Yj1DsVM_ESWUBjJCK0JwBs4`
 
-### GCP Project
-- **Project**: elo-fluxa-rj
-- **Service Account**: elo-matt-calendar-service
-- **APIs enabled**: Calendar, Gmail, Meet
-- **OAuth Client**: Elo Matt Web
+## [August 27, 2026] — Mobile Android Classroom Fix, Profile Navigation & Unified Notifications
+**Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION
+
+### What changed
+1. **Profile Navigation Redirect Loop Fix (`ProfilePage.tsx`)**:
+   - Removed premature `useEffect` redirect to `/login` that was causing authenticated mobile users to bounce `/profile` $\rightarrow$ `/login` $\rightarrow$ `/dashboard`.
+   - Added bounded 3-second loading skeleton and fallback to Firebase Auth user data.
+2. **Android Classroom Launch (`ClassroomPage.tsx` & `Dashboard.tsx`)**:
+   - Replaced popup-blocked `window.open()` with native semantic `<a>` tags with `target="_blank" rel="noopener noreferrer"`.
+   - Integrated Android Intent auto-launch for Google Meet / Zoom apps.
+   - Added 1-click "Copiar Link da Sala" with fallback clipboard execution for older Android WebViews.
+3. **Unified Notification System (3 Layers)**:
+   - **Layer 1 (Email)**: Resend transactional emails verified across all 5 booking events with non-blocking error handling.
+   - **Layer 2 (In-App)**: Firestore notifications in `/users/{uid}/notifications` with bell indicator and unread badge in Navbar.
+   - **Layer 3 (Web Push)**: Serverless push sender at `api/push.ts` with iOS/Android PWA standalone detection.
 
 ## [August 24, 2026] — Pre-Sprint 2 Foundation Cleanup & Hardening
 **Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION

@@ -41,6 +41,10 @@
       "destination": "/api/health.ts"
     },
     {
+      "source": "/api/push",
+      "destination": "/api/push.ts"
+    },
+    {
       "source": "/api/whatsapp",
       "destination": "/api/whatsapp.ts"
     },

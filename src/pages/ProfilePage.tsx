@@ -21,11 +21,13 @@ const ProfilePage: React.FC = () => {
   
   useDocumentTitle('Meu Perfil - ELO!');
 
+  // While profile loads from Firestore, show skeleton (max 3 seconds)
+  const [loadTimeout, setLoadTimeout] = useState(false);
+
   useEffect(() => {
-    if (!loading && (!user || !profile)) {
-      navigate('/login');
-    }
-  }, [loading, user, profile, navigate]);
+    const timer = setTimeout(() => setLoadTimeout(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
@@ -56,14 +58,16 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (profile) {
-      setDisplayName(profile.displayName || '');
+      setDisplayName(profile.displayName || user?.displayName || '');
       setBio(profile.bio || '');
       setTargetGoal(profile.targetGoal || '');
       setPhone(profile.phone || '');
       setHometown(profile.hometown || '');
       setCurrentLocation(profile.currentLocation || '');
+    } else if (user) {
+      setDisplayName(user.displayName || 'Estudante');
     }
-  }, [profile]);
+  }, [profile, user]);
 
   const detectLocation = () => {
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
@@ -161,13 +165,41 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  if (loading || !profile) {
+  if (loading && !loadTimeout) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 animate-pulse space-y-6">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-6">
+          <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <div className="flex-1 space-y-3 w-full text-center sm:text-left">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-md w-48 mx-auto sm:mx-0" />
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-64 mx-auto sm:mx-0" />
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-32 mx-auto sm:mx-0" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="h-28 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700" />
+          <div className="h-28 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700" />
+          <div className="h-28 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700" />
+        </div>
       </div>
     );
   }
+
+  const effectiveProfile = profile || {
+    displayName: user?.displayName || 'Estudante',
+    email: user?.email || '',
+    photoURL: user?.photoURL || '',
+    xp: 0,
+    level: 1,
+    levelName: 'Iniciante',
+    streakDays: 0,
+    badgesEarned: [],
+    role: 'student',
+    plan: 'free',
+    bio: '',
+    targetGoal: '',
+    currentLocation: '',
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -175,15 +207,15 @@ const ProfilePage: React.FC = () => {
       <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-md rounded-3xl p-6 sm:p-8 relative overflow-hidden mb-8">
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <div className="relative">
-            {profile.photoURL ? (
+            {effectiveProfile.photoURL ? (
               <img
-                src={profile.photoURL}
-                alt={profile.displayName}
+                src={effectiveProfile.photoURL}
+                alt={effectiveProfile.displayName}
                 className="w-24 h-24 rounded-full object-cover border-4 border-blue-500 shadow-xl"
               />
             ) : (
               <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-3xl font-black shadow-xl">
-                {profile.displayName?.charAt(0) || 'U'}
+                {effectiveProfile.displayName?.charAt(0) || 'U'}
               </div>
             )}
             <span className="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
@@ -193,12 +225,12 @@ const ProfilePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {profile.displayName || 'Estudante'}
+                  {effectiveProfile.displayName || 'Estudante'}
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{profile.email}</p>
-                {profile.currentLocation && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{effectiveProfile.email}</p>
+                {effectiveProfile.currentLocation && (
                   <p className="text-xs text-blue-600 dark:text-blue-400 font-bold mt-1 flex items-center justify-center sm:justify-start gap-1">
-                    <FaMapMarkerAlt /> {profile.currentLocation}
+                    <FaMapMarkerAlt /> {effectiveProfile.currentLocation}
                   </p>
                 )}
               </div>

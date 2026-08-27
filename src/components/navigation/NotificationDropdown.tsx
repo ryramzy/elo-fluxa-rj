@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, query, orderBy, limit, onSnapshot, doc, updateDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firestore';
 import { useAuth } from '../../hooks/useAuth';
@@ -8,13 +9,16 @@ import { AnimatePresence, motion } from 'framer-motion';
 interface Notification {
   id: string;
   title: string;
-  message: string;
+  body?: string;
+  message?: string;
   read: boolean;
+  actionUrl?: string;
   createdAt: any;
 }
 
 export const NotificationDropdown: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -153,6 +157,16 @@ export const NotificationDropdown: React.FC = () => {
     }
   };
 
+  const handleNotificationClick = async (n: Notification) => {
+    if (!n.read) {
+      await markAsRead(n.id);
+    }
+    setIsOpen(false);
+    if (n.actionUrl) {
+      navigate(n.actionUrl);
+    }
+  };
+
   return (
     <div className="relative notifications-menu">
       <button
@@ -214,7 +228,7 @@ export const NotificationDropdown: React.FC = () => {
                   notifications.map((n) => (
                     <div
                       key={n.id}
-                      onClick={() => !n.read && markAsRead(n.id)}
+                      onClick={() => handleNotificationClick(n)}
                       className={`p-3 rounded-xl border transition-all text-left cursor-pointer ${
                         n.read
                           ? 'bg-slate-950/20 border-slate-900 text-slate-400'
@@ -225,7 +239,7 @@ export const NotificationDropdown: React.FC = () => {
                         <span className={`font-bold text-xs ${n.read ? 'text-slate-400' : 'text-blue-400'}`}>{n.title}</span>
                         {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1 flex-shrink-0 animate-pulse"></span>}
                       </div>
-                      <p className="text-[11px] font-light leading-relaxed">{n.message}</p>
+                      <p className="text-[11px] font-light leading-relaxed">{n.body || n.message}</p>
                     </div>
                   ))
                 )}

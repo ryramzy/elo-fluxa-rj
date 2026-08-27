@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Unified 3-tier Notification System:
+  - Layer 1: Resend transactional emails across all 5 booking lifecycle events with non-blocking error logging.
+  - Layer 2: Real-time In-App Notifications in `/users/{uid}/notifications` with bell indicator, unread badge, and `actionUrl` navigation.
+  - Layer 3: Web Push Notifications via `api/push.ts` with VAPID authentication, Service Worker push/click listeners, and PWA standalone detection.
+- 1-click "Copiar Link da Sala de Aula" in `ClassroomPage.tsx` with clipboard and `execCommand` fallbacks.
+
+### Fixed
+- Fixed Profile Navigation redirect loop in `ProfilePage.tsx` where premature Firestore checks caused mobile users to bounce `/profile` $\rightarrow$ `/login` $\rightarrow$ `/dashboard`. Added a bounded 3-second loading skeleton and auth profile fallback.
+- Fixed Android / Motorola classroom launch in `ClassroomPage.tsx` and `Dashboard.tsx` by replacing popup-blocked `window.open` calls with native `<a>` tags for direct Google Meet / Zoom Android Intent launch.
 - Slot blocking engine with `blockedSlots` Firestore collection, `blockSlot`/`unblockSlot` helpers, and 1-tap blocking UI in `TutorAgendaView.tsx`.
 - Persistent live classroom hub (`ClassroomPage.tsx`) at `/classroom` and `/sala` reading dynamic zero-downtime meeting URLs from `/settings/classroom`.
 - Tutor settings configuration panel in `Admin.tsx` allowing direct editing of notification email and live meeting links in `/settings/tutor`.

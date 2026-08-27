@@ -17,9 +17,12 @@ import {
 } from 'react-icons/fa';
 import { getWhatsAppLink } from '../../constants';
 
+import { useToast } from '@/hooks/useToast';
+
 export default function ClassroomPage() {
   const { user } = useAuth();
   const { profile } = useUserProfile(user?.uid || '');
+  const { showToast } = useToast();
 
   const [classroomSettings, setClassroomSettings] = useState({
     meetingUrl: 'https://meet.google.com/new',
@@ -28,6 +31,7 @@ export default function ClassroomPage() {
   });
   const [loading, setLoading] = useState(true);
   const [nextBooking, setNextBooking] = useState<any>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     // 1. Fetch live classroom link
@@ -63,9 +67,32 @@ export default function ClassroomPage() {
     }
   }, [user]);
 
-  const handleEnterClassroom = () => {
-    const url = classroomSettings.meetingUrl || 'https://meet.google.com/new';
-    window.open(url, '_blank', 'noopener,noreferrer');
+  // Determine the best available meeting URL
+  const targetUrl = 
+    nextBooking?.meetLink ||
+    classroomSettings?.meetingUrl ||
+    'https://meet.google.com/new';
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(targetUrl);
+      setCopied(true);
+      showToast('Link da sala copiado com sucesso! 🔗', 'success');
+      setTimeout(() => setCopied(false), 3000);
+    } catch {
+      // Fallback for older Android WebViews
+      const textArea = document.createElement('textarea');
+      textArea.value = targetUrl;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      showToast('Link da sala copiado com sucesso! 🔗', 'success');
+      setTimeout(() => setCopied(false), 3000);
+    }
   };
 
   return (
@@ -147,15 +174,27 @@ export default function ClassroomPage() {
           </div>
         )}
 
-        {/* Primary 1-Click Join Button */}
-        <button
-          onClick={handleEnterClassroom}
-          className="w-full py-4 sm:py-4.5 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:via-indigo-500 hover:to-blue-500 active:scale-[0.98] text-white rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all shadow-xl shadow-blue-600/40 flex items-center justify-center gap-3 mb-6 -webkit-tap-highlight-color-transparent select-none min-h-[56px] border border-blue-400/40"
-        >
-          <FaVideo size={20} className="animate-pulse" />
-          <span>Entrar na Sala do {classroomSettings.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}</span>
-          <FaArrowRight size={15} className="opacity-90" />
-        </button>
+        {/* Primary 1-Click Join Button & Fallback Actions */}
+        <div className="space-y-3 mb-6">
+          <a
+            href={targetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-4 sm:py-4.5 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:via-indigo-500 hover:to-blue-500 active:scale-[0.98] text-white rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all shadow-xl shadow-blue-600/40 flex items-center justify-center gap-3 select-none min-h-[56px] border border-blue-400/40"
+          >
+            <FaVideo size={20} className="animate-pulse" />
+            <span>Entrar na Sala do {classroomSettings.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}</span>
+            <FaArrowRight size={15} className="opacity-90" />
+          </a>
+
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="w-full py-3 px-4 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-slate-700 flex items-center justify-center gap-2 active:scale-95"
+          >
+            <span>{copied ? '✅ Link Copiado!' : '🔗 Copiar Link da Sala de Aula'}</span>
+          </button>
+        </div>
 
         {/* Audio / Video Readiness Checklist */}
         <div className="grid grid-cols-3 gap-2 py-4 px-3 bg-slate-950/70 border border-slate-700/80 rounded-2xl mb-6 text-slate-200 text-xs font-bold">

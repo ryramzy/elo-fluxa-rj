@@ -193,6 +193,16 @@ export const InteractiveOnboardingModal: React.FC<InteractiveOnboardingModalProp
           challenge,
           pace
         });
+
+        // Prompt for PWA push notification permission on onboarding completion
+        try {
+          const { isPWAStandalone, requestPushPermission } = await import('../../utils/pushNotifications');
+          if (isPWAStandalone()) {
+            setTimeout(() => {
+              requestPushPermission(user.uid);
+            }, 1500);
+          }
+        } catch (pErr) {}
       }
     } catch (err) {
       console.warn('Onboarding save error:', err);
