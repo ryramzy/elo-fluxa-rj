@@ -56,38 +56,27 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ profile, streak, b
                 </div>
               </div>
 
-              {/* Mobile-only quick action buttons (3 Core Pillars) */}
-              <div className="grid grid-cols-3 gap-2 mt-4 w-full sm:hidden">
-                <a
-                  href="/agenda"
-                  className="inline-flex items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-emerald-400/30 text-center"
-                >
-                  <span>🗓️</span> Agendar
-                </a>
+              {/* Mobile-only quick action buttons (Sala de Aula & Progresso) */}
+              <div className="grid grid-cols-2 gap-2.5 mt-4 w-full sm:hidden">
                 <a
                   href="/classroom"
                   onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
-                  className="inline-flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30 text-center"
+                  className="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-blue-400/30 text-center"
                 >
                   <span>📹</span> Sala de Aula
                 </a>
                 <button
                   type="button"
                   onClick={handleOpenProgress}
-                  className="inline-flex items-center justify-center gap-1 bg-purple-600 hover:bg-purple-500 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-2 rounded-xl transition-all shadow-md active:scale-95 border border-purple-400/30 text-center"
+                  className="inline-flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-md active:scale-95 border border-purple-400/30 text-center"
                 >
                   <span>📊</span> Progresso
                 </button>
               </div>
             </div>
 
+            {/* Desktop-only quick action buttons */}
             <div className="hidden sm:flex items-center gap-3 shrink-0">
-              <a
-                href="/agenda"
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 border border-emerald-400/30"
-              >
-                <span>🗓️</span> Agendar Aula com Matt
-              </a>
               <a
                 href="/classroom"
                 onClick={() => trackEvent('zoom_launcher_click', { uid: profile?.uid })}
