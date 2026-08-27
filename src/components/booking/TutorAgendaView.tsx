@@ -22,6 +22,7 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { BookingFeedbackModal } from '../BookingFeedbackModal';
 import { 
   FaCheck, 
   FaTimes, 
@@ -32,7 +33,8 @@ import {
   FaFileAlt,
   FaSlidersH,
   FaVideo,
-  FaBan
+  FaBan,
+  FaRegCommentDots
 } from 'react-icons/fa';
 
 interface Booking {
@@ -75,6 +77,7 @@ export default function TutorAgendaView() {
   const [pasteModalOpen, setPasteModalOpen] = useState(false);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [classroomModalOpen, setClassroomModalOpen] = useState(false);
+  const [feedbackBooking, setFeedbackBooking] = useState<any | null>(null);
 
   // Forms state
   const [selectedStudentUid, setSelectedStudentUid] = useState('');
@@ -581,6 +584,13 @@ export default function TutorAgendaView() {
                       </div>
                     </div>
                     <div className="flex gap-1.5 flex-shrink-0">
+                      <button
+                        onClick={() => setFeedbackBooking(booking)}
+                        className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
+                        title="Registrar Feedback e Notas de Aula para o Aluno"
+                      >
+                        <FaRegCommentDots size={11} /> Feedback
+                      </button>
                       <a
                         href={classroomMeetingUrl || '/classroom'}
                         target="_blank"
@@ -588,7 +598,7 @@ export default function TutorAgendaView() {
                         className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all min-h-[36px] flex items-center justify-center gap-1 shadow-sm"
                         title="Iniciar Sala ao Vivo"
                       >
-                        📹 Sala ao Vivo
+                        📹 Ao Vivo
                       </a>
                       <a
                         href="/courses/beginner/lessons/be-dl-01"
@@ -907,6 +917,14 @@ export default function TutorAgendaView() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* 5. Booking Feedback Modal for Tutor */}
+      {feedbackBooking && (
+        <BookingFeedbackModal
+          booking={feedbackBooking}
+          onClose={() => setFeedbackBooking(null)}
+        />
       )}
     </div>
   );

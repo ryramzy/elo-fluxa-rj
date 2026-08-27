@@ -201,6 +201,40 @@ const ProfilePage: React.FC = () => {
     currentLocation: '',
   };
 
+  const POPULAR_GOALS = [
+    'Conversação e fluência',
+    'Inglês para Carreira & Tech 💻',
+    'Entrevistas / Vaga Internacional 🇺🇸',
+    'Pronúncia & Sotaque Americano 🗣️',
+    'Viagens & Morar Fora ✈️',
+    'Negócios & Apresentações 💼'
+  ];
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 11);
+    let formatted = raw;
+    if (raw.length > 6) {
+      formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 7)}-${raw.slice(7)}`;
+    } else if (raw.length > 2) {
+      formatted = `(${raw.slice(0, 2)}) ${raw.slice(2)}`;
+    } else if (raw.length > 0) {
+      formatted = `(${raw}`;
+    }
+    setPhone(formatted);
+  };
+
+  const handleCancelEdit = () => {
+    if (profile) {
+      setDisplayName(profile.displayName || user?.displayName || '');
+      setBio(profile.bio || '');
+      setTargetGoal(profile.targetGoal || '');
+      setPhone(profile.phone || '');
+      setHometown(profile.hometown || '');
+      setCurrentLocation(profile.currentLocation || '');
+    }
+    setIsEditing(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       {/* Profile Header */}
@@ -239,18 +273,27 @@ const ProfilePage: React.FC = () => {
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/30"
                   >
                     <FaEdit /> Editar Perfil
                   </button>
                 ) : (
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/30"
-                  >
-                    <FaSave /> {saving ? 'Salvando...' : 'Salvar Alterações'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                      className="px-3.5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/30"
+                    >
+                      <FaSave /> {saving ? 'Salvando...' : 'Salvar'}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -258,118 +301,205 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Editable Fields */}
+      {/* Editable Fields Card */}
       <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-md rounded-3xl p-6 sm:p-8 space-y-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4">
-          Informações Pessoais & Metas
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-              Nome de Exibição
-            </label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
-              />
-            ) : (
-              <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
-                {displayName || 'Não informado'}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-              WhatsApp / Telefone
-            </label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+55 (21) 99999-9999"
-                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
-              />
-            ) : (
-              <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
-                {phone || <em className="text-slate-400">Não informado (usado para lembretes de aula)</em>}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-              Principal Objetivo com Inglês
-            </label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={targetGoal}
-                onChange={(e) => setTargetGoal(e.target.value)}
-                placeholder="Ex: Destravar fala para reuniões internacionais"
-                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
-              />
-            ) : (
-              <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
-                {targetGoal || 'Conversação e fluência'}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-              Localização / Cidade
-            </label>
-            {isEditing ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={currentLocation}
-                  onChange={(e) => setCurrentLocation(e.target.value)}
-                  placeholder="Ex: Rio de Janeiro, RJ"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
-                />
-                <button
-                  type="button"
-                  disabled={detecting}
-                  onClick={detectLocation}
-                  className="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold flex-shrink-0"
-                >
-                  {detecting ? '...' : 'GPS'}
-                </button>
-              </div>
-            ) : (
-              <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
-                {currentLocation || 'Não informada'}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Bio */}
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-            Sobre Mim
-          </label>
-          {isEditing ? (
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm resize-none"
-              placeholder="Fale um pouco sobre você e seus interesses para os professores..."
-            />
-          ) : (
-            <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed py-1">
-              {bio || <em className="text-slate-400">Nenhuma biografia adicionada.</em>}
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              Informações Pessoais & Metas
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Personalize seus objetivos de aprendizado e dados de contato.
             </p>
+          </div>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-3.5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+            >
+              <FaEdit /> Editar
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancelEdit}
+                disabled={saving}
+                className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/30"
+              >
+                <FaSave /> {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
           )}
         </div>
+
+        <form onSubmit={handleSave} className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Nome de Exibição
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Seu nome completo"
+                  maxLength={80}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium"
+                />
+              ) : (
+                <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
+                  {displayName || 'Não informado'}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                WhatsApp / Telefone
+              </label>
+              {isEditing ? (
+                <div>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    placeholder="(21) 99999-9999"
+                    maxLength={16}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">Usado para receber lembretes e avisos das suas aulas no WhatsApp</span>
+                </div>
+              ) : (
+                <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
+                  {phone || <em className="text-slate-400">Não informado (usado para lembretes de aula)</em>}
+                </p>
+              )}
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Principal Objetivo com Inglês
+              </label>
+              {isEditing ? (
+                <div className="space-y-2.5">
+                  <input
+                    type="text"
+                    value={targetGoal}
+                    onChange={(e) => setTargetGoal(e.target.value)}
+                    placeholder="Ex: Destravar fala para reuniões internacionais"
+                    maxLength={120}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium"
+                  />
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {POPULAR_GOALS.map((goal) => (
+                      <button
+                        key={goal}
+                        type="button"
+                        onClick={() => setTargetGoal(goal)}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition-all ${
+                          targetGoal === goal
+                            ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
+                            : 'bg-slate-100 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-blue-400'
+                        }`}
+                      >
+                        {goal}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
+                  {targetGoal || 'Conversação e fluência'}
+                </p>
+              )}
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Localização / Cidade
+              </label>
+              {isEditing ? (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={currentLocation}
+                    onChange={(e) => setCurrentLocation(e.target.value)}
+                    placeholder="Ex: Rio de Janeiro, RJ"
+                    maxLength={100}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium"
+                  />
+                  <button
+                    type="button"
+                    disabled={detecting}
+                    onClick={detectLocation}
+                    className="px-3.5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold flex-shrink-0 flex items-center gap-1"
+                    title="Detectar cidade automaticamente via GPS"
+                  >
+                    <FaMapMarkerAlt /> {detecting ? 'Buscando...' : 'GPS'}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-slate-800 dark:text-slate-200 text-sm font-medium py-1">
+                  {currentLocation || 'Não informada'}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Bio */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Sobre Mim (Biografia)
+              </label>
+              {isEditing && (
+                <span className="text-[10px] text-slate-400">{bio.length}/500</span>
+              )}
+            </div>
+            {isEditing ? (
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                maxLength={500}
+                rows={3}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm resize-none"
+                placeholder="Fale um pouco sobre você e seus interesses para os professores..."
+              />
+            ) : (
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed py-1">
+                {bio || <em className="text-slate-400">Nenhuma biografia adicionada.</em>}
+              </p>
+            )}
+          </div>
+
+          {isEditing && (
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                disabled={saving}
+                className="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md shadow-blue-600/30"
+              >
+                <FaSave /> {saving ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          )}
+        </form>
       </div>
 
       {/* Badges Section */}
@@ -440,23 +570,38 @@ const ProfilePage: React.FC = () => {
           <div className="space-y-4">
             {bookings
               .filter(b => b.status === 'confirmed' || (b as any).tutorNotes)
-              .slice(0, 5)
+              .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time))
+              .slice(0, 10)
               .map((b) => {
                 const notes = (b as any).tutorNotes;
                 return (
                   <div 
                     key={b.id}
-                    className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 hover:border-blue-500/40 transition-all"
+                    className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 hover:border-blue-500/40 transition-all shadow-sm"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-800 pb-3 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${notes ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`}></span>
                         <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
                           Aula de {b.date.split('-').reverse().join('/')} às {b.time}
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold">
                           {b.tutorName || 'Professor Matt'}
                         </span>
+                        {notes?.attendance && (
+                          <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                            notes.attendance === 'present' 
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300' 
+                              : 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300'
+                          }`}>
+                            {notes.attendance === 'present' ? '✓ Presente' : 'Ausente'}
+                          </span>
+                        )}
+                        {notes?.studentRating && (
+                          <span className="text-[10px] text-amber-400 font-bold">
+                            {'★'.repeat(notes.studentRating)}{'☆'.repeat(5 - notes.studentRating)}
+                          </span>
+                        )}
                       </div>
                       <a
                         href="/classroom"
@@ -467,36 +612,50 @@ const ProfilePage: React.FC = () => {
                     </div>
 
                     {notes ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
                         {notes.pronunciation && (
-                          <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+                          <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5">
                             <span className="font-bold text-amber-800 dark:text-amber-300 block mb-1">🗣️ Pronúncia & Connected Speech:</span>
                             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.pronunciation}</p>
                           </div>
                         )}
                         {notes.vocabulary && (
-                          <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                          <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 rounded-xl p-3.5">
                             <span className="font-bold text-blue-800 dark:text-blue-300 block mb-1">📚 Vocabulário & Expressões:</span>
                             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.vocabulary}</p>
                           </div>
                         )}
                         {notes.homework && (
-                          <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 md:col-span-2">
+                          <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3.5 md:col-span-2">
                             <span className="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">📝 Tarefa / Prática Recomendada:</span>
                             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.homework}</p>
                           </div>
                         )}
                         {notes.summary && (
-                          <div className="bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 md:col-span-2">
+                          <div className="bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 rounded-xl p-3.5 md:col-span-2">
                             <span className="font-bold text-purple-800 dark:text-purple-300 block mb-1">💡 Resumo da Conversação:</span>
                             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.summary}</p>
                           </div>
                         )}
+                        {notes.nextGoal && (
+                          <div className="bg-indigo-500/5 dark:bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3.5 md:col-span-2">
+                            <span className="font-bold text-indigo-800 dark:text-indigo-300 block mb-1">🎯 Objetivo da Próxima Sessão:</span>
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{notes.nextGoal}</p>
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500 italic">
-                        Aula agendada. As notas e correções do professor estarão visíveis aqui após o término da sessão.
-                      </p>
+                      <div className="p-3 bg-slate-100 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 text-xs flex items-center justify-between">
+                        <p className="text-slate-500 italic">
+                          Aula agendada. As notas e correções do professor estarão visíveis aqui após o término da sessão.
+                        </p>
+                        <a
+                          href="/classroom"
+                          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase transition-all shrink-0 ml-2"
+                        >
+                          Entrar
+                        </a>
+                      </div>
                     )}
                   </div>
                 );

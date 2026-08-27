@@ -80,7 +80,7 @@ export interface AvailableSlot {
 
 // Helper functions
 export async function updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
-  if (uid === 'guest_user') return;
+  if (!uid || uid === 'guest_user') return;
   
   // Defensive type checking for B2B tenancy attributes
   if (updates.organizationId !== undefined && typeof updates.organizationId !== 'string') {
@@ -90,9 +90,35 @@ export async function updateUserProfile(uid: string, updates: Partial<UserProfil
     throw new Error('Invalid corporateCredits format: Must be a number');
   }
 
+  // Cloud Engineering Optimization: Sanitize & prune payload to minimize Firestore storage and write bytes
+  const sanitizedUpdates: Record<string, any> = {};
+  for (const [key, value] of Object.entries(updates)) {
+    if (value === undefined) continue;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (key === 'bio') {
+        sanitizedUpdates[key] = trimmed.slice(0, 1000);
+      } else if (key === 'displayName') {
+        sanitizedUpdates[key] = trimmed.slice(0, 80);
+      } else if (key === 'targetGoal' || key === 'learningGoal') {
+        sanitizedUpdates[key] = trimmed.slice(0, 150);
+      } else if (key === 'phone') {
+        sanitizedUpdates[key] = trimmed.slice(0, 30);
+      } else if (key === 'currentLocation' || key === 'hometown') {
+        sanitizedUpdates[key] = trimmed.slice(0, 100);
+      } else {
+        sanitizedUpdates[key] = trimmed;
+      }
+    } else {
+      sanitizedUpdates[key] = value;
+    }
+  }
+
+  if (Object.keys(sanitizedUpdates).length === 0) return;
+
   try {
     const userRef = doc(collection(db, 'users'), uid);
-    await setDoc(userRef, updates as any, { merge: true });
+    await setDoc(userRef, sanitizedUpdates, { merge: true });
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw error;
