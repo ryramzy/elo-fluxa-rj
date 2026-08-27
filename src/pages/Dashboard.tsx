@@ -194,7 +194,7 @@ const DashboardWorking: React.FC = () => {
         }}
       />
       <WidgetErrorBoundary widgetName="Boas-vindas">
-        <WelcomeBanner profile={profile} streak={streak || 0} />
+        <WelcomeBanner profile={profile} streak={streak || 0} bookings={bookings || []} />
       </WidgetErrorBoundary>
 
       {profile?.paymentPastDue && (

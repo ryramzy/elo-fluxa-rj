@@ -228,6 +228,21 @@ function AppShell() {
                   <ProfilePage />
                 </ProtectedRoute>
               } />
+              <Route path="/perfil" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/progresso" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/progress" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
               <Route path="/video-call/:roomId" element={
                 <ProtectedRoute>
                   <VideoCallPage />
