@@ -115,7 +115,7 @@ export default function Navbar({ onNavClick }: NavbarProps) {
   const textColorClass = 'text-white';
 
   const linkBaseClasses =
-    'hover:text-blue-500 transition-colors relative inline-flex items-center py-2.5 px-2 min-h-[38px] after:absolute after:left-0 after:bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
+    'hover:text-blue-500 transition-colors relative inline-flex items-center py-3 px-3 min-h-[44px] after:absolute after:left-0 after:bottom-1 after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300';
 
   const getLinkClasses = (id: string) =>
     `${linkBaseClasses} ${
@@ -347,14 +347,14 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                 <a
                   href="/sobre"
                   onClick={(e) => { setMobileMenuOpen(false); navigate('/sobre'); }}
-                  className="hover:text-blue-400 transition-colors font-medium"
+                  className="hover:text-blue-400 transition-colors font-medium py-3 px-4 min-h-[44px] flex items-center justify-center text-center"
                 >
                   Sobre
                 </a>
                 <a
                   href="/courses"
                   onClick={(e) => { setMobileMenuOpen(false); navigate('/courses'); }}
-                  className="hover:text-blue-400 transition-colors font-medium"
+                  className="hover:text-blue-400 transition-colors font-medium py-3 px-4 min-h-[44px] flex items-center justify-center text-center"
                 >
                   Cursos
                 </a>
@@ -362,14 +362,14 @@ export default function Navbar({ onNavClick }: NavbarProps) {
                   href={getWhatsAppLink('corporate')}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-blue-400 transition-colors font-medium text-emerald-400"
+                  className="hover:text-blue-400 transition-colors font-medium text-emerald-400 py-3 px-4 min-h-[44px] flex items-center justify-center text-center"
                 >
                   Para Empresas 💼
                 </a>
                 <a
                   href="/dicas"
                   onClick={(e) => { setMobileMenuOpen(false); navigate('/dicas'); }}
-                  className="hover:text-blue-400 transition-colors font-medium"
+                  className="hover:text-blue-400 transition-colors font-medium py-3 px-4 min-h-[44px] flex items-center justify-center text-center"
                 >
                   Dicas
                 </a>

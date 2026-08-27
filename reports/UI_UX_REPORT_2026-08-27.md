@@ -1,8 +1,8 @@
 # 🎨 ELO! UI/UX & Design Quality Report — 2026-08-27
 **Target:** https://www.eloingles.com.br/
-**Report Generated:** 27/08/2026, 14:32:25 BRT
+**Report Generated:** 27/08/2026, 14:36:11 BRT
 **Auditor:** Antigravity UI/UX Specialist Robot
-**Overall Design & UX Health Score:** **94/100**
+**Overall Design & UX Health Score:** **96/100**
 
 ---
 
@@ -15,14 +15,14 @@
 | Theme & Dark Mode Consistency | 1 | 0 | 0 | 0 |
 | Visual Polish & Card Styling | 1 | 0 | 0 | 0 |
 | Interactive Feedback & Micro-Interactions | 1 | 0 | 0 | 0 |
-| Forms, Inputs & Ergonomics | 1 | 0 | 1 | 0 |
+| Forms, Inputs & Ergonomics | 1 | 0 | 0 | 0 |
 | Navigation & Information Architecture | 1 | 0 | 0 | 0 |
 | Conversion Funnels & CTA Clarity | 1 | 0 | 0 | 0 |
 | Accessibility & Touch Targets | 1 | 0 | 1 | 0 |
 | PWA Experience & Standalone UI | 1 | 0 | 0 | 0 |
 | Content Integrity & Formatting | 1 | 0 | 0 | 0 |
 | Perceived Speed, Stability & CLS | 1 | 0 | 0 | 0 |
-| **TOTAL** | **14** | **0** | **3** | **0** |
+| **TOTAL** | **14** | **0** | **2** | **0** |
 
 ---
 
@@ -31,18 +31,17 @@
 
 ## 🟡 VISUAL POLISH & ERGONOMIC OPPORTUNITIES
 - **[Typography & Hierarchy] Landing Page**: Page missing top-level <h1> heading *(Element: `document`)*
-- **[Forms & Inputs] Landing Page Form**: 1 input(s) have font-size < 16px (triggers unwanted iOS zoom) *(Element: `seu@email.com (14px)`)*
-- **[Interactive Ergonomics] Landing Page**: Found 4 touch targets smaller than 36x36px recommended mobile standard *(Element: `<a> "Sobre" (41x15px), <a> "Para Empresas 💼" (127x15px), <a> "Dicas" (39x15px), <button> "⚡ Testar Aula Grátis" (195x34px)`)*
+- **[Interactive Ergonomics] Landing Page**: Found 4 touch targets smaller than 36x36px recommended mobile standard *(Element: `<a> "Sobre" (64x32px), <a> "Cursos" (76x32px), <a> "Para Empresas 💼" (205x32px), <a> "Dicas" (60x32px)`)*
 
 ## 💡 UX & CONVERSION FLOW OBSERVATIONS
 - Primary Hero Typography (<h4>): Weight 400, LineHeight 32px
 - Classroom Dark Theme Palette: Background rgb(248, 249, 250), Text rgb(26, 26, 26)
-- Forms Audit: 1 inputs with <16px font size
+- Forms Audit: All inputs meet standard 16px size
 - Primary Conversion CTA: Background rgba(0, 0, 0, 0), Text rgb(255, 255, 255), Radius 12px
 - PWA Browser Status Bar Theme Color: #111111
 
 ## 📐 VISUAL STABILITY & PERFORMANCE
-- Mobile Viewport Load Time (375px): 1.32s
+- Mobile Viewport Load Time (375px): 1.19s
 - Cumulative Layout Shift (CLS): 0.178 (Target < 0.1)
 - Touch Target Compliance: Minor undersized elements identified
 - Typography Hierarchy: Validated across key landing & feature landing sections
