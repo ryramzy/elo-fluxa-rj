@@ -68,6 +68,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
   
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isExpired, setIsExpired] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const planLabel = plan === 'biweekly' ? 'Plano 2x por Semana' : 'Plano 1x por Semana';
 
@@ -109,12 +110,12 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
       return Math.max(0, Math.floor((exp - now) / 1000));
     };
 
-    const initialSeconds = calculateSecondsRemaining(pixPayload.expirationTime);
-    setSecondsLeft(initialSeconds);
-    setIsExpired(initialSeconds <= 0);
+    const initial = calculateSecondsRemaining(pixPayload.expirationTime);
+    setSecondsLeft(initial);
+    setIsExpired(initial <= 0);
 
     const interval = setInterval(() => {
-      setSecondsLeft(prev => {
+      setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           setIsExpired(true);
@@ -128,6 +129,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
   }, [pixPayload]);
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormError(null);
     const raw = e.target.value.replace(/\D/g, '').slice(0, 11);
     let formatted = raw;
     if (raw.length > 9) {
@@ -156,10 +158,13 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
 
   const handleSubmitDynamic = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     setLoading(true);
 
-    if (!name || !email || !cpf) {
-      showToast('Por favor, preencha todos os campos obrigatórios.', 'info');
+    if (!name.trim() || !email.trim() || !cpf.trim()) {
+      const msg = 'Por favor, preencha nome, e-mail e CPF.';
+      setFormError(msg);
+      showToast(msg, 'info');
       setLoading(false);
       return;
     }
@@ -168,7 +173,9 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     const isCpfValid = validateCPF(cleanCpf);
 
     if (!isCpfValid) {
-      showToast('CPF inválido! Por favor verifique os dígitos digitados.', 'error');
+      const msg = 'CPF inválido! Por favor, confira os 11 dígitos do CPF ou pague com a Chave Pix Direta.';
+      setFormError(msg);
+      showToast(msg, 'error');
       setLoading(false);
       return;
     }
@@ -185,8 +192,8 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         body: JSON.stringify({
           plan,
           price,
-          email,
-          name,
+          email: email.trim(),
+          name: name.trim(),
           cpf: cleanCpf,
           idempotencyKey,
           userId: user?.uid || ''
@@ -209,7 +216,9 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
 
     } catch (err: any) {
       console.error('[Checkout Form Error]:', err);
-      showToast(err.message || 'Erro ao processar transação Pix. Tente novamente.', 'error');
+      const msg = err.message || 'Erro ao comunicar com Mercado Pago. Tente novamente ou use a Chave Pix Direta.';
+      setFormError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -418,6 +427,22 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
               className="w-full bg-slate-950/80 border border-slate-800 text-slate-200 text-xs px-3.5 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors font-mono tracking-wider"
             />
           </div>
+
+          {formError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 text-xs text-red-300 space-y-2.5 animate-in fade-in">
+              <div className="flex items-start gap-2">
+                <span className="text-base leading-none shrink-0">⚠️</span>
+                <span className="flex-1 font-medium leading-snug">{formError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setActiveMode('static'); setFormError(null); }}
+                className="w-full py-2 bg-blue-600/30 hover:bg-blue-600/40 text-sky-300 border border-blue-500/40 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1.5"
+              >
+                <LuKey size={13} /> Pagar com Chave Pix Direta (Sem CPF)
+              </button>
+            </div>
+          )}
 
           <div className="flex gap-2 pt-3">
             {onCancel && (
