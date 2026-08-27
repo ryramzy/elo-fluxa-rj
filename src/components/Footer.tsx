@@ -63,11 +63,11 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
         
         <div className="md:col-span-2">
           <h4 className="font-bold text-white mb-6 tracking-wide text-xs uppercase">Plataforma</h4>
-          <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
-            <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors">Painel Geral 📊</Link></li>
-            <li><Link to="/sobre" className="hover:text-blue-400 transition-colors">Sobre Nós</Link></li>
-            <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors">Privacidade (LGPD)</Link></li>
-            <li><Link to="/termos" className="hover:text-blue-400 transition-colors">Termos de Uso</Link></li>
+          <ul className="space-y-3 text-xs font-bold uppercase tracking-widest">
+            <li><Link to="/dashboard" className="hover:text-blue-400 transition-colors py-1.5 inline-block min-h-[36px]">Painel Geral 📊</Link></li>
+            <li><Link to="/sobre" className="hover:text-blue-400 transition-colors py-1.5 inline-block min-h-[36px]">Sobre Nós</Link></li>
+            <li><Link to="/privacidade" className="hover:text-blue-400 transition-colors py-1.5 inline-block min-h-[36px]">Privacidade (LGPD)</Link></li>
+            <li><Link to="/termos" className="hover:text-blue-400 transition-colors py-1.5 inline-block min-h-[36px]">Termos de Uso</Link></li>
           </ul>
         </div>
 
@@ -79,11 +79,11 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
               placeholder="seu@email.com" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-transparent border-b border-slate-800 py-2 text-sm outline-none focus:border-blue-400 transition-colors placeholder-slate-700 text-white" 
+              className="bg-transparent border-b border-slate-800 py-2.5 text-base outline-none focus:border-blue-400 transition-colors placeholder-slate-700 text-white min-h-[44px]" 
             />
             <button 
               onClick={handleSubscribe}
-              className="self-start text-[10px] font-bold uppercase tracking-widest mt-2 text-blue-400 hover:text-blue-300 transition-opacity"
+              className="self-start text-xs font-bold uppercase tracking-widest mt-2 py-2 px-3 text-blue-400 hover:text-blue-300 transition-opacity min-h-[36px] flex items-center"
             >
               {subscribeStatus === 'idle' && 'Inscrever'}
               {subscribeStatus === 'loading' && 'Processando...'}
@@ -96,9 +96,9 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
       <div className="max-w-[1800px] mx-auto mt-20 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] font-bold opacity-50 gap-3">
         <p>© 2026 ELO! — Inglês com Professores Nativos no Rio de Janeiro</p>
         <p className="flex items-center gap-4">
-          <Link to="/privacidade" className="hover:text-white">Privacidade</Link>
+          <Link to="/privacidade" className="hover:text-white py-1.5 inline-block min-h-[36px]">Privacidade</Link>
           <span>•</span>
-          <Link to="/termos" className="hover:text-white">Termos</Link>
+          <Link to="/termos" className="hover:text-white py-1.5 inline-block min-h-[36px]">Termos</Link>
           <span>•</span>
           <span>Rio de Janeiro, Brasil</span>
         </p>

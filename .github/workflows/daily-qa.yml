@@ -1,0 +1,39 @@
+name: ELO! Daily QA Report
+on:
+  schedule:
+    - cron: '0 11 * * *'  # 11:00 UTC = 08:00 BRT
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Daily QA Suite
+        run: npm run test:qa
+        env:
+          BASE_URL: 'https://www.eloingles.com.br'
+
+      - name: Upload Daily QA Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-qa-report
+          path: |
+            reports/QA_REPORT_*.md
+            QA_REPORT_*.md
+            playwright-report/

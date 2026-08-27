@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:qa": "playwright test tests/daily-qa.spec.ts",
+    "test:ui-ux": "playwright test tests/ui-ux-qa.spec.ts",
+    "test:qa:headed": "playwright test tests/daily-qa.spec.ts --headed",
+    "test:ui-ux:headed": "playwright test tests/ui-ux-qa.spec.ts --headed",
+    "test:qa:report": "playwright show-report"
   },
   "dependencies": {
     "@capacitor/core": "^6.2.0",
@@ -31,6 +36,7 @@
     "@capacitor/android": "^6.2.0",
     "@capacitor/cli": "^6.2.0",
     "@capacitor/ios": "^6.2.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.14.0",
