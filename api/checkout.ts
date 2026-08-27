@@ -152,7 +152,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const safeIdempotencyKey = String(idempotencyKey || Date.now());
     const externalReference = `elo_${userId || 'guest'}_${plan}_${safeIdempotencyKey.slice(0, 8)}`;
-    const planTitle = plan === 'biweekly' ? '2x por Semana' : '1x por Semana';
 
     const mpBody = {
       transaction_amount: Number(price),
