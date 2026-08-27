@@ -233,18 +233,18 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                   onClick={() => handlePlanClick('weekly', 400)}
                   className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Assinar com Pix (Mercado Pago)
+                  <LuQrCode size={14} /> Pix ou Cartão (Até 12x)
                 </button>
                 <button
                   onClick={() => handleStripeCheckout('weekly', 400)}
                   disabled={stripeLoading !== null}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700 font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
                 >
                   {stripeLoading === 'weekly' ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   ) : (
                     <>
-                      <LuCreditCard size={14} /> Pagar com Cartão
+                      <LuCreditCard size={13} /> Cartão Internacional
                     </>
                   )}
                 </button>
@@ -296,18 +296,18 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                   onClick={() => handlePlanClick('biweekly', 700)}
                   className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Assinar com Pix (Mercado Pago)
+                  <LuQrCode size={14} /> Pix ou Cartão (Até 12x)
                 </button>
                 <button
                   onClick={() => handleStripeCheckout('biweekly', 700)}
                   disabled={stripeLoading !== null}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700 font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
                 >
                   {stripeLoading === 'biweekly' ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   ) : (
                     <>
-                      <LuCreditCard size={14} /> Pagar com Cartão
+                      <LuCreditCard size={13} /> Cartão Internacional
                     </>
                   )}
                 </button>

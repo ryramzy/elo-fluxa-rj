@@ -57,7 +57,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
   const { showToast } = useToast();
   const { user } = useAuth();
   
-  const [activeMode, setActiveMode] = useState<'dynamic' | 'static'>('dynamic');
+  const [activeMode, setActiveMode] = useState<'dynamic' | 'preference' | 'static'>('dynamic');
   const [cpf, setCpf] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -224,6 +224,41 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
     }
   };
 
+  const handleCheckoutPreference = async () => {
+    setLoading(true);
+    setFormError(null);
+    try {
+      console.log('[Checkout] Creating Mercado Pago Checkout Pro preference:', plan, price);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'preference',
+          plan,
+          price,
+          email: email.trim() || user?.email || '',
+          name: name.trim() || user?.displayName || '',
+          userId: user?.uid || ''
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.initPoint) {
+        throw new Error(data.error || 'Erro ao gerar checkout do Mercado Pago.');
+      }
+
+      // Redirect student to official Mercado Pago Checkout page
+      window.location.href = data.initPoint;
+    } catch (err: any) {
+      console.error('[Checkout Preference Error]:', err);
+      const msg = err.message || 'Erro ao abrir checkout do Mercado Pago. Tente novamente ou use a Chave Pix Direta.';
+      setFormError(msg);
+      showToast(msg, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatTime = (secs: number) => {
     const minutes = Math.floor(secs / 60);
     const seconds = secs % 60;
@@ -347,7 +382,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         <div className="flex items-center gap-2">
           <LuCreditCard className="text-blue-400" size={18} />
           <div>
-            <h3 className="text-base font-bold text-white leading-tight">Pagamento Pix</h3>
+            <h3 className="text-base font-bold text-white leading-tight">Formas de Pagamento</h3>
             <p className="text-[11px] text-slate-400">{planLabel} • <strong className="text-sky-400">R$ {price}/mês</strong></p>
           </div>
         </div>
@@ -356,29 +391,42 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         </span>
       </div>
 
-      {/* Tabs: Dynamic Mercado Pago vs Direct Static Pix Key */}
-      <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-950/80 border border-slate-850 rounded-xl mb-5">
+      {/* Tabs: Dynamic Pix vs Mercado Pago Pro vs Direct Pix */}
+      <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 border border-slate-850 rounded-xl mb-5 text-[11px]">
         <button
           type="button"
-          onClick={() => setActiveMode('dynamic')}
-          className={`py-2 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          onClick={() => { setActiveMode('dynamic'); setFormError(null); }}
+          className={`py-2 px-1.5 font-bold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1 text-center ${
             activeMode === 'dynamic'
               ? 'bg-blue-600 text-white shadow-sm'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <LuZap size={13} /> Pix Automático
+          <LuZap size={13} className="shrink-0" /> <span>Pix QR Code</span>
         </button>
+
         <button
           type="button"
-          onClick={() => setActiveMode('static')}
-          className={`py-2 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          onClick={() => { setActiveMode('preference'); setFormError(null); }}
+          className={`py-2 px-1.5 font-bold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1 text-center ${
+            activeMode === 'preference'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <LuCreditCard size={13} className="shrink-0" /> <span>Cartão (12x)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => { setActiveMode('static'); setFormError(null); }}
+          className={`py-2 px-1.5 font-bold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1 text-center ${
             activeMode === 'static'
               ? 'bg-blue-600 text-white shadow-sm'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <LuKey size={13} /> Chave Pix Direta
+          <LuKey size={13} className="shrink-0" /> <span>Chave Direta</span>
         </button>
       </div>
 
@@ -467,8 +515,89 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
             </button>
           </div>
         </form>
+      ) : activeMode === 'preference' ? (
+        /* 2. Mercado Pago Hosted Checkout (Credit Card 12x, Pix, Boleto, Balance) */
+        <div className="space-y-4">
+          <p className="text-slate-400 text-xs leading-relaxed">
+            Pague no ambiente oficial e seguro do <strong className="text-white">Mercado Pago</strong> com todas as formas de pagamento disponíveis:
+          </p>
+
+          <div className="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2 p-2 bg-slate-900/80 rounded-xl border border-slate-800">
+                <span className="text-base">💳</span>
+                <div>
+                  <span className="font-bold text-slate-200 block text-[11px]">Cartão de Crédito</span>
+                  <span className="text-[10px] text-emerald-400">Em até 12x</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-slate-900/80 rounded-xl border border-slate-800">
+                <span className="text-base">⚡</span>
+                <div>
+                  <span className="font-bold text-slate-200 block text-[11px]">Pix Instantâneo</span>
+                  <span className="text-[10px] text-sky-400">Liberação Imediata</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-slate-900/80 rounded-xl border border-slate-800">
+                <span className="text-base">💰</span>
+                <div>
+                  <span className="font-bold text-slate-200 block text-[11px]">Saldo Mercado Pago</span>
+                  <span className="text-[10px] text-slate-400">1 clique</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-slate-900/80 rounded-xl border border-slate-800">
+                <span className="text-base">📄</span>
+                <div>
+                  <span className="font-bold text-slate-200 block text-[11px]">Boleto Bancário</span>
+                  <span className="text-[10px] text-slate-400">À vista</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-850 flex justify-between items-center text-xs">
+              <span className="text-slate-400 text-[11px]">Valor Total:</span>
+              <span className="font-extrabold text-white text-sm">R$ {price}</span>
+            </div>
+          </div>
+
+          {formError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 text-xs text-red-300 space-y-2 animate-in fade-in">
+              <div className="flex items-start gap-2">
+                <span className="text-base leading-none shrink-0">⚠️</span>
+                <span className="flex-1 font-medium leading-snug">{formError}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2 pt-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleCheckoutPreference}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_16px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 active:scale-95"
+            >
+              {loading ? (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <>
+                  <LuCreditCard size={15} /> Pagar no Mercado Pago Oficial (Até 12x) →
+                </>
+              )}
+            </button>
+
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="w-full py-2 text-slate-400 hover:text-white font-bold text-xs transition-colors text-center"
+              >
+                Voltar
+              </button>
+            )}
+          </div>
+        </div>
       ) : (
-        /* 2. Direct Manual Pix Key Transfer Screen */
+        /* 3. Direct Manual Pix Key Transfer Screen */
         <div className="space-y-4">
           <p className="text-slate-400 text-xs leading-relaxed">
             Transfira o valor de <strong className="text-sky-400">R$ {price}</strong> diretamente usando a chave Pix oficial do Mercado Pago:
