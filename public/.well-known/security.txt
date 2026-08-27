@@ -1,0 +1,7 @@
+Contact: mailto:mramsay0@gmail.com
+Contact: mailto:contato@eloingles.com.br
+Expires: 2027-08-31T23:59:59.000Z
+Preferred-Languages: pt, en
+Canonical: https://www.eloingles.com.br/.well-known/security.txt
+Policy: https://github.com/ryramzy/elo-fluxa-rj/blob/main/SECURITY.md
+Acknowledgments: https://github.com/ryramzy/elo-fluxa-rj

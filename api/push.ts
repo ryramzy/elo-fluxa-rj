@@ -1,22 +1,32 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 
-const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || process.env.VITE_VAPID_PUBLIC_KEY || 'BBItwOdVjqMMfgkAb0vXcYuEoIoQlkGdxwlzfbu5hQy9BOKlmI56Szq9DNjUBKb3Yj1DsVM_ESWUBjJCK0JwBs4';
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || 'aXsF2EMKkPZjKJUAm9r-VTQPXUCNvCEJifRBa_WXhKk';
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || process.env.VITE_VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 
-try {
-  webpush.setVapidDetails(
-    'mailto:contato@eloingles.com.br',
-    vapidPublicKey,
-    vapidPrivateKey
-  );
-} catch (e) {
-  console.warn('[push] VAPID initialization notice:', e);
+let isVapidInitialized = false;
+
+if (vapidPublicKey && vapidPrivateKey) {
+  try {
+    webpush.setVapidDetails(
+      'mailto:contato@eloingles.com.br',
+      vapidPublicKey,
+      vapidPrivateKey
+    );
+    isVapidInitialized = true;
+  } catch (e) {
+    console.warn('[push] VAPID initialization error:', e);
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!isVapidInitialized) {
+    console.error('[push] Web push service not configured. Missing VAPID keys.');
+    return res.status(503).json({ error: 'Push notification service unavailable' });
   }
 
   const { subscription, title, body, actionUrl } = req.body || {};
@@ -38,7 +48,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ sent: true });
   } catch (error: any) {
     console.error('[push] Web push delivery error:', error);
-    // 410 Gone / 404 Not Found = subscription expired or revoked by user/browser
     if (error.statusCode === 410 || error.statusCode === 404) {
       return res.status(410).json({ expired: true, message: 'Push subscription expired or unsubscribed' });
     }

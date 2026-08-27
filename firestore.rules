@@ -56,6 +56,19 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizationId == orgId
       );
     }
+
+    // Data validation helper for user profile updates
+    function isValidUserProfileUpdate() {
+      let data = request.resource.data;
+      return (
+        (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100)) &&
+        (!('bio' in data) || (data.bio is string && data.bio.size() <= 1500)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 40)) &&
+        (!('targetGoal' in data) || (data.targetGoal is string && data.targetGoal.size() <= 200)) &&
+        (!('currentLocation' in data) || (data.currentLocation is string && data.currentLocation.size() <= 150)) &&
+        (!('hometown' in data) || (data.hometown is string && data.hometown.size() <= 150))
+      );
+    }
     
     // Users collection rules
     match /users/{userId} {
@@ -86,12 +99,12 @@ service cloud.firestore {
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'uid', 'email'])
         ) ||
         (
-          isOwner(userId) && (
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'plan', 'bookingLimit', 'organizationId', 'corporateCredits']) ||
+          isOwner(userId) && isValidUserProfileUpdate() && (
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'plan', 'bookingLimit', 'organizationId', 'corporateCredits', 'isAdmin', 'isTutor', 'paymentPastDue']) ||
             (
               request.resource.data.role == resource.data.role &&
               request.resource.data.plan == resource.data.plan &&
-              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['bookingLimit', 'organizationId', 'corporateCredits'])
+              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['bookingLimit', 'organizationId', 'corporateCredits', 'isAdmin', 'isTutor', 'paymentPastDue'])
             )
           )
         )
@@ -103,7 +116,7 @@ service cloud.firestore {
         request.auth.uid == 'QI3mgrlplVSNPER0VxuZIPSlo2B3'
       );
       
-      // User enrollments sub-collection (legacy but still active)
+      // User enrollments sub-collection
       match /courses/{courseId} {
         allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
       }
@@ -113,7 +126,7 @@ service cloud.firestore {
         allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
       }
       
-      // Flashcards sub-collection (Phase 3 readiness)
+      // Flashcards sub-collection
       match /flashcards/{cardId} {
         allow read, write: if isAuthenticated() && (isOwner(userId) || isTutor());
       }
@@ -192,13 +205,7 @@ service cloud.firestore {
       allow delete: if isTutor();
     }
 
-    // Blocked slots collection rules (for Tutor Days/Hours Off)
-    match /blockedSlots/{slotId} {
-      allow read: if isAuthenticated();
-      allow write: if isTutor();
-    }
-
-    // Settings collection rules (Matt's availability presence status, tutor contact, classroom)
+    // Settings collection rules (availability presence status, tutor contact, classroom)
     match /settings/{settingId} {
       allow read: if isAuthenticated();
       allow write: if isTutor();
