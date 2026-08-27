@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^6.2.0",
-    "@capacitor/cli": "^6.2.0",
+    "@capacitor/cli": "^8.5.0",
     "@capacitor/ios": "^6.2.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/typography": "^0.5.19",
