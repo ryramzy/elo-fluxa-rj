@@ -13,9 +13,11 @@ async function waitForApp(page: Page) {
     await page.waitForFunction(
       () => {
         const root = document.getElementById('root');
-        return root && root.innerText.trim().length > 25;
+        if (!root) return false;
+        const text = root.innerText.trim();
+        return text.length > 50 && !!document.querySelector('h1, h2, nav, main, footer');
       },
-      { timeout: 8000 }
+      { timeout: 10000 }
     );
   } catch (e) {}
 }

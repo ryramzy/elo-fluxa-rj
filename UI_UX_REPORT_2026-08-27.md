@@ -1,6 +1,6 @@
 # 🎨 ELO! UI/UX & Design Quality Report — 2026-08-27
 **Target:** https://www.eloingles.com.br/
-**Report Generated:** 27/08/2026, 14:36:11 BRT
+**Report Generated:** 27/08/2026, 14:41:41 BRT
 **Auditor:** Antigravity UI/UX Specialist Robot
 **Overall Design & UX Health Score:** **96/100**
 
@@ -31,7 +31,7 @@
 
 ## 🟡 VISUAL POLISH & ERGONOMIC OPPORTUNITIES
 - **[Typography & Hierarchy] Landing Page**: Page missing top-level <h1> heading *(Element: `document`)*
-- **[Interactive Ergonomics] Landing Page**: Found 4 touch targets smaller than 36x36px recommended mobile standard *(Element: `<a> "Sobre" (64x32px), <a> "Cursos" (76x32px), <a> "Para Empresas 💼" (205x32px), <a> "Dicas" (60x32px)`)*
+- **[Interactive Ergonomics] Landing Page**: Found 4 touch targets smaller than 36x36px recommended mobile standard *(Element: `<button> "Fale conosco via WhatsApp" (192x15px), <a> "Developers 💻" (107x16px), <a> "Vaga / Visto 🇺🇸" (110x16px), <a> "Survival English 🎒" (152x16px)`)*
 
 ## 💡 UX & CONVERSION FLOW OBSERVATIONS
 - Primary Hero Typography (<h4>): Weight 400, LineHeight 32px
@@ -41,7 +41,7 @@
 - PWA Browser Status Bar Theme Color: #111111
 
 ## 📐 VISUAL STABILITY & PERFORMANCE
-- Mobile Viewport Load Time (375px): 1.19s
+- Mobile Viewport Load Time (375px): 1.37s
 - Cumulative Layout Shift (CLS): 0.178 (Target < 0.1)
 - Touch Target Compliance: Minor undersized elements identified
 - Typography Hierarchy: Validated across key landing & feature landing sections
