@@ -12,6 +12,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { GuestBanner } from './src/components/GuestBanner';
 import { GlobalErrorBoundary } from './src/components/GlobalErrorBoundary';
 
+import About from './src/components/About.tsx';
+
 // Lazy-loaded page components — each becomes its own chunk
 const Dashboard = React.lazy(() => import('./src/pages/Dashboard'));
 const CoursePage = React.lazy(() => import('./src/pages/CoursePage'));
@@ -22,9 +24,8 @@ const ProfilePage = React.lazy(() => import('./src/pages/ProfilePage'));
 const VideoCallPage = React.lazy(() => import('./src/pages/VideoCallPage'));
 const NotFound = React.lazy(() => import('./src/pages/NotFound'));
 
-// Landing page components — also lazy since most users go straight to /dashboard
+// Landing page components
 const Hero = React.lazy(() => import('./src/components/Hero.tsx'));
-const About = React.lazy(() => import('./src/components/About.tsx'));
 const Testimonials = React.lazy(() => import('./src/components/Testimonials.tsx'));
 const Login = React.lazy(() => import('./src/components/Auth/Login'));
 const Signup = React.lazy(() => import('./src/components/Auth/Signup'));

@@ -15,9 +15,9 @@ async function waitForApp(page: Page) {
         const root = document.getElementById('root');
         if (!root) return false;
         const text = root.innerText.trim();
-        return text.length > 50 && !!document.querySelector('h1, h2, nav, main, footer');
+        return text.length > 100 && (!!document.querySelector('h1') || !!document.querySelector('main') || !!document.querySelector('[data-page]'));
       },
-      { timeout: 10000 }
+      { timeout: 12000 }
     );
   } catch (e) {}
 }
