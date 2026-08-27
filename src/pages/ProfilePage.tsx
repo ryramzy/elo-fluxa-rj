@@ -370,7 +370,6 @@ const ProfilePage: React.FC = () => {
                   <input
                     type="tel"
                     inputMode="numeric"
-                    pattern="[0-9]*"
                     value={phone}
                     onChange={handlePhoneChange}
                     placeholder="(21) 99999-9999"

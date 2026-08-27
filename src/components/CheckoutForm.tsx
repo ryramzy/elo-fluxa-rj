@@ -375,7 +375,7 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
 
       {activeMode === 'dynamic' ? (
         /* 1. Dynamic Checkout Form via Mercado Pago */
-        <form onSubmit={handleSubmitDynamic} className="space-y-3.5">
+        <form onSubmit={handleSubmitDynamic} noValidate className="space-y-3.5">
           <p className="text-slate-400 text-xs leading-relaxed">
             Informe seus dados para gerar o QR Code dinâmico com <strong className="text-white">confirmação e liberação 100% automática</strong>.
           </p>
@@ -409,7 +409,6 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
             <input
               type="tel"
               inputMode="numeric"
-              pattern="[0-9]*"
               autoComplete="off"
               required
               value={cpf}
