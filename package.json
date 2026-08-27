@@ -14,7 +14,7 @@
     "test:qa:report": "playwright show-report"
   },
   "dependencies": {
-    "@capacitor/core": "^6.2.0",
+    "@capacitor/core": "^8.5.0",
     "@vercel/node": "^5.7.2",
     "canvas-confetti": "^1.9.4",
     "firebase": "^12.11.0",
