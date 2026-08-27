@@ -30,6 +30,7 @@ import { db } from '../lib/firestore';
 import { WidgetErrorBoundary } from '../components/dashboard/WidgetErrorBoundary';
 
 import { isPWAStandalone, requestPushPermission } from '../utils/pushNotifications';
+import { getWhatsAppLink } from '../../constants';
 
 const DashboardWorking: React.FC = () => {
   const { user } = useAuth();
@@ -309,9 +310,9 @@ const DashboardWorking: React.FC = () => {
                 </div>
                 <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                   <a 
-                    href="https://wa.me/5521995719878?text=Ol%C3%A1%20Professor%20Matt%2C%20gostaria%20de%20confirmar%20meu%20hor%C3%A1rio%20de%20aula%20no%20ELO!"
+                    href={getWhatsAppLink('upcomingClass', { studentName: user?.displayName || undefined, date: nextActiveBooking.date, time: nextActiveBooking.time })}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 text-center"
                   >
                     💬 Falar no WhatsApp

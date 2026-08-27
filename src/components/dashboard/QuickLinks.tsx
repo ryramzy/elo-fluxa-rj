@@ -14,8 +14,8 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({
   studentName
 }) => {
   const whatsappMessage = studentName 
-    ? `Oi Professor Matt! Sou o(a) ${studentName}. Gostaria de tirar uma dúvida sobre minhas aulas no ELO! 😊`
-    : `Oi Professor Matt! Gostaria de tirar uma dúvida sobre minhas aulas no ELO! 😊`;
+    ? `Oi Professor Matt! Sou o(a) ${studentName}. Gostaria de tirar uma dúvida sobre minhas aulas no ELO!`
+    : `Oi Professor Matt! Gostaria de tirar uma dúvida sobre minhas aulas no ELO!`;
 
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
