@@ -42,6 +42,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required checkout fields.' });
     }
 
+    // Validate plan and price strictly
+    const expectedPrices: Record<string, number> = {
+      weekly: 400,
+      biweekly: 700
+    };
+
+    if (!expectedPrices[plan] || Number(price) !== expectedPrices[plan]) {
+      return res.status(400).json({ 
+        error: `Plano ou valor inválido. Planos válidos: weekly (R$ 400) ou biweekly (R$ 700).` 
+      });
+    }
+
     const cleanCpf = cpf.replace(/\D/g, '');
     if (!validateCPF(cleanCpf)) {
       return res.status(400).json({ error: 'CPF inválido de acordo com a validação do servidor.' });
@@ -49,14 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const token = process.env.MERCADO_PAGO_ACCESS_TOKEN;
     if (!token) {
-      console.warn('[Checkout] MERCADO_PAGO_ACCESS_TOKEN is not configured. Falling back to sandbox mock creation.');
-      // Return a simulated Pix payload with a 30-minute expiry
-      const expirationDate = new Date(Date.now() + 30 * 60 * 1000);
-      return res.status(201).json({
-        success: true,
-        qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/mock123/pix",
-        copyPasteKey: "00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/mock123/pix",
-        expirationTime: expirationDate.toISOString()
+      console.error('[Checkout API] MERCADO_PAGO_ACCESS_TOKEN is not configured on the server.');
+      return res.status(503).json({
+        error: 'O checkout integrado via Mercado Pago está temporariamente indisponível. Por favor, utilize a Chave Pix direta com envio de comprovante ou tente novamente em instantes.'
       });
     }
 
@@ -69,18 +76,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const expirationDate = new Date(Date.now() + 30 * 60 * 1000);
     const dateOfExpiration = expirationDate.toISOString();
 
-    // Construct notification URL: use hardcoded production base URL or VITE_APP_URL when deployed,
-    // falling back to local host dynamically only during local development.
+    // Construct notification URL
     const host = req.headers.host;
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
     const baseUrl = isLocal 
       ? `http://${host}` 
-      : (process.env.VITE_APP_URL || 'https://eloingle.com.br');
+      : (process.env.VITE_APP_URL || 'https://eloingles.com.br');
     const notificationUrl = `${baseUrl}/api/webhooks/mercado-pago`;
+
+    const safeIdempotencyKey = String(idempotencyKey || Date.now());
+    const externalReference = `elo_${userId || 'guest'}_${plan}_${safeIdempotencyKey.slice(0, 8)}`;
+    const planTitle = plan === 'biweekly' ? '2x por Semana' : '1x por Semana';
 
     const mpBody = {
       transaction_amount: Number(price),
-      description: `Assinatura Elo! - Plano ${plan.toUpperCase()}`,
+      description: `ELO! - Plano ${planTitle}`,
       payment_method_id: 'pix',
       payer: {
         email: email,
@@ -93,10 +103,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       date_of_expiration: dateOfExpiration,
       notification_url: notificationUrl,
+      external_reference: externalReference,
       metadata: {
         plan_type: plan,
         user_id: userId || '',
-        payer_email: email
+        payer_email: email,
+        plan_price: Number(price)
       }
     };
 
@@ -104,8 +116,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       email,
       plan,
       price,
-      notificationUrl,
-      idempotencyKey
+      externalReference,
+      idempotencyKey: safeIdempotencyKey
     });
 
     const response = await fetch('https://api.mercadopago.com/v1/payments', {
@@ -113,7 +125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'X-Idempotency-Key': idempotencyKey
+        'X-Idempotency-Key': safeIdempotencyKey
       },
       body: JSON.stringify(mpBody)
     });
@@ -130,10 +142,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error('Mercado Pago response did not return transaction details.');
     }
 
-    // Capture the QR code from transaction data
+    // Capture the QR code and Copia e Cola from Mercado Pago's dynamic transaction
     const copyPasteKey = transactionData.qr_code;
-    
-    // We can use the Base64 image payload if present, otherwise fallback to the qrserver API
     const qrCodeUrl = transactionData.qr_code_base64
       ? `data:image/png;base64,${transactionData.qr_code_base64}`
       : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(copyPasteKey)}`;
@@ -143,6 +153,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       paymentId: paymentData.id,
       qrCodeUrl,
       copyPasteKey,
+      ticketUrl: transactionData.ticket_url || null,
       expirationTime: dateOfExpiration
     });
 

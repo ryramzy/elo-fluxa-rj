@@ -14,6 +14,11 @@ export const MATT_EMAIL = "mramsay0@gmail.com";
 export const ZOOM_MEETING_URL = "https://meet.google.com/new";
 export const CLASSROOM_HUB_URL = "/classroom";
 
+// Public Pix Payment Information (Mercado Pago)
+export const PUBLIC_PIX_KEY = "cc7fd708-6244-4e81-a2d4-5c89cbfb4bc6";
+export const PUBLIC_PIX_RECEIVER = "ELO! Inglês (Mercado Pago)";
+export const PUBLIC_PIX_BANK = "Mercado Pago";
+
 // WhatsApp CTAs for different contexts
 export const WHATSAPP_MESSAGES = {
   landing: "Oi Matt! Vi o ELO! e quero agendar minha aula ao vivo com você no Zoom!",
@@ -24,6 +29,14 @@ export const WHATSAPP_MESSAGES = {
   general: "Oi Matt! Preciso de ajuda com minha conta no ELO!",
   corporate: "Oi Matt! Quero saber mais sobre os planos corporativos do ELO! para minha empresa",
   upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
+};
+
+export const getPixReceiptWhatsAppLink = (studentName?: string, plan?: string, price?: number) => {
+  const planLabel = plan === 'biweekly' ? 'Plano 2x por Semana' : 'Plano 1x por Semana';
+  const priceLabel = price ? `R$ ${price}` : (plan === 'biweekly' ? 'R$ 700' : 'R$ 400');
+  const student = studentName ? `Sou o(a) ${studentName}` : 'Sou aluno(a) do ELO!';
+  const msg = `Oi Matt! ${student}. Fiz o pagamento Pix de ${priceLabel} referente ao ${planLabel} do ELO! e estou enviando meu comprovante para atendimento.`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 };
 
 export const getWhatsAppLink = (

@@ -234,7 +234,7 @@ export default function About() {
           <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
             <div>
               <div className="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
-                Plano Semanal
+                Plano 1x por Semana
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">Conversação Contínua</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">1 aula particular por semana (4 aulas/mês)</p>
@@ -268,7 +268,7 @@ export default function About() {
               onClick={handleStartAuth}
               className="w-full py-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md active:scale-95"
             >
-              Começar Plano Semanal
+              Começar Plano 1x por Semana
             </button>
           </div>
 
@@ -280,7 +280,7 @@ export default function About() {
 
             <div>
               <div className="inline-block bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase px-3 py-1 rounded-full mb-4">
-                Plano Bi-Semanal
+                Plano 2x por Semana
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">Imersão de Fluência</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">2 aulas particulares por semana (8 aulas/mês)</p>
@@ -314,7 +314,7 @@ export default function About() {
               onClick={handleStartAuth}
               className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95 border border-emerald-400/40"
             >
-              Assinar Plano Bi-Semanal
+              Assinar Plano 2x por Semana
             </button>
           </div>
         </div>

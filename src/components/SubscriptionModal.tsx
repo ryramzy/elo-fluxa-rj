@@ -199,8 +199,8 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
             <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-5 sm:p-6 hover:border-slate-700 transition-all flex flex-col justify-between">
               <div>
                 <div className="text-center mb-6">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded">
-                    Plano Semanal
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 px-2.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded">
+                    Plano 1x por Semana
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
                     R$ 400 <span className="text-xs font-normal text-slate-500">/ mês</span>
@@ -233,7 +233,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                   onClick={() => handlePlanClick('weekly', 400)}
                   className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Assinar com Pix
+                  <LuQrCode size={14} /> Assinar com Pix (Mercado Pago)
                 </button>
                 <button
                   onClick={() => handleStripeCheckout('weekly', 400)}
@@ -262,8 +262,8 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
 
               <div>
                 <div className="text-center mb-6 mt-2">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
-                    Plano Bi-Semanal
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
+                    Plano 2x por Semana
                   </span>
                   <div className="text-2xl font-extrabold text-white mt-4 mb-1">
                     R$ 700 <span className="text-xs font-normal text-slate-500">/ mês</span>
@@ -296,7 +296,7 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                   onClick={() => handlePlanClick('biweekly', 700)}
                   className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Assinar com Pix
+                  <LuQrCode size={14} /> Assinar com Pix (Mercado Pago)
                 </button>
                 <button
                   onClick={() => handleStripeCheckout('biweekly', 700)}

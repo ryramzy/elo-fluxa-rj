@@ -38,23 +38,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (status === 'approved' && metadata) {
       const userId = metadata.user_id;
-      const planType = metadata.plan_type || 'pro';
+      const planType = metadata.plan_type || 'weekly';
       const payerEmail = metadata.payer_email;
+      const amountPaid = Number(transaction_amount || 0);
 
       if (!userId) {
         console.warn('[Mercado Pago Webhook] Missing user_id in payment metadata.');
         return res.status(200).json({ received: true, warning: 'No userId in metadata' });
       }
 
+      // Strict amount validation against plan type
       let bookingLimit = 4;
-      if (planType === 'elite') {
-        bookingLimit = 12;
+      let expectedPrice = 400;
+
+      if (planType === 'biweekly') {
+        bookingLimit = 8;
+        expectedPrice = 700;
+      }
+
+      if (amountPaid < expectedPrice) {
+        console.error(`[Mercado Pago Webhook Security Warning] Amount paid (R$ ${amountPaid}) is less than expected price (R$ ${expectedPrice}) for plan ${planType}. Payment not activated.`);
+        return res.status(200).json({ received: true, warning: 'Amount paid is less than plan price.' });
       }
 
       const googleAuthToken = await getFirestoreAccessToken();
       const projectId = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!).project_id;
       const baseRestUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
       
+      // Idempotency check: check if payment was already processed
+      const paymentDocRes = await fetch(`${baseRestUrl}/payments/${paymentId}`, {
+        headers: { Authorization: `Bearer ${googleAuthToken}` }
+      });
+
+      if (paymentDocRes.ok) {
+        const paymentDocData = await paymentDocRes.json();
+        if (paymentDocData.fields?.status?.stringValue === 'processed') {
+          console.log(`[Mercado Pago Webhook] Payment ${paymentId} has already been processed. Skipping to avoid duplicate activations.`);
+          return res.status(200).json({ received: true, idempotent: true });
+        }
+      }
+
       // Fetch user profile to verify referredBy details
       const userRes = await fetch(`${baseRestUrl}/users/${userId}`, {
         headers: { Authorization: `Bearer ${googleAuthToken}` }
@@ -70,12 +93,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Configure plan activation variables
-      let patchUrl = `${baseRestUrl}/users/${userId}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit&updateMask.fieldPaths=bookingsThisMonth&updateMask.fieldPaths=paymentPastDue`;
+      let patchUrl = `${baseRestUrl}/users/${userId}?updateMask.fieldPaths=plan&updateMask.fieldPaths=bookingLimit&updateMask.fieldPaths=bookingsThisMonth&updateMask.fieldPaths=paymentPastDue&updateMask.fieldPaths=subscriptionStatus&updateMask.fieldPaths=lastPaymentId`;
       const fieldsToPatch: any = {
         plan: { stringValue: planType },
         bookingLimit: { integerValue: String(bookingLimit) },
         bookingsThisMonth: { integerValue: '0' },
-        paymentPastDue: { booleanValue: false }
+        paymentPastDue: { booleanValue: false },
+        subscriptionStatus: { stringValue: 'active' },
+        lastPaymentId: { stringValue: String(paymentId) }
       };
 
       // Process referral reward if referrer is present and reward not paid yet
@@ -147,6 +172,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       console.log(`[Mercado Pago Webhook] Activated plan ${planType} for user ${userId}`);
+
+      // Record payment document in /payments/{paymentId} for idempotency
+      await fetch(`${baseRestUrl}/payments/${paymentId}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${googleAuthToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            paymentId: { stringValue: String(paymentId) },
+            userId: { stringValue: userId },
+            plan: { stringValue: planType },
+            amount: { doubleValue: Number(transaction_amount || 0) },
+            status: { stringValue: 'processed' },
+            processedAt: { timestampValue: new Date().toISOString() }
+          }
+        })
+      });
 
       // Log transaction audit log
       const auditBody = {
