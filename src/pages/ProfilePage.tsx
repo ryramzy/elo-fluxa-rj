@@ -368,12 +368,14 @@ const ProfilePage: React.FC = () => {
               {isEditing ? (
                 <div>
                   <input
-                    type="text"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={phone}
                     onChange={handlePhoneChange}
                     placeholder="(21) 99999-9999"
                     maxLength={16}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm font-medium font-mono"
                   />
                   <span className="text-[10px] text-slate-400 mt-1 block">Usado para receber lembretes e avisos das suas aulas no WhatsApp</span>
                 </div>

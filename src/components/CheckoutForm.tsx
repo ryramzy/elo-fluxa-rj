@@ -407,12 +407,16 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CPF (Dono da conta)</label>
             <input
-              type="text"
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="off"
               required
               value={cpf}
               onChange={handleCpfChange}
               placeholder="000.000.000-00"
-              className="w-full bg-slate-950/80 border border-slate-800 text-slate-200 text-xs px-3.5 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors"
+              maxLength={14}
+              className="w-full bg-slate-950/80 border border-slate-800 text-slate-200 text-xs px-3.5 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors font-mono tracking-wider"
             />
           </div>
 
