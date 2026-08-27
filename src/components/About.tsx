@@ -379,7 +379,7 @@ export default function About() {
                   </span>
                   <button
                     onClick={() => handleDemoLesson(course.id, course.lessons[0]?.id)}
-                    className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-extrabold text-xs rounded-lg transition-colors flex items-center gap-1"
+                    className="px-3.5 py-2.5 min-h-[38px] bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-extrabold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     Testar <FaArrowRight size={10} />
                   </button>
