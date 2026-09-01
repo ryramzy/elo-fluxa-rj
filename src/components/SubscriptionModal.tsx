@@ -15,7 +15,6 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
   const { showToast } = useToast();
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<'starter' | 'weekly' | 'biweekly' | 'pro' | 'elite' | null>(null);
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(400);
-  const [stripeLoading, setStripeLoading] = useState<string | null>(null);
 
   // Prevent background scrolling on mobile iOS / Android while modal is open
   useEffect(() => {
@@ -37,47 +36,6 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
     } else {
       setSelectedPlanForCheckout(plan);
       setSelectedPlanPrice(price);
-    }
-  };
-
-  const handleStripeCheckout = async (plan: 'weekly' | 'biweekly', price: number) => {
-    if (!user) {
-      showToast('Por favor, faça login para assinar um plano.', 'info');
-      return;
-    }
-
-    setStripeLoading(plan);
-    try {
-      console.log(`[Stripe Checkout] Requesting checkout url for plan: ${plan} (R$ ${price})`);
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          plan,
-          price,
-          email: user.email || '',
-          userId: user.uid
-        })
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Erro ao iniciar checkout Stripe.');
-      }
-
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('Nenhuma URL de checkout retornada.');
-      }
-    } catch (err: any) {
-      console.error('[Stripe Checkout Error]:', err);
-      showToast(err.message || 'Erro ao processar transação no cartão. Tente novamente.', 'error');
-    } finally {
-      setStripeLoading(null);
     }
   };
 
@@ -228,25 +186,12 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 </ul>
               </div>
               
-              <div className="space-y-2">
+              <div className="pt-2">
                 <button
                   onClick={() => handlePlanClick('weekly', 400)}
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 active:scale-95"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Pix ou Cartão (Até 12x)
-                </button>
-                <button
-                  onClick={() => handleStripeCheckout('weekly', 400)}
-                  disabled={stripeLoading !== null}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700 font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
-                >
-                  {stripeLoading === 'weekly' ? (
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  ) : (
-                    <>
-                      <LuCreditCard size={13} /> Cartão Internacional
-                    </>
-                  )}
+                  <LuQrCode size={15} /> Assinar com Pix ou Cartão (Até 12x)
                 </button>
               </div>
             </div>
@@ -291,25 +236,12 @@ export default function SubscriptionModal({ isOpen, onClose, onPlanSelect }: Sub
                 </ul>
               </div>
               
-              <div className="space-y-2">
+              <div className="pt-2">
                 <button
                   onClick={() => handlePlanClick('biweekly', 700)}
-                  className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] flex items-center justify-center gap-1.5 active:scale-95"
+                  className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 active:scale-95"
                 >
-                  <LuQrCode size={14} /> Pix ou Cartão (Até 12x)
-                </button>
-                <button
-                  onClick={() => handleStripeCheckout('biweekly', 700)}
-                  disabled={stripeLoading !== null}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700 font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
-                >
-                  {stripeLoading === 'biweekly' ? (
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  ) : (
-                    <>
-                      <LuCreditCard size={13} /> Cartão Internacional
-                    </>
-                  )}
+                  <LuQrCode size={15} /> Assinar com Pix ou Cartão (Até 12x)
                 </button>
               </div>
             </div>

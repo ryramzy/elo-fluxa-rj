@@ -4,6 +4,7 @@ import { getWhatsAppLink } from '../../../constants';
 import { trackEvent } from '../../utils/analytics';
 import { cancelBooking } from '@/lib/firestore';
 import { useToast } from '@/hooks/useToast';
+import { downloadIcsFile, getGoogleCalendarUrl, isAppleDevice } from '@/utils/calendar';
 
 interface UpcomingClassesProps {
   bookings: Booking[];
@@ -124,6 +125,34 @@ export const UpcomingClasses: React.FC<UpcomingClassesProps> = ({
                         📹 Entrar na Sala ({booking.tutorName || 'Professor Matt'})
                       </a>
                     ) : null}
+                    {isConfirmed && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isAppleDevice()) {
+                            downloadIcsFile({
+                              id: booking.id,
+                              date: booking.date,
+                              time: booking.time,
+                              tutorName: booking.tutorName,
+                              meetLink: booking.meetLink
+                            });
+                          } else {
+                            window.open(getGoogleCalendarUrl({
+                              id: booking.id,
+                              date: booking.date,
+                              time: booking.time,
+                              tutorName: booking.tutorName,
+                              meetLink: booking.meetLink
+                            }), '_blank');
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all hover:scale-105 active:scale-95"
+                        title="Adicionar ao Apple Calendar ou Google Agenda"
+                      >
+                        📅 Calendário
+                      </button>
+                    )}
                     <a
                       href={getWhatsAppLink('upcomingClass', { studentName: booking.userName, date: booking.date, time: booking.time })}
                       target="_blank"

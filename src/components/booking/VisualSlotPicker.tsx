@@ -13,6 +13,12 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { createCalendarEvent } from '@/lib/googleCalendar';
+import { 
+  getGoogleCalendarUrl, 
+  getOutlookCalendarUrl, 
+  downloadIcsFile, 
+  isAppleDevice 
+} from '@/utils/calendar';
 
 interface VisualSlotPickerProps {
   onSlotSelect?: (date: string, time: string) => void;
@@ -316,22 +322,6 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
       setSuccessBooking(null);
       showToast(err?.message || 'Erro ao salvar aula. Tente novamente.', 'error');
     }
-  };
-
-  // Helper for Google Calendar export link
-  const getGoogleCalendarLink = (booking: { date: string; time: string; tutorName?: string; meetLink?: string }) => {
-    const [year, mMonth, mDay] = booking.date.split('-').map(Number);
-    const [mHour, mMinute] = booking.time.split(':').map(Number);
-    const localDate = new Date(Date.UTC(year, mMonth - 1, mDay, mHour + 3, mMinute, 0));
-    const endDate = new Date(localDate.getTime() + 60 * 60 * 1000);
-    
-    const toUtcFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    const dates = `${toUtcFormat(localDate)}/${toUtcFormat(endDate)}`;
-    const title = encodeURIComponent(`Aula de Inglês Elo com ${booking.tutorName || 'Professor Matt'}`);
-    const details = encodeURIComponent(`Sua aula de conversação no ELO!\nLink da sala: ${booking.meetLink || 'https://eloingles.com.br/classroom'}`);
-    const location = encodeURIComponent(booking.meetLink || 'https://eloingles.com.br/classroom');
-    
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
   };
 
   return (
@@ -668,15 +658,47 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                 </a>
               </div>
             </div>
-            <div className="space-y-2">
-              <a 
-                href={getGoogleCalendarLink(successBooking)}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
-              >
-                📅 Adicionar ao Google Agenda
-              </a>
+            <div className="space-y-2.5">
+              {/* Primary Calendar Options */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a 
+                  href={getGoogleCalendarUrl(successBooking)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                >
+                  📅 Google Agenda
+                </a>
+                
+                <button
+                  type="button"
+                  onClick={() => downloadIcsFile(successBooking)}
+                  className="w-full py-3 bg-slate-800 hover:bg-slate-750 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700 hover:border-slate-600 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                >
+                  🍎 Apple Calendar
+                </button>
+              </div>
+
+              {/* Secondary Options (Outlook & Direct .ics) */}
+              <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400 pt-1">
+                <a 
+                  href={getOutlookCalendarUrl(successBooking)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-1"
+                >
+                  📧 Outlook
+                </a>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => downloadIcsFile(successBooking)}
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                >
+                  💾 Baixar arquivo .ics
+                </button>
+              </div>
+
               <button
                 onClick={() => {
                   const bookingData = successBooking;
@@ -685,7 +707,7 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
                     onSlotSelect(bookingData.date, bookingData.time);
                   }
                 }}
-                className="w-full py-3 bg-slate-850 hover:bg-slate-800 active:scale-95 text-slate-350 rounded-xl text-xs font-bold transition-all border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                className="w-full py-3 bg-slate-850 hover:bg-slate-800 active:scale-95 text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-700/50 -webkit-tap-highlight-color-transparent select-none min-h-[44px] mt-2"
               >
                 Concluir
               </button>
