@@ -69,7 +69,7 @@ export default function About() {
     },
     {
       q: "Posso pagar com Pix ou Cartão de Crédito?",
-      a: "Sim! Aceitamos pagamento instantâneo via Pix (Mercado Pago) e Cartão de Crédito internacional/nacional via Stripe."
+      a: "Sim! Aceitamos Pix instantâneo, Cartão de Crédito em até 12x, boleto e saldo Mercado Pago — tudo processado com segurança pelo Mercado Pago."
     }
   ];
 

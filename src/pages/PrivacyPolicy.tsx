@@ -40,7 +40,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>Dados de Cadastro:</strong> Nome, endereço de email e foto de perfil (fornecidos diretamente ou via autenticação Google).</li>
               <li><strong>Dados de Aprendizado:</strong> Progresso nas lições, pontuação de XP, objetivos de estudo, nível de proficiência e histórico de agendamento de aulas.</li>
-              <li><strong>Dados de Pagamento:</strong> Processados de forma criptografada por parceiros certificados (Stripe e Mercado Pago). Não armazenamos números de cartão de crédito.</li>
+              <li><strong>Dados de Pagamento:</strong> Processados de forma criptografada pelo Mercado Pago. Não armazenamos números de cartão de crédito.</li>
             </ul>
           </section>
 

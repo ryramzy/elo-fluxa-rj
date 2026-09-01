@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode, LuCreditCard } from 'react-icons/lu';
+import { LuCheck, LuX, LuSparkles, LuFlame, LuQrCode } from 'react-icons/lu';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import CheckoutForm from './CheckoutForm';
