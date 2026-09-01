@@ -206,6 +206,13 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
         throw new Error(data.error || 'Erro ao processar checkout Pix via Mercado Pago.');
       }
 
+      // If backend smoothly fell back to Mercado Pago Checkout Pro
+      if (data.fallbackToPreference && data.initPoint) {
+        showToast('Redirecionando para o ambiente seguro do Mercado Pago...', 'info');
+        window.location.href = data.initPoint;
+        return;
+      }
+
       setPixPayload({
         qrCodeUrl: data.qrCodeUrl,
         copyPasteKey: data.copyPasteKey,
@@ -482,13 +489,23 @@ export default function CheckoutForm({ plan, price, onSuccess, onCancel }: Check
                 <span className="text-base leading-none shrink-0">⚠️</span>
                 <span className="flex-1 font-medium leading-snug">{formError}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => { setActiveMode('static'); setFormError(null); }}
-                className="w-full py-2 bg-blue-600/30 hover:bg-blue-600/40 text-sky-300 border border-blue-500/40 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1.5"
-              >
-                <LuKey size={13} /> Pagar com Chave Pix Direta (Sem CPF)
-              </button>
+              <div className="space-y-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={handleCheckoutPreference}
+                  disabled={loading}
+                  className="w-full py-2 bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1.5"
+                >
+                  <LuCreditCard size={13} /> Pagar no Mercado Pago Oficial (Pix ou Cartão 12x)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveMode('static'); setFormError(null); }}
+                  className="w-full py-2 bg-blue-600/30 hover:bg-blue-600/40 text-sky-300 border border-blue-500/40 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1.5"
+                >
+                  <LuKey size={13} /> Pagar com Chave Pix Direta (Sem CPF)
+                </button>
+              </div>
             </div>
           )}
 

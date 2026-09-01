@@ -197,7 +197,78 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Mercado Pago Payment creation failed: ${errorText}`);
+      console.warn('[Checkout] Direct /v1/payments rejected by Mercado Pago:', errorText);
+
+      // If Mercado Pago direct payment is rejected (e.g. code 7: "Unauthorized use of live credentials"),
+      // fallback smoothly to creating a Checkout Pro Preference where Pix, 12x Cards, and Wallet work immediately!
+      console.log('[Checkout] Automatically falling back to Mercado Pago Checkout Pro Preference...');
+      const fallbackPrefRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              id: plan,
+              title: `ELO! Inglês - ${planTitle}`,
+              description: 'Aulas de Inglês 1:1 com Professor Matt + Plataforma ELO!',
+              quantity: 1,
+              currency_id: 'BRL',
+              unit_price: Number(price)
+            }
+          ],
+          payer: {
+            email: email,
+            name: `${firstName} ${lastName}`,
+            identification: {
+              type: 'CPF',
+              number: cleanCpf
+            }
+          },
+          back_urls: {
+            success: `${baseUrl}/dashboard?payment=success`,
+            failure: `${baseUrl}/dashboard?payment=failure`,
+            pending: `${baseUrl}/dashboard?payment=pending`
+          },
+          auto_return: 'approved',
+          notification_url: notificationUrl,
+          external_reference: externalReference,
+          metadata: {
+            plan_type: plan,
+            user_id: userId || '',
+            payer_email: email,
+            plan_price: Number(price)
+          },
+          payment_methods: {
+            installments: 12
+          }
+        })
+      });
+
+      if (fallbackPrefRes.ok) {
+        const prefData = await fallbackPrefRes.json();
+        const initPoint = prefData.init_point || prefData.sandbox_init_point;
+        console.log('[Checkout] Fallback Preference created successfully:', initPoint);
+        return res.status(200).json({
+          success: true,
+          fallbackToPreference: true,
+          initPoint: initPoint,
+          message: 'Redirecionando para o ambiente seguro do Mercado Pago...'
+        });
+      }
+
+      // If both fail, return a friendly Portuguese error message (never raw JSON)
+      let cleanMessage = 'Não foi possível processar o Pix dinâmico no momento. Use o Checkout Oficial do Mercado Pago ou a Chave Pix Direta.';
+      try {
+        const parsed = JSON.parse(errorText);
+        if (parsed.message?.includes('live credentials') || parsed.cause?.[0]?.code === 7) {
+          cleanMessage = 'O Mercado Pago requer o Checkout Oficial ou Chave Pix Direta para esta conta. Clique abaixo para continuar.';
+        }
+      } catch {}
+
+      return res.status(400).json({ error: cleanMessage, rawError: errorText });
     }
 
     const paymentData = await response.json();
