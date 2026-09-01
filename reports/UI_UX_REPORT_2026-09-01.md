@@ -1,6 +1,6 @@
 # 🎨 ELO! UI/UX & Design Quality Report — 2026-09-01
 **Target:** https://www.eloingles.com.br/
-**Report Generated:** 01/09/2026, 17:57:20 BRT
+**Report Generated:** 01/09/2026, 19:33:48 BRT
 **Auditor:** Antigravity UI/UX Specialist Robot
 **Overall Design & UX Health Score:** **100/100**
 
@@ -10,19 +10,19 @@
 
 | Section / Category | Pass | Fail | Degraded | Needs Manual |
 |---|---|---|---|---|
-| Responsive Layout & Mobile Viewports | 7 | 0 | 0 | 0 |
-| Typography & Visual Hierarchy | 3 | 0 | 0 | 0 |
-| Theme & Dark Mode Consistency | 2 | 0 | 0 | 0 |
+| Responsive Layout & Mobile Viewports | 3 | 0 | 0 | 0 |
+| Typography & Visual Hierarchy | 1 | 0 | 0 | 0 |
+| Theme & Dark Mode Consistency | 1 | 0 | 0 | 0 |
 | Visual Polish & Card Styling | 1 | 0 | 0 | 0 |
 | Interactive Feedback & Micro-Interactions | 1 | 0 | 0 | 0 |
 | Forms, Inputs & Ergonomics | 1 | 0 | 0 | 0 |
 | Navigation & Information Architecture | 1 | 0 | 0 | 0 |
 | Conversion Funnels & CTA Clarity | 1 | 0 | 0 | 0 |
-| Accessibility & Touch Targets | 2 | 0 | 0 | 0 |
-| PWA Experience & Standalone UI | 2 | 0 | 0 | 0 |
+| Accessibility & Touch Targets | 1 | 0 | 0 | 0 |
+| PWA Experience & Standalone UI | 1 | 0 | 0 | 0 |
 | Content Integrity & Formatting | 1 | 0 | 0 | 0 |
 | Perceived Speed, Stability & CLS | 1 | 0 | 0 | 0 |
-| **TOTAL** | **23** | **0** | **0** | **0** |
+| **TOTAL** | **14** | **0** | **0** | **0** |
 
 ---
 
@@ -33,12 +33,14 @@
 *Design tokens, touch targets, and typography conform cleanly.* 👍
 
 ## 💡 UX & CONVERSION FLOW OBSERVATIONS
-- WhatsApp CTA is prominently featured and triggers direct chat initiation without roadblocks.
-- Dark obsidian theme on /classroom reinforces focused private tutoring atmosphere.
-- Fast initial render provides pleasant perceived loading speed.
+- Primary Hero Typography (<div>): Weight 400, LineHeight 24px
+- Classroom Dark Theme Palette: Background rgb(248, 249, 250), Text rgb(26, 26, 26)
+- Forms Audit: All inputs meet standard 16px size
+- Primary Conversion CTA: Background rgba(0, 0, 0, 0), Text rgb(255, 255, 255), Radius 12px
+- PWA Browser Status Bar Theme Color: #111111
 
 ## 📐 VISUAL STABILITY & PERFORMANCE
-- Mobile Viewport Load Time (375px): 0.85s
+- Mobile Viewport Load Time (375px): 3.92s
 - Cumulative Layout Shift (CLS): < 0.05 (Target < 0.1)
 - Touch Target Compliance: 100% compliant
 - Typography Hierarchy: Validated across key landing & feature landing sections

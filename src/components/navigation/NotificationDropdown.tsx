@@ -20,7 +20,7 @@ interface Notification {
 export const NotificationDropdown: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { isGranted, isRequesting, requestPermission, testNotification, isSupported } = usePushNotifications(user?.uid);
+  const { isGranted, isRequesting, requestPermission, testNotification, isSupported, requiresPWA } = usePushNotifications(user?.uid);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -215,7 +215,7 @@ export const NotificationDropdown: React.FC = () => {
               </div>
 
               {/* Browser Push Notification Quick Activation Banner */}
-              {isSupported && !isGranted && (
+              {isSupported && !isGranted && !requiresPWA && (
                 <div className="bg-blue-600/15 border border-blue-500/30 rounded-xl p-2.5 mb-3 text-left">
                   <div className="flex items-center gap-2 mb-1.5">
                     <FaBell className="text-blue-400 shrink-0" size={12} />
@@ -228,9 +228,9 @@ export const NotificationDropdown: React.FC = () => {
                     type="button"
                     onClick={() => requestPermission()}
                     disabled={isRequesting}
-                    className="w-full py-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-[10px] font-extrabold uppercase tracking-wider rounded-lg transition-all shadow-sm flex items-center justify-center gap-1.5"
+                    className="w-full py-1.5 px-3 bg-blue-600 hover:bg-blue-500 active:scale-98 text-white font-bold text-[11px] rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
                   >
-                    {isRequesting ? 'Ativando...' : 'Ativar no Navegador'}
+                    <span>🔔</span> {isRequesting ? 'Ativando...' : 'Ativar no Navegador'}
                   </button>
                 </div>
               )}

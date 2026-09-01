@@ -19,7 +19,7 @@ const ProfilePage: React.FC = () => {
   const { profile, loading } = useUserProfile(user?.uid || '');
   const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { showToast } = useToast();
-  const { isGranted: isPushGranted, permission: pushPermission, isRequesting: isRequestingPush, requestPermission: requestPushPermission, testNotification: testPushNotification } = usePushNotifications(user?.uid);
+  const { isGranted: isPushGranted, permission: pushPermission, isRequesting: isRequestingPush, requestPermission: requestPushPermission, testNotification: testPushNotification, requiresPWA } = usePushNotifications(user?.uid);
   
   useDocumentTitle('Meu Perfil - ELO!');
 
@@ -698,7 +698,12 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {!isPushGranted ? (
+            {requiresPWA ? (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 max-w-sm">
+                <span className="font-bold block mb-0.5">📱 Ativação no iPhone:</span>
+                Para receber lembretes no iOS, toque em <strong>Compartilhar</strong> no Safari e selecione <strong>"Adicionar à Tela de Início"</strong>.
+              </div>
+            ) : !isPushGranted ? (
               <button
                 type="button"
                 onClick={async () => {

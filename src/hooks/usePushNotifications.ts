@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
-import { requestPushPermission as requestPushPermissionUtil, sendTestNotification as sendTestNotificationUtil } from '../utils/pushNotifications';
+import { 
+  requestPushPermission as requestPushPermissionUtil, 
+  sendTestNotification as sendTestNotificationUtil,
+  canRequestPush,
+  isIOSDevice,
+  isPWAStandalone
+} from '../utils/pushNotifications';
 
 export type PushPermissionStatus = 'default' | 'granted' | 'denied' | 'unsupported';
 
 export function usePushNotifications(userId?: string) {
   const [permission, setPermission] = useState<PushPermissionStatus>('unsupported');
   const [isRequesting, setIsRequesting] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    setIsIOS(isIOSDevice());
+    setIsStandalone(isPWAStandalone());
 
     if (!('Notification' in window)) {
       setPermission('unsupported');
@@ -55,12 +66,17 @@ export function usePushNotifications(userId?: string) {
     return sendTestNotificationUtil(title, body);
   };
 
+  const requiresPWA = isIOS && !isStandalone;
+
   return {
     permission,
     isRequesting,
     requestPermission,
     testNotification,
     isSupported: permission !== 'unsupported',
-    isGranted: permission === 'granted'
+    isGranted: permission === 'granted',
+    isIOS,
+    isStandalone,
+    requiresPWA
   };
 }
