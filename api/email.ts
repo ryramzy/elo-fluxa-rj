@@ -4,17 +4,97 @@ import { getFirestoreAccessToken } from './utils/googleAuth.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_temp_key');
 const FROM_EMAIL = process.env.EMAIL_FROM || 'ELO! <contato@eloingles.com.br>';
+const FALLBACK_FROM_EMAIL = 'ELO! <onboarding@resend.dev>';
 const REPLY_TO_EMAIL = process.env.EMAIL_REPLY_TO || 'mramsay0@gmail.com';
 const ADMIN_EMAILS = ['mramsay0@gmail.com', 'erneleducation@gmail.com'];
 const APP_URL = process.env.VITE_APP_URL || 'https://eloingles.com.br';
 
 if (!process.env.RESEND_API_KEY) {
-  console.error('[email] MISSING: RESEND_API_KEY not configured');
+  console.error('[email] MISSING: RESEND_API_KEY not configured in environment');
+}
+
+/**
+ * Robust Email Dispatcher with Fallback & Diagnostics
+ */
+async function sendEmailWithFallback(payload: {
+  from?: string;
+  replyTo?: string;
+  to: string | string[];
+  subject: string;
+  html: string;
+}): Promise<{ success: boolean; data?: any; error?: any; fallbackUsed?: boolean }> {
+  const primaryFrom = payload.from || FROM_EMAIL;
+  const replyTo = payload.replyTo || REPLY_TO_EMAIL;
+
+  console.log(`[Email] Dispatching to ${JSON.stringify(payload.to)} with subject: "${payload.subject}"`);
+
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[Email] Cannot send: RESEND_API_KEY is not configured.');
+    return { success: false, error: 'RESEND_API_KEY not configured' };
+  }
+
+  try {
+    // 1. Attempt primary dispatch
+    const res = await resend.emails.send({
+      from: primaryFrom,
+      replyTo,
+      to: payload.to,
+      subject: payload.subject,
+      html: payload.html,
+    });
+
+    if (!res.error) {
+      console.log(`[Email] Successfully delivered via primary sender (${primaryFrom}). ID:`, res.data?.id);
+      return { success: true, data: res.data };
+    }
+
+    console.warn(`[Email] Primary sender error:`, res.error);
+
+    // 2. If domain verification or permission error, automatically retry with fallback sender
+    const isDomainError =
+      res.error.name === 'validation_error' ||
+      res.error.message?.includes('not verified') ||
+      res.error.message?.includes('domain') ||
+      res.error.message?.includes('forbidden');
+
+    if (isDomainError) {
+      console.log(`[Email] Retrying with fallback sender: ${FALLBACK_FROM_EMAIL}`);
+      const fallbackRes = await resend.emails.send({
+        from: FALLBACK_FROM_EMAIL,
+        replyTo,
+        to: payload.to,
+        subject: payload.subject,
+        html: payload.html,
+      });
+
+      if (!fallbackRes.error) {
+        console.log(`[Email] Successfully delivered via fallback (${FALLBACK_FROM_EMAIL}). ID:`, fallbackRes.data?.id);
+        return { success: true, data: fallbackRes.data, fallbackUsed: true };
+      }
+
+      console.error(`[Email] Fallback sender also failed:`, fallbackRes.error);
+      return { success: false, error: fallbackRes.error };
+    }
+
+    return { success: false, error: res.error };
+  } catch (err: any) {
+    console.error(`[Email] Exception during email send:`, err);
+    return { success: false, error: err.message || err };
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const path = req.url?.split('?')[0] ?? '';
 
+  // 1. Health & Test endpoints
+  if ((path.endsWith('/email/health') || path === '/api/email/health')) {
+    return handleHealthCheck(req, res);
+  }
+  if ((path.endsWith('/email/test') || path === '/api/email/test')) {
+    return handleTestEmail(req, res);
+  }
+
+  // 2. Transactional email events
   if ((path.endsWith('/email/booking-confirmation') || path === '/api/email/booking-confirmation') && req.method === 'POST') {
     return handleBookingConfirmation(req, res);
   }
@@ -46,11 +126,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(404).json({ error: `Not found: ${path}` });
 }
 
+async function handleHealthCheck(_req: VercelRequest, res: VercelResponse) {
+  const hasKey = !!process.env.RESEND_API_KEY;
+  const keyPrefix = hasKey ? process.env.RESEND_API_KEY!.slice(0, 7) + '...' : 'NONE';
+  
+  return res.status(200).json({
+    status: hasKey ? 'configured' : 'missing_api_key',
+    provider: 'resend',
+    apiKeyPrefix: keyPrefix,
+    primarySender: FROM_EMAIL,
+    fallbackSender: FALLBACK_FROM_EMAIL,
+    replyTo: REPLY_TO_EMAIL,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function handleTestEmail(req: VercelRequest, res: VercelResponse) {
+  const to = (req.query.to as string) || req.body?.to || 'mramsay0@gmail.com';
+  
+  console.log(`[Email Test] Sending test verification email to: ${to}`);
+
+  const result = await sendEmailWithFallback({
+    to,
+    subject: '🧪 ELO! Email Gateway Verification Test',
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a;padding:24px;border:1px solid #e2e8f0;rounded:12px">
+        <h2 style="color:#2563eb;margin-top:0">ELO! — Teste de Gateway de Email</h2>
+        <p>Olá! Este é um email de teste automático do sistema transacional do <strong>ELO! (eloingles.com.br)</strong>.</p>
+        <div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:12px;margin:16px 0;border-radius:4px">
+          <p style="margin:0;color:#166534;font-weight:bold">✓ Conexão com Resend / Email Gateway operacional!</p>
+          <p style="margin:4px 0 0 0;font-size:12px;color:#166534">Disparado em: ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })} BRT</p>
+        </div>
+        <p style="font-size:13px;color:#64748b">
+          Se você recebeu este email, seu pipeline de confirmação de agendamentos, matrículas e lembretes está funcionando.
+        </p>
+      </div>
+    `,
+  });
+
+  if (result.success) {
+    return res.status(200).json({
+      success: true,
+      message: `Email de teste enviado com sucesso para ${to}!`,
+      details: result,
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    error: result.error,
+    message: 'Falha ao enviar email de teste. Verifique a chave RESEND_API_KEY ou configuração de DNS em resend.com/domains.',
+  });
+}
+
 async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
   try {
     const {
       attendeeName, attendeeEmail,
-      date, time, durationMinutes, meetLink, notes,
+      date, time, durationMinutes, notes,
       tutorName, tutorEmail
     } = req.body;
 
@@ -62,7 +195,7 @@ async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
     // 1. Send notice to Tutor & Admins
     const tutorEmails = [tutorEmail, ...ADMIN_EMAILS].filter(Boolean);
     const tutorTo = Array.from(new Set(tutorEmails));
-    await resend.emails.send({
+    await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: tutorTo,
@@ -82,6 +215,7 @@ async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
               <strong>Data:</strong> ${formattedDate} às ${time}<br/>
               <strong>Duração:</strong> ${durationMinutes || 60} minutos
             </p>
+            ${notes ? `<p style="margin:8px 0 0 0;font-size:14px;color:#92400e"><strong>Tema:</strong> ${notes}</p>` : ''}
           </div>
           <a href="${APP_URL}/agenda" 
              style="display:inline-block;background:#2563eb;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;margin:16px 0">
@@ -92,7 +226,7 @@ async function handleBookingRequest(req: VercelRequest, res: VercelResponse) {
     });
 
     // 2. Send notice to Student
-    await resend.emails.send({
+    await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: attendeeEmail,
@@ -140,7 +274,7 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
       });
 
     const toEmails = Array.from(new Set([attendeeEmail, tutorEmail, ...ADMIN_EMAILS])).filter(Boolean);
-    const { error } = await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: toEmails,
@@ -171,12 +305,6 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
                style="display:inline-block;background:#2563eb;color:white;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
               📹 Entrar na Sala de Aula ao Vivo
             </a>
-            ${meetLink ? `
-            <div style="margin-top:6px">
-              <a href="${meetLink}" style="color:#64748b;font-size:13px;text-decoration:underline">
-                Link alternativo de sala
-              </a>
-            </div>` : ''}
           </div>
 
           <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:4px;margin:20px 0">
@@ -199,12 +327,11 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
       `,
     });
 
-    if (error) {
-      console.error('Email error:', error);
-      return res.status(500).json({ error: 'Failed to send email' });
+    if (!result.success) {
+      console.error('Email send result failed:', result.error);
     }
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: result.success, details: result });
   } catch (error) {
     console.error('Booking confirmation error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -219,7 +346,7 @@ async function handleEnrollmentConfirmation(req: VercelRequest, res: VercelRespo
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
 
-    const { error } = await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: studentEmail,
@@ -254,12 +381,7 @@ async function handleEnrollmentConfirmation(req: VercelRequest, res: VercelRespo
       `,
     });
 
-    if (error) {
-      console.error('Email error:', error);
-      return res.status(500).json({ error: 'Failed to send email' });
-    }
-
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: result.success, details: result });
   } catch (error) {
     console.error('Enrollment confirmation error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -270,7 +392,7 @@ async function handleWelcome(req: VercelRequest, res: VercelResponse) {
   try {
     const { name, email } = req.body;
 
-    const { error } = await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: email,
@@ -313,12 +435,7 @@ async function handleWelcome(req: VercelRequest, res: VercelResponse) {
       `,
     });
 
-    if (error) {
-      console.error('Welcome email error:', error);
-      return res.status(500).json({ error: 'Failed to send email' });
-    }
-
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: result.success, details: result });
   } catch (error) {
     console.error('Welcome email error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -330,7 +447,7 @@ async function handleTutorApplicationReceived(req: VercelRequest, res: VercelRes
     const { displayName, email, accent, experience, videoLink } = req.body;
 
     // 1. Confirm to Applicant
-    await resend.emails.send({
+    await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: email,
@@ -357,7 +474,7 @@ async function handleTutorApplicationReceived(req: VercelRequest, res: VercelRes
     });
 
     // 2. Alert Admin
-    await resend.emails.send({
+    await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: email,
       to: ADMIN_EMAILS,
@@ -370,9 +487,6 @@ async function handleTutorApplicationReceived(req: VercelRequest, res: VercelRes
           <p><strong>Sotaque:</strong> ${accent}</p>
           <p><strong>Experiência:</strong> ${experience}</p>
           <p><strong>Vídeo:</strong> <a href="${videoLink}">${videoLink}</a></p>
-          <a href="${APP_URL}/admin" style="display:inline-block;background:#2563eb;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;margin-top:15px">
-            Revisar no Painel Admin
-          </a>
         </div>
       `
     });
@@ -414,7 +528,7 @@ async function handleTutorDecision(req: VercelRequest, res: VercelResponse) {
       </div>
     `;
 
-    await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: email,
@@ -422,7 +536,7 @@ async function handleTutorDecision(req: VercelRequest, res: VercelResponse) {
       html: htmlContent
     });
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: result.success });
   } catch (err: any) {
     console.error('Error sending tutor decision email:', err);
     return res.status(500).json({ error: err.message || err });
@@ -431,9 +545,9 @@ async function handleTutorDecision(req: VercelRequest, res: VercelResponse) {
 
 async function handleAppDownloadInvite(req: VercelRequest, res: VercelResponse) {
   try {
-    const { name, email, platform } = req.body;
+    const { name, email } = req.body;
 
-    await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: email,
@@ -457,7 +571,7 @@ async function handleAppDownloadInvite(req: VercelRequest, res: VercelResponse) 
       `
     });
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: result.success });
   } catch (err: any) {
     console.error('Error sending app invite email:', err);
     return res.status(500).json({ error: err.message || err });
@@ -529,7 +643,7 @@ async function handleBookingCancellation(req: VercelRequest, res: VercelResponse
     `;
 
     const toEmails = [attendeeEmail, ...ADMIN_EMAILS].filter(Boolean);
-    const { error } = await resend.emails.send({
+    const result = await sendEmailWithFallback({
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: toEmails,
@@ -537,12 +651,7 @@ async function handleBookingCancellation(req: VercelRequest, res: VercelResponse
       html: htmlContent,
     });
 
-    if (error) {
-      console.error('Email error:', error);
-      return res.status(500).json({ error: 'Failed to send email' });
-    }
-
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: result.success });
   } catch (error) {
     console.error('Booking cancellation email error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -627,7 +736,7 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
 
     const results = await Promise.allSettled(
       bookings.map(async (booking: any) => {
-        const { userId, userName, userEmail, date, time, duration, meetLink, notes } = booking;
+        const { userName, userEmail, date, time, duration, notes } = booking;
         if (!userEmail) return { skipped: true, reason: 'No email address' };
 
         const lessonDateTime = new Date(`${date}T${time}:00-03:00`);
@@ -639,7 +748,7 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
               weekday: 'long', day: 'numeric', month: 'long'
             });
 
-          const { error } = await resend.emails.send({
+          const sendResult = await sendEmailWithFallback({
             from: FROM_EMAIL,
             replyTo: REPLY_TO_EMAIL,
             to: userEmail,
@@ -680,7 +789,7 @@ async function handleLessonReminder(req: VercelRequest, res: VercelResponse) {
             `,
           });
 
-          return { bookingId: booking.id, success: !error, error };
+          return { bookingId: booking.id, success: sendResult.success, result: sendResult };
         }
         
         return { bookingId: booking.id, skipped: true, reason: 'Outside reminder window' };
