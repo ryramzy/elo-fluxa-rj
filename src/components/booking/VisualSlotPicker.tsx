@@ -659,24 +659,45 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
               </div>
             </div>
             <div className="space-y-2.5">
-              {/* Primary Calendar Options */}
+              {/* Primary Calendar Options (Both always shown; ordered for platform ergonomics) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <a 
-                  href={getGoogleCalendarUrl(successBooking)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
-                >
-                  📅 Google Agenda
-                </a>
-                
-                <button
-                  type="button"
-                  onClick={() => downloadIcsFile(successBooking)}
-                  className="w-full py-3 bg-slate-800 hover:bg-slate-750 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700 hover:border-slate-600 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
-                >
-                  🍎 Apple Calendar
-                </button>
+                {isAppleDevice() ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => downloadIcsFile(successBooking)}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                    >
+                      🍎 Apple Calendar
+                    </button>
+                    <a 
+                      href={getGoogleCalendarUrl(successBooking)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-3 bg-slate-800 hover:bg-slate-750 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700 hover:border-slate-600 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                    >
+                      📅 Google Agenda
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <a 
+                      href={getGoogleCalendarUrl(successBooking)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-600/20 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                    >
+                      📅 Google Agenda
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => downloadIcsFile(successBooking)}
+                      className="w-full py-3 bg-slate-800 hover:bg-slate-750 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700 hover:border-slate-600 -webkit-tap-highlight-color-transparent select-none min-h-[44px]"
+                    >
+                      🍎 Apple Calendar
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Secondary Options (Outlook & Direct .ics) */}

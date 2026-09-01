@@ -1,3 +1,4 @@
+// Frontend entry point removed in favor of Mercado Pago — endpoint kept for future international expansion. Do not delete.
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { getFirestoreAccessToken } from './utils/googleAuth.js';

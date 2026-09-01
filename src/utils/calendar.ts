@@ -12,30 +12,46 @@ export interface CalendarBookingDetails {
 }
 
 /**
- * Detects if the current user agent is an Apple device (iOS, iPhone, iPad, Mac)
+ * Detects if the current client is an iOS or Apple touch device (iPhone, iPad, iPod, Mac touch).
+ * Used purely for ergonomic button ordering — NEVER hides buttons.
  */
-export const isAppleDevice = (): boolean => {
+export const isAppleTouchDevice = (): boolean => {
   if (typeof window === 'undefined' || !window.navigator) return false;
-  const userAgent = window.navigator.userAgent || window.navigator.vendor || '';
-  return /iPad|iPhone|iPod|Macintosh|Mac OS X/i.test(userAgent);
+  const nav = window.navigator as any;
+  const isTouchMac = (nav.maxTouchPoints || 0) > 1 && /Mac|iPhone|iPad|iPod/i.test(nav.platform || nav.userAgent || '');
+  const isIos = /iPhone|iPad|iPod/i.test(nav.userAgent || '');
+  return isTouchMac || isIos;
 };
 
+// Backwards compatibility alias
+export const isAppleDevice = isAppleTouchDevice;
+
 /**
- * Converts booking date & time to UTC Date objects
+ * Converts booking date (YYYY-MM-DD) & time (HH:mm) from Brazil Time (BRT = UTC-3) to exact UTC Date objects.
  */
 export const getBookingDateRange = (booking: CalendarBookingDetails): { start: Date; end: Date } => {
   const [year, mMonth, mDay] = booking.date.split('-').map(Number);
   const [mHour, mMinute] = booking.time.split(':').map(Number);
   
-  // Brazil standard timezone offset: UTC-3 (add 3 hours for UTC)
+  // Brazil standard timezone offset: BRT = UTC-3 (add 3 hours to get UTC)
   const startDate = new Date(Date.UTC(year, mMonth - 1, mDay, mHour + 3, mMinute, 0));
-  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 60-minute duration
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Standard 60-minute class
 
   return { start: startDate, end: endDate };
 };
 
-const formatUtcIso = (d: Date): string => {
-  return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+/**
+ * Formats a Date object to RFC 5545 strict UTC datetime: YYYYMMDDTHHMMSSZ
+ */
+export const formatUtcIsoStrict = (d: Date): string => {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const year = d.getUTCFullYear();
+  const month = pad(d.getUTCMonth() + 1);
+  const day = pad(d.getUTCDate());
+  const hours = pad(d.getUTCHours());
+  const minutes = pad(d.getUTCMinutes());
+  const seconds = pad(d.getUTCSeconds());
+  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
 };
 
 /**
@@ -43,7 +59,7 @@ const formatUtcIso = (d: Date): string => {
  */
 export const getGoogleCalendarUrl = (booking: CalendarBookingDetails): string => {
   const { start, end } = getBookingDateRange(booking);
-  const dates = `${formatUtcIso(start)}/${formatUtcIso(end)}`;
+  const dates = `${formatUtcIsoStrict(start)}/${formatUtcIsoStrict(end)}`;
   const title = encodeURIComponent(`Aula de Inglês ELO! com ${booking.tutorName || 'Professor Matt'}`);
   const details = encodeURIComponent(
     `Sua aula particular de conversação no ELO!\nLink da sala ao vivo: ${booking.meetLink || 'https://eloingles.com.br/classroom'}`
@@ -85,9 +101,9 @@ export const generateIcsContent = (booking: CalendarBookingDetails): string => {
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     `UID:${uid}`,
-    `DTSTAMP:${formatUtcIso(now)}`,
-    `DTSTART:${formatUtcIso(start)}`,
-    `DTEND:${formatUtcIso(end)}`,
+    `DTSTAMP:${formatUtcIsoStrict(now)}`,
+    `DTSTART:${formatUtcIsoStrict(start)}`,
+    `DTEND:${formatUtcIsoStrict(end)}`,
     `SUMMARY:Aula de Inglês ELO! com ${tutor}`,
     `DESCRIPTION:Sua aula particular de conversação no ELO!\\nLink da sala: ${meetLink}`,
     `LOCATION:${meetLink}`,
@@ -105,16 +121,18 @@ export const generateIcsContent = (booking: CalendarBookingDetails): string => {
 
 /**
  * Triggers native .ics file download/import.
- * On iOS Safari / Chrome, this directly opens the native Apple Calendar event sheet.
+ * On iOS Safari / Chrome, using exact MIME type 'text/calendar' automatically intercepts
+ * and opens the native Apple Calendar event sheet.
  */
-export const downloadIcsFile = (booking: CalendarBookingDetails, filename = 'aula-elo-ingles.ics'): void => {
+export const downloadIcsFile = (booking: CalendarBookingDetails, filename = 'aula-elo.ics'): void => {
   const icsData = generateIcsContent(booking);
-  const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+  // Strict MIME type text/calendar without parameters for mobile Safari compatibility
+  const blob = new Blob([icsData], { type: 'text/calendar' });
 
-  // For iOS/Android & standard browsers
   const link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
   link.setAttribute('download', filename);
+  link.setAttribute('rel', 'noopener');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
