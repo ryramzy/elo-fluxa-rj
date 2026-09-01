@@ -19,6 +19,32 @@
 - **Serverless Endpoints**: Total 7 functions (calendar, email, checkout, stripe, health, whatsapp, push).
 - **VAPID Public Key**: `BBItwOdVjqMMfgkAb0vXcYuEoIoQlkGdxwlzfbu5hQy9BOKlmI56Szq9DNjUBKb3Yj1DsVM_ESWUBjJCK0JwBs4`
 
+## [September 1, 2026] — Cross-Platform QA (Desktop, iOS, Android), Mercado Pago/Pix Resilience, Universal Push & Email Diagnostics
+**Status:** ✅ COMPLETED, TESTED & DEPLOYED TO PRODUCTION
+
+### What changed
+1. **Cross-Platform Automated QA Validation**:
+   - Executed full functional test suite (`npm run test:qa`): **23/23 tests passed**.
+   - Executed multi-device UI/UX design & ergonomics audit (`npm run test:ui-ux`): **14/14 tests passed, 100/100 Health Score**.
+   - Validated across Desktop (1280px+), iOS Mobile Safari (375px / 390px), and Android Chrome (412px).
+2. **Mercado Pago & Pix Checkout Hardening (`api/checkout.ts`, `CheckoutForm.tsx`)**:
+   - Removed Stripe from client-side UI to focus 100% on Mercado Pago, Pix, and 12x Credit Card installments for the Brazilian market.
+   - Added automated fallback: When direct `/v1/payments` API returns 401 (*Unauthorized use of live credentials*), the system seamlessly generates a Mercado Pago Checkout Pro preference and routes the user to the secure hosted checkout.
+   - Enhanced error handling with Portuguese messaging and dual 1-click recovery buttons.
+3. **Classroom Page Cleanup (`ClassroomPage.tsx`)**:
+   - Removed static, non-functional hardware indicators (*Microfone OK / Áudio HD OK / 100% Privado*).
+   - Added honest, actionable pre-class tips (*"💡 Dicas para sua aula"*) and renamed courses button to *"📚 Cursos ELO!"*.
+4. **Universal Notification Permissions (`pushNotifications.ts`, `usePushNotifications.ts`, `ProfilePage.tsx`, `NotificationDropdown.tsx`)**:
+   - Removed standalone-only PWA gatekeeper, enabling native browser push permissions across Desktop and mobile web.
+   - Added dedicated notification management card with live status indicator and test trigger to `/profile`.
+   - Added 1-tap browser notification prompt banner inside the Navbar bell dropdown.
+5. **Email Gateway Resilience & Diagnostics (`api/email.ts`)**:
+   - Implemented automated fallback sender (`onboarding@resend.dev`) if custom domain is unverified.
+   - Added live health and test verification endpoints (`/api/email/health` and `/api/email/test`).
+6. **Dual Calendar Integration (`src/utils/calendar.ts`)**:
+   - Created centralized RFC 5545 `.ics` generator with `TRIGGER:-PT15M` alarm and strict +3 hour BRT→UTC offset.
+   - Added dynamic dual buttons for Apple Calendar and Google Agenda.
+
 ## [August 27, 2026] — Mobile Android Classroom Fix, Profile Navigation & Unified Notifications
 **Status:** ✅ COMPLETED & DEPLOYED TO PRODUCTION
 
