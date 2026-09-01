@@ -6,9 +6,10 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { updateUserProfile, db } from '../lib/firestore';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { deleteUser } from 'firebase/auth';
-import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave, FaGlobe, FaMapMarkerAlt, FaTrashAlt, FaExclamationTriangle } from 'react-icons/fa';
+import { FaUser, FaFire, FaTrophy, FaCalendarPlus, FaEdit, FaSave, FaGlobe, FaMapMarkerAlt, FaTrashAlt, FaExclamationTriangle, FaBell } from 'react-icons/fa';
 import { useToast } from '../hooks/useToast';
 import { useBookings } from '../hooks/useBookings';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 import { TutorProfileModal } from '../components/profile/TutorProfileModal';
 import { courses } from '../data/courses';
 
@@ -18,6 +19,7 @@ const ProfilePage: React.FC = () => {
   const { profile, loading } = useUserProfile(user?.uid || '');
   const { bookings, loading: bookingsLoading } = useBookings(user?.uid || '');
   const { showToast } = useToast();
+  const { isGranted: isPushGranted, permission: pushPermission, isRequesting: isRequestingPush, requestPermission: requestPushPermission, testNotification: testPushNotification } = usePushNotifications(user?.uid);
   
   useDocumentTitle('Meu Perfil - ELO!');
 
@@ -663,6 +665,70 @@ const ProfilePage: React.FC = () => {
               })}
           </div>
         )}
+      </div>
+
+      {/* Notifications & Class Reminders Settings Card */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-md rounded-3xl p-6 sm:p-8 mt-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6 gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <FaBell className="text-blue-500" /> Notificações & Lembretes de Aula
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Receba lembretes sonoros no celular e computador 15 minutos antes da sua aula no Zoom.
+            </p>
+          </div>
+          <span className={`self-start sm:self-auto text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+            isPushGranted
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-500/30'
+              : pushPermission === 'denied'
+              ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-500/30'
+              : 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-500/30'
+          }`}>
+            {isPushGranted ? '✓ Ativadas' : pushPermission === 'denied' ? 'Bloqueadas no Navegador' : 'Não Ativadas'}
+          </span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60">
+          <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
+            <p className="font-bold text-slate-850 dark:text-white">Lembretes automáticos via navegador</p>
+            <p className="text-slate-500 text-[11px] leading-relaxed">
+              Compatível com Desktop (Chrome, Edge, Safari, Firefox), Android e iPhone.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {!isPushGranted ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  const granted = await requestPushPermission();
+                  if (granted) {
+                    showToast('Notificações ativadas com sucesso!', 'success');
+                  } else {
+                    showToast('Permissão não concedida. Verifique as configurações do navegador.', 'info');
+                  }
+                }}
+                disabled={isRequestingPush}
+                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2"
+              >
+                <FaBell size={12} />
+                {isRequestingPush ? 'Solicitando...' : 'Ativar Notificações no Dispositivo'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={async () => {
+                  await testPushNotification('Teste de Lembrete de Aula', 'Este é um lembrete de teste do ELO! Inglês. Seus alertas estão ativos!');
+                  showToast('Notificação de teste enviada!', 'success');
+                }}
+                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-500/20 transition-all flex items-center gap-2"
+              >
+                <span>🚀</span> Testar Notificação Agora
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Flagship Teacher Section */}

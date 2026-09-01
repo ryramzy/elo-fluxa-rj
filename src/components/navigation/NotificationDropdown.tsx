@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { collection, query, orderBy, limit, onSnapshot, doc, updateDoc, writeBatch, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firestore';
 import { useAuth } from '../../hooks/useAuth';
-import { FaBell, FaCheck, FaTrashAlt } from 'react-icons/fa';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { FaBell, FaCheck, FaTrashAlt, FaCheckCircle } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface Notification {
@@ -19,19 +20,13 @@ interface Notification {
 export const NotificationDropdown: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isGranted, isRequesting, requestPermission, testNotification, isSupported } = usePushNotifications(user?.uid);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (!user?.uid) return;
-
-    // Request browser notification permission once per session
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
-      try {
-        Notification.requestPermission().catch(() => {});
-      } catch (e) {}
-    }
 
     if (user.uid === 'guest_user') {
       setNotifications([
@@ -218,6 +213,42 @@ export const NotificationDropdown: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              {/* Browser Push Notification Quick Activation Banner */}
+              {isSupported && !isGranted && (
+                <div className="bg-blue-600/15 border border-blue-500/30 rounded-xl p-2.5 mb-3 text-left">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <FaBell className="text-blue-400 shrink-0" size={12} />
+                    <span className="text-[11px] font-bold text-white leading-tight">Receber Lembretes de Aula</span>
+                  </div>
+                  <p className="text-[10px] text-slate-300 leading-tight mb-2">
+                    Receba avisos 15 min antes das suas aulas ao vivo no Zoom.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => requestPermission()}
+                    disabled={isRequesting}
+                    className="w-full py-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-[10px] font-extrabold uppercase tracking-wider rounded-lg transition-all shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    {isRequesting ? 'Ativando...' : 'Ativar no Navegador'}
+                  </button>
+                </div>
+              )}
+
+              {isGranted && (
+                <div className="flex items-center justify-between px-1 py-1 mb-2 text-[10px] text-slate-400 border-b border-slate-850">
+                  <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                    <FaCheckCircle size={10} /> Lembretes Ativados
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => testNotification('Teste de Lembrete', 'Seus alertas de aula estão funcionando perfeitamente!')}
+                    className="text-blue-400 hover:text-blue-300 transition-colors font-bold"
+                  >
+                    Testar alerta
+                  </button>
+                </div>
+              )}
 
               <div className="max-h-60 overflow-y-auto space-y-2.5 pr-1.5">
                 {notifications.length === 0 ? (

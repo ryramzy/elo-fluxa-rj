@@ -10,6 +10,16 @@ export const isPWAStandalone = (): boolean => {
   );
 };
 
+export const isPushSupported = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return 'Notification' in window;
+};
+
+export const getNotificationPermission = (): NotificationPermission | 'unsupported' => {
+  if (!isPushSupported()) return 'unsupported';
+  return Notification.permission;
+};
+
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
@@ -25,47 +35,86 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export async function requestPushPermission(userId: string): Promise<boolean> {
-  if (typeof window === 'undefined' || !('Notification' in window) || !('serviceWorker' in navigator)) {
+/**
+ * Requests browser notification permission and subscribes to push service
+ * Works on Desktop (Chrome, Edge, Safari, Firefox), Android, and installed iOS PWAs.
+ */
+export async function requestPushPermission(userId?: string): Promise<boolean> {
+  if (typeof window === 'undefined' || !isPushSupported()) {
+    console.warn('[push] Notifications not supported on this device/browser.');
     return false;
   }
 
-  // Only prompt in standalone PWA mode
-  if (!isPWAStandalone()) return false;
-  
-  // Don't re-prompt if already decided
-  const existing = localStorage.getItem('elo_push_permission');
-  if (existing && existing !== 'default') return existing === 'granted';
-
   try {
-    // Request permission
+    // Request native browser permission
     const permission = await Notification.requestPermission();
     localStorage.setItem('elo_push_permission', permission);
     
     if (permission !== 'granted') return false;
 
-    // Subscribe to push
-    const registration = await navigator.serviceWorker.ready;
-    if (!registration.pushManager) return false;
+    // Send instant welcome notification
+    sendTestNotification('Notificações Ativadas 🎉', 'Você receberá lembretes de aula 15 minutos antes da sua sessão com o Professor Matt!');
 
-    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BBItwOdVjqMMfgkAb0vXcYuEoIoQlkGdxwlzfbu5hQy9BOKlmI56Szq9DNjUBKb3Yj1DsVM_ESWUBjJCK0JwBs4';
-    
-    let subscription = await registration.pushManager.getSubscription();
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey),
-      });
-    }
+    // If Service Worker & PushManager are available, register push subscription
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration && registration.pushManager) {
+          const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BBItwOdVjqMMfgkAb0vXcYuEoIoQlkGdxwlzfbu5hQy9BOKlmI56Szq9DNjUBKb3Yj1DsVM_ESWUBjJCK0JwBs4';
+          
+          let subscription = await registration.pushManager.getSubscription();
+          if (!subscription) {
+            subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(vapidKey),
+            });
+          }
 
-    if (subscription && userId && userId !== 'guest_user') {
-      // Save subscription to Firestore
-      await savePushSubscription(userId, subscription.toJSON());
+          if (subscription && userId && userId !== 'guest_user') {
+            await savePushSubscription(userId, subscription.toJSON());
+          }
+        }
+      } catch (swErr) {
+        console.warn('[push] PushManager subscription skipped or unsupported:', swErr);
+      }
     }
 
     return true;
   } catch (err) {
-    console.warn('[push] Permission or subscription error:', err);
+    console.error('[push] Permission request error:', err);
+    return false;
+  }
+}
+
+/**
+ * Triggers a local browser test notification
+ */
+export async function sendTestNotification(title = 'ELO! Inglês', body = 'Esta é uma notificação de teste de lembrete de aula!'): Promise<boolean> {
+  if (!isPushSupported() || Notification.permission !== 'granted') {
+    return false;
+  }
+
+  try {
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.ready.catch(() => null);
+      if (reg && reg.showNotification) {
+        await reg.showNotification(`ELO! — ${title}`, {
+          body,
+          icon: '/favicon-96x96.png',
+          badge: '/favicon-32x32.png',
+          tag: 'elo_test_' + Date.now(),
+        });
+        return true;
+      }
+    }
+
+    new Notification(`ELO! — ${title}`, {
+      body,
+      icon: '/favicon-96x96.png',
+    });
+    return true;
+  } catch (e) {
+    console.warn('[push] Failed to show test notification:', e);
     return false;
   }
 }
