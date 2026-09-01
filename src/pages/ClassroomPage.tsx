@@ -8,12 +8,7 @@ import {
   FaCalendarAlt, 
   FaWhatsapp, 
   FaArrowRight, 
-  FaBookOpen, 
-  FaMicrophone, 
-  FaCheckCircle, 
-  FaShieldAlt,
-  FaHeadphones,
-  FaSparkles
+  FaBookOpen
 } from 'react-icons/fa';
 import { getWhatsAppLink } from '../../constants';
 
@@ -196,20 +191,25 @@ export default function ClassroomPage() {
           </button>
         </div>
 
-        {/* Audio / Video Readiness Checklist */}
-        <div className="grid grid-cols-3 gap-2 py-4 px-3 bg-slate-950/70 border border-slate-700/80 rounded-2xl mb-6 text-slate-200 text-xs font-bold">
-          <div className="flex items-center justify-center gap-1.5">
-            <FaMicrophone className="text-emerald-400 shrink-0" />
-            <span>Microfone OK</span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <FaHeadphones className="text-emerald-400 shrink-0" />
-            <span>Áudio HD OK</span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <FaShieldAlt className="text-emerald-400 shrink-0" />
-            <span>100% Privado</span>
-          </div>
+        {/* Pre-Class Tips */}
+        <div className="py-4 px-4 bg-slate-950/70 border border-slate-700/80 rounded-2xl mb-6 text-left">
+          <p className="text-xs font-black text-slate-300 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+            💡 Dicas para sua aula
+          </p>
+          <ul className="space-y-1.5 text-xs text-slate-400 font-medium leading-relaxed">
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400 mt-0.5 shrink-0">•</span>
+              <span>Use fones de ouvido para melhor qualidade de áudio</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400 mt-0.5 shrink-0">•</span>
+              <span>Escolha um ambiente silencioso e bem iluminado</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400 mt-0.5 shrink-0">•</span>
+              <span>Teste seu microfone antes de entrar na sala</span>
+            </li>
+          </ul>
         </div>
 
         {/* Secondary Shortcuts */}
@@ -219,7 +219,7 @@ export default function ClassroomPage() {
             className="py-3 px-4 bg-slate-950 hover:bg-slate-800 active:scale-95 text-slate-200 rounded-xl text-xs sm:text-sm font-bold transition-all border border-slate-700 flex items-center justify-center gap-2 min-h-[44px]"
           >
             <FaBookOpen size={14} className="text-blue-400" />
-            <span>Materiais & Slides</span>
+            <span>Cursos ELO!</span>
           </a>
           <a
             href={getWhatsAppLink('general', { studentName: profile?.displayName || user?.displayName || 'Estudante' })}
