@@ -1317,10 +1317,12 @@ export async function tutorCancelBooking(bookingId: string, reason = 'Necessidad
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        studentEmail: booking.studentEmail,
-        studentName: booking.studentName || 'Estudante',
+        attendeeEmail: booking.studentEmail || booking.userEmail,
+        attendeeName: booking.studentName || booking.userName || 'Estudante',
         date: booking.date,
         time: booking.time,
+        cancellationType: 'tutor',
+        deservesRefund: true,
         reason
       })
     }).catch(e => console.warn('Cancel email dispatch error:', e));
