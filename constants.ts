@@ -6,7 +6,7 @@
 import { Product, Testimonial } from './types.ts';
 
 export const STUDENT_COUNT = 54;
-export const WHATSAPP_NUMBER = "5522992322566";
+export const WHATSAPP_NUMBER = "5521992094338";
 export const WHATSAPP_MESSAGE = "Oi Matt! Vi o ELO! (eloingles.com.br) e quero começar a aprender inglês americano";
 export const BRAND_NAME = "ELO!";
 export const DOMAIN_NAME = "eloingles.com.br";
@@ -28,7 +28,8 @@ export const WHATSAPP_MESSAGES = {
   onboarding: "Oi Matt! Acabei de me cadastrar no ELO! Quero combinar meu horário de aula no Zoom",
   general: "Oi Matt! Preciso de ajuda com minha conta no ELO!",
   corporate: "Oi Matt! Quero saber mais sobre os planos corporativos do ELO! para minha empresa",
-  upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você"
+  upcomingClass: "Oi Matt! Tenho uma aula agendada no Zoom e quero confirmar detalhes com você",
+  tips: "Hi Professor! I want to receive weekly English tips"
 };
 
 export const getPixReceiptWhatsAppLink = (studentName?: string, plan?: string, price?: number) => {
@@ -116,7 +117,8 @@ export const MATTHEW_BIO = {
   ]
 };
 
-export const TESTIMONIALS: Testimonial[] = [
+export type PublicTestimonial = Pick<Testimonial, 'name' | 'location' | 'content'> & Partial<Testimonial> & { stars: number };
+export const TESTIMONIALS: PublicTestimonial[] = [
   {
     name: "Gabriel Santos",
     location: "Rio de Janeiro, RJ",

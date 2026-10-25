@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { InAppBrowserNotice } from './Auth/InAppBrowserNotice';
 import { FaTimes } from 'react-icons/fa';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -208,6 +209,7 @@ export default function LoginModal({ isOpen, onClose, onSignIn }: LoginModalProp
           </div>
 
           {/* Error message */}
+          <InAppBrowserNotice />
           {error && (
             <div className="bg-rose-950/60 border border-rose-500/40 text-rose-300 px-4 py-3 rounded-xl mb-4 text-xs leading-relaxed">
               {error}

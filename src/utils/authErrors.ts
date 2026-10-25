@@ -13,7 +13,8 @@ export function getAuthErrorMessage(error: any): string {
     case 'auth/popup-closed-by-user':
       return 'A janela do Google foi fechada antes de concluir o login. Tente novamente.';
     case 'auth/popup-blocked':
-      return 'A janela de login foi bloqueada pelo navegador. Permita popups ou use seu email e senha.';
+    case 'auth/operation-not-supported-in-this-environment':
+      return 'Abra esta página no Chrome ou Safari para entrar com o Google. Se abriu pelo WhatsApp, use o menu do aplicativo para abrir no navegador. Você também pode usar email e senha.';
     case 'auth/email-already-in-use':
       return 'Este email já está cadastrado. Tente fazer login ou recuperar sua senha.';
     case 'auth/invalid-email':

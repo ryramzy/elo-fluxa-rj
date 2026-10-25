@@ -1300,7 +1300,7 @@ export async function tutorCancelBooking(bookingId: string, reason = 'Necessidad
     await setDoc(cancelLogRef, {
       bookingId,
       studentId,
-      studentName: booking.studentName || 'Estudante',
+      studentName: booking.studentName || booking.userName || 'Estudante',
       date: booking.date,
       time: booking.time,
       cancelledBy: 'tutor',
@@ -1312,13 +1312,13 @@ export async function tutorCancelBooking(bookingId: string, reason = 'Necessidad
   }
 
   // 4. Send cancellation notification email to student via Resend
-  if (booking.studentEmail) {
+  if (booking.studentEmail || booking.userEmail) {
     fetch('/api/email/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        studentEmail: booking.studentEmail,
-        studentName: booking.studentName || 'Estudante',
+        attendeeEmail: booking.studentEmail || booking.userEmail,
+        attendeeName: booking.studentName || booking.userName || 'Estudante',
         date: booking.date,
         time: booking.time,
         reason

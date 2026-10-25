@@ -1,6 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  webServer: process.env.LOCAL_QA ? {
+    command: 'npm run preview -- --host 127.0.0.1',
+    url: 'http://127.0.0.1:4173',
+    reuseExistingServer: !process.env.CI,
+  } : undefined,
   testDir: './tests',
   fullyParallel: false,
   workers: 1, // run tests sequentially to gather coherent reporting

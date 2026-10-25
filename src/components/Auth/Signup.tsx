@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { InAppBrowserNotice } from './InAppBrowserNotice';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
@@ -198,6 +199,7 @@ const Signup = () => {
           <p className="text-slate-400 text-sm font-light">Pratique conversação e domine o inglês com Professor Nativo</p>
         </div>
 
+        <InAppBrowserNotice />
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded mb-6 text-sm">
             {error}

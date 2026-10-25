@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { InAppBrowserNotice } from './InAppBrowserNotice';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useNavigate, Link } from 'react-router-dom';
@@ -39,24 +40,29 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Safely ensure user profile document in Firestore
+      // Initialize new profiles only; returning students keep their progress.
       const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        displayName: user.displayName || 'Estudante',
-        email: user.email || email,
-        photoURL: user.photoURL || '',
-        xp: 0,
-        level: 1,
-        streakDays: 0,
-        lastActiveDate: new Date(),
-        badgesEarned: [],
-        createdAt: new Date(),
-        role: 'student',
-        hasSeenOnboarding: false,
-        bio: '',
-        targetGoal: '',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
-      }, { merge: true });
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          displayName: user.displayName || 'Estudante',
+          email: user.email || email,
+          photoURL: user.photoURL || '',
+          xp: 0,
+          level: 1,
+          streakDays: 0,
+          lastActiveDate: new Date(),
+          badgesEarned: [],
+          createdAt: new Date(),
+          role: 'student',
+          hasSeenOnboarding: false,
+          bio: '',
+          targetGoal: '',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
+        }, { merge: true });
+      } else {
+        await updateDoc(userRef, { lastActiveDate: new Date() });
+      }
 
       trackEvent('auth_login', { method: 'email' });
       navigate('/dashboard');
@@ -158,6 +164,7 @@ const Login = ({ copyVariant = DEFAULT_LOGIN_VARIANT }: LoginProps) => {
         </div>
 
         {/* Error message */}
+        <InAppBrowserNotice />
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded mb-6 text-sm">
             {error}

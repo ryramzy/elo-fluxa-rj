@@ -5,7 +5,7 @@ let analyticsInstance: any = null;
 
 // Safely initialize analytics in browser environment
 isSupported().then((supported) => {
-  if (supported) {
+  if (supported && app.options.projectId !== 'demo-project') {
     try {
       analyticsInstance = getAnalytics(app);
       console.log('Firebase Analytics initialized successfully');

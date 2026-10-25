@@ -150,7 +150,7 @@ export default class UiUxMarkdownReporter implements Reporter {
     const uiUxScore = Math.max(50, Math.min(100, 100 - penalty));
 
     let report = `# 🎨 ELO! UI/UX & Design Quality Report — ${brtDateString}\n`;
-    report += `**Target:** https://www.eloingles.com.br/\n`;
+    report += `**Target:** ${process.env.BASE_URL || 'https://www.eloingles.com.br/'}\n`;
     report += `**Report Generated:** ${brtTimestamp} BRT\n`;
     report += `**Auditor:** Antigravity UI/UX Specialist Robot\n`;
     report += `**Overall Design & UX Health Score:** **${uiUxScore}/100**\n\n`;
