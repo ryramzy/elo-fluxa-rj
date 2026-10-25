@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.use({ ignoreHTTPSErrors: false });
+
 // Keep the bypass secret on this deployment's origin; never send it to analytics,
 // Firebase, or any other third-party request made by the page.
 test.beforeEach(async ({ page, baseURL }) => {
@@ -35,6 +37,7 @@ test('Auth gateway is healthy on the deployment', async ({ request }) => {
   test.skip(!process.env.REQUIRE_FIREBASE, 'Requires deployed serverless functions.');
   const secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
   const response = await request.get('/api/health', {
+    timeout: 15000,
     headers: secret ? { 'x-vercel-protection-bypass': secret } : undefined,
   });
   expect(response.status()).toBe(200);

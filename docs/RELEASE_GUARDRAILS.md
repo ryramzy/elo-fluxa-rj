@@ -34,4 +34,8 @@ The stable project URL `https://elo-fluxa-rj.vercel.app` returned HTTP 200. Do n
 
 ## Local validation limits
 
+Vercel's active production metadata identifies commit `e3d58be6f58cf191176bd2155167b83fc319d6c2`, which had not reached GitHub main. The release preserves that already-live commit so existing email fixes are not rolled back. Its deployment URL is `https://elo-fluxa-644pcvr4q-matthew-ramsay-s-projects.vercel.app`; verify its health before using it for rollback.
+
+Production `/api/health` currently returns HTTP 500 because `GOOGLE_SERVICE_ACCOUNT_KEY` is missing. Restore the existing credential in Preview and Production and redeploy before considering the release healthy. Never put the credential in source control or chat.
+
 The local Firebase environment values are empty, so local route tests use demo mode. Automatic WhatsApp reminder credentials are also absent locally. Deployment smoke tests deliberately require real Firebase configuration and the server auth gateway. Prefilled WhatsApp messages open a chat; they do not send a message without the visitor's action.

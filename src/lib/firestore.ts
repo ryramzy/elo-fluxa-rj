@@ -1321,6 +1321,8 @@ export async function tutorCancelBooking(bookingId: string, reason = 'Necessidad
         attendeeName: booking.studentName || booking.userName || 'Estudante',
         date: booking.date,
         time: booking.time,
+        cancellationType: 'tutor',
+        deservesRefund: true,
         reason
       })
     }).catch(e => console.warn('Cancel email dispatch error:', e));
