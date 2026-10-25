@@ -12,6 +12,8 @@ Application changes must reach `main` through a pull request. Main is protected 
 
 The required GitHub checks are `Verify Build & Contact Links`, `Verify Vercel Preview`, and `Vercel`. Do not bypass them. A missing or protected preview blocks the release until Vercel access is configured.
 
+For protected previews, configure the project's existing Vercel automation bypass value as the GitHub Actions secret `VERCEL_AUTOMATION_BYPASS_SECRET`. The smoke tests send it only to the deployment origin. Do not disable deployment protection or commit the value.
+
 ## After merging
 
 Use `gh pr checks`, `vercel list`, and `vercel inspect <deployment-url>` to confirm the expected commit deployed. Run:
