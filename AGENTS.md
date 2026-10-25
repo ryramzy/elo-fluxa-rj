@@ -1,5 +1,7 @@
 # Release safeguards
 
+- Use GCP project `gen-lang-client-0976465403` and the named `elo-fluxa-rj` gcloud configuration (or `scripts/gcloud.ps1`). Do not rely on or change another project's global CLI defaults.
+
 - Never push application changes directly to `main`. Use a `codex/` branch and a pull request.
 - Preserve unrelated local changes and commits. Keep release work isolated.
 - Before merging, require a clean install, production build, TypeScript check, security audit, functional tests, mobile UI tests, and contact regressions.

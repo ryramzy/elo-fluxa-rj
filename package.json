@@ -12,7 +12,8 @@
     "test:qa:headed": "playwright test tests/daily-qa.spec.ts --headed",
     "test:ui-ux:headed": "playwright test tests/ui-ux-qa.spec.ts --headed",
     "test:qa:report": "playwright show-report",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cloud:check": "powershell -NoProfile -File scripts/check-cloud-connections.ps1"
   },
   "dependencies": {
     "@capacitor/core": "^6.2.0",
