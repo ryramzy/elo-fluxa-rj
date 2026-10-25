@@ -45,7 +45,7 @@ jobs:
         run: npm audit --audit-level=moderate
 
       - name: Verify functionality, mobile UI, and contact links
-        run: npx playwright test tests/daily-qa.spec.ts tests/ui-ux-qa.spec.ts tests/contact-regression.spec.ts
+        run: npx playwright test tests/daily-qa.spec.ts tests/ui-ux-qa.spec.ts tests/contact-regression.spec.ts tests/health-regression.spec.ts
         env:
           LOCAL_QA: 'true'
           BASE_URL: 'http://127.0.0.1:4173'
