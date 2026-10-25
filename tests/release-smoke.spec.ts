@@ -2,15 +2,19 @@ import { test, expect } from '@playwright/test';
 
 test.use({ ignoreHTTPSErrors: false });
 
-// Keep the bypass secret on this deployment's origin; never send it to analytics,
-// Firebase, or any other third-party request made by the page.
-test.beforeEach(async ({ page, baseURL }) => {
+// Exchange the secret for a deployment cookie before opening a browser page.
+// Do not follow redirects with a credential header or add it to browser traffic.
+test.beforeEach(async ({ context, baseURL }) => {
   const secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
   if (!secret || !baseURL) return;
-  const origin = new URL(baseURL).origin;
-  await page.route(`${origin}/**`, route => route.continue({
-    headers: { ...route.request().headers(), 'x-vercel-protection-bypass': secret },
-  }));
+  await context.request.get(new URL('/', baseURL).href, {
+    headers: {
+      'x-vercel-protection-bypass': secret,
+      'x-vercel-set-bypass-cookie': 'true',
+    },
+    maxRedirects: 0,
+    timeout: 15000,
+  });
 });
 
 test('Deployed app renders core routes without startup failures', async ({ page }) => {
@@ -37,6 +41,7 @@ test('Auth gateway is healthy on the deployment', async ({ request }) => {
   test.skip(!process.env.REQUIRE_FIREBASE, 'Requires deployed serverless functions.');
   const secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
   const response = await request.get('/api/health', {
+    maxRedirects: 0,
     timeout: 15000,
     headers: secret ? { 'x-vercel-protection-bypass': secret } : undefined,
   });
