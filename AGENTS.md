@@ -1,6 +1,7 @@
 # Release safeguards
 
 - Use GCP project `gen-lang-client-0976465403` and the named `elo-fluxa-rj` gcloud configuration (or `scripts/gcloud.ps1`). Do not rely on or change another project's global CLI defaults.
+- For the October maintenance request, verify existing Firebase/GCP resources only. Do not create databases, enable billing, generate Google service-account keys, or migrate projects without a separate explicit user request. Firebase Authentication and Firestore are separate services.
 
 - Never push application changes directly to `main`. Use a `codex/` branch and a pull request.
 - Preserve unrelated local changes and commits. Keep release work isolated.
