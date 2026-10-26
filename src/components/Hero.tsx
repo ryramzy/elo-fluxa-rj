@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE, STUDENT_COUNT } from '../../constants.ts';
+import { STUDENT_COUNT } from '../../constants.ts';
 import { trackEvent } from '@/utils/analytics';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -16,12 +16,6 @@ interface HeroProps {
 export default function Hero({ onEnter }: HeroProps) {
   const navigate = useNavigate();
   const { signInAsGuest } = useAuth();
-
-  function handleWhatsAppClick() {
-    trackEvent('hero_whatsapp_click');
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
-    window.open(url, '_blank');
-  }
 
   function handleDemoClick() {
     trackEvent('hero_demo_click');

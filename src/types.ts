@@ -25,7 +25,9 @@ export interface Booking {
   date: string;
   time: string;
   duration: number;
-  status: 'confirmed' | 'cancelled' | 'completed';
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
+  studentName?: string; // Legacy records use these aliases.
+  studentEmail?: string;
   tutorId?: string;
   tutorName?: string;
   uid?: string;

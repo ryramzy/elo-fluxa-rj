@@ -14,6 +14,81 @@ if (!process.env.RESEND_API_KEY) {
 }
 
 /**
+ * Beautiful branded email wrapper — ELO! Design System
+ * All transactional emails use this for consistent premium look
+ */
+function emailLayout(options: {
+  preheader?: string;
+  greeting: string;
+  body: string;
+  cta?: { text: string; url: string; color?: string };
+  footer?: string;
+}): string {
+  const { preheader, greeting, body, cta, footer } = options;
+  const ctaColor = cta?.color || '#2563eb';
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  body{margin:0;padding:0;background:#f1f5f9;font-family:'Inter',system-ui,-apple-system,sans-serif}
+  .email-wrap{max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+  .email-header{background:linear-gradient(135deg,#1e40af 0%,#2563eb 50%,#3b82f6 100%);padding:32px 32px 28px;text-align:center}
+  .email-logo{font-size:28px;font-weight:800;color:#ffffff;letter-spacing:1px;margin:0}
+  .email-logo span{color:#fbbf24}
+  .email-tagline{color:rgba(255,255,255,0.8);font-size:12px;margin-top:4px;letter-spacing:0.5px}
+  .email-body{padding:32px 32px 24px;color:#1e293b;font-size:15px;line-height:1.7}
+  .email-body h3{color:#1e293b;margin:0 0 8px 0;font-size:17px;font-weight:700}
+  .email-body p{margin:0 0 16px 0}
+  .info-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0}
+  .info-card.success{background:#f0fdf4;border-color:#bbf7d0}
+  .info-card.warning{background:#fffbeb;border-color:#fde68a}
+  .info-card.danger{background:#fef2f2;border-color:#fecaca}
+  .info-card.info{background:#eff6ff;border-color:#bfdbfe}
+  .info-row{display:flex;padding:6px 0;font-size:14px;line-height:1.5}
+  .info-label{color:#64748b;min-width:100px;font-weight:600}
+  .info-value{color:#1e293b}
+  .cta-wrap{text-align:center;margin:28px 0 8px}
+  .cta-btn{display:inline-block;padding:14px 36px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px;color:#ffffff;letter-spacing:0.3px}
+  .email-footer{padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center}
+  .footer-brand{font-size:16px;font-weight:700;color:#1e40af;margin-bottom:4px}
+  .footer-text{font-size:12px;color:#94a3b8;line-height:1.6;margin:0}
+  .footer-links{margin-top:12px}
+  .footer-links a{color:#2563eb;text-decoration:none;font-size:12px;font-weight:600;margin:0 8px}
+  .preheader{display:none;max-height:0;overflow:hidden;mso-hide:all}
+</style></head>
+<body style="margin:0;padding:24px 16px;background:#f1f5f9">
+  ${preheader ? `<div class="preheader">${preheader}</div>` : ''}
+  <div class="email-wrap">
+    <div class="email-header">
+      <div class="email-logo">ELO<span>!</span></div>
+      <div class="email-tagline">INGLÊS AMERICANO · RIO DE JANEIRO</div>
+    </div>
+    <div class="email-body">
+      <p style="font-size:16px;margin-bottom:20px">${greeting}</p>
+      ${body}
+      ${cta ? `
+      <div class="cta-wrap">
+        <a href="${cta.url}" class="cta-btn" style="background:${ctaColor}">${cta.text}</a>
+      </div>` : ''}
+      ${footer ? `<p style="font-size:13px;color:#94a3b8;margin-top:24px">${footer}</p>` : ''}
+    </div>
+    <div class="email-footer">
+      <div class="footer-brand">ELO!</div>
+      <p class="footer-text">
+        Inglês americano com nativos no Rio de Janeiro<br>
+        eloingles.com.br · ${REPLY_TO_EMAIL}
+      </p>
+      <div class="footer-links">
+        <a href="${APP_URL}/dashboard">Meu Painel</a>
+        <a href="${APP_URL}">Site</a>
+      </div>
+    </div>
+  </div>
+</body></html>`;
+}
+
+/**
  * Robust Email Dispatcher with Fallback & Diagnostics
  */
 async function sendEmailWithFallback(payload: {
@@ -278,53 +353,33 @@ async function handleBookingConfirmation(req: VercelRequest, res: VercelResponse
       from: FROM_EMAIL,
       replyTo: REPLY_TO_EMAIL,
       to: toEmails,
-      subject: `Sua aula está confirmada - ${formattedDate}`,
-      html: `
-        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
-          <h2 style="color:#2563eb;margin-bottom:8px">ELO!</h2>
-          <p style="margin:0 0 24px 0;font-size:16px">
-            Olá, <strong>${attendeeName}</strong>!
-          </p>
-          <p style="margin:0 0 20px 0">
-            Sua aula particular de inglês americano está confirmada!
-          </p>
-          
-          <div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:16px;border-radius:4px;margin:20px 0">
-            <p style="margin:0;font-size:15px;line-height:1.5">
-              <strong>${formattedDate}</strong> às ${time}<br/>
-              Duração: ${durationMinutes || 60} minutos<br/>
-              Professor: ${tutorName || 'Professor Matt'}
-            </p>
-            ${notes ? `<p style="margin:8px 0 0 0;font-size:14px;color:#64748b">
-              <strong>Notas:</strong> ${notes}
-            </p>` : ''}
+      subject: `✅ Sua aula está confirmada - ${formattedDate}`,
+      html: emailLayout({
+        preheader: `Aula confirmada: ${formattedDate} às ${time} com ${tutorName || 'Professor Matt'}`,
+        greeting: `Olá, <strong>${attendeeName}</strong>! 🎉`,
+        body: `
+          <p>Sua aula particular de inglês americano está <strong>confirmada</strong>!</p>
+          <div class="info-card success">
+            <h3>📅 Detalhes da Aula</h3>
+            <table style="width:100%;border-collapse:collapse;margin-top:12px">
+              <tr><td style="padding:8px 0;color:#64748b;font-size:14px;font-weight:600;width:120px">Data</td><td style="padding:8px 0;color:#1e293b;font-size:14px;font-weight:700">${formattedDate}</td></tr>
+              <tr><td style="padding:8px 0;color:#64748b;font-size:14px;font-weight:600">Horário</td><td style="padding:8px 0;color:#1e293b;font-size:14px">${time}</td></tr>
+              <tr><td style="padding:8px 0;color:#64748b;font-size:14px;font-weight:600">Duração</td><td style="padding:8px 0;color:#1e293b;font-size:14px">${durationMinutes || 60} minutos</td></tr>
+              <tr><td style="padding:8px 0;color:#64748b;font-size:14px;font-weight:600">Professor</td><td style="padding:8px 0;color:#1e293b;font-size:14px">${tutorName || 'Professor Matt'}</td></tr>
+            </table>
+            ${notes ? `<p style="margin:12px 0 0;font-size:13px;color:#64748b"><strong>Notas:</strong> ${notes}</p>` : ''}
           </div>
-
-          <div style="margin:24px 0;text-align:center">
-            <a href="${meetLink || `${APP_URL}/classroom`}" 
-               style="display:inline-block;background:#2563eb;color:white;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;margin-bottom:10px">
-              📹 Entrar na Sala de Aula ao Vivo
-            </a>
-          </div>
-
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:4px;margin:20px 0">
-            <h4 style="margin:0 0 8px 0;color:#475569;font-size:14px">
-              RECOMENDAÇÕES:
-            </h4>
-            <ul style="margin:0;padding-left:16px;font-size:13px;color:#64748b">
-              <li>Entre 5 minutos antes para testar microfone</li>
+          <div class="info-card" style="background:#fffbeb;border-color:#fde68a">
+            <h3>💡 Dicas para sua aula</h3>
+            <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:#92400e;line-height:2">
+              <li>Entre 5 min antes para testar microfone e câmera</li>
               <li>Use fones de ouvido para melhor clareza sonora</li>
-              <li>Avise com pelo menos 24h de antecedência se precisar remarcar</li>
+              <li>Avise com 24h de antecedência se precisar remarcar</li>
             </ul>
           </div>
-
-          <p style="color:#94a3b8;font-size:12px;margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0">
-            <strong>ELO!</strong><br/>
-            Inglês americano com nativos no Rio de Janeiro<br/>
-            eloingles.com.br · ${REPLY_TO_EMAIL}
-          </p>
-        </div>
-      `,
+        `,
+        cta: { text: '📹 Entrar na Sala de Aula ao Vivo', url: meetLink || `${APP_URL}/classroom`, color: '#16a34a' },
+      }),
     });
 
     if (!result.success) {
@@ -397,42 +452,24 @@ async function handleWelcome(req: VercelRequest, res: VercelResponse) {
       replyTo: REPLY_TO_EMAIL,
       to: email,
       subject: `Bem-vindo ao ELO!, ${name}! 🚀`,
-      html: `
-        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
-          <h2 style="color:#2563eb;margin-bottom:8px">ELO!</h2>
-          <p style="margin:0 0 24px 0;font-size:16px">
-            Olá, <strong>${name}</strong>!
-          </p>
-          <p style="margin:0 0 20px 0">
-            Seja muito bem-vindo(a) ao ELO! Estou super animado para te ajudar a destravar sua fala em inglês americano.
-          </p>
-          
-          <div style="background:#f0f9ff;border-left:4px solid #2563eb;padding:16px;border-radius:4px;margin:20px 0">
-            <h3 style="margin:0 0 8px 0;color:#1e40af;font-size:16px">
-              O que você encontra no ELO!:
-            </h3>
-            <ul style="margin:8px 0 0 0;padding-left:16px;color:#1e40af;font-size:14px">
+      html: emailLayout({
+        preheader: `${name}, sua jornada de inglês americano começa agora!`,
+        greeting: `Olá, <strong>${name}</strong>! 👋`,
+        body: `
+          <p>Seja muito bem-vindo(a) ao <strong>ELO!</strong> Estou super animado para te ajudar a destravar sua fala em inglês americano.</p>
+          <div class="info-card info">
+            <h3>🎯 O que você encontra no ELO!</h3>
+            <ul style="margin:12px 0 0 0;padding-left:20px;font-size:14px;color:#1e40af;line-height:2">
               <li>Aulas 1:1 ao vivo no Zoom com foco em conversação real</li>
               <li>Decks de slides interativos para praticar connected speech</li>
               <li>Ambiente descontraído, sem pressão e sem gramática decorada</li>
               <li>Flexibilidade de horários na sua semana</li>
             </ul>
           </div>
-
-          <div style="text-align:center;margin:32px 0">
-            <a href="${APP_URL}/dashboard" 
-               style="display:inline-block;background:#2563eb;color:white;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px">
-              Acessar Meu Painel
-            </a>
-          </div>
-
-          <p style="color:#94a3b8;font-size:12px;margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0">
-            <strong>ELO!</strong><br/>
-            Seu professor de inglês americano no Rio<br/>
-            eloingles.com.br · ${REPLY_TO_EMAIL}
-          </p>
-        </div>
-      `,
+          <p>Sua primeira aula experimental é <strong>gratuita</strong>. Acesse seu painel e escolha o melhor horário!</p>
+        `,
+        cta: { text: '🚀 Acessar Meu Painel', url: `${APP_URL}/dashboard` },
+      }),
     });
 
     res.status(200).json({ success: result.success, details: result });

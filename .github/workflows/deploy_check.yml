@@ -1,4 +1,4 @@
-name: Deployment & Curriculum Verification
+name: Build & Contact Regression Checks
 
 on:
   push:
@@ -6,9 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: release-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
-    name: Verify Curriculum & Build Integrity
+    name: Verify Build & Contact Links
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
@@ -27,10 +35,68 @@ jobs:
       - name: Run Build Check
         run: npm run build
 
-      - name: Verify 100% Curriculum Coverage
+      - name: Check TypeScript
+        run: npm run typecheck
+
+      - name: Install browser for regression checks
+        run: npx playwright install --with-deps chromium
+
+      - name: Audit dependency security
+        run: npm audit --audit-level=moderate
+
+      - name: Verify functionality, mobile UI, and contact links
+        run: npx playwright test tests/daily-qa.spec.ts tests/ui-ux-qa.spec.ts tests/contact-regression.spec.ts tests/health-regression.spec.ts
+        env:
+          LOCAL_QA: 'true'
+          BASE_URL: 'http://127.0.0.1:4173'
+
+      - name: Upload browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-browser-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+
+  preview:
+    name: Verify Vercel Preview
+    if: github.event_name == 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Find successful preview for this PR commit
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
         run: |
-          echo "Verifying curriculum and lesson ID resolution..."
-          node -e "
-            const { courses } = require('./src/data/courses.ts');
-            console.log('Courses count:', courses.length);
-          " || true
+          for attempt in {1..30}; do
+            deployment_id=$(gh api "repos/$REPOSITORY/deployments?sha=$HEAD_SHA&per_page=20" --jq 'map(select((.environment | ascii_downcase) != "production")) | .[0].id // empty')
+            if [ -n "$deployment_id" ]; then
+              preview_url=$(gh api "repos/$REPOSITORY/deployments/$deployment_id/statuses" --jq '.[0] | select(.state == "success") | .environment_url // .target_url // empty')
+              if [[ "$preview_url" == https://*.vercel.app ]]; then
+                echo "url=$preview_url" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "No successful Vercel preview exists for $HEAD_SHA. Release remains blocked."
+          exit 1
+      - name: Smoke-test deployed preview
+        run: npx playwright test tests/release-smoke.spec.ts --reporter=list
+        env:
+          BASE_URL: ${{ steps.deployment.outputs.url }}
+          REQUIRE_FIREBASE: 'true'
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

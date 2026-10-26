@@ -243,7 +243,7 @@ export default class QaMarkdownReporter implements Reporter {
     const summaryText = `${totalFail} failures, ${regressions.length} regressions from yesterday, ${totalDegraded} degraded, ${totalManual} manual checks required`;
 
     let report = `# ELO! QA Report — ${brtDateString}\n`;
-    report += `**Site:** https://www.eloingles.com.br/\n`;
+    report += `**Site:** ${process.env.BASE_URL || 'https://www.eloingles.com.br/'}\n`;
     report += `**Report Generated:** ${brtTimestamp} BRT\n`;
     report += `**Tested By:** Antigravity / Kimi QA Agent (Playwright Suite)\n`;
     report += `**Previous Report:** ${previousReportName}\n\n`;

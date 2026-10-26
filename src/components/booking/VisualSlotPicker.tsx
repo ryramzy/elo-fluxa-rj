@@ -288,21 +288,8 @@ export const VisualSlotPicker: React.FC<VisualSlotPickerProps> = ({
         'confirmed'
       );
 
-      // Dispatch booking confirmation email via Resend in background
-      fetch('/api/email/booking-confirmation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          attendeeName: studentName,
-          attendeeEmail: studentEmail,
-          date,
-          time,
-          durationMinutes: 60,
-          meetLink,
-          tutorName: activeTutor.name || 'Professor Matt',
-          tutorEmail: activeTutor.email || 'mramsay0@gmail.com'
-        })
-      }).catch(e => console.warn('Email dispatch warning:', e));
+      // NOTE: booking-confirmation email is already dispatched inside bookSlot() in firestore.ts
+      // Do NOT dispatch again here to avoid duplicate emails to students and admins.
     } catch (err: any) {
       console.warn('Booking persistence failed, rolling back optimistic state:', err);
       // ROLLBACK: revert optimistic state so user sees the slot is still available

@@ -141,7 +141,7 @@ const Dicas: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href={`${getWhatsAppLink('general')}&text=Hi%20Professor!%20I%20want%20to%20receive%20weekly%20English%20tips`}
+              href={getWhatsAppLink('tips')}
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-white text-green-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"

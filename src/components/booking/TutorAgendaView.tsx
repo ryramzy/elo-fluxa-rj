@@ -47,7 +47,7 @@ interface Booking {
   userEmail?: string;
   studentName?: string;
   studentEmail?: string;
-  status?: 'confirmed' | 'pending' | 'cancelled_by_tutor' | 'cancelled_by_student';
+  status?: 'confirmed' | 'pending' | 'completed' | 'cancelled' | 'cancelled_by_tutor' | 'cancelled_by_student';
   meetLink?: string;
   googleEventId?: string;
 }
@@ -629,7 +629,7 @@ export default function TutorAgendaView() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                 {Array.from({ length: 13 }, (_, i) => `${String(8 + i).padStart(2, '0')}:00`).map((timeStr) => {
                   const isBlocked = blockedSlots.some(b => b.date === selectedDateStr && b.time === timeStr && b.blocked !== false);
-                  const isBooked = bookings.some(b => b.date === selectedDateStr && b.time === timeStr && b.status !== 'cancelled');
+                  const isBooked = bookings.some(b => b.date === selectedDateStr && b.time === timeStr && (b.status === 'confirmed' || b.status === 'pending'));
 
                   return (
                     <div 

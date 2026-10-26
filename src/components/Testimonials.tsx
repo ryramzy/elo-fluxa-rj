@@ -4,10 +4,9 @@
 */
 
 import React, { useMemo } from 'react';
-import { TESTIMONIALS } from '../../constants.ts';
-import { Testimonial } from '../../types.ts';
+import { TESTIMONIALS, type PublicTestimonial } from '../../constants.ts';
 
-const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => {
+const TestimonialCard: React.FC<{ testimonial: PublicTestimonial }> = ({ testimonial }) => {
   const isRTL = testimonial.language === 'ar';
 
   return (
@@ -70,7 +69,7 @@ export default function Testimonials() {
       <section>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {featured.map(t => (
-            <TestimonialCard key={t.id} testimonial={t} />
+            <TestimonialCard key={t.id || t.name} testimonial={t} />
           ))}
         </div>
       </section>
@@ -91,7 +90,7 @@ export default function Testimonials() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {others.map(t => (
-            <TestimonialCard key={t.id} testimonial={t} />
+            <TestimonialCard key={t.id || t.name} testimonial={t} />
           ))}
         </div>
       </section>

@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { WHATSAPP_NUMBER, WHATSAPP_MESSAGE } from '../../constants.ts';
+import { getWhatsAppLink } from '../../constants.ts';
 import { trackEvent } from '@/utils/analytics';
 
 interface FooterProps {
@@ -26,11 +26,8 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
     }, 1500);
   };
 
-  const handleWhatsApp = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleWhatsApp = () => {
     trackEvent('footer_whatsapp_click');
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
-    window.open(url, '_blank');
   }
 
   return (
@@ -43,13 +40,13 @@ const Footer: React.FC<FooterProps> = ({ onLinkClick = () => {} }) => {
             Aprenda inglês com Professor, americano nativo e coach. 
             Do Business English para Oil & Gas à sobrevivência no Rio, destrave sua fala com confiança.
           </p>
-          <button 
+          <a href={getWhatsAppLink('landing')}
             onClick={handleWhatsApp}
             className="text-green-400 font-bold uppercase tracking-widest text-xs hover:text-green-300 transition-colors flex items-center gap-2 py-2.5 px-3 min-h-[38px] rounded-lg bg-green-500/10 border border-green-500/20"
           >
             <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
             Fale conosco via WhatsApp
-          </button>
+          </a>
         </div>
 
         <div className="md:col-span-2">
